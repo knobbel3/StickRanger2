@@ -287,7 +287,7 @@ function Ve(a, b) {
     if (0 != c) {
         var d = $b[a] - 1;
         a == Zb && d++;
-        return u[a][b] + v(u[a][b] * d * c / 100)
+        return u[a][b] + floor(u[a][b] * d * c / 100)
     }
     return u[a][b]
 }
@@ -314,7 +314,7 @@ function Ye(a, b, c) {
         Ze(a, me) && 4 == u[b][Lc] && (f += $e(a, me));
         Ze(a, ne) && 3 == u[b][Lc] && (f += $e(a, ne));
         Ze(a, ne) && 4 == u[b][Lc] && (f += af(a, ne));
-        return u[b][c] + v(u[b][c] * f * d / 100)
+        return u[b][c] + floor(u[b][c] * f * d / 100)
     }
     return u[b][c]
 }
@@ -782,7 +782,7 @@ function Af(a, b) {
 
 function Bf() {
     var a, b, c;
-    uf = c = v(E(1024));
+    uf = c = floor(E(1024));
     c = Af(c, 0);
     c = Af(c, q);
     c = Af(c, r);
@@ -816,7 +816,7 @@ function Df(a, b) {
         Gf.height = 432;
         for (c = 0; 513 > c; c++) Hf[c] = new Float32Array(2);
         for (c = 0; 512 > c; c++) {
-            var d = 360 * c / 512 * If / 180;
+            var d = 360 * c / 512 * PI / 180;
             Hf[c][0] = Math.cos(d);
             Hf[c][1] = Math.sin(d)
         }
@@ -870,9 +870,9 @@ function Df(a, b) {
         var f;
         for (c = 0; 1024 > c; c++) Of[c] = c / 1024;
         for (c = 0; 1024 >
-            c; c++) d = v(1024 * Pf()), f = Of[c], Of[c] = Of[d], Of[d] = f;
-        Tf = v(1024 * Pf()) & 1023;
-        Uf = v(512 * Pf()) | 1;
+            c; c++) d = floor(1024 * rand()), f = Of[c], Of[c] = Of[d], Of[d] = f;
+        Tf = floor(1024 * rand()) & 1023;
+        Uf = floor(512 * rand()) | 1;
         for (c = 0; 276480 > c; c++) F[c] = 0;
         Vf.f("font.png", 8, 12);
         Wf.f("font_s.png", 5, 7);
@@ -1018,35 +1018,35 @@ function dg() {
                 for (B = ((h >> 8) * ha.h << 8) + g, l = a; l < d; l++, n++, B += k) M = t[B >> 8], -1 != M && (F[n] = M);
             2 == ra ? (lg(Vf, 320, 220, "NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 0 == jf ? 3 : 4), L(256, 228, 384, 228, 11141120)), 0 == jf && (lg(Vf, 320, 260, "LOAD GAME", 16777215,
                 10053171), mg(320, 260, 128, 24) && (ng && (ra = 5), L(256, 268, 384, 268, 11141120)))) : 3 == ra && (lg(Vf, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 4), L(192, 228, 448, 228, 11141120)), lg(Vf, 320, 260, "CANCEL", 16777215, 10053171), mg(320, 260, 128, 24) && (ng && (ra = 2), L(256, 268, 384, 268, 11141120)));
-            og(608, 312, 8, "IMPORT", 16777215) && (8 != ca.length ? N(Vf, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && (a = rg("Import Game Data", "")) && (jf = rf(a), kf = 100));
+            og(608, 312, 8, "IMPORT", 16777215) && (8 != ca.length ? N(Vf, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && (a = promptInput("Import Game Data", "")) && (jf = rf(a), kf = 100));
             og(608, 352, 9, "EXPORT", 16777215) && (8 != ca.length ?
-                N(Vf, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && rg("Export Game Data", gf));
+                N(Vf, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && promptInput("Export Game Data", gf));
             sg(0, 408, 640, 16, 0);
             lg(Vf, 320, 417, Ff, -1, 6697728)
         } else if (4 == ra || 5 == ra) 4 == ra ? (bc(), Yb[0][0] = 4, q = $b[4] = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40, tg()) : 5 == ra && (cc(), q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), ug = 0, ra = 10;
         else if (10 == ra) hg(q) && (1 == q && (Gc >>= 1), sa = 0, ra++);
         else if (11 == ra || 12 == ra || 13 == ra || 30 == ra)
             if (ng && (ta = !1, 360 <= qg && (ta = !0), va && vg(8, 8, 204, 196) && (ta = !0),
-                    wa && vg(218, 8, 204, 260) && (ta = !0), xa && vg(428, 8, 204, 180) && (ta = !0), ya && vg(428, 8, 204, 180) && (ta = !0), za && vg(428, 196, 204, 148) && (ta = !0), Aa && vg(218, 8, 204, 180) && (ta = !0)), tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), Gg = 1, sg(4, 4, 8 * H[q][Hg].length + 8, 20, 2151694400), Gg = 0, N(Vf, 8, 8, H[q][Hg], 16777215, 0), Ig(), 11 == ra) c = 255, 50 < sa && (c = 255 - v(255 * (sa - 50) / 20)), Jg(Vf, 320, 180, H[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), a = -1E3 + v(500 * sa / 20), L(a, 164, a + 1E3, 164, 8421504), a = 640 - v(500 * sa / 20), L(a, 193, a + 1E3, 193, 8421504),
-                sa++, ug = Kg(sa / 30, 0, 1), 70 <= sa && (ug = 1, sa = 0, ra++);
+                    wa && vg(218, 8, 204, 260) && (ta = !0), xa && vg(428, 8, 204, 180) && (ta = !0), ya && vg(428, 8, 204, 180) && (ta = !0), za && vg(428, 196, 204, 148) && (ta = !0), Aa && vg(218, 8, 204, 180) && (ta = !0)), tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), Gg = 1, sg(4, 4, 8 * H[q][Hg].length + 8, 20, 2151694400), Gg = 0, N(Vf, 8, 8, H[q][Hg], 16777215, 0), Ig(), 11 == ra) c = 255, 50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)), Jg(Vf, 320, 180, H[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), a = -1E3 + floor(500 * sa / 20), L(a, 164, a + 1E3, 164, 8421504), a = 640 - floor(500 * sa / 20), L(a, 193, a + 1E3, 193, 8421504),
+                sa++, ug = clamp(sa / 30, 0, 1), 70 <= sa && (ug = 1, sa = 0, ra++);
             else if (12 == ra) {
             for (a = b = 0; a < r; a++) b += Ya[a];
             if (0 == b) {
                 sa = 0;
                 ra = 30;
                 Gc = Hc = Ic = 0;
-                c = v(Wa / 10 / r);
+                c = floor(Wa / 10 / r);
                 if (0 < c) {
                     for (a = 0; a < r; a++) Lg(O[a][0].x, O[a][0].y, 0, -c, 60, 16776960);
-                    Wa = Kg(Wa - c * r, 0, 9999999)
+                    Wa = clamp(Wa - c * r, 0, 9999999)
                 }
                 for (a = 0; a < r; a++) Ya[a] = 1, $a[a] = 0;
                 mf();
                 for (a = 0; a < r; a++) Ya[a] = 0
             } else q != Mg && (sa = 0, ra = 13, A(6) && (2 == Ng && 4 == Mg || 4 == Ng && 2 == Mg) && 0 == Og && 0 == Pg && C(6), A(51) && (13 == Ng && 15 == Mg || 15 == Ng && 13 == Mg) && 0 == Og && 0 == Pg && C(51))
-        } else if (13 == ra) sa++, ug = Kg(1 - sa / 20, 0, 1), 20 == sa && (ug = 0, ra = 10, Ng = q, q = Mg, mf());
+        } else if (13 == ra) sa++, ug = clamp(1 - sa / 20, 0, 1), 20 == sa && (ug = 0, ra = 10, Ng = q, q = Mg, mf());
         else if (30 ==
-            ra && (100 > sa && sa++, c = v(255 * sa / 100), Jg(Vf, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24), 100 == sa && ng)) {
+            ra && (100 > sa && sa++, c = floor(255 * sa / 100), Jg(Vf, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24), 100 == sa && ng)) {
             for (a = 0; 4 > a; a++) Ya[a] = 1, $a[a] = 0;
             ug = 0;
             ra = 10;
@@ -1062,25 +1062,25 @@ function dg() {
             mf()
         }
         Bf();
-        0 < bf && (bf--, a = z[cf][3], Qg(qa, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, !0), b = 440, a = Sg(120 - bf - 0, 4), 0 < a && N(G, b + 0, 342 + 2 * a, "G", 16777215, 0), a = Sg(120 - bf - 2, 4), 0 < a && N(G, b + 5, 342 + 2 * a, "E", 16777215, 0), a = Sg(120 - bf - 4, 4), 0 < a && N(G, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = Sg(120 -
-            bf - 6, 4), 0 < a && N(G, b + 20, 342 + 2 * a, "M", 16777215, 0), a = Sg(120 - bf - 8, 4), 0 < a && N(G, b + 25, 342 + 2 * a, "E", 16777215, 0), a = Sg(120 - bf - 10, 4), 0 < a && N(G, b + 30, 342 + 2 * a, "D", 16777215, 0), a = Sg(120 - bf - 12, 4), 0 < a && N(G, b + 35, 342 + 2 * a, "A", 16777215, 0), a = Sg(120 - bf - 14, 4), 0 < a && N(G, b + 40, 342 + 2 * a, "L", 16777215, 0));
-        0 < kf ? (kf--, 10 > kf ? c = v(255 * kf / 10) : c = 255, Tg(Vf, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = v(255 * hf / 10) : c = 255, Tg(Vf, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
+        0 < bf && (bf--, a = z[cf][3], Qg(qa, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, !0), b = 440, a = min(120 - bf - 0, 4), 0 < a && N(G, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && N(G, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && N(G, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
+            bf - 6, 4), 0 < a && N(G, b + 20, 342 + 2 * a, "M", 16777215, 0), a = min(120 - bf - 8, 4), 0 < a && N(G, b + 25, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 10, 4), 0 < a && N(G, b + 30, 342 + 2 * a, "D", 16777215, 0), a = min(120 - bf - 12, 4), 0 < a && N(G, b + 35, 342 + 2 * a, "A", 16777215, 0), a = min(120 - bf - 14, 4), 0 < a && N(G, b + 40, 342 + 2 * a, "L", 16777215, 0));
+        0 < kf ? (kf--, 10 > kf ? c = floor(255 * kf / 10) : c = 255, Tg(Vf, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = floor(255 * hf / 10) : c = 255, Tg(Vf, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
     }
 }
 m.fff = tg;
 
 function tg() {
     var a, b, c, d, f, g;
-    for (a = 0; 4 > a; a++) ub[a] = 10 * lb[a], vb[a] = 5 * mb[a], wb[a] = 5 * nb[a], xb[a] = 5 * pb[a], yb[a] = 5 * qb[a], zb[a] = 5 * rb[a], Ab[a] = 2 * sb[a], b = Ye(a, Yb[a][2], ae), c = Ye(a, Yb[a][2], be), d = Ye(a, Yb[a][2], ce), f = Ye(a, Yb[a][2], de), Jb[a] = c, Ze(a, Ke) && (Jb[a] += $e(a, Ke)), Kb[a] = c, Ze(a, Ke) && (Kb[a] += $e(a, Ke)), Lb[a] = d, Ze(a, Le) && (Lb[a] += $e(a, Le)), Mb[a] = Ab[a] + f, Ze(a, ve) && (Mb[a] += $e(a, ve)), Nb[a] = yb[a], Ob[a] = zb[a], Pb[a] = zb[a], Sb[a] = zb[a], Tb[a] = zb[a], Za[a] = v((50 + b) * (100 + ub[a]) / 100), Ze(a, Oe) && (Za[a] = v(Za[a] * (100 + $e(a,
-        Oe)) / 100)), Ya[a] = Kg(Ya[a], 0, Za[a]), bb[a] = Ye(a, Yb[a][0], vd), Ze(a, Ne) && 0 < bb[a] && (bb[a] = Ug(bb[a] + $e(a, Ne), 1)), ab[a] = Ye(a, Yb[a][1], vd), Ze(a, te) && 0 < ab[a] && (ab[a] = Ug(ab[a] - $e(a, te), 1)), $a[a] = Kg($a[a], 0, ab[a]);
+    for (a = 0; 4 > a; a++) ub[a] = 10 * lb[a], vb[a] = 5 * mb[a], wb[a] = 5 * nb[a], xb[a] = 5 * pb[a], yb[a] = 5 * qb[a], zb[a] = 5 * rb[a], Ab[a] = 2 * sb[a], b = Ye(a, Yb[a][2], ae), c = Ye(a, Yb[a][2], be), d = Ye(a, Yb[a][2], ce), f = Ye(a, Yb[a][2], de), Jb[a] = c, Ze(a, Ke) && (Jb[a] += $e(a, Ke)), Kb[a] = c, Ze(a, Ke) && (Kb[a] += $e(a, Ke)), Lb[a] = d, Ze(a, Le) && (Lb[a] += $e(a, Le)), Mb[a] = Ab[a] + f, Ze(a, ve) && (Mb[a] += $e(a, ve)), Nb[a] = yb[a], Ob[a] = zb[a], Pb[a] = zb[a], Sb[a] = zb[a], Tb[a] = zb[a], Za[a] = floor((50 + b) * (100 + ub[a]) / 100), Ze(a, Oe) && (Za[a] = floor(Za[a] * (100 + $e(a,
+        Oe)) / 100)), Ya[a] = clamp(Ya[a], 0, Za[a]), bb[a] = Ye(a, Yb[a][0], vd), Ze(a, Ne) && 0 < bb[a] && (bb[a] = max(bb[a] + $e(a, Ne), 1)), ab[a] = Ye(a, Yb[a][1], vd), Ze(a, te) && 0 < ab[a] && (ab[a] = max(ab[a] - $e(a, te), 1)), $a[a] = clamp($a[a], 0, ab[a]);
     for (b = 0; 2 > b; b++)
-        for (a = 0; 4 > a; a++) d = Yb[a][b], 0 != d && (f = Ye(a, d, Oc), g = Ye(a, d, td), c = 4 * b + a, Db[c] = Ye(a, d, Vc), Eb[c] = Ye(a, d, Wc), Db[c] = v(Db[c] * (100 + Cb[f][a]) / 100), Eb[c] = v(Eb[c] * (100 + Cb[f][a]) / 100), Db[c] = v(Db[c] * (100 + Ub[g][a]) / 100), Eb[c] = v(Eb[c] * (100 + Ub[g][a]) / 100), Ze(a, oe) && (Db[c] = v(Db[c] * (100 + $e(a, oe)) / 100),
-            Eb[c] = v(Eb[c] * (100 + $e(a, oe)) / 100)), Ze(a, Ge) && 1 == g && (Db[c] = v(Db[c] * (100 + $e(a, Ge)) / 100), Eb[c] = v(Eb[c] * (100 + $e(a, Ge)) / 100)), Ze(a, He) && 2 == g && (Db[c] = v(Db[c] * (100 + $e(a, He)) / 100), Eb[c] = v(Eb[c] * (100 + $e(a, He)) / 100)), Ze(a, ze) && 3 == g && (Eb[c] = v(Eb[c] * (100 + $e(a, ze)) / 100)), Ze(a, Be) && 4 == g && (Db[c] = v(Db[c] * (100 + $e(a, Be)) / 100), Eb[c] = v(Eb[c] * (100 + $e(a, Be)) / 100)), Fb[c] = Ye(a, d, Xc), Ze(a, ue) && 1 < Fb[c] && (Fb[c] += $e(a, ue)), b || (Gb[a] = Ye(a, d, Zc), Ze(a, pe) && (Gb[a] -= $e(a, pe)), Hb[a] = Ye(a, d, $c), !Ze(a, qe) || 4 != u[d][Nc] && 5 != u[d][Nc] ||
+        for (a = 0; 4 > a; a++) d = Yb[a][b], 0 != d && (f = Ye(a, d, Oc), g = Ye(a, d, td), c = 4 * b + a, Db[c] = Ye(a, d, Vc), Eb[c] = Ye(a, d, Wc), Db[c] = floor(Db[c] * (100 + Cb[f][a]) / 100), Eb[c] = floor(Eb[c] * (100 + Cb[f][a]) / 100), Db[c] = floor(Db[c] * (100 + Ub[g][a]) / 100), Eb[c] = floor(Eb[c] * (100 + Ub[g][a]) / 100), Ze(a, oe) && (Db[c] = floor(Db[c] * (100 + $e(a, oe)) / 100),
+            Eb[c] = floor(Eb[c] * (100 + $e(a, oe)) / 100)), Ze(a, Ge) && 1 == g && (Db[c] = floor(Db[c] * (100 + $e(a, Ge)) / 100), Eb[c] = floor(Eb[c] * (100 + $e(a, Ge)) / 100)), Ze(a, He) && 2 == g && (Db[c] = floor(Db[c] * (100 + $e(a, He)) / 100), Eb[c] = floor(Eb[c] * (100 + $e(a, He)) / 100)), Ze(a, ze) && 3 == g && (Eb[c] = floor(Eb[c] * (100 + $e(a, ze)) / 100)), Ze(a, Be) && 4 == g && (Db[c] = floor(Db[c] * (100 + $e(a, Be)) / 100), Eb[c] = floor(Eb[c] * (100 + $e(a, Be)) / 100)), Fb[c] = Ye(a, d, Xc), Ze(a, ue) && 1 < Fb[c] && (Fb[c] += $e(a, ue)), b || (Gb[a] = Ye(a, d, Zc), Ze(a, pe) && (Gb[a] -= $e(a, pe)), Hb[a] = Ye(a, d, $c), !Ze(a, qe) || 4 != u[d][Nc] && 5 != u[d][Nc] ||
             (Hb[a] += $e(a, qe))));
     Xb = Wb = Vb = 0;
     Vg = 180;
     for (a = 0; 4 > a; a++) Ze(a, Ce) && (Vb += $e(a, Ce)), Ze(a, Ee) && (Wb += $e(a, Ee)), Ze(a, Fe) && (Xb += $e(a, Fe)), Ze(a, Me) && (Vg += 60 * $e(a, Me));
-    Ic = Kg(Ic, 0, Vg);
+    Ic = clamp(Ic, 0, Vg);
     for (a = hb = 0; 9 > a; a++) 1 == db[a] && hb++
 }
 m.fff = Wg;
@@ -1094,7 +1094,7 @@ function Wg(a, b, c, d, f, g) {
                 for (h = 0; h < Jc[a].length && Jc[a][h] != f; h++);
                 if (Jc[a][h] == f) break
             }
-            a != Jc.length && (Na = a, Oa = v(h / 28), Pa = h % 28)
+            a != Jc.length && (Na = a, Oa = floor(h / 28), Pa = h % 28)
         } else ng && ((wa = wa && Na == g ? !1 : !0) && (Aa = !1), Na = g, Pa = Oa = 0)
 }
 m.fff = Ig;
@@ -1108,18 +1108,18 @@ function Ig() {
     N(Vf, f, g, "LV " + Ua, 16777215, 0);
     if (99 > Ua) {
         var p = Ta[Ua - 1];
-        N(Vf, f + 48, g, "EXP " + Va + "(" + v(100 * (Va - p) / (Ta[Ua] - p)) + "%)", 16777215, 0)
+        N(Vf, f + 48, g, "EXP " + Va + "(" + floor(100 * (Va - p) / (Ta[Ua] - p)) + "%)", 16777215, 0)
     } else N(Vf, f + 48, g, "EXP " + Va + "(MAX)", 16777215, 0);
     N(Vf, f + 184, g, "G " + Wa, 16777215, 0);
     sg(f + 264, g, 90, 11, 2236962);
-    sg(f + 264, g, v(90 * Ic / Vg), 11, 12281344);
-    p = 10 + v(Hc / 10);
+    sg(f + 264, g, floor(90 * Ic / Vg), 11, 12281344);
+    p = 10 + floor(Hc / 10);
     h = "CB " + Hc;
     G.a = 4;
     N(G, f +
         265, g + 2, h, 12281344, 0);
     10 <= Hc && (G.a = 4, N(G, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
-    0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = v((Hc * p / 10 + r - 1) / r), Wa = Kg(Wa + $g * r, 0, 9999999), A(1) && 100 <= Hc && C(1), A(26) && 300 <= Hc && C(26), A(36) && 500 <= Hc && C(36), A(56) && 600 <= Hc && C(56)), Hc = 0));
+    0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + r - 1) / r), Wa = clamp(Wa + $g * r, 0, 9999999), A(1) && 100 <= Hc && C(1), A(26) && 300 <= Hc && C(26), A(36) && 500 <= Hc && C(36), A(56) && 600 <= Hc && C(56)), Hc = 0));
     p = 100 + Gc;
     G.a = 4;
     N(G, f + 356, g + 2, "CB *" + p / 100, 16777215, 0);
@@ -1129,7 +1129,7 @@ function Ig() {
     var p = [12, 12, 12, 8, 16, 5, 19, 9, 14, 9, 14],
         t = [6, 10, 14, 13, 13, 13, 13, 18, 17, 21, 21],
         l = Array(11);
-    for (e = 0; 11 > e; e++) l[e] = new ah;
+    for (e = 0; 11 > e; e++) l[e] = new Vec2;
     for (a = 0; a < r; a++) {
         sg(f + a * d, g, 24, 24, 0);
         L(f + a * d + 7, g + 22, f + a * d +
@@ -1137,19 +1137,19 @@ function Ig() {
         L(f + a * d + 6, g + 23, f + a * d + 17, g + 23, 15908203);
         for (b = 0; 11 > b; b++) l[b].x = f + a * d + p[b], l[b].y = g + t[b];
         c = 16777215;
-        0 < bh[a] ? c = 5934817 : 0 < ch[a] ? c = 1989840 : 0 < dh[a] && (c = 3407616);
+        0 < bh[a] ? c = 5934817 : 0 < ch[a] ? c = 1989840 : 0 < phIdxWrapped[a] && (c = 3407616);
         eh(a, l, 0, 1, 15908203, c, 2);
         N(Wf, f + a * d + 28, g, "P" + (a + 1), 3355443, -1);
         sg(f + a * d + 28, g + 8, 48, 7, 1114112);
-        sg(f + a * d + 28, g + 8, v(48 * Ya[a] / Za[a]), 7, 10027008);
+        sg(f + a * d + 28, g + 8, floor(48 * Ya[a] / Za[a]), 7, 10027008);
         N(Wf, f + a * d + 28, g + 8, "" + Ya[a], 16764108, -1);
         sg(f + a * d + 28, g + 17, 48, 5, 17);
-        sg(f + a * d + 28, g + 17, 48 * $a[a] / Ug(ab[a], 1), 5, 221);
+        sg(f + a * d + 28, g + 17, 48 * $a[a] / max(ab[a], 1), 5, 221);
         vg(f + a * d, g, 24, 24) && (Xg(f + a * d, g, 24, 24, 8388608), ng && Ka == a && (va = !va), ng && (Ka = a));
         for (b = 0; 5 > b; b++) {
             c = Yb[a][b];
             k = f + a * d + b % 3 * 20;
-            var n = g + 28 + 20 * v(b / 3);
+            var n = g + 28 + 20 * floor(b / 3);
             sg(k, n, 16, 16, 0);
             0 != c && (fh = 2, h = u[c][Mc], 2 == b ? Qg(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc], u[c][$d], !0) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), u[c][Pc], u[c][$d]) : hh(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0);
             Wg(k, n, 16, 16, c, b);
@@ -1192,7 +1192,7 @@ function Ig() {
                 for (a = 0; a < r; a++) Ya[a] != Za[a] && Lg(O[a][0].x, O[a][0].y, 0, Za[a] - Ya[a], 60, 65280), Ya[a] = Za[a];
                 eb != hb && Lg(436, 380, 0, hb - eb, 60, 65280);
                 eb = hb;
-                Wa = Kg(Wa - c, 0, 9999999)
+                Wa = clamp(Wa - c, 0, 9999999)
             }
         }
         Vf.a = 1;
@@ -1228,7 +1228,7 @@ function Ig() {
         sg(f - 6, g - 6, 204, 260, H[q][Yg]);
         c = Jc[Na][28 * Oa + Pa];
         0 != $b[c] && 1 == q && 2 >= Na && (lg(G, f + 138, g + 28, "Lv UP", 16777215, 0),
-            a = Ve(c, wd), 0 == a ? nh(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], nh(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= Wa && (Zb = c, ng && (Zb = -1, Wa = Kg(Wa - h, 0, 9999999), $b[c]++))) : nh(f + 138, g + 48 - 2, 80, 24, "MAX"));
+            a = Ve(c, wd), 0 == a ? nh(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], nh(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= Wa && (Zb = c, ng && (Zb = -1, Wa = clamp(Wa - h, 0, 9999999), $b[c]++))) : nh(f + 138, g + 48 - 2, 80, 24, "MAX"));
         0 != $b[c] && (10 > u[c][Nc] ? (G.a = 4, N(G, f, g + 0, "" + u[c][Kc] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), N(G,
             f, g + 12, h, 16777215, 0), 0 == Na && N(G, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && N(G, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? N(G, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? N(G, f, g + 48, "EMIT passive", 16777215, 0) : N(G, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), N(G, f, g + 60, "SML", 16777215, 0), 0 == u[c][Oc] && N(G, f, g + 60, "    short", 16764057, 0), 1 == u[c][Oc] && N(G, f, g + 60, "    middle", 16764057, 0), 2 == u[c][Oc] && N(G, f, g + 60, "    long", 16764057, 0), N(G, f, g + 72, "ATR", 16777215, 0), 0 == u[c][td] && N(G, f, g + 72, "    physical", 10066329,
             0), 1 == u[c][td] && N(G, f, g + 72, "    fire", 16724736, 0), 2 == u[c][td] && N(G, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == u[c][td] && N(G, f, g + 72, "    lightning", 15658496, 0), 4 == u[c][td] && N(G, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && N(G, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && N(G, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && N(G, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > u[c][Nc] ? (G.a = 4, 0 == u[c][wd] ? N(G, f, g + 0, "" + u[c][Kc], -1, 0) : N(G, f, g + 0, "" + u[c][Kc] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, ae),
@@ -1250,7 +1250,7 @@ function Ig() {
         kh(f + 96 - 42, g + 209, 7, "PREV", 16777215) && ng && Oa--;
         kh(f + 138, g + 209, 8, "NEXT", 16777215) && ng && Oa++;
         h = ~~(Jc[Na].length / 28);
-        Oa = Kg(Oa, 0, h - 1);
+        Oa = clamp(Oa, 0, h - 1);
         lg(Wf, f + 96, g + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
     }
     if (xa) {
@@ -1258,14 +1258,14 @@ function Ig() {
         g = 14;
         sg(f - 6, g - 6, 204, 180, H[q][Yg]);
         mh(f + 188, g + 4) && ng && (xa = !1);
-        Ra = Kg(Ra, 0, oh[Qa].length - 1);
+        Ra = clamp(Ra, 0, oh[Qa].length - 1);
         c = oh[Qa][Ra];
         if (0 == ec[ph[Qa]]) lg(Vf, f + 96, g + 48, "Not reached", -1, 0);
         else {
             if (0 == Bc[c]) h = I[c][qh], nh(f + 96, g + 48, 96, 24, "G " + h) && h <= Wa &&
-                ng && (Wa = Kg(Wa - h, 0, 9999999), Bc[c] = 1);
+                ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 1);
             else if (N(G, f, g + 0, "LV " + I[c][rh], 16777215, 0), N(G, f, g + 12, "LP " + I[c][sh], 16777215, 0), N(G, f, g + 24, "GOLD " + I[c][th], 16777215, 0), N(G, f, g + 36, "EXP " + I[c][uh], 16777215, 0), b = 0, 0 != I[c][vh] && (wh(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != I[c][xh] && (wh(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != I[c][yh] && (wh(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != I[c][zh] && (wh(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != I[c][Ah] && (wh(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && N(G, f, g + 48, "RES ", 16777215, 0), N(G, f + 80, g + 0,
-                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = I[c][qh], nh(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && ng && (Wa = Kg(Wa - h, 0, 9999999), Bc[c] = 2);
+                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = I[c][qh], nh(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 2);
             else
                 for (d = b = 0; 4 > b; b++) a = I[c][Bh + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = u[a][Mc], 10 == u[a][Nc] ? Qg(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc], u[a][$d], !0) : 20 == u[a][Nc] || 30 == u[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), u[a][Pc], u[a][$d]) : hh(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc]), fh = 0, G.a = 4, N(G, f + 100, g + 12 + 20 * d + 4, u[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), sg(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
@@ -1273,7 +1273,7 @@ function Ig() {
         }
         kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Qa--;
         kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Qa++;
-        Qa = Dh(Qa);
+        Qa = phIdxWrapped(Qa);
         lg(Wf, f + 96, g + 156, "" + (Qa + 1) + "/" + ph.length, 3355443, -1);
         1 == ec[ph[Qa]] && lg(G, f + 96, g + 156 - 20, H[ph[Qa]][Hg], -1, 0)
     }
@@ -1289,7 +1289,7 @@ function Ig() {
                 0) : (N(G, b + 40, d + 1, z[c][0], 16777215, 0), G.a = 3, N(G, b + 40, d + 11, z[c][1], 16777215, 0)));
         kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Sa--;
         kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Sa++;
-        Sa = Dh(Sa);
+        Sa = phIdxWrapped(Sa);
         lg(Wf, f + 96, g + 156, "" + (Sa + 1) + "/" + ph.length, 3355443, -1);
         1 == ec[ph[Sa]] && lg(G, f + 96, g + 156 - 20, H[ph[Sa]][Hg], -1, 0)
     }
@@ -1316,7 +1316,7 @@ function Ig() {
         1 == q ? lg(G, f + 96, g + 100, "Return to TITLE", -1, 0) : lg(G, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = H[q][Eh];
-        nh(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && ng && (Wa = Kg(Wa - h, 0, 9999999), 1 == q ? ra = 0 : (ug = 0, ra = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = !1)
+        nh(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), 1 == q ? ra = 0 : (ug = 0, ra = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = !1)
     }
     if (Aa) {
         f = 224;
@@ -1332,7 +1332,7 @@ function Ig() {
         for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, sg(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (Wf.b = -2, Jg(Wf,
             b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (Wf.a = 3, Wf.b = -3, Jg(Wf, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : vg(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && ng && (c = a)), G.a = 3, G.b = 1, N(G, b + 40, d + 6, ff[a][0], 16777215, 0);
         if (!c)
-            for (Fc[c] = 1, Aa = !1, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = v(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
+            for (Fc[c] = 1, Aa = !1, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
             for (Fc[c] = 1, a = 0; 4 > a; a++)
                 for (b = 0; b < tb.length; b++) Xa[a] += tb[b][a],
@@ -1357,30 +1357,30 @@ for (e = 0; 4 > e; e++) O[e] = Array(21);
 var Mh = Array(4);
 for (e = 0; 4 > e; e++) Mh[e] = Array(21);
 for (e = 0; 4 > e; e++)
-    for (aa = 0; 21 > aa; aa++) O[e][aa] = new ah;
+    for (aa = 0; 21 > aa; aa++) O[e][aa] = new Vec2;
 for (e = 0; 4 > e; e++)
-    for (aa = 0; 21 > aa; aa++) Mh[e][aa] = new ah;
+    for (aa = 0; 21 > aa; aa++) Mh[e][aa] = new Vec2;
 var Nh = Array(4);
 for (e = 0; 4 > e; e++) Nh[e] = Array(16);
 for (e = 0; 4 > e; e++)
-    for (aa = 0; 16 > aa; aa++) Nh[e][aa] = new ah;
+    for (aa = 0; 16 > aa; aa++) Nh[e][aa] = new Vec2;
 var Oh = Array(4);
 for (e = 0; 4 > e; e++) Oh[e] = Array(16);
 for (e = 0; 4 > e; e++)
-    for (aa = 0; 16 > aa; aa++) Oh[e][aa] = new ah;
+    for (aa = 0; 16 > aa; aa++) Oh[e][aa] = new Vec2;
 var Ph = Array(4);
 for (e = 0; 4 > e; e++) Ph[e] = Array(16);
 for (e = 0; 4 > e; e++)
-    for (aa = 0; 16 > aa; aa++) Ph[e][aa] = new ah;
+    for (aa = 0; 16 > aa; aa++) Ph[e][aa] = new Vec2;
 var Qh = Array(4);
 for (e = 0; 4 > e; e++) Qh[e] = Array(16);
 for (e = 0; 4 > e; e++)
-    for (aa = 0; 16 > aa; aa++) Qh[e][aa] = new ah;
+    for (aa = 0; 16 > aa; aa++) Qh[e][aa] = new Vec2;
 var Rh = Array(4),
     Sh = Array(4),
     Th = [Nh, Ph, Oh, Qh],
     Uh = Array(4);
-for (e = 0; 4 > e; e++) Uh[e] = new ah;
+for (e = 0; 4 > e; e++) Uh[e] = new Vec2;
 var Vh = Array(4),
     Wh = new Int32Array(4),
     Xh = new Int32Array(4),
@@ -1424,11 +1424,11 @@ function li(a, b, c) {
     var d;
     b *= 8;
     c *= 8;
-    for (d = 0; 21 > d; d++) mi(O[a][d], b + E(4), c + E(4)), Mh[a][d].set(O[a][d]);
+    for (d = 0; 21 > d; d++) Vec2Set(O[a][d], b + E(4), c + E(4)), Mh[a][d].set(O[a][d]);
     for (d = 0; 16 > d; d++) Nh[a][d].set(O[a][5]), Oh[a][d].set(O[a][3]), Ph[a][d].set(O[a][6]), Qh[a][d].set(O[a][4]);
     Rh[a] = 0;
     Sh[a] = 0;
-    mi(Uh[a], 320, 240);
+    Vec2Set(Uh[a], 320, 240);
     Vh[a] = 0;
     Wh[a] = 0;
     Xh[a] = 0;
@@ -1440,7 +1440,7 @@ function li(a, b, c) {
     fi[a] = 0;
     ch[a] = 0;
     hi[a] = 0;
-    dh[a] = 0;
+    phIdxWrapped[a] = 0;
     ii[a] = 0;
     bh[a] = 0;
     ji[a] = 0
@@ -1448,14 +1448,14 @@ function li(a, b, c) {
 m.fff = ni;
 
 function ni(a, b) {
-    var c = new ah;
-    oi(c, O[a][b], Mh[a][b]);
+    var c = new Vec2;
+    Vec2Sub(c, O[a][b], Mh[a][b]);
     O[a][b].set(Mh[a][b]);
-    var d = (pi(c) >> 2) + 1;
-    qi(c, 1 / d);
+    var d = (Vec2Mag(c) >> 2) + 1;
+    Vec2Scale(c, 1 / d);
     var f, g;
     g = ri(O[a][b].x, O[a][b].y);
-    31 == g && (qi(c, .95), Yh[a] |= 2);
+    31 == g && (Vec2Scale(c, .95), Yh[a] |= 2);
     for (var h = 0; h < d; h++) f = O[a][b].y + c.y, g = ri(O[a][b].x, f), 0 > f || 8 * si <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != a ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : O[a][b].y = f), f = O[a][b].x + c.x, g = ri(f, O[a][b].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[a] |= 1) : O[a][b].x = f)
 }
 m.fff = ti;
@@ -1465,8 +1465,8 @@ function ti(a, b, c, d, f) {
         h = b - d - 10;
     c = a + c + 5;
     d = b + d + 10;
-    var k, p = new ah,
-        t = new ah,
+    var k, p = new Vec2,
+        t = new Vec2,
         l, n, w = 1E3,
         B = -1;
     f = 0 == f ? 29 : 23;
@@ -1474,10 +1474,10 @@ function ti(a, b, c, d, f) {
         if (Wh[M] != Lh && (k = O[M][2], !(k.x > c || k.x < g || k.y > d || k.y < h))) {
             t.x = k.x - a;
             t.y = k.y - b;
-            l = pi(t);
+            l = Vec2Mag(t);
             k = (l >> 3) + 1;
-            qi(t, 1 / k);
-            mi(p, a, b);
+            Vec2Scale(t, 1 / k);
+            Vec2Set(p, a, b);
             for (var J = 0; J <= k; J++) {
                 n = ri(p.x, p.y);
                 if (0 <= n && n <= f) break;
@@ -1495,43 +1495,43 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
     var l = k - t - 10;
     p = h + p + 5;
     t = k + t + 10;
-    for (var n, w = new ah, B = new ah, M, J, y = -1, x = 0; x < r; x++)
+    for (var n, w = new Vec2, B = new Vec2, M, J, y = -1, x = 0; x < r; x++)
         if (Wh[x] != Lh && (n = O[x][2], !(n.x > p || n.x < a || n.y > t || n.y < l))) {
             B.x = n.x - h;
             B.y = n.y - k;
-            n = pi(B);
+            n = Vec2Mag(B);
             M = (n >> 3) + 1;
-            qi(B, 1 / M);
-            mi(w, h, k);
+            Vec2Scale(B, 1 / M);
+            Vec2Set(w, h, k);
             for (n = 0; n <= M; n++) {
                 J = ri(w.x, w.y);
                 if (0 <= J && 29 >= J) break;
                 w.add(B)
             }
             if (!(n <= M)) {
-                y = f + v(E(g - f + 1));
+                y = f + floor(E(g - f + 1));
                 M = 0 == gi[x][2] ? 1 : -1;
                 J = 16711680;
                 $h[x] = 2;
-                0 == c ? y = Ug(y - Jb[x], 1) : 6 == c ? y = Ug(y - Kb[x], 1) : 1 <= c && (y = Ug(v(y * (100 - Lb[x]) / 100), 1));
+                0 == c ? y = max(y - Jb[x], 1) : 6 == c ? y = max(y - Kb[x], 1) : 1 <= c && (y = max(floor(y * (100 - Lb[x]) / 100), 1));
                 E(100) < Mb[x] && (y = 0, J = 16744576, $h[x] = 0);
                 1 == c && Ze(x,
-                    Qe) && (y = Ug(y - $e(x, Qe), 1));
-                if (2 == c) ch[x] = 120, hi[x] = d, Ze(x, Re) && (hi[x] = Ug(v(hi[x] * (100 - $e(x, Re)) / 100), 0));
+                    Qe) && (y = max(y - $e(x, Qe), 1));
+                if (2 == c) ch[x] = 120, hi[x] = d, Ze(x, Re) && (hi[x] = max(floor(hi[x] * (100 - $e(x, Re)) / 100), 0));
                 else if (3 == c) Ze(x, Se) && E(100) < $e(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
                 else if (4 == c) {
-                    dh[x] = d;
+                    phIdxWrapped[x] = d;
                     ii[x] = y;
-                    Ze(x, Te) && (dh[x] = Ug(dh[x] - 60 * $e(x, Te), 0));
+                    Ze(x, Te) && (phIdxWrapped[x] = max(phIdxWrapped[x] - 60 * $e(x, Te), 0));
                     y = x;
                     continue
-                } else 5 == c && (bh[x] = v(d / 10));
-                A(43) && 1 == c && 0 < ch[x] && 0 < dh[x] && C(43);
+                } else 5 == c && (bh[x] = floor(d / 10));
+                A(43) && 1 == c && 0 < ch[x] && 0 < phIdxWrapped[x] && C(43);
                 Ya[x] -= y;
                 Lg(O[x][0].x, O[x][0].y, M, y, 60, J);
                 Og += y;
                 if (0 > Ya[x])
-                    for (y = Ug(~~-Ya[x], 1), n = Ya[x] = 0; n < r; n++) x != n && (Ya[n] = Kg(Ya[n] - y, 0, Za[n]), Lg(O[n][0].x, O[n][0].y, M, y, 60, J), Og += y);
+                    for (y = max(~~-Ya[x], 1), n = Ya[x] = 0; n < r; n++) x != n && (Ya[n] = clamp(Ya[n] - y, 0, Za[n]), Lg(O[n][0].x, O[n][0].y, M, y, 60, J), Og += y);
                 y = x;
                 if (0 == b) break
             }
@@ -1540,25 +1540,25 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
 m.fff = vi;
 
 function vi() {
-    var a = new ah,
+    var a = new Vec2,
         b, c;
     if (-1 == bi) {
         if (ng && !ta) {
             b = 20;
             a.x = pg - Mh[Ka][0].x;
             a.y = qg - (Mh[Ka][0].y - 8);
-            c = pi(a);
+            c = Vec2Mag(a);
             20 > c && c < b && (b = c, bi = Ka, ci = 0);
             for (var d = 0; d < r; d++)
                 if (Wh[d] != Lh)
-                    for (var f = 0; 10 > f; f++) a.x = pg - Mh[d][f].x, a.y = qg - Mh[d][f].y, c = pi(a), 20 > c && c < b && (b = c, bi = d, ci = f, Ka = d)
+                    for (var f = 0; 10 > f; f++) a.x = pg - Mh[d][f].x, a.y = qg - Mh[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, Ka = d)
         }
     } else wi || (bi = -1, ci = 0)
 }
 m.fff = xi;
 
 function xi(a, b, c, d, f, g) {
-    var h = new ah,
+    var h = new Vec2,
         k = Yb[a][c],
         p = u[k],
         t = p[Qc];
@@ -1590,8 +1590,8 @@ function xi(a, b, c, d, f, g) {
         Rb = Ye(a, k, Uc),
         gb = Db[4 * c + a],
         jb = Eb[4 * c + a];
-    Ze(a, we) && 0 == p[td] && E(100) < $e(a, we) && (gb = v(gb *
-        (100 + af(a, we)) / 100), jb = v(jb * (100 + af(a, we)) / 100));
+    Ze(a, we) && 0 == p[td] && E(100) < $e(a, we) && (gb = floor(gb *
+        (100 + af(a, we)) / 100), jb = floor(jb * (100 + af(a, we)) / 100));
     c = Fb[4 * c + a];
     var La = p[Yc],
         hc = p[td],
@@ -1636,23 +1636,23 @@ function xi(a, b, c, d, f, g) {
                     De = -.1 * La;
                 zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p)
             } else if (2 == l)
-                for (h = Ac - d, h /= Ai(h), l = 0; l < c; l++) g = d + h * n, Dd = f + R(-w, w), Rd = h * La * .1, zi(a, t, g, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
+                for (h = Ac - d, h /= abs(h), l = 0; l < c; l++) g = d + h * n, Dd = f + R(-w, w), Rd = h * La * .1, zi(a, t, g, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
             else if (3 == l) {
-        mi(h, Ac - d, Rg - f);
+        Vec2Set(h, Ac - d, Rg - f);
         var We =
             0 < n ? n - 1 : 16;
-        Ze(a, Je) && (We = v(We / $e(a, Je)));
-        Ac = v(512 * Bi(h) / Ci);
-        Ac -= v((c - 1) * We / 2);
+        Ze(a, Je) && (We = floor(We / $e(a, Je)));
+        Ac = floor(512 * Vec2Angle(h) / PI2);
+        Ac -= floor((c - 1) * We / 2);
         for (l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), Ac += We
     } else if (4 == l)
-        for (mi(h, Ac - d, Rg - f - 5), La = pi(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) mi(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = nf(512), g = E(We), h.x += Hf[w][0] * g, h.y += Hf[w][1] *
+        for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = nf(512), g = E(We), h.x += Hf[w][0] * g, h.y += Hf[w][1] *
             g), g = d, Dd = f, Rd = h.x / La, De = (h.y - .5 * La * La * b * .01) / La, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
     else if (5 == l)
-        for (Ac = 256 + 256 * gi[a][2], We = v(512 / c), l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
+        for (Ac = 256 + 256 * gi[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
             tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), Ac += We;
     else if (6 == l)
-        for (d = v(512 / c), w = v(E(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), w += d
+        for (d = floor(512 / c), w = floor(E(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), w += d
 }
 m.fff = Di;
 
@@ -1692,13 +1692,13 @@ function Di(a) {
 m.fff = ig;
 
 function ig() {
-    var a, b, c, d, f = new ah,
-        g = new ah,
-        h = new ah;
+    var a, b, c, d, f = new Vec2,
+        g = new Vec2,
+        h = new Vec2;
     vi();
     for (a = 0; a < r; a++) {
-        if (0 < dh[a] && (dh[a]--, d = v(ii[a] / 60), b = ii[a] - 60 * d, E(60) < b && (d += 1), Ya[a] -= d, Og += d, 0 > Ya[a]))
-            for (c = 0 == gi[a][2] ? 1 : -1, d = Ug(~~-Ya[a], 1), b = Ya[a] = 0; b < r; b++) a != b && (Ya[b] = Kg(Ya[b] - d, 0, Za[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
+        if (0 < phIdxWrapped[a] && (phIdxWrapped[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, E(60) < b && (d += 1), Ya[a] -= d, Og += d, 0 > Ya[a]))
+            for (c = 0 == gi[a][2] ? 1 : -1, d = max(~~-Ya[a], 1), b = Ya[a] = 0; b < r; b++) a != b && (Ya[b] = clamp(Ya[b] - d, 0, Za[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
         if (0 < bh[a]) bh[a]--;
         else {
             if (0 < ch[a] && (ch[a]--, E(100) < hi[a])) continue;
@@ -1716,7 +1716,7 @@ function ig() {
                 for (Wh[a] = Lh, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += R(-2, 2), O[a][b].y +=
                     R(-1, -3);
             if (Wh[a] != Lh) {
-                1 == q && Ya[a] < Za[a] && 1 > E(100) && (Ya[a] = Kg(Ya[a] + 5, 0, Za[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
+                1 == q && Ya[a] < Za[a] && 1 > E(100) && (Ya[a] = clamp(Ya[a] + 5, 0, Za[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
                 bi == a && (O[bi][ci].x += .2 * (pg - O[bi][ci].x), O[bi][ci].y += .2 * (qg - O[bi][ci].y));
                 b = u[Yb[a][0]][Nc];
                 c = Hb[a];
@@ -1728,9 +1728,9 @@ function ig() {
                     Zh[a] = Gb[a] + Fh(-1, 1);
                     gi[a][2] = d < Q[c][yi].x ? 1 : 0;
                     k = 0; - 1 == ab[a] ? ($a[a] =
-                        0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = Kg($a[a] + bb[a], 0, ab[a]), fi[a] = 0, Ze(a, re) && 100 * Pf() < $e(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = u[Yb[a][1]][Nc], Ze(a, se) && 100 * Pf() < $e(a, se) && ($a[a] = ab[a]));
+                        0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = clamp($a[a] + bb[a], 0, ab[a]), fi[a] = 0, Ze(a, re) && 100 * rand() < $e(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = u[Yb[a][1]][Nc], Ze(a, se) && 100 * rand() < $e(a, se) && ($a[a] = ab[a]));
                     if (0 != b)
-                        if (3 == b) oi(g, Q[c][yi], O[a][5]), oi(h, Q[c][yi], O[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Fi(g), qi(g, 3), O[a][5].add(g), O[a][4].sub(g), f.set(O[a][5]), k = 1283, ei[a] = 0) : (Fi(h), qi(h, 3), O[a][6].add(h), O[a][3].sub(h), f.set(O[a][6]), k = 1540, ei[a] = 1), Uh[a].set(Q[c][yi]), Vh[a] = 5;
+                        if (3 == b) Vec2Sub(g, Q[c][yi], O[a][5]), Vec2Sub(h, Q[c][yi], O[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), O[a][5].add(g), O[a][4].sub(g), f.set(O[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), O[a][6].add(h), O[a][3].sub(h), f.set(O[a][6]), k = 1540, ei[a] = 1), Uh[a].set(Q[c][yi]), Vh[a] = 5;
                         else if (4 == b) {
                         var k = 5 + fi[a],
                             p = 3 +
@@ -1758,14 +1758,14 @@ function ig() {
             Ph[a][Rh[a]].set(O[a][6]);
             Qh[a][Rh[a]].set(O[a][4]);
             0 < Sh[a] && (Sh[a]--, b = u[Yb[a][fi[a]]][Nc], 2 != b && (Sh[a] = 0));
-            0 == Zh[a] && (f.set(O[a][1]), f.x += 0 == gi[a][2] ? -50 : 50, qi(f, .1),
-                qi(Uh[a], .9), Uh[a].add(f));
+            0 == Zh[a] && (f.set(O[a][1]), f.x += 0 == gi[a][2] ? -50 : 50, Vec2Scale(f, .1),
+                Vec2Scale(Uh[a], .9), Uh[a].add(f));
             0 < Vh[a] && Vh[a]--;
             if (Yh[a] & 2) {
                 if (0 == ji[a])
-                    for (ji[a] = 1, b = 0; 11 > b; b++) d = Kg(O[a][b].x, 0, 8 * Gi - 1) >> 3, c = Kg(O[a][b].y, 0, 8 * si - 1) >> 3, 30 == P[c][d] && zi(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                d = Kg(O[a][0].x, 0, 8 * Gi - 1) >> 3;
-                c = Kg(O[a][0].y, 0, 8 * si - 1) >> 3;
+                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(O[a][b].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[a][b].y, 0, 8 * si - 1) >> 3, 30 == P[c][d] && zi(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                d = clamp(O[a][0].x, 0, 8 * Gi - 1) >> 3;
+                c = clamp(O[a][0].y, 0, 8 * si - 1) >> 3;
                 31 == P[c][d] && 1 > E(50) && (b = R(-1, 2), zi(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
             } else ji[a] = 0;
@@ -1781,15 +1781,15 @@ function ig() {
 m.fff = kg;
 
 function kg() {
-    var a, b, c, d, f, g, h = new ah,
-        k = new ah;
+    var a, b, c, d, f, g, h = new Vec2,
+        k = new Vec2;
     for (a = 0; a < r; a++) {
         d = 15908203;
         f = 16777215;
-        0 < bh[a] ? (d = 1989840, f = 5934817) : 0 < ch[a] ? (d = 9840, f = 1989840) : 0 < dh[a] && (d = 3381504, f = 3407616);
+        0 < bh[a] ? (d = 1989840, f = 5934817) : 0 < ch[a] ? (d = 9840, f = 1989840) : 0 < phIdxWrapped[a] && (d = 3381504, f = 3407616);
         0 < $h[a] && ($h[a]--, f = 16711680);
         fh = Gg = 1;
-        for (c = 0; 11 > c; c++) Ii(pa, v(O[a][c].x), v(O[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
+        for (c = 0; 11 > c; c++) Ii(pa, floor(O[a][c].x), floor(O[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         Gg = fh = 0;
         eh(a, O[a], gi[a][0], gi[a][1], d, f, Wh[a]);
         if (0 < Sh[a]) {
@@ -1808,13 +1808,13 @@ function kg() {
                     b - 1 & 15;
                 h.x = t[a][l].x - g[a][l].x;
                 h.y = t[a][l].y - g[a][l].y;
-                Fi(h);
-                qi(h, c);
+                Vec2Norm(h);
+                Vec2Scale(h, c);
                 k.x = t[a][n].x - g[a][n].x;
                 k.y = t[a][n].y - g[a][n].y;
-                Fi(k);
-                qi(k, c);
-                g = v(f * (12 - b) / 12);
+                Vec2Norm(k);
+                Vec2Scale(k, c);
+                g = floor(f * (12 - b) / 12);
                 Gg = p;
                 var w = t[a][l].x + h.x,
                     B = t[a][l].y + h.y,
@@ -1858,24 +1858,24 @@ function kg() {
                 M = t >> 8 & 255;
                 J = t & 255;
                 for (l = U; l < n; l++)
-                    for (0 > Ji[l] && (Ji[l] = 0), 640 <= Ki[l] && (Ki[l] = 639), U = 640 * l + Ji[l], y = U + (Ki[l] - Ji[l]), x = 640 * l + Ji[l + 1], K = x + (Ki[l + 1] - Ji[l + 1]), U < x && (U = x), y >= K && (y = Sg(y - 1, K)); U <= y; U++) 0 == Gg ? F[U] = t : 1 == Gg ? (x = F[U] >> 16 & 255, x = ((B - x) * w >> 8) + x, K = F[U] >> 8 & 255, K = ((M - K) * w >> 8) + K, ba = F[U] & 255, ba = ((J - ba) * w >> 8) + ba, F[U] = x << 16 | K << 8 | ba) : 2 == Gg && (x = (F[U] >>
+                    for (0 > Ji[l] && (Ji[l] = 0), 640 <= Ki[l] && (Ki[l] = 639), U = 640 * l + Ji[l], y = U + (Ki[l] - Ji[l]), x = 640 * l + Ji[l + 1], K = x + (Ki[l + 1] - Ji[l + 1]), U < x && (U = x), y >= K && (y = min(y - 1, K)); U <= y; U++) 0 == Gg ? F[U] = t : 1 == Gg ? (x = F[U] >> 16 & 255, x = ((B - x) * w >> 8) + x, K = F[U] >> 8 & 255, K = ((M - K) * w >> 8) + K, ba = F[U] & 255, ba = ((J - ba) * w >> 8) + ba, F[U] = x << 16 | K << 8 | ba) : 2 == Gg && (x = (F[U] >>
                         16 & 255) + (B * w >> 8), 255 < x && (x = 255), K = (F[U] >> 8 & 255) + (M * w >> 8), 255 < K && (K = 255), ba = (F[U] & 255) + (J * w >> 8), 255 < ba && (ba = 255), F[U] = x << 16 | K << 8 | ba);
                 Gg = 0
             }
         }
-        0 < Hh && (d = ~~O[a][0].x + 0, f = ~~O[a][0].y - 7, 5 > Hh ? g = v(255 * Hh / 5) : g = 255, c = Sg(60 - Hh - 0, 4), 0 < c && Tg(Wf, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = Sg(60 - Hh - 3, 4), 0 < c && Tg(Wf, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = Sg(60 - Hh - 6, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = Sg(60 - Hh - 9, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = Sg(60 - Hh - 12, 4), 0 < c &&
-            Tg(Wf, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = Sg(60 - Hh - 15, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = Sg(60 - Hh - 18, 4), 0 < c && Tg(Wf, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
-        0 < di && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > di ? g = v(255 * di / 5) : g = 255, c = Sg(60 - di - 0, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = Sg(60 - di - 3, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = Sg(60 - di - 6, 4), 0 < c && Tg(Wf, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = Sg(60 - di - 9, 4), 0 < c && Tg(Wf, d + 4, f -
-            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = Sg(60 - di - 12, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = Sg(60 - di - 15, 4), 0 < c && (Wf.b = -1, Jg(Wf, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
-        0 < Zg && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > Zg ? g = v(255 * Zg / 5) : g = 255, c = Sg(60 - Zg - 0, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = Sg(60 - Zg - 3, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = Sg(60 - Zg - 6, 4), 0 < c && Tg(Wf, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = Sg(60 - Zg - 9, 4), 0 < c && Tg(Wf, d + 4, f -
-            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = Sg(60 - Zg - 12, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = Sg(60 - Zg - 15, 4), 0 < c && (Wf.b = -1, Jg(Wf, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
+        0 < Hh && (d = ~~O[a][0].x + 0, f = ~~O[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && Tg(Wf, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && Tg(Wf, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
+            Tg(Wf, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 15, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 18, 4), 0 < c && Tg(Wf, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
+        0 < di && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && Tg(Wf, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && Tg(Wf, d + 4, f -
+            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 12, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 15, 4), 0 < c && (Wf.b = -1, Jg(Wf, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
+        0 < Zg && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && Tg(Wf, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && Tg(Wf, d + 4, f -
+            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 12, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 15, 4), 0 < c && (Wf.b = -1, Jg(Wf, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
     }
     0 < Hh ? Hh-- : 0 < di ? di-- : 0 < Zg && Zg--
 }
 m.fff = eh;
 
 function eh(a, b, c, d, f, g, h) {
-    var k = new ah;
+    var k = new Vec2;
     L(b[1].x, b[1].y, b[2].x, b[2].y, g);
     h != Lh && (L(b[1].x, b[1].y, b[3].x, b[3].y, g), L(b[1].x, b[1].y, b[4].x, b[4].y, g));
     L(b[3].x, b[3].y, b[5].x, b[5].y, g);
@@ -1893,8 +1893,8 @@ function eh(a, b, c, d, f, g, h) {
         var p = u[p][Pc],
             t = b[5 + f],
             l = b[3 + f];
-        1 == g ? Ni(t.x, t.y, 3, 3, p) : 2 == g ? (oi(k, t, l), Fi(k), 2 == h ? L(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 7 * k.x, l.y + 7 * k.y, p) : L(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 10 * k.x, l.y + 10 * k.y, p), Oi(k), L(t.x - 2 * k.x, t.y - 2 * k.y, t.x + 2 * k.x, t.y + 2 * k.y, p)) : 3 == g ? 2 == h ? f ? L(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p) : L(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p) : (oi(k, Uh[a], t), Fi(k), 0 < Vh[a] && ei[a] ==
-            f ? L(t.x - 5 * k.x, t.y - 5 * k.y, Uh[a].x, Uh[a].y, p) : L(t.x - 5 * k.x, t.y - 5 * k.y, t.x + 20 * k.x, t.y + 20 * k.y, p)) : 4 == g ? (oi(k, t, l), Fi(k), 2 == h ? L(l.x, l.y, l.x + 4 * k.x, l.y + 4 * k.y, p) : L(l.x, l.y, l.x + 8 * k.x, l.y + 8 * k.y, p), L(t.x, t.y, t.x - 2 * k.x + 4 * k.y, t.y - 2 * k.y - 4 * k.x, 8421504), L(t.x, t.y, t.x - 2 * k.x - 4 * k.y, t.y - 2 * k.y + 4 * k.x, 8421504)) : 5 == g && (Gg = 2, fh = 1, Ii(pa, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), Gg = fh = 0)
+        1 == g ? Ni(t.x, t.y, 3, 3, p) : 2 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? L(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 7 * k.x, l.y + 7 * k.y, p) : L(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 10 * k.x, l.y + 10 * k.y, p), Vec2Rotate(k), L(t.x - 2 * k.x, t.y - 2 * k.y, t.x + 2 * k.x, t.y + 2 * k.y, p)) : 3 == g ? 2 == h ? f ? L(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p) : L(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p) : (Vec2Sub(k, Uh[a], t), Vec2Norm(k), 0 < Vh[a] && ei[a] ==
+            f ? L(t.x - 5 * k.x, t.y - 5 * k.y, Uh[a].x, Uh[a].y, p) : L(t.x - 5 * k.x, t.y - 5 * k.y, t.x + 20 * k.x, t.y + 20 * k.y, p)) : 4 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? L(l.x, l.y, l.x + 4 * k.x, l.y + 4 * k.y, p) : L(l.x, l.y, l.x + 8 * k.x, l.y + 8 * k.y, p), L(t.x, t.y, t.x - 2 * k.x + 4 * k.y, t.y - 2 * k.y - 4 * k.x, 8421504), L(t.x, t.y, t.x - 2 * k.x - 4 * k.y, t.y - 2 * k.y + 4 * k.x, 8421504)) : 5 == g && (Gg = 2, fh = 1, Ii(pa, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), Gg = fh = 0)
     }
 }
 var dc = 32,
@@ -2008,8 +2008,8 @@ function hg(a) {
 m.fff = ri;
 
 function ri(a, b) {
-    a = Kg(a, 0, 8 * Gi - 1) >> 3;
-    b = Kg(b, 0, 8 * si - 1) >> 3;
+    a = clamp(a, 0, 8 * Gi - 1) >> 3;
+    b = clamp(b, 0, 8 * si - 1) >> 3;
     return P[b][a]
 }
 m.fff = dj;
@@ -2049,16 +2049,16 @@ function wg() {
             d = H[q][b + 4],
             h = H[q][b + 5],
             k = H[q][b + 6];
-        !(c <= Xi[(b - Vi) / 7]) && V[(b - Vi) / 7] < f && 1E3 * Pf() < H[q][Ui] && (c = Fh(g, h + 1), d = Fh(d, k + 1), 25 >= P[d][c] || (Zi(c, d, a, (b - Vi) / 7), V[(b - Vi) / 7]++, Xi[(b - Vi) / 7]++))
+        !(c <= Xi[(b - Vi) / 7]) && V[(b - Vi) / 7] < f && 1E3 * rand() < H[q][Ui] && (c = Fh(g, h + 1), d = Fh(d, k + 1), 25 >= P[d][c] || (Zi(c, d, a, (b - Vi) / 7), V[(b - Vi) / 7]++, Xi[(b - Vi) / 7]++))
     }
     a = d = 0;
     for (b = Vi; b < H[q].length; b += 7) a = (b - Vi) / 7, c = H[q][b + 2], (0 != V[a] || Xi[a] < c) && d++;
     for (; 20 > a; a++) 0 != V[a] && d++;
     if (!d && 0 == Mi) {
         for (a = 0; 20 > a; a++) Mi += Xi[a];
-        Mi = v((Mi + r - 1) / r);
-        0 < Mi && (b = 100 + Gc, Gc += Mi, Mi = v(Mi * b / 100), di = 60, Wa = Kg(Wa + Mi * r, 0, 9999999), A(0) && C(0), A(10) && 3600 > gj && C(10), A(15) && !jh && C(15), A(20) && 87 <= Hc && C(20), A(25) && 100 <=
-            Gc && C(25), A(30) && 111 <= Hc && C(30), A(35) && !jh && C(35), A(40) && 3600 > gj && C(40), A(45) && 7200 > gj && C(45), A(50) && !jh && C(50), A(55) && 227 <= Hc && C(55), A(60) && C(60), A(65) && !jh && C(65), A(70) && 9E3 > gj && C(70), 19 == q && 0 == of [1] && (of [1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? v(gj / 60) + "." + gj % 60 : v(gj / 3600) + ":" + v(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
+        Mi = floor((Mi + r - 1) / r);
+        0 < Mi && (b = 100 + Gc, Gc += Mi, Mi = floor(Mi * b / 100), di = 60, Wa = clamp(Wa + Mi * r, 0, 9999999), A(0) && C(0), A(10) && 3600 > gj && C(10), A(15) && !jh && C(15), A(20) && 87 <= Hc && C(20), A(25) && 100 <=
+            Gc && C(25), A(30) && 111 <= Hc && C(30), A(35) && !jh && C(35), A(40) && 3600 > gj && C(40), A(45) && 7200 > gj && C(45), A(50) && !jh && C(50), A(55) && 227 <= Hc && C(55), A(60) && C(60), A(65) && !jh && C(65), A(70) && 9E3 > gj && C(70), 19 == q && 0 == of [1] && (of [1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
     }
 }
 m.fff = jg;
@@ -2090,7 +2090,7 @@ function jg() {
     else if (17 == q) 70 == gj % 360 && zi(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (18 == q)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
-            for (h = 0; h < r && !(b = Kg(O[h][2].x, 0, 8 * Gi - 1) >> 3, c = Kg(O[h][2].y, 0, 8 * si - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
+            for (h = 0; h < r && !(b = clamp(O[h][2].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[h][2].y, 0, 8 * si - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
             h == r || gj % 8 || zi(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         }
@@ -2123,21 +2123,21 @@ function xg() {
         p = 0,
         t = 59,
         l = 0;
-    gj++; - 1 != bi && (b = Kg(O[bi][2].x, 0, 8 * Gi - 1) >> 3, f = Kg(O[bi][2].y, 0, 8 * si - 1) >> 3);
-    g = Kg(O[Ka][2].x, 0, 8 * Gi - 1) >> 3;
-    h = Kg(O[Ka][2].y, 0, 8 * si - 1) >> 3;
-    for (a = 0; a < r; a++) c = Kg(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = Kg(O[a][2].y, 0, 8 * si - 1) >> 3, k > c && (k = c), p < c && (p = c), t > d && (t = d), l < d && (l = d);
+    gj++; - 1 != bi && (b = clamp(O[bi][2].x, 0, 8 * Gi - 1) >> 3, f = clamp(O[bi][2].y, 0, 8 * si - 1) >> 3);
+    g = clamp(O[Ka][2].x, 0, 8 * Gi - 1) >> 3;
+    h = clamp(O[Ka][2].y, 0, 8 * si - 1) >> 3;
+    for (a = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, k > c && (k = c), p < c && (p = c), t > d && (t = d), l < d && (l = d);
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
-        var n = Kg(pg + c[a] >> 3, 0, Gi - 1),
-            w = Kg(qg + d[a] >> 3, 0, si - 1);
+        var n = clamp(pg + c[a] >> 3, 0, Gi - 1),
+            w = clamp(qg + d[a] >> 3, 0, si - 1);
         if (ng) {
             if (39 == P[w][n]) {
                 dj(n, w, n, w, 32);
                 a = 1;
                 1 > E(200) ? a = 100 : 1 > E(14) && (a = 7);
-                a = v(a * (100 + Vb) / 100);
+                a = floor(a * (100 + Vb) / 100);
                 Gh(8 * n +
                     4, 8 * w + 4, 2, a, 0);
                 A(3) && C(3);
@@ -2148,7 +2148,7 @@ function xg() {
             }
             if (47 == P[w][n]) {
                 2 == q && A(4) && C(4);
-                11 == q && (c = 8 * n + 4 - pg, d = 8 * w + 4 - qg, Ai(c) >= Ai(d) ? 0 < c && 32 == P[w][n + 1] ? (dj(n + 1, w, n + 1, w, 47), dj(n, w, n, w, 32), n += 1) : 0 > c && 32 == P[w][n - 1] && (dj(n - 1, w, n - 1, w, 47), dj(n, w, n, w, 32), --n) : 0 < d && 32 == P[w + 1][n] ? (dj(n, w + 1, n, w + 1, 47), dj(n, w, n, w, 32), w += 1) : 0 > d && 32 == P[w - 1][n] && (dj(n, w - 1, n, w - 1, 47), dj(n, w, n, w, 32), --w), A(44) && (c = Ai(64 - n), d = Ai(11 - w), Lg(pg, qg, 0, "" + c + d, 30, 10066431), 0 ==
+                11 == q && (c = 8 * n + 4 - pg, d = 8 * w + 4 - qg, abs(c) >= abs(d) ? 0 < c && 32 == P[w][n + 1] ? (dj(n + 1, w, n + 1, w, 47), dj(n, w, n, w, 32), n += 1) : 0 > c && 32 == P[w][n - 1] && (dj(n - 1, w, n - 1, w, 47), dj(n, w, n, w, 32), --n) : 0 < d && 32 == P[w + 1][n] ? (dj(n, w + 1, n, w + 1, 47), dj(n, w, n, w, 32), w += 1) : 0 > d && 32 == P[w - 1][n] && (dj(n, w - 1, n, w - 1, 47), dj(n, w, n, w, 32), --w), A(44) && (c = abs(64 - n), d = abs(11 - w), Lg(pg, qg, 0, "" + c + d, 30, 10066431), 0 ==
                     c && 0 == d && C(44)));
                 break
             }
@@ -2164,7 +2164,7 @@ function xg() {
             0 == Xi[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f && (Zi(14, 41, 15, 2), Zi(16, 41, 15, 2), Zi(18, 41, 15, 2), V[2] = 3, Xi[2] = 3);
             1 == db[1] ? dj(16, 41, 16, 41, 63) : 32 == P[41][16] ? 0 == V[2] && 0 != Xi[2] && dj(16, 41, 16, 41, 55) : 55 == P[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (dj(16, 41, 16, 41, 63), Gh(132, 332, 3, 1, 0));
             if (A(7)) {
-                for (a = b = 0; a < r; a++) c = Kg(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = Kg(O[a][2].y, 0, 8 * si - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
+                for (a = b = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
                 3 == b && C(7)
             }
             0 != Xi[2] && hj++
@@ -2182,7 +2182,7 @@ function xg() {
     } else if (5 == q) {
         if (3 == r && 0 == V[0] && 0 == V[1] && (li(r, 17, 5), r++), 4 == r && (dj(17, 4, 17, 5, 64), dj(77, 20, 77, 24, 64)), !A(16) || 0 != V[0] || 0 != V[1] || Hi & 2 || C(16),
             !A(17) || 0 != V[0] || 0 != V[1] || Hi & 1 || C(17), A(19)) {
-            for (a = b = 0; a < r; a++) c = Kg(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = Kg(O[a][2].y, 0, 8 * si - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
+            for (a = b = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
             4 == b && C(19)
         }
     } else if (6 == q) 12 == ra && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (Mg = 1, fg[0] = 18, gg[0] = 24, fg[1] = 20, gg[1] = 24, fg[2] = 29, gg[2] = 24, fg[3] = 31, gg[3] = 24);
@@ -2205,7 +2205,7 @@ function xg() {
     } else if (8 == q) {
         30 > Xi[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > E(60) && (a = [5, 18, 3, 20], g = [18, 16, 21, 22], b = nf(4), Zi(a[b], g[b], 32, 3), V[3]++, Xi[3]++);
         if (A(27)) {
-            for (a = 0; a < r; a++) c = Kg(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = Kg(O[a][2].y, 0, 8 * si - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (Hi = 1);
+            for (a = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (Hi = 1);
             0 != V[4] || Hi || C(27)
         }
         if (A(28)) {
@@ -2222,7 +2222,7 @@ function xg() {
         A(32) && 100 <= ej && C(32);
         if (A(33)) {
             for (a =
-                b = 0; a < r; a++) c = Kg(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = Kg(O[a][2].y, 0, 8 * si - 1) >> 3, 26 == P[d][c] && b++;
+                b = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 26 == P[d][c] && b++;
             4 == b && C(33)
         }
         A(34) && 10 == Mg && 1 >= g && 41 <= h && C(34)
@@ -2233,7 +2233,7 @@ function xg() {
         A(37) && 0 == V[1] && V[0] == Xi[0] && C(37);
         A(38) && 0 == V[3] && 0 == Og && C(38);
         if (A(39)) {
-            for (a = b = 0; a < r; a++) 0 < dh[a] && b++;
+            for (a = b = 0; a < r; a++) 0 < phIdxWrapped[a] && b++;
             4 == b && C(39)
         }
     } else if (11 == q) A(41) &&
@@ -2262,19 +2262,19 @@ function xg() {
         b = -1;
         for (a = 0; a < ej; a++) 70 == X[a] && 0 != jj[a] && (b = a);
         if (-1 != b && 10 < Y[b] && jj[b] < 1E4 * (Y[b] - 10) - 5E3)
-            for (Y[b]--, t = Sg(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * Hf[512 * a / t][0], d = .5 * -Hf[512 * a / t][1], zi(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            for (Y[b]--, t = min(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * Hf[512 * a / t][0], d = .5 * -Hf[512 * a / t][1], zi(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         0 == of [0] && 0 == V[10] && (of [0] = 1);
         1 == of [0] && dj(2, 20, 2, 24, 31);
         A(61) && 0 == V[10] &&
             !jh && C(61);
         !A(62) || 0 != V[10] || Hi & 1 || C(62);
         if (A(63)) {
-            for (a = 0; a < r; a++) c = Kg(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = Kg(O[a][2].y, 0, 8 * si - 1) >> 3, 58 <= c && 76 >= c && 36 <= d && 42 >= d && (ij = 1);
+            for (a = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 58 <= c && 76 >= c && 36 <= d && 42 >= d && (ij = 1);
             0 != V[9] || ij || C(63)
         }
         A(64) && 0 == p && 0 < f && 0 < k && 100 == V[11] && C(64)
     } else if (17 == q) {
-        for (a = 0; a < r; a++) 0 < dh[a] && (Hi = 1);
+        for (a = 0; a < r; a++) 0 < phIdxWrapped[a] && (Hi = 1);
         A(66) && 0 == V[0] && !Hi && C(66);
         A(68) && 0 == V[6] && 5 == V[5] && C(68)
     } else 18 == q ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = nf(3), Zi(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > E(60) && (c = Fh(8, 23), Zi(c, 10, 83, 10), V[10]++,
@@ -2461,9 +2461,9 @@ for (e = 0; 999 > e; e++) Q[e] = Array(21);
 var Z = Array(999);
 for (e = 0; 999 > e; e++) Z[e] = Array(21);
 for (e = 0; 999 > e; e++)
-    for (aa = 0; 21 > aa; aa++) Q[e][aa] = new ah;
+    for (aa = 0; 21 > aa; aa++) Q[e][aa] = new Vec2;
 for (e = 0; 999 > e; e++)
-    for (aa = 0; 21 > aa; aa++) Z[e][aa] = new ah;
+    for (aa = 0; 21 > aa; aa++) Z[e][aa] = new Vec2;
 var X = new Int32Array(999),
     Bk = new Int32Array(999),
     Y = new Int32Array(999),
@@ -2498,7 +2498,7 @@ function Zi(a, b, c, d) {
     if (999 != ej) {
         a *= 8;
         b *= 8;
-        for (var f = 0; 21 > f; f++) mi(Q[ej][f], a + E(1), b + E(1)), Z[ej][f].set(Q[ej][f]);
+        for (var f = 0; 21 > f; f++) Vec2Set(Q[ej][f], a + E(1), b + E(1)), Z[ej][f].set(Q[ej][f]);
         X[ej] = c;
         Bk[ej] = I[c][kj];
         Y[ej] = 0;
@@ -2539,11 +2539,11 @@ function Zk(a) {
 m.fff = $k;
 
 function $k(a, b, c) {
-    var d = new ah;
-    oi(d, Q[a][b], Z[a][b]);
+    var d = new Vec2;
+    Vec2Sub(d, Q[a][b], Z[a][b]);
     Q[a][b].set(Z[a][b]);
-    var f = (pi(d) >> 2) + 1;
-    qi(d, 1 / f);
+    var f = (Vec2Mag(d) >> 2) + 1;
+    Vec2Scale(d, 1 / f);
     for (var g, h, k = 0; k < f; k++) g = Q[a][b].y + d.y, h = ri(Q[a][b].x, g), 0 > g || 8 * si <= g ? Dk[a] |= 2 : 0 <= h && 25 >= h ? (0 < d.y && (Dk[a] |= 2), d.x *= c, d.y = -d.y) : 26 <= h && 26 >= h && 0 < d.y ? (Dk[a] |= 2, d.x *= c, d.y = -d.y) : Q[a][b].y = g, g = Q[a][b].x + d.x, h = ri(g, Q[a][b].y), 0 > g || 640 <= g ? Dk[a] |= 1 : 0 <= h && 25 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : 27 <= h && 29 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : Q[a][b].x = g
 }
 m.fff = Ei;
@@ -2553,7 +2553,7 @@ function Ei(a, b, c, d) {
         g = b - d;
     c = a + c;
     d = b + d;
-    for (var h, k, p, t = new ah, l = new ah, n = 1E3, w = -1, B = 0; B < ej; B++)
+    for (var h, k, p, t = new Vec2, l = new Vec2, n = 1E3, w = -1, B = 0; B < ej; B++)
         if (0 != jj[B]) {
             h = Lk[I[X[B]][kj]] * I[X[B]][oj];
             k = Mk[I[X[B]][kj]] * I[X[B]][oj];
@@ -2562,10 +2562,10 @@ function Ei(a, b, c, d) {
             if (!(p.x - h > c || p.x + h < f || p.y - k > d || p.y + k < g)) {
                 l.x = p.x - a;
                 l.y = p.y - b;
-                k = pi(l);
+                k = Vec2Mag(l);
                 h = (k >> 3) + 1;
-                qi(l, 1 / h);
-                mi(t, a, b);
+                Vec2Scale(l, 1 / h);
+                Vec2Set(t, a, b);
                 for (var M = 0; M <= h; M++) {
                     p = ri(t.x, t.y);
                     if (0 <= p && 29 >= p) break;
@@ -2579,12 +2579,12 @@ m.fff = al;
 
 function al(a, b, c, d, f, g, h, k, p, t, l) {
     var n = -1,
-        w, B, M, J, y, x, K = new ah,
-        ba = new ah,
+        w, B, M, J, y, x, K = new Vec2,
+        ba = new Vec2,
         U, na;
     t *= .5;
     l *= .5;
-    0 == b ? (w = k.x - t, B = k.y - l, M = k.x + t, J = k.y + l) : 1 == b && (Fi(p), qi(p, l), w = Sg(k.x - p.x, k.x + p.x), B = Sg(k.y - p.y, k.y + p.y), M = Ug(k.x - p.x, k.x + p.x), J = Ug(k.y - p.y, k.y + p.y));
+    0 == b ? (w = k.x - t, B = k.y - l, M = k.x + t, J = k.y + l) : 1 == b && (Vec2Norm(p), Vec2Scale(p, l), w = min(k.x - p.x, k.x + p.x), B = min(k.y - p.y, k.y + p.y), M = max(k.x - p.x, k.x + p.x), J = max(k.y - p.y, k.y + p.y));
     for (l = 0; l < ej; l++)
         if (0 != jj[l]) {
             x = Q[l][yi];
@@ -2595,9 +2595,9 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
                 if (0 == b) {
                     ba.x = x.x - k.x;
                     ba.y = x.y - k.y;
-                    U = pi(ba);
+                    U = Vec2Mag(ba);
                     U = (U >> 3) + 1;
-                    qi(ba, 1 / U);
+                    Vec2Scale(ba, 1 / U);
                     K.set(k);
                     for (var Fa =
                             0; Fa <= U; Fa++) {
@@ -2609,10 +2609,10 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
                 } else if (1 == b) {
                     ba.x = 2 * p.x;
                     ba.y = 2 * p.y;
-                    U = pi(ba);
+                    U = Vec2Mag(ba);
                     U = (U >> 3) + 1;
-                    qi(ba, 1 / U);
-                    oi(K, k, p);
+                    Vec2Scale(ba, 1 / U);
+                    Vec2Sub(K, k, p);
                     for (Fa = 0; Fa <= U; Fa++) {
                         na = ri(K.x, K.y);
                         if (0 <= na && 29 >= na) break;
@@ -2624,8 +2624,8 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
                     }
                     if (Fa < U + 2) continue
                 }
-                0 == a && (n = g + v(E(h - g + 1)), 4 == d ? (Jk[l] = Ug(Jk[l], Ug(1, n - v(n * I[X[l]][Ah] / 100))), Ik[l] = Ug(Ik[l], f - v(f * I[X[l]][Ah] / 100))) : (0 == d ? n = Ug(1, n - I[X[l]][vh]) : 1 == d ? n = Ug(1, n - v(n * I[X[l]][xh] / 100)) : 2 == d ? n = Ug(1, n - v(n *
-                    I[X[l]][yh] / 100)) : 3 == d && (n = Ug(1, n - v(n * I[X[l]][zh] / 100))), jj[l] = Ug(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - v(120 * I[X[l]][yh] / 100), Hk[l] = f - v(f * I[X[l]][yh] / 100)) : 5 == d && (Kk[l] = f - v(f * I[X[l]][Vj] / 100)), Ek[l] = 120, 30 != ra && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
+                0 == a && (n = g + floor(E(h - g + 1)), 4 == d ? (Jk[l] = max(Jk[l], max(1, n - floor(n * I[X[l]][Ah] / 100))), Ik[l] = max(Ik[l], f - floor(f * I[X[l]][Ah] / 100))) : (0 == d ? n = max(1, n - I[X[l]][vh]) : 1 == d ? n = max(1, n - floor(n * I[X[l]][xh] / 100)) : 2 == d ? n = max(1, n - floor(n *
+                    I[X[l]][yh] / 100)) : 3 == d && (n = max(1, n - floor(n * I[X[l]][zh] / 100))), jj[l] = max(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - floor(120 * I[X[l]][yh] / 100), Hk[l] = f - floor(f * I[X[l]][yh] / 100)) : 5 == d && (Kk[l] = f - floor(f * I[X[l]][Vj] / 100)), Ek[l] = 120, 30 != ra && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
                 n = l;
                 c--;
                 if (0 >= c) break
@@ -2635,14 +2635,14 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
 m.fff = bl;
 
 function bl(a, b, c, d) {
-    var f = new ah,
+    var f = new Vec2,
         g = X[a] + b,
         h = I[g];
     b = -a - 1;
     var k = h[sj];
     0 == k ? k = -1 : 1 == k ? k = 0 : 2 == k && (k = 1);
     var p = h[tj] % 100,
-        t = v(h[tj] / 100),
+        t = floor(h[tj] / 100),
         l = h[uj],
         n = h[vj],
         w = h[wj],
@@ -2701,25 +2701,25 @@ function bl(a, b, c, d) {
             for (gb = c, jb = d, La = gb < O[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) zi(b, k, gb, jb, La,
                 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, h);
         else if (3 == p || 6 == p)
-            for (3 == p ? mi(f, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && mi(f, 0, -1), g = 0 < t ? t : 16, a = v(512 * Bi(f) / Ci), a -= v((Qb - 1) * g / 2), p = 0; p < Qb; p++) f.x = Hf[a & 511][0], f.y = -Hf[a & 511][1], gb = c + 10 * f.x, jb = d + 10 * f.y, La = f.x * Rb * .1, Qd = f.y * Rb * .1, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
+            for (3 == p ? Vec2Set(f, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(f, 0, -1), g = 0 < t ? t : 16, a = floor(512 * Vec2Angle(f) / PI2), a -= floor((Qb - 1) * g / 2), p = 0; p < Qb; p++) f.x = Hf[a & 511][0], f.y = -Hf[a & 511][1], gb = c + 10 * f.x, jb = d + 10 * f.y, La = f.x * Rb * .1, Qd = f.y * Rb * .1, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
                 vc, wc, xc, yc, h), a += g;
         else if (4 == p)
-            for (p = 0; p < Qb; p++) mi(f, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), g = 0 < t ? t - 1 : Qb, 0 < Qb && (La = v(E(512)), g = E(10) * g, f.x += Hf[La][0] * g, f.y += Hf[La][1] * g), gb = c, jb = d, La = f.x / Rb, Qd = (f.y - .5 * Rb * Rb * Fa * .01) / Rb, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, h);
+            for (p = 0; p < Qb; p++) Vec2Set(f, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), g = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(E(512)), g = E(10) * g, f.x += Hf[La][0] * g, f.y += Hf[La][1] * g), gb = c, jb = d, La = f.x / Rb, Qd = (f.y - .5 * Rb * Rb * Fa * .01) / Rb, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, h);
         else if (5 == p)
             for (p = 0; p < Qb; p++) gb = c + R(-La, La), jb = d + R(-La, 0), zi(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
                 hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, h);
         else if (7 == p)
-            for (p = 0; p < Qb; p++) gb = v(c / 8), jb = v(d / 8), Zi(gb, jb, g + Bb, 0)
+            for (p = 0; p < Qb; p++) gb = floor(c / 8), jb = floor(d / 8), Zi(gb, jb, g + Bb, 0)
     }
 }
 m.fff = cl;
 
 function cl(a) {
     var b;
-    b = Ai(I[X[a]][rh] - Ua);
-    var c = v(I[X[a]][uh] * (100 + Xb) / 100);
-    $i + 10 <= Ua ? c = 0 : 10 > b ? c = v(c * (10 - b) / 10) : c = 1;
-    Va = Kg(Va + c, 0, 9999999);
+    b = abs(I[X[a]][rh] - Ua);
+    var c = floor(I[X[a]][uh] * (100 + Xb) / 100);
+    $i + 10 <= Ua ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
+    Va = clamp(Va + c, 0, 9999999);
     if (Ta[Ua] <= Va && 99 > Ua) {
         Ua++;
         for (b = 0; 4 > b; b++) Xa[b] += 2;
@@ -2727,21 +2727,21 @@ function cl(a) {
     }
     for (b = Bh; b < Bh + 8; b += 2)
         if (c = I[X[a]][b], 0 != c) {
-            var d = v(100 * (100 + Wb) / 100);
-            2 == c ? (c = v(I[X[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : Pf() * I[X[a]][b + 1] * 100 < d && 1 > $b[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
-        } c = v(I[X[a]][th] * (100 + Vb) / 100);
-    1 > 3 * Pf() && Gh(Q[a][0].x, Q[a][0].y, 2, c, 0);
+            var d = floor(100 * (100 + Wb) / 100);
+            2 == c ? (c = floor(I[X[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * I[X[a]][b + 1] * 100 < d && 1 > $b[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
+        } c = floor(I[X[a]][th] * (100 + Vb) / 100);
+    1 > 3 * rand() && Gh(Q[a][0].x, Q[a][0].y, 2, c, 0);
     30 != ra && Hc++;
     A(2) && 3 == X[a] &&
         C(2);
     A(5) && 4 == X[a] && C(5);
-    3 == q && (8 == X[a] && (A(8) && 1800 > gj && C(8), Lg(Q[a][0].x, Q[a][0].y, 0, v(gj / 60) + "SEC", 120, 10066431)), 15 == X[a] && (ij++, 3 == ij && (A(9) && 600 > hj && C(9), Lg(Q[a][0].x, Q[a][0].y, 0, "" + v(hj / 60) + "SEC", 120, 10066431))));
-    5 == q && 22 == X[a] && (A(18) && 1200 > gj && C(18), Lg(Q[a][0].x, Q[a][0].y, 0, v(gj / 60) + "SEC", 120, 10066431));
+    3 == q && (8 == X[a] && (A(8) && 1800 > gj && C(8), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431)), 15 == X[a] && (ij++, 3 == ij && (A(9) && 600 > hj && C(9), Lg(Q[a][0].x, Q[a][0].y, 0, "" + floor(hj / 60) + "SEC", 120, 10066431))));
+    5 == q && 22 == X[a] && (A(18) && 1200 > gj && C(18), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     A(22) && 28 == X[a] && C(22);
     !A(47) || 50 != X[a] && 52 != X[a] || C(47);
-    51 == X[a] && (A(49) && 1500 > gj && C(49), Lg(Q[a][0].x, Q[a][0].y, 0, v(gj / 60) + "SEC", 120, 10066431));
+    51 == X[a] && (A(49) && 1500 > gj && C(49), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     !A(52) || 56 != X[a] && 57 != X[a] && 58 != X[a] || C(52);
-    63 == X[a] && (A(58) && 3600 > gj && C(58), Lg(Q[a][0].x, Q[a][0].y, 0, v(gj / 60) + "SEC", 120, 10066431));
+    63 == X[a] && (A(58) && 3600 > gj && C(58), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     A(69) && 72 == X[a] && C(69)
 }
 m.fff = yg;
@@ -2751,10 +2751,10 @@ function yg() {
     for (a = 0; a < ej; a++) {
         if (0 < Ik[a] && 0 < jj[a]) {
             Ik[a]--;
-            var b = v(Jk[a] / 60),
+            var b = floor(Jk[a] / 60),
                 c = Jk[a] - 60 * b;
             E(60) < c && (b += 1);
-            jj[a] = Ug(jj[a] - b, 0);
+            jj[a] = max(jj[a] - b, 0);
             Pg += b
         }
         if (0 < Kk[a] && 0 < jj[a]) Kk[a]--;
@@ -2835,7 +2835,7 @@ function Pk(a) {
 m.fff = Qk;
 
 function Qk(a) {
-    var b, c = new ah;
+    var b, c = new Vec2;
     b = I[X[a]][oj];
     if (0 == Y[a]) {
         Q[a][0].x += 4;
@@ -2862,9 +2862,9 @@ function Qk(a) {
         S(Q[a][4], Z[a][4], 0, .99);
         S(Q[a][5], Z[a][5], 0, .99);
         S(Q[a][6], Z[a][6], 0, .99);
-        mi(c, 0, 0);
+        Vec2Set(c, 0, 0);
         var d = ti(Q[a][0].x,
-            Q[a][0].y, 150, 150, 0); - 1 != d && (oi(c, O[d][2], Q[a][0]), d = Fi(c), d -= I[X[a]][Sj] - 10, 0 > d ? qi(c, -.05) : qi(c, .05));
+            Q[a][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, O[d][2], Q[a][0]), d = Vec2Norm(c), d -= I[X[a]][Sj] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
         Q[a][0].add(c);
         10 > E(100) && (Q[a][0].x += R(-1, 1), Q[a][0].y += R(-1, 1));
         Q[a][2].x += R(0, -.1);
@@ -2907,14 +2907,14 @@ function Qk(a) {
 m.fff = Rk;
 
 function Rk(a) {
-    var b, c, d, f = new ah;
+    var b, c, d, f = new Vec2;
     if (0 == Y[a]) Y[a] = I[X[a]][lj];
     else if (20 >= Y[a]) {
         S(Q[a][0], Z[a][0], 0, .99);
         for (b = 1; b < Y[a]; b++) S(Q[a][b], Z[a][b], 0, .9);
-        oi(f, Q[a][0], Z[a][0]);
-        Fi(f);
-        qi(f, .008);
+        Vec2Sub(f, Q[a][0], Z[a][0]);
+        Vec2Norm(f);
+        Vec2Scale(f, .008);
         b = Q[a][0].x;
         c = Q[a][0].y;
         d = ri(b - 24, c);
@@ -3008,7 +3008,7 @@ m.fff = Tk;
 function Tk(a) {
     var b;
     if (0 == Y[a])
-        for (Y[a] = v(R(I[X[a]][lj] + 1, I[X[a]][mj] + 2)), b = 0; b < Y[a]; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
+        for (Y[a] = floor(R(I[X[a]][lj] + 1, I[X[a]][mj] + 2)), b = 0; b < Y[a]; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
     else if (20 >= Y[a]) {
         if (Bk[a] == uk) {
             for (b = 0; b < Y[a] - 1; b++) S(Q[a][b], Z[a][b], -.04, .99);
@@ -3017,7 +3017,7 @@ function Tk(a) {
             for (b = 0; b < Y[a] - 1; b++) S(Q[a][b], Z[a][b], .04, .99);
             S(Q[a][b], Z[a][b], -1, .99)
         }
-        10 > E(100) && (b = v(E(Y[a] - 1)), Q[a][b].x += R(-.5, .5));
+        10 > E(100) && (b = floor(E(Y[a] - 1)), Q[a][b].x += R(-.5, .5));
         T(Q[a][0], Q[a][1], 8, .2, .2);
         for (b = 1; b < Y[a] - 2; b++) T(Q[a][b], Q[a][b + 1], 6, .2, .2);
         T(Q[a][b], Q[a][b + 1], 6, .2, 0);
@@ -3079,19 +3079,19 @@ function Uk(a) {
 m.fff = Vk;
 
 function Vk(a) {
-    var b, c, d, f = new ah,
+    var b, c, d, f = new Vec2,
         g = I[X[a]][lj],
         h = I[X[a]][mj] * I[X[a]][oj];
     if (0 == Y[a]) {
-        for (b = 0; b < g; b++) c = 360 * b / g * If / 180, Q[a][1 + b].x += Math.cos(c) * h, Q[a][1 + b].y += Math.sin(c) * h;
+        for (b = 0; b < g; b++) c = 360 * b / g * PI / 180, Q[a][1 + b].x += Math.cos(c) * h, Q[a][1 + b].y += Math.sin(c) * h;
         for (b = 0; b <= g; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
         Y[a] = 1
     } else if (1 == Y[a] || 2 == Y[a]) {
         S(Q[a][0], Z[a][0], 0, .99);
         for (b = 1; b <= g; b++) S(Q[a][b], Z[a][b], 0, .99);
-        oi(f, Q[a][0], Z[a][0]);
-        Fi(f);
-        qi(f, .008);
+        Vec2Sub(f, Q[a][0], Z[a][0]);
+        Vec2Norm(f);
+        Vec2Scale(f, .008);
         b = Q[a][0].x;
         c = Q[a][0].y;
         d = ri(b - 16, c);
@@ -3113,10 +3113,10 @@ function Vk(a) {
         30 >= d && (f.y -= .05);
         3 > E(100) && (f.x += R(-.1, .1), f.y += R(-.1, .1));
         Q[a][0].add(f);
-        c = 360 / g * If / 180;
+        c = 360 / g * PI / 180;
         f.x = Math.cos(0) * h - Math.cos(c) * h;
         f.y = Math.sin(0) * h - Math.sin(c) * h;
-        f = pi(f);
+        f = Vec2Mag(f);
         for (b = 0; b < g; b++) T(Q[a][0], Q[a][b + 1], h, 0, .2);
         for (b = 1; b < g; b++) T(Q[a][b], Q[a][b + 1], f, .2, .2);
         T(Q[a][b], Q[a][1], f, .2, .2);
@@ -3224,7 +3224,7 @@ function Wk(a) {
 m.fff = Xk;
 
 function Xk(a) {
-    var b, c = new ah,
+    var b, c = new Vec2,
         d = I[X[a]][oj];
     if (0 == Y[a]) {
         1 > E(2) ? (Q[a][0].x += 0, Q[a][1].x += 2, Q[a][2].x += 4, Q[a][3].x += 6, Q[a][4].x += 6) : (Q[a][0].x += 6, Q[a][1].x += 4, Q[a][2].x += 2, Q[a][3].x += 0, Q[a][4].x += 0);
@@ -3233,8 +3233,8 @@ function Xk(a) {
     } else if (1 == Y[a] || 2 == Y[a]) {
         S(Q[a][0], Z[a][0], 0, .99);
         for (b = 1; 5 > b; b++) S(Q[a][b], Z[a][b], 0, .9);
-        mi(c, 0, 0);
-        b = ti(Q[a][0].x, Q[a][0].y, 150, 50, 0); - 1 != b && (oi(c, O[b][2], Q[a][0]), b = Fi(c), b -= I[X[a]][Sj] / 2 - 10, 0 > b ? qi(c, -.01) : qi(c, .01));
+        Vec2Set(c, 0, 0);
+        b = ti(Q[a][0].x, Q[a][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, O[b][2], Q[a][0]), b = Vec2Norm(c), b -= I[X[a]][Sj] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
         b = ri(Q[a][0].x, Q[a][0].y);
         31 != b && (c.y += .03);
         b = ri(Q[a][0].x - 8, Q[a][0].y);
@@ -3287,38 +3287,38 @@ function Cg() {
         var h = Nk[c];
         0 < Kk[a] ? (d = 5934817, f = 1989840) : 0 < Gk[a] ? (d = 3368652, g = f = 13158) : 0 < Ik[a] && (d = 3407616, g = f = 3381504);
         var k = (150 - Ck[a]) / 150 * b;
-        if (Bk[a] == pk) 3 > Y[a] ? fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, v(128 * (50 - Ck[a]) / 50));
+        if (Bk[a] == pk) 3 > Y[a] ? fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - Ck[a]) / 50));
         else if (Bk[a] == qk) Ni(Q[a][2].x, Q[a][2].y - 2 * k, 4 * k, 4 * k, g), Ni(Q[a][1].x, Q[a][1].y -
-            2.5 * k, 5 * k, 5 * k, g), 3 > Y[a] && (k = Ug(1, k)), fl(Q[a][0].x, Q[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (Bk[a] == rk) L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), L(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), L(Q[a][3].x, Q[a][3].y, Q[a][1].x, Q[a][1].y, g), L(Q[a][4].x, Q[a][4].y, Q[a][5].x, Q[a][5].y, g), L(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, g), L(Q[a][6].x, Q[a][6].y, Q[a][4].x, Q[a][4].y, g), 3 > Y[a] && (k = Ug(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+            2.5 * k, 5 * k, 5 * k, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+        else if (Bk[a] == rk) L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), L(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), L(Q[a][3].x, Q[a][3].y, Q[a][1].x, Q[a][1].y, g), L(Q[a][4].x, Q[a][4].y, Q[a][5].x, Q[a][5].y, g), L(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, g), L(Q[a][6].x, Q[a][6].y, Q[a][4].x, Q[a][4].y, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
         else if (Bk[a] == sk) {
             b = 0;
             h = Y[a] - 1;
             20 < Y[a] && (b = 1, h = Y[a] - 20 - 1);
             for (; b < h; b++) L(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, g);
-            Ni(v(Q[a][h].x) + 1, v(Q[a][h].y) + 1, v(2 * k), v(2 * k), d);
+            Ni(floor(Q[a][h].x) + 1, floor(Q[a][h].y) + 1, floor(2 * k), floor(2 * k), d);
             fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
         } else if (Bk[a] == tk || Bk[a] == Ak) L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), 3 > Y[a] && (L(Q[a][1].x, Q[a][1].y, Q[a][3].x, Q[a][3].y, g), L(Q[a][1].x, Q[a][1].y, Q[a][4].x, Q[a][4].y, g)), L(Q[a][3].x, Q[a][3].y, Q[a][5].x, Q[a][5].y, g), L(Q[a][4].x, Q[a][4].y, Q[a][6].x, Q[a][6].y, g), 3 > Y[a] && (L(Q[a][2].x, Q[a][2].y,
             Q[a][7].x, Q[a][7].y, g), L(Q[a][2].x, Q[a][2].y, Q[a][8].x, Q[a][8].y, g)), L(Q[a][7].x, Q[a][7].y, Q[a][9].x, Q[a][9].y, g), L(Q[a][8].x, Q[a][8].y, Q[a][10].x, Q[a][10].y, g), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
         else if (Bk[a] == uk || Bk[a] == vk) {
             h = Bk[a] == uk ? -2 : 2;
-            for (b = 20 >= Y[a] ? Y[a] - 1 : Y[a] - 21; 0 < b; b--) gl(v(Q[a][b].x), v(Q[a][b].y + h), 5, 5, g);
+            for (b = 20 >= Y[a] ? Y[a] - 1 : Y[a] - 21; 0 < b; b--) gl(floor(Q[a][b].x), floor(Q[a][b].y + h), 5, 5, g);
             Bk[a] == uk ? fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
         } else if (Bk[a] ==
             wk) {
             for (b = 1; 6 > b; b++) L(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, f);
             3 > Y[a] && L(Q[a][b].x, Q[a][b].y, Q[a][1].x, Q[a][1].y, f);
-            Ii(la, v(Q[a][0].x), v(Q[a][0].y), v(16 * k), v(16 * k), 16 * c, 0, 16, 16, d)
+            Ii(la, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
         } else if (Bk[a] == xk) {
             h = I[X[a]][lj];
             for (b = 1; b < h; b++) L(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][b + 1].x - 1, Q[a][b + 1].y - 1, g);
             L(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][1].x - 1, Q[a][1].y - 1, g);
             fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
         } else Bk[a] == yk ? (L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), 3 > Y[a] && (L(Q[a][0].x, Q[a][0].y,
-            Q[a][1].x, Q[a][1].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), L(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (L(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), L(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), L(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), Ii(la, v(Q[a][0].x), v(Q[a][0].y), v(16 * k), v(16 * k), 16 * c, 0, 16, 16, d)) : Bk[a] == zk && (L(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), L(Q[a][3].x, Q[a][3].y, Q[a][4].x,
-            Q[a][4].y, g), L(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), gl(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = Ug(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
+            Q[a][1].x, Q[a][1].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), L(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (L(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), L(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), L(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), Ii(la, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : Bk[a] == zk && (L(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), L(Q[a][3].x, Q[a][3].y, Q[a][4].x,
+            Q[a][4].y, g), L(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), gl(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
     }
-    for (a = 0; a < ej; a++) 0 >= Ek[a] || (Ek[a]--, 0 >= jj[a] || (b = I[X[a]][oj], sg(v(Q[a][0].x) - 7 * b, v(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), sg(v(Q[a][0].x) - 7 * b, v(Q[a][0].y) - 10 * b, v(14 * b * jj[a] / I[X[a]][sh]), 1, 52224)))
+    for (a = 0; a < ej; a++) 0 >= Ek[a] || (Ek[a]--, 0 >= jj[a] || (b = I[X[a]][oj], sg(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), sg(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, floor(14 * b * jj[a] / I[X[a]][sh]), 1, 52224)))
 }
 m.fff = Ch;
 
@@ -3328,7 +3328,7 @@ function Ch(a, b, c, d) {
         h = I[a][pj],
         k = I[a][qj],
         p = I[a][rj];
-    d = Kg(I[a][oj], 1, d);
+    d = clamp(I[a][oj], 1, d);
     var t = Nk[g],
         l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         n = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3336,8 +3336,8 @@ function Ch(a, b, c, d) {
     else if (f == qk) Ni(b + 5 * d, c - 4 * d, 4 * d, 4 * d, p), Ni(b + 2 * d, c - 10 * d, 5 * d, 5 * d, p), fl(b - 4 * d, c - 11 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
     else if (f == rk) l[0] = b + 0 * d, n[0] = c - 8 * d, l[1] = b - 4 * d, n[1] = c - 8 * d, l[2] = b - 9 * d, n[2] = c - 9 * d, l[3] = b - 7 * d, n[3] = c - 4 * d, l[4] = b + 3 * d, n[4] = c - 8 * d, l[5] = b + 9 * d, n[5] = c - 10 * d,
         l[6] = b + 7 * d, n[6] = c - 4 * d, L(l[1], n[1], l[2], n[2], p), L(l[2], n[2], l[3], n[3], p), L(l[3], n[3], l[1], n[1], p), L(l[4], n[4], l[5], n[5], p), L(l[5], n[5], l[6], n[6], p), L(l[6], n[6], l[4], n[4], p), fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == sk) l[0] = b - 3 * d, n[0] = c - 10 * d, l[1] = b + 1 * d, n[1] = c - 10 * d, l[2] = b + 4 * d, n[2] = c - 8 * d, l[3] = b + 5 * d, n[3] = c - 6 * d, l[4] = b + 5 * d, n[4] = c - 4 * d, l[5] = b + 3 * d, n[5] = c - 1 * d, L(l[0], n[0], l[1], n[1], p), L(l[4], n[4], l[5], n[5], p), L(l[1], n[1], l[2], n[2], p), L(l[2], n[2], l[3], n[3], p), L(l[3], n[3], l[4], n[4], p), Ni(v(l[5]),
-        v(n[5]), v(2 * d), v(2 * d), h), fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == sk) l[0] = b - 3 * d, n[0] = c - 10 * d, l[1] = b + 1 * d, n[1] = c - 10 * d, l[2] = b + 4 * d, n[2] = c - 8 * d, l[3] = b + 5 * d, n[3] = c - 6 * d, l[4] = b + 5 * d, n[4] = c - 4 * d, l[5] = b + 3 * d, n[5] = c - 1 * d, L(l[0], n[0], l[1], n[1], p), L(l[4], n[4], l[5], n[5], p), L(l[1], n[1], l[2], n[2], p), L(l[2], n[2], l[3], n[3], p), L(l[3], n[3], l[4], n[4], p), Ni(floor(l[5]),
+        floor(n[5]), floor(2 * d), floor(2 * d), h), fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
     else if (f == tk) l[0] = b + 0 * d, n[0] = c - 15 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 0 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b + 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b + 5 * d, n[6] = c - 8 * d, l[7] = b - 3 * d, n[7] = c - 3 * d, l[8] = b + 3 * d, n[8] = c - 5 * d, l[9] = b - 1 * d, n[9] = c - 1 * d, l[10] = b + 2 * d, n[10] = c - 0 * d, L(l[1], n[1], l[2], n[2], p), L(l[1], n[1], l[3], n[3], p), L(l[1], n[1], l[4], n[4], p), L(l[3], n[3], l[5], n[5], p), L(l[4], n[4], l[6], n[6], p), L(l[2], n[2], l[7], n[7], p), L(l[2], n[2],
         l[8], n[8], p), L(l[7], n[7], l[9], n[9], p), L(l[8], n[8], l[10], n[10], p), fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
     else if (f == uk) gl(b + 0, c + 0, 5, 5, p), gl(b - 1, c - 6, 5, 5, p), gl(b + 0, c - 12, 5, 5, p), fl(b + 0, c - 18, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
@@ -3360,27 +3360,27 @@ function Ch(a, b, c, d) {
         n[6] = c - 10 * d;
         for (b = 1; 6 > b; b++) L(l[b], n[b], l[b + 1], n[b + 1], k);
         L(l[b], n[b], l[1], n[1], k);
-        Ii(la, v(l[0]), v(n[0]), v(16 * d), v(16 * d), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
+        Ii(la, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
     } else if (f == xk) {
         f = I[a][lj];
         a = I[a][mj];
         l[0] = b + 0 * d;
         n[0] = c - 10 * d;
-        for (b = 0; b < f; b++) c = 360 * b / f * If / 180, l[b + 1] = l[0] + Math.cos(c) * a * d, n[b + 1] = n[0] + Math.sin(c) * a * d;
+        for (b = 0; b < f; b++) c = 360 * b / f * PI / 180, l[b + 1] = l[0] + Math.cos(c) * a * d, n[b + 1] = n[0] + Math.sin(c) * a * d;
         for (b = 1; b < f; b++) L(l[b], n[b], l[b + 1], n[b + 1], p);
         L(l[b], n[b], l[1], n[1], p);
         fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)
     } else f == yk ? (l[0] = b + 0 * d, n[0] = c - 6 * d, l[1] = b - 9 * d, n[1] = c -
-        9 * d, l[2] = b - 7 * d, n[2] = c - 0 * d, l[3] = b + 9 * d, n[3] = c - 9 * d, l[4] = b + 7 * d, n[4] = c - 0 * d, l[5] = b - 7 * d, n[5] = c - 5 * d, l[6] = b - 5 * d, n[6] = c - 0 * d, l[7] = b + 7 * d, n[7] = c - 5 * d, l[8] = b + 5 * d, n[8] = c - 0 * d, L(v(l[0]), v(n[0]), v(l[1]), v(n[1]), k), L(v(l[0]), v(n[0]), v(l[3]), v(n[3]), k), L(v(l[1]), v(n[1]), v(l[2]), v(n[2]), k), L(v(l[3]), v(n[3]), v(l[4]), v(n[4]), k), L(v(l[0]), v(n[0]), v(l[5]), v(n[5]), k), L(v(l[0]), v(n[0]), v(l[7]), v(n[7]), k), L(v(l[5]), v(n[5]), v(l[6]), v(n[6]), k), L(v(l[7]), v(n[7]), v(l[8]), v(n[8]), k), Ii(la, v(l[0]), v(n[0]), v(16 * d), v(16 * d), 16 * (g & 7),
+        9 * d, l[2] = b - 7 * d, n[2] = c - 0 * d, l[3] = b + 9 * d, n[3] = c - 9 * d, l[4] = b + 7 * d, n[4] = c - 0 * d, l[5] = b - 7 * d, n[5] = c - 5 * d, l[6] = b - 5 * d, n[6] = c - 0 * d, l[7] = b + 7 * d, n[7] = c - 5 * d, l[8] = b + 5 * d, n[8] = c - 0 * d, L(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), L(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), L(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), L(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), L(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), L(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), L(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), L(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), Ii(la, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7),
             16 * (g >> 3), 16, 16, h)) : f == zk ? (L(b + 5 * d, c - 6 * d, b + 8 * d, c - 11 * d, p), L(b + 8 * d, c - 11 * d, b + 10 * d, c - 3 * d, p), L(b + 10 * d, c - 3 * d, b + 5 * d, c - 6 * d, p), gl(b + 0 * d, c - 9 * d, 6 * d + 1, 6 * d + 1, p), fl(b - 5 * d, c - 13 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == Ak && (l[0] = b + 0 * d, n[0] = c - 16 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 2 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b - 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b - 8 * d, n[6] = c - 10 * d, l[7] = b - 1 * d, n[7] = c - 4 * d, l[8] = b + 2 * d, n[8] = c - 5 * d, l[9] = b - 0 * d, n[9] = c - 1 * d, l[10] = b + 4 * d, n[10] = c - 0 * d)
 }
 var W = 0,
     hl = new Int32Array(1E3),
     il = new Int32Array(1E3),
     jl = Array(1E3);
-for (e = 0; 1E3 > e; e++) jl[e] = new ah;
+for (e = 0; 1E3 > e; e++) jl[e] = new Vec2;
 var kl = Array(1E3);
-for (e = 0; 1E3 > e; e++) kl[e] = new ah;
+for (e = 0; 1E3 > e; e++) kl[e] = new Vec2;
 var ll = new Int32Array(1E3),
     ml = new Int32Array(1E3),
     nl = new Int32Array(1E3),
@@ -3439,7 +3439,7 @@ function im() {
 m.fff = zi;
 
 function zi(a, b, c, d, f, g, h, k, p, t, l, n, w, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, ob, Bb, gc, Qb, Rb, gb, jb, La, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc) {
-    1E3 != W && (hl[W] = a, il[W] = b, mi(jl[W], c, d), mi(kl[W], f, g), ll[W] = 0, ml[W] = h, nl[W] = k, ol[W] = p, pl[W] = t, ql[W] = l, rl[W] = n, sl[W] = w, tl[W] = B, ul[W] = M, vl[W] = v(E(J)), wl[W] = y, xl[W] = x, yl[W] = K, zl[W] = ba, Al[W] = U, Bl[W] = na, Cl[W] = Fa, Dl[W] = Ga, El[W] = Ca, Fl[W] = ua, Gl[W] = fb, Hl[W] = ob, Il[W] = Bb, Jl[W] = gc, Kl[W] = Qb, Ll[W] = Rb, Ml[W] = gb, Nl[W] = jb, Ol[W] = La, Pl[W] = hc, Ql[W] = Ib, Rl[W] = ic, Sl[W] =
+    1E3 != W && (hl[W] = a, il[W] = b, Vec2Set(jl[W], c, d), Vec2Set(kl[W], f, g), ll[W] = 0, ml[W] = h, nl[W] = k, ol[W] = p, pl[W] = t, ql[W] = l, rl[W] = n, sl[W] = w, tl[W] = B, ul[W] = M, vl[W] = floor(E(J)), wl[W] = y, xl[W] = x, yl[W] = K, zl[W] = ba, Al[W] = U, Bl[W] = na, Cl[W] = Fa, Dl[W] = Ga, El[W] = Ca, Fl[W] = ua, Gl[W] = fb, Hl[W] = ob, Il[W] = Bb, Jl[W] = gc, Kl[W] = Qb, Ll[W] = Rb, Ml[W] = gb, Nl[W] = jb, Ol[W] = La, Pl[W] = hc, Ql[W] = Ib, Rl[W] = ic, Sl[W] =
         jc, Tl[W] = kc, Ul[W] = lc, Vl[W] = mc, Wl[W] = nc, Xl[W] = oc, Yl[W] = pc, Zl[W] = qc, $l[W] = rc, am[W] = sc, bm[W] = tc, cm[W] = uc, dm[W] = vc, em[W] = wc, fm[W] = xc, gm[W] = yc, hm[W] = zc, W++)
 }
 m.fff = jm;
@@ -3506,32 +3506,32 @@ m.fff = km;
 function km(a, b) {
     var c = 0;
     b.set(kl[a]);
-    var d = v(pi(b) / 4) + 1;
-    qi(b, 1 / d);
+    var d = floor(Vec2Mag(b) / 4) + 1;
+    Vec2Scale(b, 1 / d);
     for (var f, g, h = 0; h < d; h++) f = jl[a].y + b.y, g = ri(jl[a].x, f), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].y = f : 3 == Dl[a] ? (b.y = -b.y, kl[a].y = -kl[a].y) : 4 == Dl[a] && (0 < kl[a].y ? c = 1 : kl[a].y = 0) : jl[a].y = f, f = jl[a].x + b.x, g = ri(f, jl[a].y), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].x = f : 3 == Dl[a] ? (b.x = -b.x, kl[a].x = -kl[a].x) : 4 == Dl[a] && (kl[a].x = 0) : jl[a].x = f;
     return c
 }
 m.fff = Bg;
 
 function Bg() {
-    var a, b, c, d = new ah,
-        f = new ah,
-        g = new ah,
-        h = new ah,
-        k = new ah,
+    var a, b, c, d = new Vec2,
+        f = new Vec2,
+        g = new Vec2,
+        h = new Vec2,
+        k = new Vec2,
         p, t, l;
     for (a = 0; a < W; a++)
         if (-64 > jl[a].x || 704 < jl[a].x) jm(a--);
         else if (0 < vl[a]) vl[a]--;
     else if (1 == ll[a]) xl[a]++, xl[a] >= yl[a] && jm(a--);
     else {
-        0 < El[a] && (b = El[a], b = 0 <= hl[a] ? Ei(jl[a].x, jl[a].y, b, b) : ti(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? oi(d, Q[b][0], jl[a]) : oi(d, O[b][0], jl[a]), Fi(d), b = pi(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + R(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + R(-.1, .1), Fi(kl[a]), qi(kl[a], Ug(b, 1))));
+        0 < El[a] && (b = El[a], b = 0 <= hl[a] ? Ei(jl[a].x, jl[a].y, b, b) : ti(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, O[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + R(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + R(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
         0 == zl[a] ? kl[a].y += .01 * Al[a] : (-1 == zl[a] ?
-            d.set(jl[a]) : (c = hl[a], l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, oi(d, jl[a], l[c][zl[a]])), Fi(d), qi(d, .01 * -Al[a]), kl[a].add(d));
-        qi(kl[a], .01 * Bl[a]);
+            d.set(jl[a]) : (c = hl[a], l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, Vec2Sub(d, jl[a], l[c][zl[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -Al[a]), kl[a].add(d));
+        Vec2Scale(kl[a], .01 * Bl[a]);
         b = 0;
         0 > il[a] ? b = km(a, d) : jl[a].add(kl[a]);
-        0 > il[a] ? (h.set(jl[a]), k.set(kl[a])) : (c = hl[a], p = il[a] >> 8, t = il[a] & 255, l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, p == t ? (lm(h, l[c][p], jl[a]), k.set(kl[a])) : (oi(g, l[c][t], l[c][p]), Fi(g), f.set(g), Oi(f), h.x = f.x * jl[a].x + g.x * jl[a].y + l[c][p].x, h.y = f.y * jl[a].x + g.y * jl[a].y + l[c][p].y, k.x = f.x * kl[a].x + g.x * kl[a].y, k.y = f.y * kl[a].x + g.y * kl[a].y));
+        0 > il[a] ? (h.set(jl[a]), k.set(kl[a])) : (c = hl[a], p = il[a] >> 8, t = il[a] & 255, l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], jl[a]), k.set(kl[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * jl[a].x + g.x * jl[a].y + l[c][p].x, h.y = f.y * jl[a].x + g.y * jl[a].y + l[c][p].y, k.x = f.x * kl[a].x + g.x * kl[a].y, k.y = f.y * kl[a].x + g.y * kl[a].y));
         p = 1;
         1 == Jl[a] && 0 == Ml[a] &&
             Kl[a] <= E(60) && (p = 0);
@@ -3547,59 +3547,59 @@ function Bg() {
         2 == Ll[a] && 1 == xl[a] && (b = 1);
         if (1 == b || -1 != c)
             if (ll[a] = 1, xl[a] = 0, 1 <= Ml[a] && 9 >= Ml[a])
-                for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? mi(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = v(E(512)), p = R(.1, hm[a]), d.x = Hf[c][0] * p, d.y = Hf[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Fi(k),
-                    qi(k, R(.1, .1 * Nl[a])), c = v(E(512)), p = R(0, .1 * hm[a]), d.x = k.x + Hf[c][0] * p, d.y = k.y + Hf[c][1] * p), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(E(512)), p = R(.1, hm[a]), d.x = Hf[c][0] * p, d.y = Hf[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
+                    Vec2Scale(k, R(.1, .1 * Nl[a])), c = floor(E(512)), p = R(0, .1 * hm[a]), d.x = k.x + Hf[c][0] * p, d.y = k.y + Hf[c][1] * p), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             else if (-1 != c && 20 <= Ml[a] && 29 >= Ml[a])
-            for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = v(512 * Bi(k) / Ci), c = c + R(-Nl[a], Nl[a]) & 511, d.x = Hf[c][0] * hm[a], d.y = -Hf[c][1] * hm[a]), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
+            for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / PI2), c = c + R(-Nl[a], Nl[a]) & 511, d.x = Hf[c][0] * hm[a], d.y = -Hf[c][1] * hm[a]), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
                 Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], Ml[a], Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], gm[a], hm[a]);
         0 < xl[a] && xl[a]--;
         0 == xl[a] && (ll[a] = 1);
-        if (10 == Ml[a]) E(60) < gm[a] && (Fi(k), qi(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
+        if (10 == Ml[a]) E(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
             Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-        else if (11 == Ml[a]) E(60) < gm[a] && (Fi(k), p = R(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Oi(k), qi(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-        else if (12 == Ml[a]) E(60) < gm[a] && (c = v(E(512)), p = R(.1 * Nl[a], .1 * hm[a]), k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y,
+        else if (11 == Ml[a]) E(60) < gm[a] && (Vec2Norm(k), p = R(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+        else if (12 == Ml[a]) E(60) < gm[a] && (c = floor(E(512)), p = R(.1 * Nl[a], .1 * hm[a]), k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y,
             k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
         else if (13 == Ml[a]) {
             if (E(60) < Nl[a])
-                for (c = v(E(512)), b = 0; b < gm[a]; b++) c = c + v(512 / gm[a]) & 511, p = .1 * hm[a], k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
+                for (c = floor(E(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         } else if (14 == Ml[a]) {
             if (E(60) < Nl[a] && (c = Ei(h.x, h.y, 200, 200), -1 != c))
-                for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Fi(d), b = 0; b < gm[a]; b++) c = v(E(512)), p = .1 * E(gm[a] - 1), k.x = d.x * hm[a] * .1 + Hf[c][0] * p, k.y = d.y * hm[a] * .1 + Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(E(512)), p = .1 * E(gm[a] - 1), k.x = d.x * hm[a] * .1 + Hf[c][0] * p, k.y = d.y * hm[a] * .1 + Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         } else 15 == Ml[a] && E(60) < gm[a] &&
-            (Fi(k), qi(k, hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
+            (Vec2Norm(k), Vec2Scale(k, hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
     }
 }
 m.fff = Eg;
 
 function Eg() {
-    var a, b, c, d, f = new ah,
-        g = new ah,
-        h = new ah,
-        k = new ah,
-        p = new ah,
-        t = new ah,
+    var a, b, c, d, f = new Vec2,
+        g = new Vec2,
+        h = new Vec2,
+        k = new Vec2,
+        p = new Vec2,
+        t = new Vec2,
         l, n, w, B;
     for (a = 0; a < W; a++)
         if (!(0 < vl[a])) {
             b = (nl[a] & 7) << 4;
             c = nl[a] >> 3 << 4;
-            1 == ll[a] ? d = v((ol[a] >> 24 & 255) * (yl[a] - xl[a]) / yl[a]) << 24 | ol[a] & 16777215 : d = ol[a];
-            0 < wl[a] && (d = v((d >> 24 & 255) / 2) << 24 | d & 16777215);
+            1 == ll[a] ? d = floor((ol[a] >> 24 & 255) * (yl[a] - xl[a]) / yl[a]) << 24 | ol[a] & 16777215 : d = ol[a];
+            0 < wl[a] && (d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215);
             Gg = pl[a];
             fh = 1;
-            0 > il[a] ? (p.set(jl[a]), t.set(kl[a])) : (l = hl[a], n = il[a] >> 8, w = il[a] & 255, B = 0 <= l ? O : Q, l = 0 <= l ? l : -l - 1, n == w ? (lm(p, B[l][n], jl[a]), t.set(kl[a])) : (oi(g, B[l][w], B[l][n]), Fi(g), f.set(g), Oi(f), p.x = f.x * jl[a].x + g.x * jl[a].y + B[l][n].x, p.y =
+            0 > il[a] ? (p.set(jl[a]), t.set(kl[a])) : (l = hl[a], n = il[a] >> 8, w = il[a] & 255, B = 0 <= l ? O : Q, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], jl[a]), t.set(kl[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * jl[a].x + g.x * jl[a].y + B[l][n].x, p.y =
                 f.y * jl[a].x + g.y * jl[a].y + B[l][n].y, t.x = f.x * kl[a].x + g.x * kl[a].y, t.y = f.y * kl[a].x + g.y * kl[a].y));
             if (0 == ml[a]) Ii(pa, p.x, p.y, ql[a], rl[a], b, c, 16, 16, d);
             else if (1 == ml[a]) {
                 g.set(t);
-                Fi(g);
+                Vec2Norm(g);
                 f.set(g);
-                Oi(f);
-                qi(f, ql[a] >> 1);
-                qi(g, rl[a] >> 1);
-                oi(h, g, f);
-                lm(k, g, f);
+                Vec2Rotate(f);
+                Vec2Scale(f, ql[a] >> 1);
+                Vec2Scale(g, rl[a] >> 1);
+                Vec2Sub(h, g, f);
+                Vec2Add(k, g, f);
                 w = p.x + h.x;
                 B = p.y + h.y;
                 var M = b,
@@ -3661,7 +3661,7 @@ function Eg() {
                 y = l >> 8 & 255;
                 x = l & 255;
                 for (b = n; b <= c; b++)
-                    for (l = Ki[b] - Ji[b] + 1, n = v((nm[b] - om[b]) / l), Fa = v((pm[b] - qm[b]) / l), U = om[b], na = qm[b], 0 > Ji[b] && (U += n * -Ji[b], na += Fa * -Ji[b], Ji[b] =
+                    for (l = Ki[b] - Ji[b] + 1, n = floor((nm[b] - om[b]) / l), Fa = floor((pm[b] - qm[b]) / l), U = om[b], na = qm[b], 0 > Ji[b] && (U += n * -Ji[b], na += Fa * -Ji[b], Ji[b] =
                             0), 640 <= Ki[b] && (Ki[b] = 639), K = 640 * b + Ji[b], ba = K + (Ki[b] - Ji[b]); K <= ba; K++, U += n, na += Fa) l = w[(na >> 16) * B + (U >> 16)], 0 != l && (l = (l & 255) * M >> 8, 1 == Gg ? (Ga = F[K] >> 16 & 255, Ga = ((J - Ga) * l >> 8) + Ga, Ca = F[K] >> 8 & 255, Ca = ((y - Ca) * l >> 8) + Ca, ua = F[K] & 255, ua = ((x - ua) * l >> 8) + ua, F[K] = Ga << 16 | Ca << 8 | ua) : 2 == Gg ? (Ga = (F[K] >> 16 & 255) + (J * l >> 8), 255 < Ga && (Ga = 255), Ca = (F[K] >> 8 & 255) + (y * l >> 8), 255 < Ca && (Ca = 255), ua = (F[K] & 255) + (x * l >> 8), 255 < ua && (ua = 255), F[K] = Ga << 16 | Ca << 8 | ua) : 3 == Gg && (Ga = (F[K] >> 16 & 255) - (J * l >> 8), 0 > Ga && (Ga = 0), Ca = (F[K] >> 8 & 255) - (y * l >> 8), 0 > Ca && (Ca = 0),
                         ua = (F[K] & 255) - (x * l >> 8), 0 > ua && (ua = 0), F[K] = Ga << 16 | Ca << 8 | ua))
             } else if (2 == ml[a]) {
@@ -3669,7 +3669,7 @@ function Eg() {
                 l = -hl[a] - 1;
                 n = I[X[l]][kj];
                 w = I[X[l]][nj];
-                l = Ug(I[X[l]][oj], 1);
+                l = max(I[X[l]][oj], 1);
                 B = 0;
                 if (n == pk || n == qk) B = -Nk[w] * l + 1;
                 Ii(la, p.x, p.y + B, ql[a], rl[a], b, c, 16, 16, d)
@@ -3679,9 +3679,9 @@ function Eg() {
 }
 var aj = 0,
     rm = Array(1E3);
-for (e = 0; 1E3 > e; e++) rm[e] = new ah;
+for (e = 0; 1E3 > e; e++) rm[e] = new Vec2;
 var sm = Array(1E3);
-for (e = 0; 1E3 > e; e++) sm[e] = new ah;
+for (e = 0; 1E3 > e; e++) sm[e] = new Vec2;
 var tm = Array(1E3),
     um = new Int32Array(1E3),
     vm = new Int32Array(1E3);
@@ -3693,7 +3693,7 @@ function wm() {
 m.fff = Lg;
 
 function Lg(a, b, c, d, f, g) {
-    1E3 != aj && (a = Kg(a, 16, 623), b = Kg(b, 8, 351), mi(rm[aj], a, b), mi(sm[aj], c, -2), 0 != c && (sm[aj].x += R(-.2, .2), sm[aj].y += R(-.2, .2)), tm[aj] = d, um[aj] = f, vm[aj] = g, aj++)
+    1E3 != aj && (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(rm[aj], a, b), Vec2Set(sm[aj], c, -2), 0 != c && (sm[aj].x += R(-.2, .2), sm[aj].y += R(-.2, .2)), tm[aj] = d, um[aj] = f, vm[aj] = g, aj++)
 }
 m.fff = xm;
 
@@ -3714,11 +3714,11 @@ function Ag() {
             var b = rm[a],
                 c = sm[a];
             c.y += 0;
-            qi(c, .95)
-        } else b = rm[a], c = sm[a], c.y += .05, qi(c, .99);
+            Vec2Scale(c, .95)
+        } else b = rm[a], c = sm[a], c.y += .05, Vec2Scale(c, .99);
         b.add(c);
-        rm[a].x = Kg(rm[a].x, 16, 623);
-        rm[a].y = Kg(rm[a].y, 8, 351);
+        rm[a].x = clamp(rm[a].x, 16, 623);
+        rm[a].y = clamp(rm[a].y, 8, 351);
         um[a]--;
         0 >= um[a] && xm(a--)
     }
@@ -3727,13 +3727,13 @@ m.fff = Fg;
 
 function Fg() {
     var a, b, c, d, f;
-    for (a = 0; a < aj; a++) 20 <= um[a] ? lg(Wf, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = v(255 * Sg(um[a], 20) / 20), Jg(Wf, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
+    for (a = 0; a < aj; a++) 20 <= um[a] ? lg(Wf, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), Jg(Wf, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
 }
 var ym = 0,
     zm = Array(100);
-for (e = 0; 100 > e; e++) zm[e] = new ah;
+for (e = 0; 100 > e; e++) zm[e] = new Vec2;
 var Am = Array(100);
-for (e = 0; 100 > e; e++) Am[e] = new ah;
+for (e = 0; 100 > e; e++) Am[e] = new Vec2;
 var Bm = new Int32Array(100),
     Cm = new Int32Array(100),
     Dm = new Int32Array(100),
@@ -3748,7 +3748,7 @@ m.fff = Gh;
 
 function Gh(a, b, c, d, f) {
     if (100 != ym)
-        for (a = Kg(a, 16, 623), b = Kg(b, 8, 351), mi(zm[ym], a, b), Am[ym].x = pg < a ? R(-.5, -1) : R(.5, 1), Am[ym].y = R(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
+        for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = pg < a ? R(-.5, -1) : R(.5, 1), Am[ym].y = R(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
 }
 m.fff = Gm;
 
@@ -3777,7 +3777,7 @@ function zg() {
     var a, b, c;
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (F = null);
-    for (a = 0; a < ym; a++) Am[a].y += .04, qi(Am[a], .98), c = Kg(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && C(29), Gm(a--)) : (c = Kg(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (Wa = Kg(Wa + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
+    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && C(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (Wa = clamp(Wa + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
         $b[Bm[a]] < Cm[a] && ($b[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && C(24), Gm(a--)))
 }
 m.fff = Dg;
@@ -3838,7 +3838,7 @@ function cg() {
         Um(cg);
         Vm++;
         Wm = Date.now();
-        var a = v(60 * (Wm - Xm) / 1E3 + .5);
+        var a = floor(60 * (Wm - Xm) / 1E3 + .5);
         if (0 > a || 60 <= a) Vm = 0, Jh = Ym, Ym = 0, Xm = Wm, a = 0;
         else if (a == Zm) return;
         Ym++;
@@ -3851,8 +3851,8 @@ function cg() {
     pg = cn;
     qg = dn;
     for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = !1;
-    Tf = Tf + v(1024 * Pf()) & 1023;
-    Uf = v(512 * Pf()) | 1;
+    Tf = Tf + floor(1024 * rand()) & 1023;
+    Uf = floor(512 * rand()) | 1;
     dg();
     var b = 11 == Sm ? 276480 : 0;
     if (1 <= ug)
@@ -3886,7 +3886,7 @@ var Um = window.requestAnimationFrame || window.mozRequestAnimationFrame || wind
 
 function ag() {
     Wm = Date.now();
-    var a = Kg(fn - Wm, 5, en);
+    var a = clamp(fn - Wm, 5, en);
     Ym++;
     $m++;
     fn += en;
@@ -4045,9 +4045,9 @@ function L(a, b, c, d, f) {
     c -= a;
     d -= b;
     var g, h;
-    Ai(c) >= Ai(d) ? (h = v(Ai(c)), 0 != h && (d = v(65536 * d / h)), c = 0 <= c ? 65536 : -65536) : (h = v(Ai(d)), 0 != h && (c = v(65536 * c / h)), d = 0 <= d ? 65536 : -65536);
-    a = v(65536 * a) + 32768;
-    b = v(65536 * b) + 32768;
+    abs(c) >= abs(d) ? (h = floor(abs(c)), 0 != h && (d = floor(65536 * d / h)), c = 0 <= c ? 65536 : -65536) : (h = floor(abs(d)), 0 != h && (c = floor(65536 * c / h)), d = 0 <= d ? 65536 : -65536);
+    a = floor(65536 * a) + 32768;
+    b = floor(65536 * b) + 32768;
     if (0 == Gg)
         for (; 0 <= h; h--, a += c, b += d) 0 > a || 640 <= a >> 16 || 0 > b || 432 <= b >> 16 || (g = 640 * (b >> 16) + (a >> 16), F[g] = f);
     else {
@@ -4204,25 +4204,25 @@ function Xg(a, b, c, d, f) {
 
 function Li(a, b, c, d) {
     var f, g, h;
-    if (Ai(c - a) >= Ai(d - b))
-        for (a >>= 16, c >>= 16, f = Ai(c - a), c = a <= c ? 1 : -1, h = v((d - b) / Ug(f, 1)); 0 <= f; f--, a += c, b += h) 0 == f && (b = d), g = b >> 16, 0 > g || 432 <= g || (Ji[g] > a && (Ji[g] = a), Ki[g] < a && (Ki[g] = a));
+    if (abs(c - a) >= abs(d - b))
+        for (a >>= 16, c >>= 16, f = abs(c - a), c = a <= c ? 1 : -1, h = floor((d - b) / max(f, 1)); 0 <= f; f--, a += c, b += h) 0 == f && (b = d), g = b >> 16, 0 > g || 432 <= g || (Ji[g] > a && (Ji[g] = a), Ki[g] < a && (Ki[g] = a));
     else
-        for (b >>= 16, d >>= 16, f = Ai(d - b), h = v((c - a) / Ug(f, 1)), d = b <= d ? 1 : -1; 0 <= f; f--, a += h, b += d) 0 == f && (a = c), g = a >> 16, 0 > b || 432 <= b || (Ji[b] > g && (Ji[b] = g), Ki[b] < g && (Ki[b] = g))
+        for (b >>= 16, d >>= 16, f = abs(d - b), h = floor((c - a) / max(f, 1)), d = b <= d ? 1 : -1; 0 <= f; f--, a += h, b += d) 0 == f && (a = c), g = a >> 16, 0 > b || 432 <= b || (Ji[b] > g && (Ji[b] = g), Ki[b] < g && (Ki[b] = g))
 }
 
 function mm(a, b, c, d, f, g, h, k) {
-    var p = (Ug(Ai(f - a), Ai(g - b)) >> 16) + 1;
-    f = v((f - a) / p);
-    g = v((g - b) / p);
-    h = v((h - c) / p);
-    k = v((k - d) / p);
+    var p = (max(abs(f - a), abs(g - b)) >> 16) + 1;
+    f = floor((f - a) / p);
+    g = floor((g - b) / p);
+    h = floor((h - c) / p);
+    k = floor((k - d) / p);
     for (var t, l, n = 0; n < p; n++, a += f, b += g, c += h, d += k) t = a >> 16, l = b >> 16, 0 > l || 432 <= l || (Ji[l] > t && (Ji[l] = t, om[l] = c, qm[l] = d), Ki[l] < t && (Ki[l] = t, nm[l] = c, pm[l] = d))
 }
-var nn = new ah;
+var nn = new Vec2;
 
 function T(a, b, c, d, f) {
-    oi(nn, a, b);
-    c -= Fi(nn);
+    Vec2Sub(nn, a, b);
+    c -= Vec2Norm(nn);
     d *= c;
     f *= c;
     a.x += nn.x * d;
@@ -4232,10 +4232,10 @@ function T(a, b, c, d, f) {
 }
 
 function S(a, b, c, d) {
-    oi(nn, a, b);
+    Vec2Sub(nn, a, b);
     b.set(a);
     nn.y += c;
-    qi(nn, d);
+    Vec2Scale(nn, d);
     a.add(nn)
 }
 m.full_screen = on;
@@ -4266,10 +4266,10 @@ function qn(a) {
     var b = Gf.getBoundingClientRect(),
         c = b.right - b.left,
         d = b.bottom - b.top,
-        f = Sg(c / 640, d / 432),
-        d = v(d / 2 - 432 * f / 2);
-    cn = v((a.clientX - b.left - v(c / 2 - 640 * f / 2)) / f);
-    dn = v((a.clientY - b.top - d) / f)
+        f = min(c / 640, d / 432),
+        d = floor(d / 2 - 432 * f / 2);
+    cn = floor((a.clientX - b.left - floor(c / 2 - 640 * f / 2)) / f);
+    dn = floor((a.clientY - b.top - d) / f)
 }
 Hm.onmousemove = qn;
 Hm.onmousedown = function(a) {
@@ -4289,12 +4289,12 @@ function sn(a) {
     var b = Gf.getBoundingClientRect(),
         c = b.right - b.left,
         d = b.bottom - b.top,
-        f = Sg(c / 640, d / 432),
-        c = v(c / 2 - 640 * f / 2),
-        d = v(d / 2 - 432 * f / 2);
+        f = min(c / 640, d / 432),
+        c = floor(c / 2 - 640 * f / 2),
+        d = floor(d / 2 - 432 * f / 2);
     a = a.touches;
     pn = a.length;
-    1 == pn ? (cn = v((a[0].clientX - b.left - c) / f), dn = v((a[0].clientY - b.top - d) / f)) : 2 == pn && (cn = v((a[0].clientX - b.left - c) / f), dn = v((a[0].clientY - b.top - d) / f), d = v((a[1].clientY - b.top - d) / f), cn = v((cn + v((a[1].clientX - b.left - c) / f)) / 2), dn = v((dn + d) / 2))
+    1 == pn ? (cn = floor((a[0].clientX - b.left - c) / f), dn = floor((a[0].clientY - b.top - d) / f)) : 2 == pn && (cn = floor((a[0].clientX - b.left - c) / f), dn = floor((a[0].clientY - b.top - d) / f), d = floor((a[1].clientY - b.top - d) / f), cn = floor((cn + floor((a[1].clientX - b.left - c) / f)) / 2), dn = floor((dn + d) / 2))
 }
 Gf.ontouchstart = function(a) {
     sn(a);
@@ -4334,7 +4334,7 @@ Hm.onkeyup = function(a) {
 var rn = !1,
     qf = m.localStorage;
 
-function rg(a, b) {
+function promptInput(a, b) {
     var c = null;
     try {
         c = prompt(a, b)
@@ -4359,66 +4359,66 @@ var hn = "ERROR";// fromCharCode(69, 82, 82, 79, 82);
 "Content-Type";// fromCharCode(67, 111, 110, 116, 101, 110, 116, 45, 84, 121, 112, 101);
 "application/x-www-form-urlencoded";// fromCharCode(97, 112, 112, 108, 105, 99, 97, 116, 105, 111, 110, 47, 120, 45, 119, 119, 119, 45, 102, 111, 114, 109, 45, 117, 114, 108, 101, 110, 99, 111, 100, 101, 100);
 
-function ah() {
+function Vec2() {
     this.y = this.x = 0
 }
-ah.prototype.set = function(a) {
+Vec2.prototype.set = function(a) {
     this.x = a.x;
     this.y = a.y;
     return this
 };
 
-function mi(a, b, c) {
-    a.x = b;
-    a.y = c
+function Vec2Set(v, x, y) {
+    v.x = x;
+    v.y = y
 }
-ah.prototype.add = function(a) {
+Vec2.prototype.add = function(a) {
     this.x += a.x;
     this.y += a.y;
     return this
 };
 
-function lm(a, b, c) {
+function Vec2Add(a, b, c) {
     a.x = b.x + c.x;
     a.y = b.y + c.y
 }
-ah.prototype.sub = function(a) {
+Vec2.prototype.sub = function(a) {
     this.x -= a.x;
     this.y -= a.y;
     return this
 };
 
-function oi(a, b, c) {
+function Vec2Sub(a, b, c) {
     a.x = b.x - c.x;
     a.y = b.y - c.y
 }
 
-function qi(a, b) {
+function Vec2Scale(a, b) {
     a.x *= b;
     a.y *= b
 }
 
-function Oi(a) {
+function Vec2Rotate(a) {
     var b = a.x;
     a.x = a.y;
     a.y = -b
 }
 
-function pi(a) {
+function Vec2Mag(a) {
     return Math.sqrt(a.x * a.x + a.y * a.y)
 }
 
-function Fi(a) {
-    var b = pi(a);
+function Vec2Norm(a) {
+    var b = Vec2Mag(a);
     if (0 == b) return 0;
     a.x /= b;
     a.y /= b;
     return b
 }
 
-function Bi(a) {
+function Vec2Angle(a) {
     var b = Math.acos(a.x / Math.sqrt(a.x * a.x + a.y * a.y));
-    0 < a.y && (b = Ci - b);
+    0 < a.y && (b = PI2 - b);
     return b
 }
 var Of = new Float32Array(1024),
@@ -4454,36 +4454,37 @@ function Fh(a, b) {
     Tf &= 1023;
     return ~~(Of[Tf] * (b - a) + a)
 }
-var Hf = Array(513),
-    If = 3.1415927,
-    Ci = 6.2831855;
 
-function Pf() {
+var Hf = Array(513),
+    PI = 3.1415927,
+    PI2 = 6.2831855;
+
+function rand() {
     return Math.random()
 }
 
-function Ai(a) {
+function abs(a) {
     return 0 > a ? -a : a
 }
 
-function Ug(a, b) {
+function max(a, b) {
     return a > b ? a : b
 }
 
-function Sg(a, b) {
+function min(a, b) {
     return a < b ? a : b
 }
 
-function Kg(a, b, c) {
+function clamp(a, b, c) {
     return a < b ? b : a > c ? c : a
 }
 
-function Dh(a) {
+function phIdxWrapped(a) {
     var b = ph.length - 1;
     return 0 > a ? b : a > b ? 0 : a
 }
 
-function v(a) {
+function floor(a) {
     return Math.floor(a)
 }
 

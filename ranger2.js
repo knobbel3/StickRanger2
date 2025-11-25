@@ -3,17 +3,17 @@
 */
 var iterIdxTemp_1, iterIdxTemp_2, mainWindow = window,
     ca, da = [0, 0, 0, 0, 0, 0, 0, 0],
-    ea, ga = new fa,
-    ha = new fa,
-    ia = new fa,
+    ea, ga = new Sprite,
+    ha = new Sprite,
+    ia = new Sprite,
     ja = Array(3);
-for (iterIdxTemp_1 = 0; 3 > iterIdxTemp_1; iterIdxTemp_1++) ja[iterIdxTemp_1] = new fa;
-var ka = new fa,
-    la = new fa,
-    ma = new fa,
-    oa = new fa,
-    pa = new fa,
-    qa = new fa,
+for (iterIdxTemp_1 = 0; 3 > iterIdxTemp_1; iterIdxTemp_1++) ja[iterIdxTemp_1] = new Sprite;
+var ka = new Sprite,
+    la = new Sprite,
+    ma = new Sprite,
+    oa = new Sprite,
+    pa = new Sprite,
+    qa = new Sprite,
     ra = 0,
     sa = 0,
     q = 0,
@@ -874,9 +874,9 @@ function Df(a, b) {
         Tf = floor(1024 * rand()) & 1023;
         Uf = floor(512 * rand()) | 1;
         for (c = 0; 276480 > c; c++) F[c] = 0;
-        Vf.f("font.png", 8, 12);
-        Wf.f("font_s.png", 5, 7);
-        G.f("font_m.png", 6, 8);
+        gameFont.f("font.png", 8, 12);
+        gameFontSmall.f("font_s.png", 5, 7);
+        gameFontMed.f("font_m.png", 6, 8);
         ha.f("title.png");
         ia.f("b.png");
         for (c = 0; 3 > c; c++) ja[c].f("g" + c + ".png");
@@ -888,9 +888,9 @@ function Df(a, b) {
         Xf() ? Cf-- : Cf++
     }
     if (1 == Cf) {
-        Yf(Vf.i);
-        Yf(Wf.i);
-        Yf(G.i);
+        Yf(gameFont.i);
+        Yf(gameFontSmall.i);
+        Yf(gameFontMed.i);
         Yf(ha);
         Yf(ia);
         for (c = 0; 3 > c; c++) Yf(ja[c]);
@@ -1016,18 +1016,18 @@ function dg() {
             n = 640 * b + a;
             for (w = 640 - (d - a); b < f; b++, n += w, h += p)
                 for (B = ((h >> 8) * ha.h << 8) + g, l = a; l < d; l++, n++, B += k) M = t[B >> 8], -1 != M && (F[n] = M);
-            2 == ra ? (lg(Vf, 320, 220, "NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 0 == jf ? 3 : 4), L(256, 228, 384, 228, 11141120)), 0 == jf && (lg(Vf, 320, 260, "LOAD GAME", 16777215,
-                10053171), mg(320, 260, 128, 24) && (ng && (ra = 5), L(256, 268, 384, 268, 11141120)))) : 3 == ra && (lg(Vf, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 4), L(192, 228, 448, 228, 11141120)), lg(Vf, 320, 260, "CANCEL", 16777215, 10053171), mg(320, 260, 128, 24) && (ng && (ra = 2), L(256, 268, 384, 268, 11141120)));
-            og(608, 312, 8, "IMPORT", 16777215) && (8 != ca.length ? N(Vf, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && (a = promptInput("Import Game Data", "")) && (jf = rf(a), kf = 100));
+            2 == ra ? (lg(gameFont, 320, 220, "NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 0 == jf ? 3 : 4), L(256, 228, 384, 228, 11141120)), 0 == jf && (lg(gameFont, 320, 260, "LOAD GAME", 16777215,
+                10053171), mg(320, 260, 128, 24) && (ng && (ra = 5), L(256, 268, 384, 268, 11141120)))) : 3 == ra && (lg(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 4), L(192, 228, 448, 228, 11141120)), lg(gameFont, 320, 260, "CANCEL", 16777215, 10053171), mg(320, 260, 128, 24) && (ng && (ra = 2), L(256, 268, 384, 268, 11141120)));
+            og(608, 312, 8, "IMPORT", 16777215) && (8 != ca.length ? N(gameFont, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && (a = promptInput("Import Game Data", "")) && (jf = rf(a), kf = 100));
             og(608, 352, 9, "EXPORT", 16777215) && (8 != ca.length ?
-                N(Vf, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && promptInput("Export Game Data", gf));
+                N(gameFont, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && promptInput("Export Game Data", gf));
             sg(0, 408, 640, 16, 0);
-            lg(Vf, 320, 417, Ff, -1, 6697728)
+            lg(gameFont, 320, 417, Ff, -1, 6697728)
         } else if (4 == ra || 5 == ra) 4 == ra ? (bc(), Yb[0][0] = 4, q = $b[4] = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40, tg()) : 5 == ra && (cc(), q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), ug = 0, ra = 10;
         else if (10 == ra) hg(q) && (1 == q && (Gc >>= 1), sa = 0, ra++);
         else if (11 == ra || 12 == ra || 13 == ra || 30 == ra)
             if (ng && (ta = false, 360 <= qg && (ta = true), va && vg(8, 8, 204, 196) && (ta = true),
-                    wa && vg(218, 8, 204, 260) && (ta = true), xa && vg(428, 8, 204, 180) && (ta = true), ya && vg(428, 8, 204, 180) && (ta = true), za && vg(428, 196, 204, 148) && (ta = true), Aa && vg(218, 8, 204, 180) && (ta = true)), tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), Gg = 1, sg(4, 4, 8 * levelListArray[q][Hg].length + 8, 20, 2151694400), Gg = 0, N(Vf, 8, 8, levelListArray[q][Hg], 16777215, 0), Ig(), 11 == ra) c = 255, 50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)), Jg(Vf, 320, 180, levelListArray[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), a = -1E3 + floor(500 * sa / 20), L(a, 164, a + 1E3, 164, 8421504), a = 640 - floor(500 * sa / 20), L(a, 193, a + 1E3, 193, 8421504),
+                    wa && vg(218, 8, 204, 260) && (ta = true), xa && vg(428, 8, 204, 180) && (ta = true), ya && vg(428, 8, 204, 180) && (ta = true), za && vg(428, 196, 204, 148) && (ta = true), Aa && vg(218, 8, 204, 180) && (ta = true)), tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), Gg = 1, sg(4, 4, 8 * levelListArray[q][Hg].length + 8, 20, 2151694400), Gg = 0, N(gameFont, 8, 8, levelListArray[q][Hg], 16777215, 0), Ig(), 11 == ra) c = 255, 50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)), Jg(gameFont, 320, 180, levelListArray[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), a = -1E3 + floor(500 * sa / 20), L(a, 164, a + 1E3, 164, 8421504), a = 640 - floor(500 * sa / 20), L(a, 193, a + 1E3, 193, 8421504),
                 sa++, ug = clamp(sa / 30, 0, 1), 70 <= sa && (ug = 1, sa = 0, ra++);
             else if (12 == ra) {
             for (a = b = 0; a < r; a++) b += Ya[a];
@@ -1046,7 +1046,7 @@ function dg() {
             } else q != Mg && (sa = 0, ra = 13, A(6) && (2 == Ng && 4 == Mg || 4 == Ng && 2 == Mg) && 0 == Og && 0 == Pg && C(6), A(51) && (13 == Ng && 15 == Mg || 15 == Ng && 13 == Mg) && 0 == Og && 0 == Pg && C(51))
         } else if (13 == ra) sa++, ug = clamp(1 - sa / 20, 0, 1), 20 == sa && (ug = 0, ra = 10, Ng = q, q = Mg, mf());
         else if (30 ==
-            ra && (100 > sa && sa++, c = floor(255 * sa / 100), Jg(Vf, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24), 100 == sa && ng)) {
+            ra && (100 > sa && sa++, c = floor(255 * sa / 100), Jg(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24), 100 == sa && ng)) {
             for (a = 0; 4 > a; a++) Ya[a] = 1, $a[a] = 0;
             ug = 0;
             ra = 10;
@@ -1062,9 +1062,9 @@ function dg() {
             mf()
         }
         Bf();
-        0 < bf && (bf--, a = badgeArray[cf][3], Qg(qa, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true), b = 440, a = min(120 - bf - 0, 4), 0 < a && N(G, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && N(G, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && N(G, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
-            bf - 6, 4), 0 < a && N(G, b + 20, 342 + 2 * a, "M", 16777215, 0), a = min(120 - bf - 8, 4), 0 < a && N(G, b + 25, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 10, 4), 0 < a && N(G, b + 30, 342 + 2 * a, "D", 16777215, 0), a = min(120 - bf - 12, 4), 0 < a && N(G, b + 35, 342 + 2 * a, "A", 16777215, 0), a = min(120 - bf - 14, 4), 0 < a && N(G, b + 40, 342 + 2 * a, "L", 16777215, 0));
-        0 < kf ? (kf--, 10 > kf ? c = floor(255 * kf / 10) : c = 255, Tg(Vf, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = floor(255 * hf / 10) : c = 255, Tg(Vf, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
+        0 < bf && (bf--, a = badgeArray[cf][3], Qg(qa, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true), b = 440, a = min(120 - bf - 0, 4), 0 < a && N(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && N(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && N(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
+            bf - 6, 4), 0 < a && N(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0), a = min(120 - bf - 8, 4), 0 < a && N(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 10, 4), 0 < a && N(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0), a = min(120 - bf - 12, 4), 0 < a && N(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0), a = min(120 - bf - 14, 4), 0 < a && N(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0));
+        0 < kf ? (kf--, 10 > kf ? c = floor(255 * kf / 10) : c = 255, Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = floor(255 * hf / 10) : c = 255, Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
     }
 }
 mainWindow.fff = tg;
@@ -1105,24 +1105,24 @@ function Ig() {
     sg(0, 361, 640, 70, levelListArray[q][Yg]);
     f = 8;
     g = 348;
-    N(Vf, f, g, "LV " + Ua, 16777215, 0);
+    N(gameFont, f, g, "LV " + Ua, 16777215, 0);
     if (99 > Ua) {
         var p = Ta[Ua - 1];
-        N(Vf, f + 48, g, "EXP " + Va + "(" + floor(100 * (Va - p) / (Ta[Ua] - p)) + "%)", 16777215, 0)
-    } else N(Vf, f + 48, g, "EXP " + Va + "(MAX)", 16777215, 0);
-    N(Vf, f + 184, g, "G " + Wa, 16777215, 0);
+        N(gameFont, f + 48, g, "EXP " + Va + "(" + floor(100 * (Va - p) / (Ta[Ua] - p)) + "%)", 16777215, 0)
+    } else N(gameFont, f + 48, g, "EXP " + Va + "(MAX)", 16777215, 0);
+    N(gameFont, f + 184, g, "G " + Wa, 16777215, 0);
     sg(f + 264, g, 90, 11, 2236962);
     sg(f + 264, g, floor(90 * Ic / Vg), 11, 12281344);
     p = 10 + floor(Hc / 10);
     h = "CB " + Hc;
-    G.a = 4;
-    N(G, f +
+    gameFontMed.a = 4;
+    N(gameFontMed, f +
         265, g + 2, h, 12281344, 0);
-    10 <= Hc && (G.a = 4, N(G, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
+    10 <= Hc && (gameFontMed.a = 4, N(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
     0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + r - 1) / r), Wa = clamp(Wa + $g * r, 0, 9999999), A(1) && 100 <= Hc && C(1), A(26) && 300 <= Hc && C(26), A(36) && 500 <= Hc && C(36), A(56) && 600 <= Hc && C(56)), Hc = 0));
     p = 100 + Gc;
-    G.a = 4;
-    N(G, f + 356, g + 2, "CB *" + p / 100, 16777215, 0);
+    gameFontMed.a = 4;
+    N(gameFontMed, f + 356, g + 2, "CB *" + p / 100, 16777215, 0);
     f = 8;
     g = 364;
     d = 80;
@@ -1139,10 +1139,10 @@ function Ig() {
         c = 16777215;
         0 < bh[a] ? c = 5934817 : 0 < ch[a] ? c = 1989840 : 0 < phIdxWrapped[a] && (c = 3407616);
         eh(a, l, 0, 1, 15908203, c, 2);
-        N(Wf, f + a * d + 28, g, "P" + (a + 1), 3355443, -1);
+        N(gameFontSmall, f + a * d + 28, g, "P" + (a + 1), 3355443, -1);
         sg(f + a * d + 28, g + 8, 48, 7, 1114112);
         sg(f + a * d + 28, g + 8, floor(48 * Ya[a] / Za[a]), 7, 10027008);
-        N(Wf, f + a * d + 28, g + 8, "" + Ya[a], 16764108, -1);
+        N(gameFontSmall, f + a * d + 28, g + 8, "" + Ya[a], 16764108, -1);
         sg(f + a * d + 28, g + 17, 48, 5, 17);
         sg(f + a * d + 28, g + 17, 48 * $a[a] / max(ab[a], 1), 5, 221);
         vg(f + a * d, g, 24, 24) && (Xg(f + a * d, g, 24, 24, 8388608), ng && Ka == a && (va = !va), ng && (Ka = a));
@@ -1176,18 +1176,18 @@ function Ig() {
     og(f + 4 * d, g, 5, "OPTION", za ? 16750950 : 16777215) && ng && (za = !za);
     c = 0;
     for (b = ac.length - 1; 0 <= b; b--) c += ac[b];
-    0 < c && N(Wf, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
+    0 < c && N(gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
     if (1 == q) {
-        Vf.a = 1;
-        lg(Vf, 530,
+        gameFont.a = 1;
+        lg(gameFont, 530,
             168, "INN", 16777215, 8409120);
         if (mg(528, 180, 48, 40)) {
             for (a = c = 0; a < r; a++) c += Za[a] - Ya[a];
             0 < c && (c = 10);
             c += 10 * (hb - eb);
-            Vf.a = 1;
-            lg(Vf, 530, 168, "INN", 15908203, 8409120);
-            lg(Vf, 528, 187, "G " + c, 16777215, 8409120);
+            gameFont.a = 1;
+            lg(gameFont, 530, 168, "INN", 15908203, 8409120);
+            lg(gameFont, 528, 187, "G " + c, 16777215, 8409120);
             if (0 < c && c <= Wa && ng && !ta) {
                 for (a = 0; a < r; a++) Ya[a] != Za[a] && Lg(O[a][0].x, O[a][0].y, 0, Za[a] - Ya[a], 60, 65280), Ya[a] = Za[a];
                 eb != hb && Lg(436, 380, 0, hb - eb, 60, 65280);
@@ -1195,63 +1195,63 @@ function Ig() {
                 Wa = clamp(Wa - c, 0, 9999999)
             }
         }
-        Vf.a = 1;
-        lg(Vf, 54, 296, "SMITH", 16777215, 8409120);
-        mg(52, 308, 56, 40) && (Vf.a = 1, lg(Vf, 54, 296, "SMITH", 15908203, 8409120), ng && !ta && (wa = !wa) &&
+        gameFont.a = 1;
+        lg(gameFont, 54, 296, "SMITH", 16777215, 8409120);
+        mg(52, 308, 56, 40) && (gameFont.a = 1, lg(gameFont, 54, 296, "SMITH", 15908203, 8409120), ng && !ta && (wa = !wa) &&
             (Aa = false))
-    } else 12 == q && (Vf.a = 1, lg(Vf, 418, 104, "SHRINE", 16777215, 8409120), mg(416, 108, 48, 40) && (Vf.a = 1, lg(Vf, 418, 104, "SHRINE", 15908203, 8409120), ng && !ta && (Aa = !Aa) && (wa = false)));
+    } else 12 == q && (gameFont.a = 1, lg(gameFont, 418, 104, "SHRINE", 16777215, 8409120), mg(416, 108, 48, 40) && (gameFont.a = 1, lg(gameFont, 418, 104, "SHRINE", 15908203, 8409120), ng && !ta && (Aa = !Aa) && (wa = false)));
     if (va) {
         g = f = 14;
         sg(f - 6, g - 6, 204, 196, levelListArray[q][Yg]);
-        Vf.a = 1;
-        N(Vf, f, g, "LP " + Ya[Ka] + "/" + Za[Ka] + " SP (" + Xa[Ka] + ")", 16777215, 0);
+        gameFont.a = 1;
+        N(gameFont, f, g, "LP " + Ya[Ka] + "/" + Za[Ka] + " SP (" + Xa[Ka] + ")", 16777215, 0);
         k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
-        Vf.a = 1;
-        N(Vf, f, g + 20, k[Ma], 16777215, 0);
+        gameFont.a = 1;
+        N(gameFont, f, g + 20, k[Ma], 16777215, 0);
         k = [9, 0, 20, 21, 17, 22, 23];
         c = [999, 999, 999, 999, 999, 999, 25];
         for (a = 0; 7 > a; a++) kh(f +
-            12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? lh && (Ma = a) : 0 < Xa[Ka] && tb[Ma][Ka] < c[Ma] && (N(Wf, pg - 5, qg - 8, "UP", 16776960, 1118481), lh && (tb[Ma][Ka]++, Xa[Ka]--)));
+            12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? lh && (Ma = a) : 0 < Xa[Ka] && tb[Ma][Ka] < c[Ma] && (N(gameFontSmall, pg - 5, qg - 8, "UP", 16776960, 1118481), lh && (tb[Ma][Ka]++, Xa[Ka]--)));
         mh(f + 188, g + 4) && ng && (va = false);
         g += 64;
-        for (a = 0; 2 > a; a++) c = Yb[Ka][a], 0 != u[c][Nc] && (10 > u[c][Nc] ? (G.a = 4, h = $b[c], Ze(Ka, le) && 3 == u[c][Lc] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == u[c][Lc] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == u[c][Lc] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == u[c][Lc] && (h += af(Ka, ne)), N(G, f + 96 * a, g + 0, "" + u[c][Kc] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
-            "-" + Eb[4 * a + Ka], 10 <= u[c][Ad] && 11 >= u[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(Ye(Ka, c, ld) * Ye(Ka, c, Ed) / 60) : 0 != u[c][Ad] ? (b = Ye(Ka, c, Ed), Ze(Ka, Ae) && 3 == u[c][td] && 20 == u[c][Ad] && (b += $e(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == Ye(Ka, c, Uc) ? h += " all" : 1 < Ye(Ka, c, Uc) && (h += " " + Ye(Ka, c, Uc) + "hit"), N(G, f + 96 * a, g + 12, h, 16777215, 0), a || N(G, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || N(G, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? N(G, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : N(G, f + 96 * a, g + 48, "EMIT " +
-                ab[Ka], 16777215, 0) : N(G, f + 96 * a, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), N(G, f + 96 * a, g + 60, "SML", 16777215, 0), 0 == u[c][Oc] && N(G, f + 96 * a, g + 60, "    short", 16764057, 0), 1 == u[c][Oc] && N(G, f + 96 * a, g + 60, "    middle", 16764057, 0), 2 == u[c][Oc] && N(G, f + 96 * a, g + 60, "    long", 16764057, 0), N(G, f + 96 * a, g + 72, "ATR", 16777215, 0), 0 == u[c][td] && N(G, f + 96 * a, g + 72, "    physical", 10066329, 0), 1 == u[c][td] && N(G, f + 96 * a, g + 72, "    fire", 16724736, 0), 2 == u[c][td] && (h = Ye(Ka, c, ud), Ze(Ka, ye) && (h += $e(Ka, ye)), N(G, f + 96 * a, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
-            u[c][td] && N(G, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == u[c][td] && N(G, f + 96 * a, g + 72, "    poison", 52224, 0)) : (G.a = 4, N(G, f + 96 * a, g + 0, "" + u[c][Kc] + " Lv" + $b[c], 16777215, 0)));
+        for (a = 0; 2 > a; a++) c = Yb[Ka][a], 0 != u[c][Nc] && (10 > u[c][Nc] ? (gameFontMed.a = 4, h = $b[c], Ze(Ka, le) && 3 == u[c][Lc] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == u[c][Lc] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == u[c][Lc] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == u[c][Lc] && (h += af(Ka, ne)), N(gameFontMed, f + 96 * a, g + 0, "" + u[c][Kc] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
+            "-" + Eb[4 * a + Ka], 10 <= u[c][Ad] && 11 >= u[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(Ye(Ka, c, ld) * Ye(Ka, c, Ed) / 60) : 0 != u[c][Ad] ? (b = Ye(Ka, c, Ed), Ze(Ka, Ae) && 3 == u[c][td] && 20 == u[c][Ad] && (b += $e(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == Ye(Ka, c, Uc) ? h += " all" : 1 < Ye(Ka, c, Uc) && (h += " " + Ye(Ka, c, Uc) + "hit"), N(gameFontMed, f + 96 * a, g + 12, h, 16777215, 0), a || N(gameFontMed, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || N(gameFontMed, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? N(gameFontMed, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : N(gameFontMed, f + 96 * a, g + 48, "EMIT " +
+                ab[Ka], 16777215, 0) : N(gameFontMed, f + 96 * a, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), N(gameFontMed, f + 96 * a, g + 60, "SML", 16777215, 0), 0 == u[c][Oc] && N(gameFontMed, f + 96 * a, g + 60, "    short", 16764057, 0), 1 == u[c][Oc] && N(gameFontMed, f + 96 * a, g + 60, "    middle", 16764057, 0), 2 == u[c][Oc] && N(gameFontMed, f + 96 * a, g + 60, "    long", 16764057, 0), N(gameFontMed, f + 96 * a, g + 72, "ATR", 16777215, 0), 0 == u[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    physical", 10066329, 0), 1 == u[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    fire", 16724736, 0), 2 == u[c][td] && (h = Ye(Ka, c, ud), Ze(Ka, ye) && (h += $e(Ka, ye)), N(gameFontMed, f + 96 * a, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
+            u[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == u[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, N(gameFontMed, f + 96 * a, g + 0, "" + u[c][Kc] + " Lv" + $b[c], 16777215, 0)));
         g += 96;
         k = ["ARMS", "CHARGE"];
-        for (a = 0; 2 > a; a++) c = Yb[Ka][a], b = f + 28 * a, d = g, sg(b, d, 24, 24, 0), fh = 2, h = u[c][Mc], hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0, lg(Wf, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
+        for (a = 0; 2 > a; a++) c = Yb[Ka][a], b = f + 28 * a, d = g, sg(b, d, 24, 24, 0), fh = 2, h = u[c][Mc], hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0, lg(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
     }
     if (wa) {
         f = 224;
         g = 14;
         sg(f - 6, g - 6, 204, 260, levelListArray[q][Yg]);
         c = Jc[Na][28 * Oa + Pa];
-        0 != $b[c] && 1 == q && 2 >= Na && (lg(G, f + 138, g + 28, "Lv UP", 16777215, 0),
+        0 != $b[c] && 1 == q && 2 >= Na && (lg(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
             a = Ve(c, wd), 0 == a ? nh(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], nh(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= Wa && (Zb = c, ng && (Zb = -1, Wa = clamp(Wa - h, 0, 9999999), $b[c]++))) : nh(f + 138, g + 48 - 2, 80, 24, "MAX"));
-        0 != $b[c] && (10 > u[c][Nc] ? (G.a = 4, N(G, f, g + 0, "" + u[c][Kc] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), N(G,
-            f, g + 12, h, 16777215, 0), 0 == Na && N(G, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && N(G, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? N(G, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? N(G, f, g + 48, "EMIT passive", 16777215, 0) : N(G, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), N(G, f, g + 60, "SML", 16777215, 0), 0 == u[c][Oc] && N(G, f, g + 60, "    short", 16764057, 0), 1 == u[c][Oc] && N(G, f, g + 60, "    middle", 16764057, 0), 2 == u[c][Oc] && N(G, f, g + 60, "    long", 16764057, 0), N(G, f, g + 72, "ATR", 16777215, 0), 0 == u[c][td] && N(G, f, g + 72, "    physical", 10066329,
-            0), 1 == u[c][td] && N(G, f, g + 72, "    fire", 16724736, 0), 2 == u[c][td] && N(G, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == u[c][td] && N(G, f, g + 72, "    lightning", 15658496, 0), 4 == u[c][td] && N(G, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && N(G, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && N(G, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && N(G, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > u[c][Nc] ? (G.a = 4, 0 == u[c][wd] ? N(G, f, g + 0, "" + u[c][Kc], -1, 0) : N(G, f, g + 0, "" + u[c][Kc] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, ae),
-            0 < a && (N(G, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (N(G, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (N(G, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && N(G, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (G.a = 4, N(G, f, g + 0, "" + u[c][Kc], -1, 0), 0 != u[c][ge] && N(G, f, g + 12, u[c][fe] + u[c][ge] + u[c][he], 16777215, 0), 0 != u[c][je] && N(G, f, g + 24, u[c][ie] + u[c][je] + u[c][ke], 16777215, 0)));
+        0 != $b[c] && (10 > u[c][Nc] ? (gameFontMed.a = 4, N(gameFontMed, f, g + 0, "" + u[c][Kc] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), N(gameFontMed,
+            f, g + 12, h, 16777215, 0), 0 == Na && N(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && N(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? N(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? N(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : N(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), N(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == u[c][Oc] && N(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == u[c][Oc] && N(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == u[c][Oc] && N(gameFontMed, f, g + 60, "    long", 16764057, 0), N(gameFontMed, f, g + 72, "ATR", 16777215, 0), 0 == u[c][td] && N(gameFontMed, f, g + 72, "    physical", 10066329,
+            0), 1 == u[c][td] && N(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == u[c][td] && N(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == u[c][td] && N(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == u[c][td] && N(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && N(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && N(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && N(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > u[c][Nc] ? (gameFontMed.a = 4, 0 == u[c][wd] ? N(gameFontMed, f, g + 0, "" + u[c][Kc], -1, 0) : N(gameFontMed, f, g + 0, "" + u[c][Kc] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, ae),
+            0 < a && (N(gameFontMed, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (N(gameFontMed, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (N(gameFontMed, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && N(gameFontMed, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (gameFontMed.a = 4, N(gameFontMed, f, g + 0, "" + u[c][Kc], -1, 0), 0 != u[c][ge] && N(gameFontMed, f, g + 12, u[c][fe] + u[c][ge] + u[c][he], 16777215, 0), 0 != u[c][je] && N(gameFontMed, f, g + 24, u[c][ie] + u[c][je] + u[c][ke], 16777215, 0)));
         Zb = -1;
         k = Na;
         mh(f + 188, g + 4) && ng && (wa = false);
         for (a = 0; 28 > a; a++) c = Jc[Na][28 * Oa + a], b = f + a % 7 * 28, d = g + 84 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0),
-            0 < $b[c] && (fh = 2, h = u[c][Mc], 2 == Na ? Qg(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc], u[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), u[c][Pc], u[c][$d]) : hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? lh && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(Wf, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[Ka][k] = c)) : h == Ka ? (N(Wf, pg - 25, qg - 8, "REMOVE", 16777215,
-                0), lh && (Yb[Ka][k] = 0)) : (N(Wf, pg - 25, qg - 16, "REMOVE", 16777215, 0), N(Wf, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[h][k] = 0, Yb[Ka][k] = c)))), lh && (ac[c] = 0)), 0 < ac[c] && N(Wf, b, d, "NEW", 16776960, -1), 0 != c && (Yb[0][k] == c ? N(Wf, b + 14, d + 17, "E1", 16777215, -1) : Yb[1][k] == c ? N(Wf, b + 14, d + 17, "E2", 16777215, -1) : Yb[2][k] == c ? N(Wf, b + 14, d + 17, "E3", 16777215, -1) : Yb[3][k] == c && N(Wf, b + 14, d + 17, "E4", 16777215, -1));
+            0 < $b[c] && (fh = 2, h = u[c][Mc], 2 == Na ? Qg(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc], u[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), u[c][Pc], u[c][$d]) : hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? lh && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(gameFontSmall, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[Ka][k] = c)) : h == Ka ? (N(gameFontSmall, pg - 25, qg - 8, "REMOVE", 16777215,
+                0), lh && (Yb[Ka][k] = 0)) : (N(gameFontSmall, pg - 25, qg - 16, "REMOVE", 16777215, 0), N(gameFontSmall, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[h][k] = 0, Yb[Ka][k] = c)))), lh && (ac[c] = 0)), 0 < ac[c] && N(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (Yb[0][k] == c ? N(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : Yb[1][k] == c ? N(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : Yb[2][k] == c ? N(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : Yb[3][k] == c && N(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (a = 0; 5 > a; a++) {
             kh(f + 12 + 28 * a, g + 238, a, k[a], Na == a ? 16737894 : 16777215) && ng && (Na = a);
             c =
                 0;
             for (b = Jc[a].length - 1; 0 <= b; b--) c += ac[Jc[a][b]];
-            0 < c && N(Wf, f + 12 + 28 * a - 12, g + 238 - 12, "NEW", 16776960, -1)
+            0 < c && N(gameFontSmall, f + 12 + 28 * a - 12, g + 238 - 12, "NEW", 16776960, -1)
         }
         kh(f + 96 - 42, g + 209, 7, "PREV", 16777215) && ng && Oa--;
         kh(f + 138, g + 209, 8, "NEXT", 16777215) && ng && Oa++;
         h = ~~(Jc[Na].length / 28);
         Oa = clamp(Oa, 0, h - 1);
-        lg(Wf, f + 96, g + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
+        lg(gameFontSmall, f + 96, g + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
     }
     if (xa) {
         f = 434;
@@ -1260,22 +1260,22 @@ function Ig() {
         mh(f + 188, g + 4) && ng && (xa = false);
         Ra = clamp(Ra, 0, oh[Qa].length - 1);
         c = oh[Qa][Ra];
-        if (0 == ec[ph[Qa]]) lg(Vf, f + 96, g + 48, "Not reached", -1, 0);
+        if (0 == ec[ph[Qa]]) lg(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else {
             if (0 == Bc[c]) h = itemCatalogArray[c][itemAttr67], nh(f + 96, g + 48, 96, 24, "G " + h) && h <= Wa &&
                 ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 1);
-            else if (N(G, f, g + 0, "LV " + itemCatalogArray[c][itemAttr1], 16777215, 0), N(G, f, g + 12, "LP " + itemCatalogArray[c][itemAttr10], 16777215, 0), N(G, f, g + 24, "GOLD " + itemCatalogArray[c][itemAttr66], 16777215, 0), N(G, f, g + 36, "EXP " + itemCatalogArray[c][itemAttr65], 16777215, 0), b = 0, 0 != itemCatalogArray[c][itemAttr40] && (wh(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != itemCatalogArray[c][itemAttr41] && (wh(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != itemCatalogArray[c][itemAttr42] && (wh(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != itemCatalogArray[c][itemAttr43] && (wh(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != itemCatalogArray[c][itemAttr44] && (wh(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && N(G, f, g + 48, "RES ", 16777215, 0), N(G, f + 80, g + 0,
+            else if (N(gameFontMed, f, g + 0, "LV " + itemCatalogArray[c][itemAttr1], 16777215, 0), N(gameFontMed, f, g + 12, "LP " + itemCatalogArray[c][itemAttr10], 16777215, 0), N(gameFontMed, f, g + 24, "GOLD " + itemCatalogArray[c][itemAttr66], 16777215, 0), N(gameFontMed, f, g + 36, "EXP " + itemCatalogArray[c][itemAttr65], 16777215, 0), b = 0, 0 != itemCatalogArray[c][itemAttr40] && (wh(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != itemCatalogArray[c][itemAttr41] && (wh(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != itemCatalogArray[c][itemAttr42] && (wh(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != itemCatalogArray[c][itemAttr43] && (wh(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != itemCatalogArray[c][itemAttr44] && (wh(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && N(gameFontMed, f, g + 48, "RES ", 16777215, 0), N(gameFontMed, f + 80, g + 0,
                     "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], nh(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 2);
             else
-                for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = u[a][Mc], 10 == u[a][Nc] ? Qg(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc], u[a][$d], true) : 20 == u[a][Nc] || 30 == u[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), u[a][Pc], u[a][$d]) : hh(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc]), fh = 0, G.a = 4, N(G, f + 100, g + 12 + 20 * d + 4, u[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
+                for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = u[a][Mc], 10 == u[a][Nc] ? Qg(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc], u[a][$d], true) : 20 == u[a][Nc] || 30 == u[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), u[a][Pc], u[a][$d]) : hh(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc]), fh = 0, gameFontMed.a = 4, N(gameFontMed, f + 100, g + 12 + 20 * d + 4, u[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), sg(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
             for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0), a == Ra && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), ng && (Ra = a)), Ch(c, b + 12, d + 20, 2)
         }
         kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Qa--;
         kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Qa++;
         Qa = phIdxWrapped(Qa);
-        lg(Wf, f + 96, g + 156, "" + (Qa + 1) + "/" + ph.length, 3355443, -1);
-        1 == ec[ph[Qa]] && lg(G, f + 96, g + 156 - 20, levelListArray[ph[Qa]][Hg], -1, 0)
+        lg(gameFontSmall, f + 96, g + 156, "" + (Qa + 1) + "/" + ph.length, 3355443, -1);
+        1 == ec[ph[Qa]] && lg(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Qa]][Hg], -1, 0)
     }
     if (ya) {
         f = 434;
@@ -1283,15 +1283,15 @@ function Ig() {
         sg(f -
             6, g - 6, 204, 180, levelListArray[q][Yg]);
         mh(f + 188, g + 4) && ng && (ya = false);
-        if (0 == ec[ph[Sa]]) lg(Vf, f + 96, g + 48, "Not reached", -1, 0);
+        if (0 == ec[ph[Sa]]) lg(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
-            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (hh(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (G.b = -1, lg(G, b + 3, d + 10, "" + Dc[c], 16777215, -1))), G.a = 3, 0 == badgeArray[c][1].length ? N(G, b + 40, d + 6, badgeArray[c][0], 16777215,
-                0) : (N(G, b + 40, d + 1, badgeArray[c][0], 16777215, 0), G.a = 3, N(G, b + 40, d + 11, badgeArray[c][1], 16777215, 0)));
+            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (hh(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (gameFontMed.b = -1, lg(gameFontMed, b + 3, d + 10, "" + Dc[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeArray[c][1].length ? N(gameFontMed, b + 40, d + 6, badgeArray[c][0], 16777215,
+                0) : (N(gameFontMed, b + 40, d + 1, badgeArray[c][0], 16777215, 0), gameFontMed.a = 3, N(gameFontMed, b + 40, d + 11, badgeArray[c][1], 16777215, 0)));
         kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Sa--;
         kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Sa++;
         Sa = phIdxWrapped(Sa);
-        lg(Wf, f + 96, g + 156, "" + (Sa + 1) + "/" + ph.length, 3355443, -1);
-        1 == ec[ph[Sa]] && lg(G, f + 96, g + 156 - 20, levelListArray[ph[Sa]][Hg], -1, 0)
+        lg(gameFontSmall, f + 96, g + 156, "" + (Sa + 1) + "/" + ph.length, 3355443, -1);
+        1 == ec[ph[Sa]] && lg(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Sa]][Hg], -1, 0)
     }
     if (za) {
         f = 434;
@@ -1300,20 +1300,20 @@ function Ig() {
         sg(f - 6, g - 6, 204, 148, levelListArray[q][Yg]);
         mh(f + 188, g + 4) && ng && (za = false);
         c = ["ON", "OFF"];
-        N(G, f + 0, g + 48, "Auto move", 16777215, 0);
+        N(gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
         for (a = 0; a < r; a++) {
             sg(f + 72 + a * d, g + 20, 24, 24, 0);
             L(f + 72 + a * d + 7, g + 42, f + 72 + a * d + 16, g + 42, 15908203);
             L(f + 72 + a * d + 6, g + 43, f + 72 + a * d + 17, g + 43, 15908203);
             for (b = 0; 11 > b; b++) l[b].x = f + 72 + a * d + p[b], l[b].y = g + 20 + t[b];
             eh(a, l, 0, 1, 15908203, 16777215, 2);
-            lg(G, f + 84 + a * d, g + 52, c[ib[a]], 16777215, 0);
-            mg(f + 84 + a * d, g + 40, 32, 40) && (Xg(f + 72 + a * d, g + 20, 24, 24, 8388608), lg(G, f + 84 + a * d, g + 52, c[ib[a]], 16711680, 0), ng && (ib[a] = 1 - ib[a]))
+            lg(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16777215, 0);
+            mg(f + 84 + a * d, g + 40, 32, 40) && (Xg(f + 72 + a * d, g + 20, 24, 24, 8388608), lg(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16711680, 0), ng && (ib[a] = 1 - ib[a]))
         }
-        N(G, f + 0, g + 64, "Cliff stop :", 16777215, 0);
-        N(G, f + 78, g + 64, c[kb], 16777215, 0);
-        vg(f + 0, g + 64 - 2, 192, 12) && (N(G, f + 78, g + 64, c[kb], 16711680, 0), ng && (kb = 1 - kb));
-        1 == q ? lg(G, f + 96, g + 100, "Return to TITLE", -1, 0) : lg(G, f + 96, g + 100, "Return to Village",
+        N(gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
+        N(gameFontMed, f + 78, g + 64, c[kb], 16777215, 0);
+        vg(f + 0, g + 64 - 2, 192, 12) && (N(gameFontMed, f + 78, g + 64, c[kb], 16711680, 0), ng && (kb = 1 - kb));
+        1 == q ? lg(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : lg(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = levelListArray[q][Eh];
         nh(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), 1 == q ? ra = 0 : (ug = 0, ra = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = false)
@@ -1324,13 +1324,13 @@ function Ig() {
         sg(f - 6, g - 6, 204, 180, levelListArray[q][Yg]);
         mh(f + 188, g + 4) && ng && (Aa = false);
         for (a = h = 0; a < badgeArray.length; a++) badgeArray[a] && Dc[a] == badgeArray[a][4] && h++;
-        G.a = 3;
-        N(G, f + 27, g + 6, "Achievement Medal", 16777215, 0);
-        Vf.a = 1;
-        N(Vf, f + 129, g + 6 - 3, "" + h, 16777215, 0);
+        gameFontMed.a = 3;
+        N(gameFontMed, f + 27, g + 6, "Achievement Medal", 16777215, 0);
+        gameFont.a = 1;
+        N(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
-        for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, sg(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (Wf.b = -2, Jg(Wf,
-            b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (Wf.a = 3, Wf.b = -3, Jg(Wf, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : vg(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && ng && (c = a)), G.a = 3, G.b = 1, N(G, b + 40, d + 6, ff[a][0], 16777215, 0);
+        for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, sg(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
+            b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : vg(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && ng && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, N(gameFontMed, b + 40, d + 6, ff[a][0], 16777215, 0);
         if (!c)
             for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
@@ -1347,9 +1347,9 @@ function Ig() {
                     Hh = 60
                 }
     }
-    Wf.a = 2;
-    Tg(Wf, 476, 421, Ih, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
-    Tg(Wf, 607, 421, "" + Jh + Kh, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7)
+    gameFontSmall.a = 2;
+    Tg(gameFontSmall, 476, 421, Ih, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    Tg(gameFontSmall, 607, 421, "" + Jh + Kh, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7)
 }
 var Lh = 1,
     O = Array(4);
@@ -1863,12 +1863,12 @@ function kg() {
                 Gg = 0
             }
         }
-        0 < Hh && (d = ~~O[a][0].x + 0, f = ~~O[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && Tg(Wf, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && Tg(Wf, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
-            Tg(Wf, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 15, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 18, 4), 0 < c && Tg(Wf, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
-        0 < di && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && Tg(Wf, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && Tg(Wf, d + 4, f -
-            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 12, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 15, 4), 0 < c && (Wf.b = -1, Jg(Wf, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
-        0 < Zg && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && Tg(Wf, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && Tg(Wf, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && Tg(Wf, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && Tg(Wf, d + 4, f -
-            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 12, 4), 0 < c && Tg(Wf, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 15, 4), 0 < c && (Wf.b = -1, Jg(Wf, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
+        0 < Hh && (d = ~~O[a][0].x + 0, f = ~~O[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && Tg(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && Tg(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && Tg(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && Tg(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
+            Tg(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 15, 4), 0 < c && Tg(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 18, 4), 0 < c && Tg(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
+        0 < di && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && Tg(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && Tg(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && Tg(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && Tg(gameFontSmall, d + 4, f -
+            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 12, 4), 0 < c && Tg(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 15, 4), 0 < c && (gameFontSmall.b = -1, Jg(gameFontSmall, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
+        0 < Zg && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && Tg(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && Tg(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && Tg(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && Tg(gameFontSmall, d + 4, f -
+            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 12, 4), 0 < c && Tg(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 15, 4), 0 < c && (gameFontSmall.b = -1, Jg(gameFontSmall, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
     }
     0 < Hh ? Hh-- : 0 < di ? di-- : 0 < Zg && Zg--
 }
@@ -1968,7 +1968,7 @@ var Wi = -1,
 mainWindow.fff = hg;
 
 function hg(a) {
-    Wi != a && (Wi = a, ka = new fa, ka.f("m" + a + ".png"));
+    Wi != a && (Wi = a, ka = new Sprite, ka.f("m" + a + ".png"));
     Yf(ka);
     if (Zf) return false;
     Mg = q;
@@ -3726,7 +3726,7 @@ mainWindow.fff = Fg;
 
 function Fg() {
     var a, b, c, d, f;
-    for (a = 0; a < aj; a++) 20 <= um[a] ? lg(Wf, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), Jg(Wf, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
+    for (a = 0; a < aj; a++) 20 <= um[a] ? lg(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), Jg(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
 }
 var ym = 0,
     zm = Array(100);
@@ -3815,7 +3815,7 @@ var Ih = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 4
     Ff = "Copyright (C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     Pm = "./data/", //fromCharCode(46, 47, 100, 97, 116, 97, 47),
     Kh = "fps", //fromCharCode(102, 112, 115),
-    Qm = "canvas", //fromCharCode(99, 97, 110, 118, 97, 115),
+    canvasTag = "canvas", //fromCharCode(99, 97, 110, 118, 97, 115),
     Rm = "2d", //fromCharCode(50, 100),
     pf = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK",
         //fromCharCode(48, 49, 87, 116, 67, 112, 108, 120, 97, 121, 102, 84, 118, 113, 99, 104, 72, 109, 65, 57, 42, 74, 90, 79, 114, 105, 54, 86, 78, 55, 76, 52, 119, 56, 100, 85, 71, 101, 46, 83, 51, 70, 73, 68, 122, 115, 110, 80, 98, 69, 107, 81, 88,
@@ -3895,10 +3895,13 @@ function ag() {
 }
 var Zf = 0;
 
-function fa() {
+function Sprite() {
     this.a = 0;
     this.b = "";
-    this.c = this.g = this.i = this.h = 0
+    this.c = 0
+    this.g = 0
+    this.i = 0
+    this.h = 0
 }
 
 function bg(a, b, c) {
@@ -3907,8 +3910,16 @@ function bg(a, b, c) {
     for (b = 0; 16 > b; b++);
     a.g = new Int32Array(a.h * a.i)
 }
-fa.prototype.f = function(a) {
-    this.b != a && (Zf++, this.b = a, this.a = new Image, this.a.src = Pm + a, delete this.g, this.c = this.g = 0)
+Sprite.prototype.f = function(a) {
+    this.b != a && (
+        Zf++, 
+        this.b = a, 
+        this.a = new Image, 
+        this.a.src = Pm + a, 
+        delete this.g, 
+        this.c = 
+        this.g = 0
+    )
 };
 
 function Yf(a) {
@@ -3917,7 +3928,7 @@ function Yf(a) {
         var b = a.a.width,
             c = a.a.height;
         if (!b || !c) throw delete a.a, a.b = "", hn;
-        var d = Hm.createElement(Qm);
+        var d = Hm.createElement(canvasTag);
         d.width = b;
         d.height = c;
         d = d.getContext(Rm);
@@ -3948,15 +3959,18 @@ var jn = [
             2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0
         ]
     ],
-    Vf = new ln,
-    Wf = new ln,
-    G = new ln;
+    gameFont = new GameFont,
+    gameFontSmall = new GameFont,
+    gameFontMed = new GameFont;
 
-function ln() {
-    this.i = new fa;
-    this.a = this.b = this.j = this.c = 0
+function GameFont() {
+    this.i = new Sprite;
+    this.a = 0
+    this.b = 0
+    this.j = 0
+    this.c = 0
 }
-ln.prototype.f = function(a, b, c) {
+GameFont.prototype.f = function(a, b, c) {
     this.i.f(a);
     this.c = b;
     this.j = c;
@@ -3990,14 +4004,14 @@ function lg(a, b, c, d, f, g) {
 }
 
 function wh(a, b, c, d) {
-    var f = G;
+    var f = gameFontMed;
     f.b = -1;
     f.a = 3;
     N(f, a, b, c, d, 0)
 }
 
 function mn(a, b, c, d) {
-    var f = Wf;
+    var f = gameFontSmall;
     f.b = -1;
     f.a = 0;
     lg(f, a, b, c, d, -1)
@@ -4492,8 +4506,8 @@ function og(a, b, c, d, f) {
     Ni(a, b, 32, 32, 2147483648);
     Gg = 0;
     Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, f);
-    6 <= d.length ? mn(a, b + 10, d, f) : lg(Wf, a, b + 10, d, f, -1);
-    return mg(a, b, 32, 32) ? (Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : lg(Wf, a, b + 10, d, 16750950, -1), true) : false
+    6 <= d.length ? mn(a, b + 10, d, f) : lg(gameFontSmall, a, b + 10, d, f, -1);
+    return mg(a, b, 32, 32) ? (Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : lg(gameFontSmall, a, b + 10, d, 16750950, -1), true) : false
 }
 
 function kh(a, b, c, d, f) {
@@ -4501,8 +4515,8 @@ function kh(a, b, c, d, f) {
     Ni(a, b, 24, 24, 2147483648);
     Gg = 0;
     Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, f);
-    6 <= d.length ? mn(a, b + 8, d, f) : lg(Wf, a, b + 8, d, f, -1);
-    return mg(a, b, 24, 24) ? (Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : lg(Wf, a, b + 8, d, 16737894, -1), true) : false
+    6 <= d.length ? mn(a, b + 8, d, f) : lg(gameFontSmall, a, b + 8, d, f, -1);
+    return mg(a, b, 24, 24) ? (Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : lg(gameFontSmall, a, b + 8, d, 16737894, -1), true) : false
 }
 
 function mh(a, b) {
@@ -4515,6 +4529,6 @@ function mh(a, b) {
 
 function nh(a, b, c, d, f) {
     Ni(a, b, c, d, 0);
-    lg(Vf, a, b, f, 16777215, 8409120);
+    lg(gameFont, a, b, f, 16777215, 8409120);
     return mg(a, b, c, d) ? (Xg(a - (c >> 1), b - (d >> 1), c, d, 6684672), true) : false
 };

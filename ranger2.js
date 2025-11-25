@@ -7,17 +7,17 @@ const CANVAS_HEIGHT = 432;
 
 var iterIdxTemp_1, iterIdxTemp_2, mainWindow = window,
     ca, da = [0, 0, 0, 0, 0, 0, 0, 0],
-    ea, ga = new Sprite,
-    ha = new Sprite,
-    ia = new Sprite,
-    ja = Array(3);
-for (iterIdxTemp_1 = 0; 3 > iterIdxTemp_1; iterIdxTemp_1++) ja[iterIdxTemp_1] = new Sprite;
-var ka = new Sprite,
-    la = new Sprite,
-    ma = new Sprite,
-    oa = new Sprite,
-    pa = new Sprite,
-    qa = new Sprite,
+    ea, canvasImageBuffer = new Sprite,
+    titleSprite = new Sprite,
+    iconSpriteSheet = new Sprite,
+    tilesetSprites = Array(3);
+for (iterIdxTemp_1 = 0; 3 > iterIdxTemp_1; iterIdxTemp_1++) tilesetSprites[iterIdxTemp_1] = new Sprite;
+var currentLevelSprite = new Sprite,
+    enemySpriteSheet = new Sprite,
+    droppedItemSpriteSheet = new Sprite,
+    itemsSpriteSheet = new Sprite,
+    effectSpriteSheet = new Sprite,
+    medalSpriteSheet = new Sprite,
     ra = 0,
     sa = 0,
     q = 0,
@@ -811,7 +811,7 @@ var gameInitStage = 0;
 
 function gameInit(a, b) {
     var c;
-    console.log("Cf ", gameInitStage);
+    console.log("Game init ", gameInitStage);
     if (!gameInitStage) {
         null != a ? ca = a : ca = "";
         ea = "0" == b ? true : false;
@@ -883,28 +883,28 @@ function gameInit(a, b) {
         gameFont.f("font.png", 8, 12);
         gameFontSmall.f("font_s.png", 5, 7);
         gameFontMed.f("font_m.png", 6, 8);
-        ha.f("title.png");
-        ia.f("b.png");
-        for (c = 0; 3 > c; c++) ja[c].f("g" + c + ".png");
-        la.f("en.png");
-        ma.f("icon.png");
-        oa.f("item.png");
-        pa.f("ef.png");
-        qa.f("medal.png");
+        titleSprite.f("title.png");
+        iconSpriteSheet.f("b.png");
+        for (c = 0; 3 > c; c++) tilesetSprites[c].f("g" + c + ".png");
+        enemySpriteSheet.f("en.png");
+        droppedItemSpriteSheet.f("icon.png");
+        itemsSpriteSheet.f("item.png");
+        effectSpriteSheet.f("ef.png");
+        medalSpriteSheet.f("medal.png");
         hostnameCheck() ? gameInitStage-- : gameInitStage++
     }
     if (1 == gameInitStage) {
-        Yf(gameFont.i);
-        Yf(gameFontSmall.i);
-        Yf(gameFontMed.i);
-        Yf(ha);
-        Yf(ia);
-        for (c = 0; 3 > c; c++) Yf(ja[c]);
-        Yf(la);
-        Yf(ma);
-        Yf(oa);
-        Yf(pa);
-        Yf(qa);
+        drawSprite(gameFont.i);
+        drawSprite(gameFontSmall.i);
+        drawSprite(gameFontMed.i);
+        drawSprite(titleSprite);
+        drawSprite(iconSpriteSheet);
+        for (c = 0; 3 > c; c++) drawSprite(tilesetSprites[c]);
+        drawSprite(enemySpriteSheet);
+        drawSprite(droppedItemSpriteSheet);
+        drawSprite(itemsSpriteSheet);
+        drawSprite(effectSpriteSheet);
+        drawSprite(medalSpriteSheet);
         Zf ? _setTimeout(gameInit, ag()) : gameInitStage++
     }
     if (2 == gameInitStage) {
@@ -927,14 +927,13 @@ function gameInit(a, b) {
         for (c = zf = 0; c < Jc.length; c++)
             for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
         Bf();
-        bg(ga, 640, 432);
+        spriteCreateBuffer(canvasImageBuffer, 640, 432);
         setupAnimRequest()
     }
 }
 mainWindow.fff = drawCanvas;
 
 function drawCanvas() {
-    console.log("dg");
     if (0 < iterIdxTemp_3) iterIdxTemp_3++;
     else {
         var a, b, c;
@@ -1022,7 +1021,7 @@ function drawCanvas() {
             d = 350;
             var f = 125,
                 g, h = ea ? 0 : 125,
-                k, p, t = ha.g,
+                k, p, t = titleSprite.g,
                 l, n, w, B, M;
             k = ~~(89600 / d);
             p = ~~(32E3 / f);
@@ -1036,7 +1035,7 @@ function drawCanvas() {
             b = 0 > b ? 0 : ~~b;
             n = 640 * b + a;
             for (w = 640 - (d - a); b < f; b++, n += w, h += p)
-                for (B = ((h >> 8) * ha.h << 8) + g, l = a; l < d; l++, n++, B += k) M = t[B >> 8], -1 != M && (F[n] = M);
+                for (B = ((h >> 8) * titleSprite.h << 8) + g, l = a; l < d; l++, n++, B += k) M = t[B >> 8], -1 != M && (F[n] = M);
             2 == ra ? (lg(gameFont, 320, 220, "NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 0 == jf ? 3 : 4), L(256, 228, 384, 228, 11141120)), 0 == jf && (lg(gameFont, 320, 260, "LOAD GAME", 16777215,
                 10053171), mg(320, 260, 128, 24) && (ng && (ra = 5), L(256, 268, 384, 268, 11141120)))) : 3 == ra && (lg(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 4), L(192, 228, 448, 228, 11141120)), lg(gameFont, 320, 260, "CANCEL", 16777215, 10053171), mg(320, 260, 128, 24) && (ng && (ra = 2), L(256, 268, 384, 268, 11141120)));
             og(608, 312, 8, "IMPORT", 16777215) && (8 != ca.length ? N(gameFont, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && (a = promptInput("Import Game Data", "")) && (jf = rf(a), kf = 100));
@@ -1083,7 +1082,7 @@ function drawCanvas() {
             mf()
         }
         Bf();
-        0 < bf && (bf--, a = badgeArray[cf][3], Qg(qa, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true), b = 440, a = min(120 - bf - 0, 4), 0 < a && N(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && N(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && N(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
+        0 < bf && (bf--, a = badgeArray[cf][3], Qg(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true), b = 440, a = min(120 - bf - 0, 4), 0 < a && N(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && N(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && N(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
             bf - 6, 4), 0 < a && N(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0), a = min(120 - bf - 8, 4), 0 < a && N(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 10, 4), 0 < a && N(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0), a = min(120 - bf - 12, 4), 0 < a && N(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0), a = min(120 - bf - 14, 4), 0 < a && N(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0));
         0 < kf ? (kf--, 10 > kf ? c = floor(255 * kf / 10) : c = 255, Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = floor(255 * hf / 10) : c = 255, Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
     }
@@ -1172,7 +1171,7 @@ function Ig() {
             k = f + a * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             sg(k, n, 16, 16, 0);
-            0 != c && (fh = 2, h = itemList[c][Mc], 2 == b ? Qg(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : hh(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0);
+            0 != c && (fh = 2, h = itemList[c][Mc], 2 == b ? Qg(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : hh(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0);
             Wg(k, n, 16, 16, c, b);
             vg(k, n, 16, 16) && ng && 0 != c && (Ka = a)
         }
@@ -1241,7 +1240,7 @@ function Ig() {
             itemList[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, N(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], 16777215, 0)));
         g += 96;
         k = ["ARMS", "CHARGE"];
-        for (a = 0; 2 > a; a++) c = Yb[Ka][a], b = f + 28 * a, d = g, sg(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, lg(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
+        for (a = 0; 2 > a; a++) c = Yb[Ka][a], b = f + 28 * a, d = g, sg(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], hh(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, lg(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
     }
     if (wa) {
         f = 224;
@@ -1258,7 +1257,7 @@ function Ig() {
         k = Na;
         mh(f + 188, g + 4) && ng && (wa = false);
         for (a = 0; 28 > a; a++) c = Jc[Na][28 * Oa + a], b = f + a % 7 * 28, d = g + 84 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0),
-            0 < $b[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? lh && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(gameFontSmall, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[Ka][k] = c)) : h == Ka ? (N(gameFontSmall, pg - 25, qg - 8, "REMOVE", 16777215,
+            0 < $b[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : hh(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? lh && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(gameFontSmall, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[Ka][k] = c)) : h == Ka ? (N(gameFontSmall, pg - 25, qg - 8, "REMOVE", 16777215,
                 0), lh && (Yb[Ka][k] = 0)) : (N(gameFontSmall, pg - 25, qg - 16, "REMOVE", 16777215, 0), N(gameFontSmall, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[h][k] = 0, Yb[Ka][k] = c)))), lh && (ac[c] = 0)), 0 < ac[c] && N(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (Yb[0][k] == c ? N(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : Yb[1][k] == c ? N(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : Yb[2][k] == c ? N(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : Yb[3][k] == c && N(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (a = 0; 5 > a; a++) {
@@ -1288,7 +1287,7 @@ function Ig() {
             else if (N(gameFontMed, f, g + 0, "LV " + itemCatalogArray[c][itemAttr1], 16777215, 0), N(gameFontMed, f, g + 12, "LP " + itemCatalogArray[c][itemAttr10], 16777215, 0), N(gameFontMed, f, g + 24, "GOLD " + itemCatalogArray[c][itemAttr66], 16777215, 0), N(gameFontMed, f, g + 36, "EXP " + itemCatalogArray[c][itemAttr65], 16777215, 0), b = 0, 0 != itemCatalogArray[c][itemAttr40] && (wh(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != itemCatalogArray[c][itemAttr41] && (wh(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != itemCatalogArray[c][itemAttr42] && (wh(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != itemCatalogArray[c][itemAttr43] && (wh(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != itemCatalogArray[c][itemAttr44] && (wh(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && N(gameFontMed, f, g + 48, "RES ", 16777215, 0), N(gameFontMed, f + 80, g + 0,
                     "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], nh(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 2);
             else
-                for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : hh(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, N(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
+                for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : hh(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, N(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), sg(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
             for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0), a == Ra && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), ng && (Ra = a)), Ch(c, b + 12, d + 20, 2)
         }
@@ -1306,7 +1305,7 @@ function Ig() {
         mh(f + 188, g + 4) && ng && (ya = false);
         if (0 == ec[ph[Sa]]) lg(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
-            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (hh(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (gameFontMed.b = -1, lg(gameFontMed, b + 3, d + 10, "" + Dc[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeArray[c][1].length ? N(gameFontMed, b + 40, d + 6, badgeArray[c][0], 16777215,
+            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (hh(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (gameFontMed.b = -1, lg(gameFontMed, b + 3, d + 10, "" + Dc[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeArray[c][1].length ? N(gameFontMed, b + 40, d + 6, badgeArray[c][0], 16777215,
                 0) : (N(gameFontMed, b + 40, d + 1, badgeArray[c][0], 16777215, 0), gameFontMed.a = 3, N(gameFontMed, b + 40, d + 11, badgeArray[c][1], 16777215, 0)));
         kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Sa--;
         kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Sa++;
@@ -1351,7 +1350,7 @@ function Ig() {
         N(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
         for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, sg(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
-            b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : vg(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && ng && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, N(gameFontMed, b + 40, d + 6, ff[a][0], 16777215, 0);
+            b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : vg(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && ng && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, N(gameFontMed, b + 40, d + 6, ff[a][0], 16777215, 0);
         if (!c)
             for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
@@ -1810,7 +1809,7 @@ function kg() {
         0 < bh[a] ? (d = 1989840, f = 5934817) : 0 < ch[a] ? (d = 9840, f = 1989840) : 0 < phIdxWrapped[a] && (d = 3381504, f = 3407616);
         0 < $h[a] && ($h[a]--, f = 16711680);
         fh = Gg = 1;
-        for (c = 0; 11 > c; c++) Ii(pa, floor(O[a][c].x), floor(O[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
+        for (c = 0; 11 > c; c++) Ii(effectSpriteSheet, floor(O[a][c].x), floor(O[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         Gg = fh = 0;
         eh(a, O[a], gi[a][0], gi[a][1], d, f, Wh[a]);
         if (0 < Sh[a]) {
@@ -1906,8 +1905,8 @@ function eh(a, b, c, d, f, g, h) {
     L(b[8].x, b[8].y, b[10].x, b[10].y, g);
     ih(~~b[0].x - 2, ~~b[0].y - 2, 5, 5, f);
     f = itemList[Yb[a][2]][Mc];
-    0 != f && (0 == gi[a][2] ? Qg(oa, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 0, 16 * (f >> 4), 16, 16, itemList[Yb[a][2]][Pc],
-        itemList[Yb[a][2]][$d], false) : Qg(oa, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 16, 16 * (f >> 4), -16, 16, itemList[Yb[a][2]][Pc], itemList[Yb[a][2]][$d], false));
+    0 != f && (0 == gi[a][2] ? Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 0, 16 * (f >> 4), 16, 16, itemList[Yb[a][2]][Pc],
+        itemList[Yb[a][2]][$d], false) : Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 16, 16 * (f >> 4), -16, 16, itemList[Yb[a][2]][Pc], itemList[Yb[a][2]][$d], false));
     for (f = 0; 2 > f; f++) {
         var p = Yb[a][f ? d : c];
         g = itemList[p][Nc];
@@ -1915,7 +1914,7 @@ function eh(a, b, c, d, f, g, h) {
             t = b[5 + f],
             l = b[3 + f];
         1 == g ? Ni(t.x, t.y, 3, 3, p) : 2 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? L(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 7 * k.x, l.y + 7 * k.y, p) : L(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 10 * k.x, l.y + 10 * k.y, p), Vec2Rotate(k), L(t.x - 2 * k.x, t.y - 2 * k.y, t.x + 2 * k.x, t.y + 2 * k.y, p)) : 3 == g ? 2 == h ? f ? L(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p) : L(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p) : (Vec2Sub(k, Uh[a], t), Vec2Norm(k), 0 < Vh[a] && ei[a] ==
-            f ? L(t.x - 5 * k.x, t.y - 5 * k.y, Uh[a].x, Uh[a].y, p) : L(t.x - 5 * k.x, t.y - 5 * k.y, t.x + 20 * k.x, t.y + 20 * k.y, p)) : 4 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? L(l.x, l.y, l.x + 4 * k.x, l.y + 4 * k.y, p) : L(l.x, l.y, l.x + 8 * k.x, l.y + 8 * k.y, p), L(t.x, t.y, t.x - 2 * k.x + 4 * k.y, t.y - 2 * k.y - 4 * k.x, 8421504), L(t.x, t.y, t.x - 2 * k.x - 4 * k.y, t.y - 2 * k.y + 4 * k.x, 8421504)) : 5 == g && (Gg = 2, fh = 1, Ii(pa, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), Gg = fh = 0)
+            f ? L(t.x - 5 * k.x, t.y - 5 * k.y, Uh[a].x, Uh[a].y, p) : L(t.x - 5 * k.x, t.y - 5 * k.y, t.x + 20 * k.x, t.y + 20 * k.y, p)) : 4 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? L(l.x, l.y, l.x + 4 * k.x, l.y + 4 * k.y, p) : L(l.x, l.y, l.x + 8 * k.x, l.y + 8 * k.y, p), L(t.x, t.y, t.x - 2 * k.x + 4 * k.y, t.y - 2 * k.y - 4 * k.x, 8421504), L(t.x, t.y, t.x - 2 * k.x - 4 * k.y, t.y - 2 * k.y + 4 * k.x, 8421504)) : 5 == g && (Gg = 2, fh = 1, Ii(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), Gg = fh = 0)
     }
 }
 var dc = 32,
@@ -1989,15 +1988,15 @@ var Wi = -1,
 mainWindow.fff = hg;
 
 function hg(a) {
-    Wi != a && (Wi = a, ka = new Sprite, ka.f("m" + a + ".png"));
-    Yf(ka);
+    Wi != a && (Wi = a, currentLevelSprite = new Sprite, currentLevelSprite.f("m" + a + ".png"));
+    drawSprite(currentLevelSprite);
     if (Zf) return false;
     Mg = q;
     ec[q] = 1;
-    si = ka.i;
+    si = currentLevelSprite.i;
     var b, c, d = 0,
         f, g, h, k, p, t, l;
-    c = ka.g;
+    c = currentLevelSprite.g;
     for (b = 0; b < si; b++)
         for (a = 0; a < Gi; a++, d++) f = b ? d - Gi : d, g = b == si - 1 ? d : d + Gi, h = a ? d - 1 : d, k = a == Gi - 1 ? d : d + 1, P[b][a] = 64, 16777215 == c[d] ? (p = c[f] >> 16 & 255, t = c[f] >> 8 & 255, l = c[f] & 255, f = p == l && t == l && l ? 1 : 0, p = c[g] >> 16 & 255, t = c[g] >> 8 & 255, l = c[g] & 255, g = p == l && t == l && l ? 1 : 0, p = c[h] >> 16 & 255, t = c[h] >> 8 & 255, l = c[h] & 255, h = p == l && t == l && l ? 1 : 0, p = c[k] >> 16 & 255, t = c[k] >> 8 & 255, l = c[k] & 255, k = p == l && t == l && l ? 1 : 0, f || 1 != g ||
                 h || 1 != k ? f || 1 != g || 1 != h || 1 != k ? f || 1 != g || 1 != h || k ? 1 != f || 1 != g || h || 1 != k ? 1 == f && 1 == g && 1 == h && 1 == k ? P[b][a] = 9 : 1 != f || 1 != g || 1 != h || k ? 1 != f || g || h || 1 != k ? 1 != f || g || 1 != h || 1 != k ? 1 != f || g || 1 != h || k ? f || g || h || k ? f || 1 != g || h || k ? 1 != f || g || h || k ? f || g || h || 1 != k ? f || g || 1 != h || k ? f || g || 1 != h || 1 != k ? 1 != f || 1 != g || h || k || (P[b][a] = 19) : P[b][a] = 11 : P[b][a] = 7 : P[b][a] = 6 : P[b][a] = 5 : P[b][a] = 4 : P[b][a] = 3 : P[b][a] = 18 : P[b][a] = 17 : P[b][a] = 16 : P[b][a] = 10 : P[b][a] = 8 : P[b][a] = 2 : P[b][a] = 1 : P[b][a] = 0) : 12303291 == c[d] ? P[b][a] = 12 : 11184810 == c[d] ? P[b][a] = 13 : 10066329 == c[d] ? P[b][a] =
@@ -2091,7 +2090,7 @@ function jg() {
         for (b = 0; b < Gi; b++)
             if (d = P[c][b], 64 == d) sg(8 * b, 8 * c, 8, 8, 0);
             else {
-                var f = ja[a],
+                var f = tilesetSprites[a],
                     g = 8,
                     h = 8,
                     k, p, t, l;
@@ -3328,14 +3327,14 @@ function Cg() {
             wk) {
             for (b = 1; 6 > b; b++) L(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, f);
             3 > Y[a] && L(Q[a][b].x, Q[a][b].y, Q[a][1].x, Q[a][1].y, f);
-            Ii(la, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
+            Ii(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
         } else if (Bk[a] == xk) {
             h = itemCatalogArray[X[a]][itemAttr3];
             for (b = 1; b < h; b++) L(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][b + 1].x - 1, Q[a][b + 1].y - 1, g);
             L(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][1].x - 1, Q[a][1].y - 1, g);
             fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
         } else Bk[a] == yk ? (L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), 3 > Y[a] && (L(Q[a][0].x, Q[a][0].y,
-            Q[a][1].x, Q[a][1].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), L(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (L(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), L(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), L(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), Ii(la, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : Bk[a] == zk && (L(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), L(Q[a][3].x, Q[a][3].y, Q[a][4].x,
+            Q[a][1].x, Q[a][1].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), L(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), L(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (L(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), L(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), L(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), L(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), Ii(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : Bk[a] == zk && (L(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), L(Q[a][3].x, Q[a][3].y, Q[a][4].x,
             Q[a][4].y, g), L(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), gl(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
     }
     for (a = 0; a < ej; a++) 0 >= Ek[a] || (Ek[a]--, 0 >= jj[a] || (b = itemCatalogArray[X[a]][itemAttr6], sg(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), sg(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, floor(14 * b * jj[a] / itemCatalogArray[X[a]][itemAttr10]), 1, 52224)))
@@ -3380,7 +3379,7 @@ function Ch(a, b, c, d) {
         n[6] = c - 10 * d;
         for (b = 1; 6 > b; b++) L(l[b], n[b], l[b + 1], n[b + 1], k);
         L(l[b], n[b], l[1], n[1], k);
-        Ii(la, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
+        Ii(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
     } else if (f == xk) {
         f = itemCatalogArray[a][itemAttr3];
         a = itemCatalogArray[a][itemAttr4];
@@ -3391,7 +3390,7 @@ function Ch(a, b, c, d) {
         L(l[b], n[b], l[1], n[1], p);
         fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)
     } else f == yk ? (l[0] = b + 0 * d, n[0] = c - 6 * d, l[1] = b - 9 * d, n[1] = c -
-        9 * d, l[2] = b - 7 * d, n[2] = c - 0 * d, l[3] = b + 9 * d, n[3] = c - 9 * d, l[4] = b + 7 * d, n[4] = c - 0 * d, l[5] = b - 7 * d, n[5] = c - 5 * d, l[6] = b - 5 * d, n[6] = c - 0 * d, l[7] = b + 7 * d, n[7] = c - 5 * d, l[8] = b + 5 * d, n[8] = c - 0 * d, L(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), L(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), L(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), L(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), L(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), L(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), L(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), L(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), Ii(la, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7),
+        9 * d, l[2] = b - 7 * d, n[2] = c - 0 * d, l[3] = b + 9 * d, n[3] = c - 9 * d, l[4] = b + 7 * d, n[4] = c - 0 * d, l[5] = b - 7 * d, n[5] = c - 5 * d, l[6] = b - 5 * d, n[6] = c - 0 * d, l[7] = b + 7 * d, n[7] = c - 5 * d, l[8] = b + 5 * d, n[8] = c - 0 * d, L(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), L(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), L(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), L(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), L(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), L(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), L(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), L(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), Ii(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7),
             16 * (g >> 3), 16, 16, h)) : f == zk ? (L(b + 5 * d, c - 6 * d, b + 8 * d, c - 11 * d, p), L(b + 8 * d, c - 11 * d, b + 10 * d, c - 3 * d, p), L(b + 10 * d, c - 3 * d, b + 5 * d, c - 6 * d, p), gl(b + 0 * d, c - 9 * d, 6 * d + 1, 6 * d + 1, p), fl(b - 5 * d, c - 13 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == Ak && (l[0] = b + 0 * d, n[0] = c - 16 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 2 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b - 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b - 8 * d, n[6] = c - 10 * d, l[7] = b - 1 * d, n[7] = c - 4 * d, l[8] = b + 2 * d, n[8] = c - 5 * d, l[9] = b - 0 * d, n[9] = c - 1 * d, l[10] = b + 4 * d, n[10] = c - 0 * d)
 }
 var W = 0,
@@ -3610,7 +3609,7 @@ function Eg() {
             fh = 1;
             0 > il[a] ? (p.set(jl[a]), t.set(kl[a])) : (l = hl[a], n = il[a] >> 8, w = il[a] & 255, B = 0 <= l ? O : Q, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], jl[a]), t.set(kl[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * jl[a].x + g.x * jl[a].y + B[l][n].x, p.y =
                 f.y * jl[a].x + g.y * jl[a].y + B[l][n].y, t.x = f.x * kl[a].x + g.x * kl[a].y, t.y = f.y * kl[a].x + g.y * kl[a].y));
-            if (0 == ml[a]) Ii(pa, p.x, p.y, ql[a], rl[a], b, c, 16, 16, d);
+            if (0 == ml[a]) Ii(effectSpriteSheet, p.x, p.y, ql[a], rl[a], b, c, 16, 16, d);
             else if (1 == ml[a]) {
                 g.set(t);
                 Vec2Norm(g);
@@ -3637,7 +3636,7 @@ function Eg() {
                     fb = b,
                     ob = c + 16;
                 l = d;
-                var Bb = pa;
+                var Bb = effectSpriteSheet;
                 w <<= 16;
                 B <<= 16;
                 y <<= 16;
@@ -3692,7 +3691,7 @@ function Eg() {
                 l = max(itemCatalogArray[X[l]][itemAttr6], 1);
                 B = 0;
                 if (n == pk || n == qk) B = -Nk[w] * l + 1;
-                Ii(la, p.x, p.y + B, ql[a], rl[a], b, c, 16, 16, d)
+                Ii(enemySpriteSheet, p.x, p.y + B, ql[a], rl[a], b, c, 16, 16, d)
             }
             fh = Gg = 0
         }
@@ -3805,7 +3804,7 @@ mainWindow.fff = Dg;
 function Dg() {
     var a;
     fh = 2;
-    for (a = 0; a < ym; a++)(100 == Em[a] || Em[a] & 6) && hh(ma, zm[a].x - 6, zm[a].y - 12, 12, 12, 12 * itemList[Bm[a]][Lc], 0, 12, 12, itemList[Bm[a]][Pc]);
+    for (a = 0; a < ym; a++)(100 == Em[a] || Em[a] & 6) && hh(droppedItemSpriteSheet, zm[a].x - 6, zm[a].y - 12, 12, 12, 12 * itemList[Bm[a]][Lc], 0, 12, 12, itemList[Bm[a]][Pc]);
     fh = 0
 }
 var domDocument = document,
@@ -3924,11 +3923,11 @@ function Sprite() {
     this.h = 0
 }
 
-function bg(a, b, c) {
-    a.h = b;
-    a.i = c;
-    for (b = 0; 16 > b; b++);
-    a.g = new Int32Array(a.h * a.i)
+function spriteCreateBuffer(sprite, width, height) {
+    sprite.h = width;
+    sprite.i = height;
+    for (width = 0; 16 > width; width++);
+    sprite.g = new Int32Array(sprite.h * sprite.i)
 }
 Sprite.prototype.f = function(a) {
     this.b != a && (
@@ -3942,23 +3941,27 @@ Sprite.prototype.f = function(a) {
     )
 };
 
-function Yf(a) {
-    if (!a.c && a.a.complete) {
+function drawSprite(sprite) {
+    if (!sprite.c && sprite.a.complete) {
         Zf--;
-        var b = a.a.width,
-            c = a.a.height;
-        if (!b || !c) throw delete a.a, a.b = "", hn;
+        var imgWidth = sprite.a.width,
+            imgHeight = sprite.a.height;
+        if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", hn;
         var d = domDocument.createElement(canvasTag);
-        d.width = b;
-        d.height = c;
+        d.width = imgWidth;
+        d.height = imgHeight;
         d = d.getContext(name2d);
-        d.drawImage(a.a, 0, 0);
-        d = d.getImageData(0, 0, b, c).data;
-        bg(a, b, c);
-        b = 0;
-        for (c = d.length; b < c; b += 4) a.g[b >> 2] = 0 == d[b + 3] ? -1 : d[b + 0] << 16 | d[b + 1] << 8 | d[b + 2];
-        delete a.a;
-        a.c = 1
+        d.drawImage(sprite.a, 0, 0);
+        d = d.getImageData(0, 0, imgWidth, imgHeight).data;
+        spriteCreateBuffer(sprite, imgWidth, imgHeight);
+        imgWidth = 0;
+        for (imgHeight = d.length; imgWidth < imgHeight; imgWidth += 4) 
+
+            sprite.g[imgWidth >> 2] = 0 == d[imgWidth + 3] 
+                ? -1 
+                : d[imgWidth + 0] << 16 | d[imgWidth + 1] << 8 | d[imgWidth + 2];
+        delete sprite.a;
+        sprite.c = 1
     }
 }
 var jn = [
@@ -4188,7 +4191,7 @@ function Qg(a, b, c, d, f, g, h, k, p, t, l, n) {
 function fl(a, b, c, d, f, g, h, k, p, t) {
     a -= c >> 1;
     b -= d >> 1;
-    var l, n = la.g,
+    var l, n = enemySpriteSheet.g,
         w, B, M, J, y, x, K;
     l = ~~(4096 / c);
     h = ~~((h << 8) / d);
@@ -4202,14 +4205,14 @@ function fl(a, b, c, d, f, g, h, k, p, t) {
     b = 0 > b ? 0 : ~~b;
     B = 640 * b + a;
     for (M = 640 - (c - a); b < d; b++, B += M, g += h)
-        for (J = ((g >> 8) * la.h << 8) + f, w = a; w < c; w++, B++, J += l) y = n[J >> 8], -1 != y && (255 == t ? F[B] = 16777215 == y ? k : p : (16777215 == y ? (y = F[B] >> 16 & 255, x = (((k >> 16 & 255) - y) * t >> 8) + y, y = F[B] >> 8 & 255, K = (((k >> 8 & 255) - y) * t >> 8) + y, y = F[B] & 255, y = (((k & 255) - y) * t >> 8) + y) : (y = F[B] >> 16 &
+        for (J = ((g >> 8) * enemySpriteSheet.h << 8) + f, w = a; w < c; w++, B++, J += l) y = n[J >> 8], -1 != y && (255 == t ? F[B] = 16777215 == y ? k : p : (16777215 == y ? (y = F[B] >> 16 & 255, x = (((k >> 16 & 255) - y) * t >> 8) + y, y = F[B] >> 8 & 255, K = (((k >> 8 & 255) - y) * t >> 8) + y, y = F[B] & 255, y = (((k & 255) - y) * t >> 8) + y) : (y = F[B] >> 16 &
             255, x = (((p >> 16 & 255) - y) * t >> 8) + y, y = F[B] >> 8 & 255, K = (((p >> 8 & 255) - y) * t >> 8) + y, y = F[B] & 255, y = (((p & 255) - y) * t >> 8) + y), F[B] = x << 16 | K << 8 | y))
 }
 
 function gh(a, b, c, d, f, g) {
     var h = 16,
         k = 16,
-        p, t, l = oa.g,
+        p, t, l = itemsSpriteSheet.g,
         n, w, B, M;
     p = ~~(4096 / h);
     t = ~~(4096 / k);
@@ -4224,7 +4227,7 @@ function gh(a, b, c, d, f, g) {
     n = 640 * b + a;
     w = 640 - (h - a);
     for (var J, y, x = g >> 16 & 255, K = g >> 8 & 255, ba = g & 255; b < k; b++, n += w, d += t)
-        for (B = ((d >> 8) * oa.h << 8) + c, g = a; g < h; g++, n++, B += p) M = l[B >> 8], 0 >= M || (J = M >> 16 & 255, y = M >> 8 & 255, M &= 255, F[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : f)
+        for (B = ((d >> 8) * itemsSpriteSheet.h << 8) + c, g = a; g < h; g++, n++, B += p) M = l[B >> 8], 0 >= M || (J = M >> 16 & 255, y = M >> 8 & 255, M &= 255, F[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : f)
 }
 
 function Xg(a, b, c, d, f) {
@@ -4525,26 +4528,26 @@ function og(a, b, c, d, f) {
     Gg = 1;
     Ni(a, b, 32, 32, 2147483648);
     Gg = 0;
-    Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, f);
+    Ii(iconSpriteSheet, a, b - 3, 24, 24, 24 * c, 0, 24, 24, f);
     6 <= d.length ? mn(a, b + 10, d, f) : lg(gameFontSmall, a, b + 10, d, f, -1);
-    return mg(a, b, 32, 32) ? (Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : lg(gameFontSmall, a, b + 10, d, 16750950, -1), true) : false
+    return mg(a, b, 32, 32) ? (Ii(iconSpriteSheet, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : lg(gameFontSmall, a, b + 10, d, 16750950, -1), true) : false
 }
 
 function kh(a, b, c, d, f) {
     Gg = 1;
     Ni(a, b, 24, 24, 2147483648);
     Gg = 0;
-    Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, f);
+    Ii(iconSpriteSheet, a, b - 3, 16, 16, 16 * c, 24, 16, 16, f);
     6 <= d.length ? mn(a, b + 8, d, f) : lg(gameFontSmall, a, b + 8, d, f, -1);
-    return mg(a, b, 24, 24) ? (Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : lg(gameFontSmall, a, b + 8, d, 16737894, -1), true) : false
+    return mg(a, b, 24, 24) ? (Ii(iconSpriteSheet, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : lg(gameFontSmall, a, b + 8, d, 16737894, -1), true) : false
 }
 
 function mh(a, b) {
     Gg = 1;
     Ni(a, b, 20, 20, 2147483648);
     Gg = 0;
-    Ii(ia, a, b, 16, 16, 96, 24, 16, 16, 16777215);
-    return mg(a, b, 20, 20) ? (Ii(ia, a, b, 16, 16, 96, 24, 16, 16, 16737894), true) : false
+    Ii(iconSpriteSheet, a, b, 16, 16, 96, 24, 16, 16, 16777215);
+    return mg(a, b, 20, 20) ? (Ii(iconSpriteSheet, a, b, 16, 16, 96, 24, 16, 16, 16737894), true) : false
 }
 
 function nh(a, b, c, d, f) {

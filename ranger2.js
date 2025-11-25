@@ -1,13 +1,13 @@
 /*
  The games source code use is permission :-)
 */
-var iterIdxTemp, aa, m = window,
+var iterIdxTemp_1, iterIdxTemp_2, mainWindow = window,
     ca, da = [0, 0, 0, 0, 0, 0, 0, 0],
     ea, ga = new fa,
     ha = new fa,
     ia = new fa,
     ja = Array(3);
-for (iterIdxTemp = 0; 3 > iterIdxTemp; iterIdxTemp++) ja[iterIdxTemp] = new fa;
+for (iterIdxTemp_1 = 0; 3 > iterIdxTemp_1; iterIdxTemp_1++) ja[iterIdxTemp_1] = new fa;
 var ka = new fa,
     la = new fa,
     ma = new fa,
@@ -40,7 +40,7 @@ var ka = new fa,
     Sa = 0,
     Ta = Array(100);
 Ta[0] = 0;
-for (iterIdxTemp = 1; 98 > iterIdxTemp; iterIdxTemp++) Ta[iterIdxTemp] = Ta[iterIdxTemp - 1] + 1E3 * iterIdxTemp;
+for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) Ta[iterIdxTemp_1] = Ta[iterIdxTemp_1 - 1] + 1E3 * iterIdxTemp_1;
 Ta[98] = 9999999;
 Ta[99] = 9999999;
 var r = 1,
@@ -104,10 +104,10 @@ var r = 1,
     ],
     Zb = -1,
     $b = Array(256);
-for (iterIdxTemp = 0; 256 > iterIdxTemp; iterIdxTemp++) $b[iterIdxTemp] = 0;
+for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) $b[iterIdxTemp_1] = 0;
 var ac = Array(256);
-for (iterIdxTemp = 0; 256 > iterIdxTemp; iterIdxTemp++) ac[iterIdxTemp] = 0;
-m.fff = bc;
+for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) ac[iterIdxTemp_1] = 0;
+mainWindow.fff = bc;
 
 function bc() {
     var a, b;
@@ -127,7 +127,7 @@ function bc() {
     for (a = 0; 4 > a; a++) ib[a] = 0;
     kb = 0
 }
-m.fff = cc;
+mainWindow.fff = cc;
 
 function cc() {
     sa = 0;
@@ -146,140 +146,140 @@ var Jc = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     []
 ];
-iterIdxTemp = 0;
-var Kc = iterIdxTemp++,
-    Lc = iterIdxTemp++,
-    Mc = iterIdxTemp++,
-    Nc = iterIdxTemp++,
-    Oc = iterIdxTemp++,
-    Pc = iterIdxTemp++,
-    Qc = iterIdxTemp++,
-    Rc = iterIdxTemp++,
-    Sc = iterIdxTemp++,
-    Tc = iterIdxTemp++,
-    Uc = iterIdxTemp++,
-    Vc = iterIdxTemp++,
-    Wc = iterIdxTemp++,
-    Xc = iterIdxTemp++,
-    Yc = iterIdxTemp++,
-    Zc = iterIdxTemp++,
-    $c = iterIdxTemp++,
-    ad = iterIdxTemp++,
-    bd = iterIdxTemp++,
-    cd = iterIdxTemp++,
-    dd = iterIdxTemp++,
-    ed = iterIdxTemp++,
-    fd = iterIdxTemp++,
-    gd = iterIdxTemp++,
-    hd = iterIdxTemp++,
-    id = iterIdxTemp++,
-    jd = iterIdxTemp++,
-    kd = iterIdxTemp++,
-    ld = iterIdxTemp++,
-    md = iterIdxTemp++,
-    nd = iterIdxTemp++,
-    od = iterIdxTemp++,
-    pd = iterIdxTemp++,
-    qd = iterIdxTemp++,
-    rd = iterIdxTemp++,
-    sd = iterIdxTemp++,
-    td = iterIdxTemp++,
-    ud = iterIdxTemp++,
-    vd = iterIdxTemp++,
-    wd = iterIdxTemp++,
-    xd = iterIdxTemp++,
-    yd = iterIdxTemp++;
-iterIdxTemp++;
-iterIdxTemp++;
-iterIdxTemp++;
-iterIdxTemp++;
-iterIdxTemp++;
-var zd = iterIdxTemp++,
-    Ad = iterIdxTemp++,
-    Bd = iterIdxTemp++,
-    Cd = iterIdxTemp++,
-    Ed = iterIdxTemp++,
-    Fd = iterIdxTemp++,
-    Gd = iterIdxTemp++,
-    Hd = iterIdxTemp++,
-    Id = iterIdxTemp++,
-    Jd = iterIdxTemp++,
-    Kd = iterIdxTemp++,
-    Ld = iterIdxTemp++,
-    Md = iterIdxTemp++,
-    Nd = iterIdxTemp++,
-    Od = iterIdxTemp++,
-    Pd = iterIdxTemp++,
-    Sd = iterIdxTemp++,
-    Td = iterIdxTemp++,
-    Ud = iterIdxTemp++,
-    Vd = iterIdxTemp++,
-    Wd = iterIdxTemp++,
-    Xd = iterIdxTemp++,
-    Yd = iterIdxTemp++,
-    Zd = iterIdxTemp++;
-iterIdxTemp = 6;
-var $d = iterIdxTemp++,
-    ae = iterIdxTemp++,
-    be = iterIdxTemp++,
-    ce = iterIdxTemp++,
-    de = iterIdxTemp++;
-iterIdxTemp = 6;
-iterIdxTemp++;
-var ee = iterIdxTemp++,
-    fe = iterIdxTemp++,
-    ge = iterIdxTemp++,
-    he = iterIdxTemp++,
-    ie = iterIdxTemp++,
-    je = iterIdxTemp++,
-    ke = iterIdxTemp++;
-iterIdxTemp = 1;
-var le = iterIdxTemp++,
-    me = iterIdxTemp++,
-    ne = iterIdxTemp++,
-    oe = iterIdxTemp++,
-    pe = iterIdxTemp++,
-    qe = iterIdxTemp++,
-    re = iterIdxTemp++,
-    se = iterIdxTemp++,
-    te = iterIdxTemp++,
-    ue = iterIdxTemp++;
-iterIdxTemp++;
-iterIdxTemp++;
-iterIdxTemp++;
-iterIdxTemp++;
-var ve = iterIdxTemp++,
-    we = iterIdxTemp++,
-    xe = iterIdxTemp++,
-    ye = iterIdxTemp++,
-    ze = iterIdxTemp++,
-    Ae = iterIdxTemp++,
-    Be = iterIdxTemp++,
-    Ce = iterIdxTemp++,
-    Ee = iterIdxTemp++,
-    Fe = iterIdxTemp++,
-    Ge = iterIdxTemp++,
-    He = iterIdxTemp++,
-    Ie = iterIdxTemp++,
-    Je = iterIdxTemp++,
-    Ke = iterIdxTemp++,
-    Le = iterIdxTemp++,
-    Me = iterIdxTemp++,
-    Ne = iterIdxTemp++,
-    Oe = iterIdxTemp++,
-    Pe = iterIdxTemp++,
-    Qe = iterIdxTemp++,
-    Re = iterIdxTemp++,
-    Se = iterIdxTemp++,
-    Te = iterIdxTemp++;
-m.fff = Ue;
+iterIdxTemp_1 = 0;
+var Kc = iterIdxTemp_1++,
+    Lc = iterIdxTemp_1++,
+    Mc = iterIdxTemp_1++,
+    Nc = iterIdxTemp_1++,
+    Oc = iterIdxTemp_1++,
+    Pc = iterIdxTemp_1++,
+    Qc = iterIdxTemp_1++,
+    Rc = iterIdxTemp_1++,
+    Sc = iterIdxTemp_1++,
+    Tc = iterIdxTemp_1++,
+    Uc = iterIdxTemp_1++,
+    Vc = iterIdxTemp_1++,
+    Wc = iterIdxTemp_1++,
+    Xc = iterIdxTemp_1++,
+    Yc = iterIdxTemp_1++,
+    Zc = iterIdxTemp_1++,
+    $c = iterIdxTemp_1++,
+    ad = iterIdxTemp_1++,
+    bd = iterIdxTemp_1++,
+    cd = iterIdxTemp_1++,
+    dd = iterIdxTemp_1++,
+    ed = iterIdxTemp_1++,
+    fd = iterIdxTemp_1++,
+    gd = iterIdxTemp_1++,
+    hd = iterIdxTemp_1++,
+    id = iterIdxTemp_1++,
+    jd = iterIdxTemp_1++,
+    kd = iterIdxTemp_1++,
+    ld = iterIdxTemp_1++,
+    md = iterIdxTemp_1++,
+    nd = iterIdxTemp_1++,
+    od = iterIdxTemp_1++,
+    pd = iterIdxTemp_1++,
+    qd = iterIdxTemp_1++,
+    rd = iterIdxTemp_1++,
+    sd = iterIdxTemp_1++,
+    td = iterIdxTemp_1++,
+    ud = iterIdxTemp_1++,
+    vd = iterIdxTemp_1++,
+    wd = iterIdxTemp_1++,
+    xd = iterIdxTemp_1++,
+    yd = iterIdxTemp_1++;
+iterIdxTemp_1++;
+iterIdxTemp_1++;
+iterIdxTemp_1++;
+iterIdxTemp_1++;
+iterIdxTemp_1++;
+var zd = iterIdxTemp_1++,
+    Ad = iterIdxTemp_1++,
+    Bd = iterIdxTemp_1++,
+    Cd = iterIdxTemp_1++,
+    Ed = iterIdxTemp_1++,
+    Fd = iterIdxTemp_1++,
+    Gd = iterIdxTemp_1++,
+    Hd = iterIdxTemp_1++,
+    Id = iterIdxTemp_1++,
+    Jd = iterIdxTemp_1++,
+    Kd = iterIdxTemp_1++,
+    Ld = iterIdxTemp_1++,
+    Md = iterIdxTemp_1++,
+    Nd = iterIdxTemp_1++,
+    Od = iterIdxTemp_1++,
+    Pd = iterIdxTemp_1++,
+    Sd = iterIdxTemp_1++,
+    Td = iterIdxTemp_1++,
+    Ud = iterIdxTemp_1++,
+    Vd = iterIdxTemp_1++,
+    Wd = iterIdxTemp_1++,
+    Xd = iterIdxTemp_1++,
+    Yd = iterIdxTemp_1++,
+    Zd = iterIdxTemp_1++;
+iterIdxTemp_1 = 6;
+var $d = iterIdxTemp_1++,
+    ae = iterIdxTemp_1++,
+    be = iterIdxTemp_1++,
+    ce = iterIdxTemp_1++,
+    de = iterIdxTemp_1++;
+iterIdxTemp_1 = 6;
+iterIdxTemp_1++;
+var ee = iterIdxTemp_1++,
+    fe = iterIdxTemp_1++,
+    ge = iterIdxTemp_1++,
+    he = iterIdxTemp_1++,
+    ie = iterIdxTemp_1++,
+    je = iterIdxTemp_1++,
+    ke = iterIdxTemp_1++;
+iterIdxTemp_1 = 1;
+var le = iterIdxTemp_1++,
+    me = iterIdxTemp_1++,
+    ne = iterIdxTemp_1++,
+    oe = iterIdxTemp_1++,
+    pe = iterIdxTemp_1++,
+    qe = iterIdxTemp_1++,
+    re = iterIdxTemp_1++,
+    se = iterIdxTemp_1++,
+    te = iterIdxTemp_1++,
+    ue = iterIdxTemp_1++;
+iterIdxTemp_1++;
+iterIdxTemp_1++;
+iterIdxTemp_1++;
+iterIdxTemp_1++;
+var ve = iterIdxTemp_1++,
+    we = iterIdxTemp_1++,
+    xe = iterIdxTemp_1++,
+    ye = iterIdxTemp_1++,
+    ze = iterIdxTemp_1++,
+    Ae = iterIdxTemp_1++,
+    Be = iterIdxTemp_1++,
+    Ce = iterIdxTemp_1++,
+    Ee = iterIdxTemp_1++,
+    Fe = iterIdxTemp_1++,
+    Ge = iterIdxTemp_1++,
+    He = iterIdxTemp_1++,
+    Ie = iterIdxTemp_1++,
+    Je = iterIdxTemp_1++,
+    Ke = iterIdxTemp_1++,
+    Le = iterIdxTemp_1++,
+    Me = iterIdxTemp_1++,
+    Ne = iterIdxTemp_1++,
+    Oe = iterIdxTemp_1++,
+    Pe = iterIdxTemp_1++,
+    Qe = iterIdxTemp_1++,
+    Re = iterIdxTemp_1++,
+    Se = iterIdxTemp_1++,
+    Te = iterIdxTemp_1++;
+mainWindow.fff = Ue;
 
 function Ue(a, b) {
     for (var c = 0; 6 > c; c += 2)
         if (u[a][yd + c] == b) return u[a][yd + c + 1];
     return 0
 }
-m.fff = Ve;
+mainWindow.fff = Ve;
 
 function Ve(a, b) {
     var c = 0;
@@ -291,7 +291,7 @@ function Ve(a, b) {
     }
     return u[a][b]
 }
-m.fff = Xe;
+mainWindow.fff = Xe;
 
 function Xe(a, b) {
     var c = 0;
@@ -303,7 +303,7 @@ function Xe(a, b) {
     }
     return -1
 }
-m.fff = Ye;
+mainWindow.fff = Ye;
 
 function Ye(a, b, c) {
     var d = 0;
@@ -318,12 +318,12 @@ function Ye(a, b, c) {
     }
     return u[b][c]
 }
-m.fff = Ze;
+mainWindow.fff = Ze;
 
 function Ze(a, b) {
     return u[Yb[a][3]][ee] == b || u[Yb[a][4]][ee] == b ? !0 : !1
 }
-m.fff = $e;
+mainWindow.fff = $e;
 
 function $e(a, b) {
     var c = 0;
@@ -331,7 +331,7 @@ function $e(a, b) {
     u[Yb[a][4]][ee] == b && (c += u[Yb[a][4]][ge]);
     return c
 }
-m.fff = af;
+mainWindow.fff = af;
 
 function af(a, b) {
     var c = 0;
@@ -483,7 +483,7 @@ u[139] = ["Giant Amulet", 8, 144, 30, 0, 16711782, 16764057, Oe, "LP +", 50, "%"
 var Cc = 128,
     badgeArray = Array(Cc),
     Dc = Array(Cc);
-for (iterIdxTemp = 0; iterIdxTemp < Cc; iterIdxTemp++) Dc[iterIdxTemp] = 0;
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < Cc; iterIdxTemp_1++) Dc[iterIdxTemp_1] = 0;
 var bf = 0,
     cf = 0,
     df = [
@@ -580,12 +580,12 @@ badgeArray[70] = ["Stage clear", "within 150 sec", 18, 0, 1];
 badgeArray[71] = ["Defeat all fish", "without diving", 18, 12, 1];
 badgeArray[72] = ["Defeat all fish", "without landing", 18, 12, 1];
 var ef = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139];
-m.fff = A;
+mainWindow.fff = A;
 
 function A(a) {
     return q == badgeArray[a][2] && Dc[a] != badgeArray[a][4] ? !0 : !1
 }
-m.fff = C;
+mainWindow.fff = C;
 
 function C(a) {
     Dc[a]++;
@@ -600,7 +600,7 @@ function C(a) {
 }
 var Ec = 10,
     Fc = Array(Ec);
-for (iterIdxTemp = 0; iterIdxTemp < Ec; iterIdxTemp++) Dc[iterIdxTemp] = 0;
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < Ec; iterIdxTemp_1++) Dc[iterIdxTemp_1] = 0;
 var ff = [
         ["Gold Shower", 15],
         ["Clear Status", 30],
@@ -613,7 +613,7 @@ var ff = [
     kf = 0,
     D = new Int32Array(5E3),
     lf = new Int32Array(5E3);
-m.fff = mf;
+mainWindow.fff = mf;
 
 function mf() {
     var a, b, c, d, f;
@@ -694,7 +694,7 @@ function mf() {
     qf && ("" != b ? qf.setItem("ranger2", b) : qf.removeItem("ranger2"));
     hf = 50
 }
-m.fff = rf;
+mainWindow.fff = rf;
 
 function rf(a) {
     var b, c, d, f, g;
@@ -773,7 +773,7 @@ var tf = 0,
     xf = [],
     yf = [],
     zf = 0;
-m.fff = Af;
+mainWindow.fff = Af;
 
 function Af(a, b) {
     a += (b | 1) * (a & 255 | 1);
@@ -925,7 +925,7 @@ function Df(a, b) {
         cg()
     }
 }
-m.fff = dg;
+mainWindow.fff = dg;
 
 function dg() {
     if (0 < eg) eg++;
@@ -1067,7 +1067,7 @@ function dg() {
         0 < kf ? (kf--, 10 > kf ? c = floor(255 * kf / 10) : c = 255, Tg(Vf, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = floor(255 * hf / 10) : c = 255, Tg(Vf, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
     }
 }
-m.fff = tg;
+mainWindow.fff = tg;
 
 function tg() {
     var a, b, c, d, f, g;
@@ -1083,7 +1083,7 @@ function tg() {
     Ic = clamp(Ic, 0, Vg);
     for (a = hb = 0; 9 > a; a++) 1 == db[a] && hb++
 }
-m.fff = Wg;
+mainWindow.fff = Wg;
 
 function Wg(a, b, c, d, f, g) {
     var h;
@@ -1097,7 +1097,7 @@ function Wg(a, b, c, d, f, g) {
             a != Jc.length && (Na = a, Oa = floor(h / 28), Pa = h % 28)
         } else ng && ((wa = wa && Na == g ? !1 : !0) && (Aa = !1), Na = g, Pa = Oa = 0)
 }
-m.fff = Ig;
+mainWindow.fff = Ig;
 
 function Ig() {
     var a, b, c, d, f, g, h, k;
@@ -1129,7 +1129,7 @@ function Ig() {
     var p = [12, 12, 12, 8, 16, 5, 19, 9, 14, 9, 14],
         t = [6, 10, 14, 13, 13, 13, 13, 18, 17, 21, 21],
         l = Array(11);
-    for (iterIdxTemp = 0; 11 > iterIdxTemp; iterIdxTemp++) l[iterIdxTemp] = new Vec2;
+    for (iterIdxTemp_1 = 0; 11 > iterIdxTemp_1; iterIdxTemp_1++) l[iterIdxTemp_1] = new Vec2;
     for (a = 0; a < r; a++) {
         sg(f + a * d, g, 24, 24, 0);
         L(f + a * d + 7, g + 22, f + a * d +
@@ -1353,34 +1353,34 @@ function Ig() {
 }
 var Lh = 1,
     O = Array(4);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++) O[iterIdxTemp] = Array(21);
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) O[iterIdxTemp_1] = Array(21);
 var Mh = Array(4);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++) Mh[iterIdxTemp] = Array(21);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 21 > aa; aa++) O[iterIdxTemp][aa] = new Vec2;
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 21 > aa; aa++) Mh[iterIdxTemp][aa] = new Vec2;
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Mh[iterIdxTemp_1] = Array(21);
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) O[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) Mh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 var Nh = Array(4);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++) Nh[iterIdxTemp] = Array(16);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 16 > aa; aa++) Nh[iterIdxTemp][aa] = new Vec2;
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Nh[iterIdxTemp_1] = Array(16);
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Nh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 var Oh = Array(4);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++) Oh[iterIdxTemp] = Array(16);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 16 > aa; aa++) Oh[iterIdxTemp][aa] = new Vec2;
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Oh[iterIdxTemp_1] = Array(16);
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Oh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 var Ph = Array(4);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++) Ph[iterIdxTemp] = Array(16);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 16 > aa; aa++) Ph[iterIdxTemp][aa] = new Vec2;
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Ph[iterIdxTemp_1] = Array(16);
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Ph[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 var Qh = Array(4);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++) Qh[iterIdxTemp] = Array(16);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 16 > aa; aa++) Qh[iterIdxTemp][aa] = new Vec2;
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Qh[iterIdxTemp_1] = Array(16);
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Qh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 var Rh = Array(4),
     Sh = Array(4),
     Th = [Nh, Ph, Oh, Qh],
     Uh = Array(4);
-for (iterIdxTemp = 0; 4 > iterIdxTemp; iterIdxTemp++) Uh[iterIdxTemp] = new Vec2;
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Uh[iterIdxTemp_1] = new Vec2;
 var Vh = Array(4),
     Wh = new Int32Array(4),
     Xh = new Int32Array(4),
@@ -1412,13 +1412,13 @@ var Vh = Array(4),
     ii = new Int32Array(4),
     bh = new Int32Array(4),
     ji = new Int32Array(4);
-m.fff = ki;
+mainWindow.fff = ki;
 
 function ki() {
     bi = -1;
     ci = 0
 }
-m.fff = li;
+mainWindow.fff = li;
 
 function li(a, b, c) {
     var d;
@@ -1445,7 +1445,7 @@ function li(a, b, c) {
     bh[a] = 0;
     ji[a] = 0
 }
-m.fff = ni;
+mainWindow.fff = ni;
 
 function ni(a, b) {
     var c = new Vec2;
@@ -1458,7 +1458,7 @@ function ni(a, b) {
     31 == g && (Vec2Scale(c, .95), Yh[a] |= 2);
     for (var h = 0; h < d; h++) f = O[a][b].y + c.y, g = ri(O[a][b].x, f), 0 > f || 8 * si <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != a ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : O[a][b].y = f), f = O[a][b].x + c.x, g = ri(f, O[a][b].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[a] |= 1) : O[a][b].x = f)
 }
-m.fff = ti;
+mainWindow.fff = ti;
 
 function ti(a, b, c, d, f) {
     var g = a - c - 5,
@@ -1486,7 +1486,7 @@ function ti(a, b, c, d, f) {
             J > k && l < w && (w = l, B = M)
         } return B
 }
-m.fff = ui;
+mainWindow.fff = ui;
 
 function ui(a, b, c, d, f, g, h, k, p, t) {
     p *= .5;
@@ -1537,7 +1537,7 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
             }
         } return y
 }
-m.fff = vi;
+mainWindow.fff = vi;
 
 function vi() {
     var a = new Vec2,
@@ -1555,7 +1555,7 @@ function vi() {
         }
     } else wi || (bi = -1, ci = 0)
 }
-m.fff = xi;
+mainWindow.fff = xi;
 
 function xi(a, b, c, d, f, g) {
     var h = new Vec2,
@@ -1654,7 +1654,7 @@ function xi(a, b, c, d, f, g) {
     else if (6 == l)
         for (d = floor(512 / c), w = floor(E(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), w += d
 }
-m.fff = Di;
+mainWindow.fff = Di;
 
 function Di(a) {
     var b = O[a][2].x,
@@ -1689,7 +1689,7 @@ function Di(a) {
         }
     }
 }
-m.fff = ig;
+mainWindow.fff = ig;
 
 function ig() {
     var a, b, c, d, f = new Vec2,
@@ -1778,7 +1778,7 @@ function ig() {
         }
     }
 }
-m.fff = kg;
+mainWindow.fff = kg;
 
 function kg() {
     var a, b, c, d, f, g, h = new Vec2,
@@ -1872,7 +1872,7 @@ function kg() {
     }
     0 < Hh ? Hh-- : 0 < di ? di-- : 0 < Zg && Zg--
 }
-m.fff = eh;
+mainWindow.fff = eh;
 
 function eh(a, b, c, d, f, g, h) {
     var k = new Vec2;
@@ -1899,17 +1899,17 @@ function eh(a, b, c, d, f, g, h) {
 }
 var dc = 32,
     levelListArray = Array(dc);
-iterIdxTemp = 0;
-var Hg = iterIdxTemp++,
-    Pi = iterIdxTemp++,
-    Yg = iterIdxTemp++,
-    Eh = iterIdxTemp++,
-    Qi = iterIdxTemp++,
-    Ri = iterIdxTemp++,
-    Si = iterIdxTemp++,
-    Ti = iterIdxTemp++,
-    Ui = iterIdxTemp++,
-    Vi = iterIdxTemp++;
+iterIdxTemp_1 = 0;
+var Hg = iterIdxTemp_1++,
+    Pi = iterIdxTemp_1++,
+    Yg = iterIdxTemp_1++,
+    Eh = iterIdxTemp_1++,
+    Qi = iterIdxTemp_1++,
+    Ri = iterIdxTemp_1++,
+    Si = iterIdxTemp_1++,
+    Ti = iterIdxTemp_1++,
+    Ui = iterIdxTemp_1++,
+    Vi = iterIdxTemp_1++;
 levelListArray[0] = ["", 0, 13407305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 levelListArray[1] = ["Village", 0, 13407305, 0, 0, 0, 0, 2, 10, 0, 0, 0, 0, 0, 0, 0];
 levelListArray[2] = ["Cave 1", 0, 13407305, 1, 0, 0, 1, 3, 10, 0, 5, 10, 11, 40, 63, 41, 0, 5, 10, 5, 34, 45, 34, 1, 2, 0, 5, 34, 45, 34, 1, 8, 30, 8, 26, 46, 26, 2, 3, 5, 50, 22, 60, 22, 2, 5, 10, 32, 8, 74, 9, 3, 1, 1, 4, 13, 11, 13, 5, 15, 30, 50, 25, 62, 28];
@@ -1932,7 +1932,7 @@ levelListArray[18] = ["Limestone cave 6", 2, 8686715, 15, 19, 17, 0, 0, 50, 77, 
 levelListArray[19] = ["Limestone cave 7", 2, 8686715, 16, 0, 18, 20, 0, 50, 84, 20, 0, 10, 36, 18, 36, 84, 10, 0, 29, 38, 34, 38, 85, 1, 0, 63, 28, 63, 28, 85, 1, 0, 13, 25, 13, 25];
 levelListArray[20] = ["Limestone cave 8", 2, 8686715, 17, 0, 15, 0, 19, 50, 0, 0, 0, 0, 0, 0, 0];
 var ec = Array(dc);
-for (iterIdxTemp = 0; iterIdxTemp < dc; iterIdxTemp++) ec[iterIdxTemp] = 0;
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < dc; iterIdxTemp_1++) ec[iterIdxTemp_1] = 0;
 var ph = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     oh = [
         [0, 1, 2, 5, 3],
@@ -1956,7 +1956,7 @@ var ph = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     Gi = 80,
     si = 60,
     P = Array(si);
-for (iterIdxTemp = 0; iterIdxTemp < si; iterIdxTemp++) P[iterIdxTemp] = Array(Gi);
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < si; iterIdxTemp_1++) P[iterIdxTemp_1] = Array(Gi);
 var Wi = -1,
     Mg = 0,
     Ng = 0,
@@ -1965,7 +1965,7 @@ var Wi = -1,
     V = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     Xi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     Mi = 0;
-m.fff = hg;
+mainWindow.fff = hg;
 
 function hg(a) {
     Wi != a && (Wi = a, ka = new fa, ka.f("m" + a + ".png"));
@@ -2005,21 +2005,21 @@ function hg(a) {
     cj();
     return !0
 }
-m.fff = ri;
+mainWindow.fff = ri;
 
 function ri(a, b) {
     a = clamp(a, 0, 8 * Gi - 1) >> 3;
     b = clamp(b, 0, 8 * si - 1) >> 3;
     return P[b][a]
 }
-m.fff = dj;
+mainWindow.fff = dj;
 
 function dj(a, b, c, d, f) {
     var g;
     for (g = b; g <= d; g++)
         for (b = a; b <= c; b++) P[g][b] = f
 }
-m.fff = wg;
+mainWindow.fff = wg;
 
 function wg() {
     var a;
@@ -2061,7 +2061,7 @@ function wg() {
             Gc && C(25), A(30) && 111 <= Hc && C(30), A(35) && !jh && C(35), A(40) && 3600 > gj && C(40), A(45) && 7200 > gj && C(45), A(50) && !jh && C(50), A(55) && 227 <= Hc && C(55), A(60) && C(60), A(65) && !jh && C(65), A(70) && 9E3 > gj && C(70), 19 == q && 0 == of [1] && (of [1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
     }
 }
-m.fff = jg;
+mainWindow.fff = jg;
 
 function jg() {
     var a, b, c, d;
@@ -2103,7 +2103,7 @@ var Og = 0,
     Hi = 0,
     jh = 0,
     of = [0, 0, 0, 0];
-m.fff = cj;
+mainWindow.fff = cj;
 
 function cj() {
     jh = Hi = ij = hj = gj = Pg = Og = 0;
@@ -2115,7 +2115,7 @@ function cj() {
     } else if (19 == q)
         for (b = [14, 13, 13, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 19, 19, 19, 17, 17, 17, 0, 0, 0, 0, 17, 17, 17, 19, 19, 19, 20], a = 0; 39 > a; a++) 0 != b[a] && (Zi(19 + a, b[a], 88, 6), V[6]++, Xi[6]++)
 }
-m.fff = xg;
+mainWindow.fff = xg;
 
 function xg() {
     var a, b, c, d, f = b = 0,
@@ -2280,79 +2280,79 @@ function xg() {
     } else 18 == q ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = nf(3), Zi(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > E(60) && (c = Fh(8, 23), Zi(c, 10, 83, 10), V[10]++,
         Xi[10]++), !A(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || C(71), !A(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || C(72)) : 19 == q ? (Xi[7] < 20 * (35 - V[6]) && 15 > E(60) && (c = Fh(19, 59), d = Fh(26, 33), 33 == P[d][c] && (19 == Xi[7] % 20 ? Zi(c, d, 89, 7) : Zi(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (Zi(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of [1] && (dj(47, 15, 50, 15, 24), dj(1, 31, 1, 35, 32))) : 20 == q && (1 == db[4] ? dj(70, 34, 70, 34, 63) : 55 == P[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (dj(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
 }
-iterIdxTemp = 0;
-var itemAttr1 = iterIdxTemp++,
-    itemAttr2 = iterIdxTemp++,
-    itemAttr3 = iterIdxTemp++,
-    itemAttr4 = iterIdxTemp++,
-    itemAttr5 = iterIdxTemp++,
-    itemAttr6 = iterIdxTemp++,
-    itemAttr7 = iterIdxTemp++,
-    itemAttr8 = iterIdxTemp++,
-    itemAttr9 = iterIdxTemp++,
-    itemAttr10 = iterIdxTemp++,
-    itemAttr11 = iterIdxTemp++,
-    itemAttr12 = iterIdxTemp++,
-    itemAttr13 = iterIdxTemp++,
-    itemAttr14 = iterIdxTemp++,
-    itemAttr15 = iterIdxTemp++,
-    itemAttr16 = iterIdxTemp++,
-    itemAttr17 = iterIdxTemp++,
-    itemAttr18 = iterIdxTemp++,
-    itemAttr19 = iterIdxTemp++,
-    itemAttr20 = iterIdxTemp++,
-    itemAttr21 = iterIdxTemp++,
-    itemAttr22 = iterIdxTemp++,
-    itemAttr23 = iterIdxTemp++,
-    itemAttr24 = iterIdxTemp++,
-    itemAttr25 = iterIdxTemp++,
-    itemAttr26 = iterIdxTemp++,
-    itemAttr27 = iterIdxTemp++,
-    itemAttr28 = iterIdxTemp++,
-    itemAttr29 = iterIdxTemp++,
-    itemAttr30 = iterIdxTemp++,
-    itemAttr31 = iterIdxTemp++,
-    itemAttr32 = iterIdxTemp++,
-    itemAttr33 = iterIdxTemp++,
-    itemAttr34 = iterIdxTemp++,
-    itemAttr35 = iterIdxTemp++,
-    itemAttr36 = iterIdxTemp++,
-    itemAttr37 = iterIdxTemp++,
-    itemAttr38 = iterIdxTemp++,
-    itemAttr39 = iterIdxTemp++,
-    itemAttr40 = iterIdxTemp++,
-    itemAttr41 = iterIdxTemp++,
-    itemAttr42 = iterIdxTemp++,
-    itemAttr43 = iterIdxTemp++,
-    itemAttr44 = iterIdxTemp++,
-    itemAttr45 = iterIdxTemp++,
-    itemAttr46 = iterIdxTemp++,
-    itemAttr47 = iterIdxTemp++,
-    itemAttr48 = iterIdxTemp++,
-    itemAttr49 = iterIdxTemp++,
-    itemAttr50 = iterIdxTemp++,
-    itemAttr51 = iterIdxTemp++,
-    itemAttr52 = iterIdxTemp++,
-    itemAttr53 = iterIdxTemp++,
-    itemAttr54 = iterIdxTemp++,
-    itemAttr55 = iterIdxTemp++,
-    itemAttr56 = iterIdxTemp++,
-    itemAttr57 = iterIdxTemp++,
-    itemAttr58 = iterIdxTemp++,
-    itemAttr59 = iterIdxTemp++,
-    itemAttr60 = iterIdxTemp++,
-    itemAttr61 = iterIdxTemp++,
-    itemAttr62 = iterIdxTemp++,
-    itemAttr63 = iterIdxTemp++,
-    itemAttr64 = iterIdxTemp++,
-    itemAttr65 = iterIdxTemp++,
-    itemAttr66 = iterIdxTemp++,
-    itemAttr67 = iterIdxTemp++,
-    itemAttr68 = iterIdxTemp++,
+iterIdxTemp_1 = 0;
+var itemAttr1 = iterIdxTemp_1++,
+    itemAttr2 = iterIdxTemp_1++,
+    itemAttr3 = iterIdxTemp_1++,
+    itemAttr4 = iterIdxTemp_1++,
+    itemAttr5 = iterIdxTemp_1++,
+    itemAttr6 = iterIdxTemp_1++,
+    itemAttr7 = iterIdxTemp_1++,
+    itemAttr8 = iterIdxTemp_1++,
+    itemAttr9 = iterIdxTemp_1++,
+    itemAttr10 = iterIdxTemp_1++,
+    itemAttr11 = iterIdxTemp_1++,
+    itemAttr12 = iterIdxTemp_1++,
+    itemAttr13 = iterIdxTemp_1++,
+    itemAttr14 = iterIdxTemp_1++,
+    itemAttr15 = iterIdxTemp_1++,
+    itemAttr16 = iterIdxTemp_1++,
+    itemAttr17 = iterIdxTemp_1++,
+    itemAttr18 = iterIdxTemp_1++,
+    itemAttr19 = iterIdxTemp_1++,
+    itemAttr20 = iterIdxTemp_1++,
+    itemAttr21 = iterIdxTemp_1++,
+    itemAttr22 = iterIdxTemp_1++,
+    itemAttr23 = iterIdxTemp_1++,
+    itemAttr24 = iterIdxTemp_1++,
+    itemAttr25 = iterIdxTemp_1++,
+    itemAttr26 = iterIdxTemp_1++,
+    itemAttr27 = iterIdxTemp_1++,
+    itemAttr28 = iterIdxTemp_1++,
+    itemAttr29 = iterIdxTemp_1++,
+    itemAttr30 = iterIdxTemp_1++,
+    itemAttr31 = iterIdxTemp_1++,
+    itemAttr32 = iterIdxTemp_1++,
+    itemAttr33 = iterIdxTemp_1++,
+    itemAttr34 = iterIdxTemp_1++,
+    itemAttr35 = iterIdxTemp_1++,
+    itemAttr36 = iterIdxTemp_1++,
+    itemAttr37 = iterIdxTemp_1++,
+    itemAttr38 = iterIdxTemp_1++,
+    itemAttr39 = iterIdxTemp_1++,
+    itemAttr40 = iterIdxTemp_1++,
+    itemAttr41 = iterIdxTemp_1++,
+    itemAttr42 = iterIdxTemp_1++,
+    itemAttr43 = iterIdxTemp_1++,
+    itemAttr44 = iterIdxTemp_1++,
+    itemAttr45 = iterIdxTemp_1++,
+    itemAttr46 = iterIdxTemp_1++,
+    itemAttr47 = iterIdxTemp_1++,
+    itemAttr48 = iterIdxTemp_1++,
+    itemAttr49 = iterIdxTemp_1++,
+    itemAttr50 = iterIdxTemp_1++,
+    itemAttr51 = iterIdxTemp_1++,
+    itemAttr52 = iterIdxTemp_1++,
+    itemAttr53 = iterIdxTemp_1++,
+    itemAttr54 = iterIdxTemp_1++,
+    itemAttr55 = iterIdxTemp_1++,
+    itemAttr56 = iterIdxTemp_1++,
+    itemAttr57 = iterIdxTemp_1++,
+    itemAttr58 = iterIdxTemp_1++,
+    itemAttr59 = iterIdxTemp_1++,
+    itemAttr60 = iterIdxTemp_1++,
+    itemAttr61 = iterIdxTemp_1++,
+    itemAttr62 = iterIdxTemp_1++,
+    itemAttr63 = iterIdxTemp_1++,
+    itemAttr64 = iterIdxTemp_1++,
+    itemAttr65 = iterIdxTemp_1++,
+    itemAttr66 = iterIdxTemp_1++,
+    itemAttr67 = iterIdxTemp_1++,
+    itemAttr68 = iterIdxTemp_1++,
     itemCount = 128,
     itemCatalogArray = Array(itemCount),
     Bc = Array(itemCount);
-for (iterIdxTemp = 0; iterIdxTemp < itemCount; iterIdxTemp++) Bc[iterIdxTemp] = 0;
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < itemCount; iterIdxTemp_1++) Bc[iterIdxTemp_1] = 0;
 itemCatalogArray[0] = [1, 0, 0, 0, 0, 1, 3394611, 3355443, 0, 30, 1, 0, 2, 0, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 7, 10, 9, 10, 0, 0, 71, 1E3];
 itemCatalogArray[1] = [2, 0, 0, 0, 0, 1, 3394815, 3355545, 0, 60, 1, 0, 2, 0, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 5, 20, 10, 30, 0, 0, 71, 1E3];
 itemCatalogArray[2] = [3, 0, 0, 0, 0, 1, 13369344, 3342336, 0, 90, 0, 2, 0, 2, 4288217088, 1, 16, 16, 8, 8, 0, 0, 20, 10, 0, 100, 0, 0, 0, 0, 3, 5, 1, 10, 50, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 6, 30, 28, 5, 0, 0, 71, 1E3];
@@ -2456,13 +2456,13 @@ var pk = 0,
     zk = 10,
     Ak = 11,
     Q = Array(999);
-for (iterIdxTemp = 0; 999 > iterIdxTemp; iterIdxTemp++) Q[iterIdxTemp] = Array(21);
+for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) Q[iterIdxTemp_1] = Array(21);
 var Z = Array(999);
-for (iterIdxTemp = 0; 999 > iterIdxTemp; iterIdxTemp++) Z[iterIdxTemp] = Array(21);
-for (iterIdxTemp = 0; 999 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 21 > aa; aa++) Q[iterIdxTemp][aa] = new Vec2;
-for (iterIdxTemp = 0; 999 > iterIdxTemp; iterIdxTemp++)
-    for (aa = 0; 21 > aa; aa++) Z[iterIdxTemp][aa] = new Vec2;
+for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) Z[iterIdxTemp_1] = Array(21);
+for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) Q[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
+    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) Z[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 var X = new Int32Array(999),
     Bk = new Int32Array(999),
     Y = new Int32Array(999),
@@ -2486,12 +2486,12 @@ var X = new Int32Array(999),
     Yk = [Ok, Pk, Qk, Rk, Sk,
         Tk, Tk, Uk, Vk, Wk, Xk, Sk
     ];
-m.fff = Yi;
+mainWindow.fff = Yi;
 
 function Yi() {
     $i = ej = 0
 }
-m.fff = Zi;
+mainWindow.fff = Zi;
 
 function Zi(a, b, c, d) {
     if (999 != ej) {
@@ -2515,7 +2515,7 @@ function Zi(a, b, c, d) {
         ej++
     }
 }
-m.fff = Zk;
+mainWindow.fff = Zk;
 
 function Zk(a) {
     for (var b = 0; 21 > b; b++) Q[a][b].set(Q[ej - 1][b]), Z[a][b].set(Z[ej - 1][b]);
@@ -2535,7 +2535,7 @@ function Zk(a) {
     Kk[a] = Kk[ej - 1];
     ej--
 }
-m.fff = $k;
+mainWindow.fff = $k;
 
 function $k(a, b, c) {
     var d = new Vec2;
@@ -2545,7 +2545,7 @@ function $k(a, b, c) {
     Vec2Scale(d, 1 / f);
     for (var g, h, k = 0; k < f; k++) g = Q[a][b].y + d.y, h = ri(Q[a][b].x, g), 0 > g || 8 * si <= g ? Dk[a] |= 2 : 0 <= h && 25 >= h ? (0 < d.y && (Dk[a] |= 2), d.x *= c, d.y = -d.y) : 26 <= h && 26 >= h && 0 < d.y ? (Dk[a] |= 2, d.x *= c, d.y = -d.y) : Q[a][b].y = g, g = Q[a][b].x + d.x, h = ri(g, Q[a][b].y), 0 > g || 640 <= g ? Dk[a] |= 1 : 0 <= h && 25 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : 27 <= h && 29 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : Q[a][b].x = g
 }
-m.fff = Ei;
+mainWindow.fff = Ei;
 
 function Ei(a, b, c, d) {
     var f = a - c,
@@ -2574,7 +2574,7 @@ function Ei(a, b, c, d) {
             }
         } return w
 }
-m.fff = al;
+mainWindow.fff = al;
 
 function al(a, b, c, d, f, g, h, k, p, t, l) {
     var n = -1,
@@ -2631,7 +2631,7 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
             }
         } return n
 }
-m.fff = bl;
+mainWindow.fff = bl;
 
 function bl(a, b, c, d) {
     var itemPos = new Vec2,
@@ -2711,7 +2711,7 @@ function bl(a, b, c, d) {
             for (p = 0; p < Qb; p++) gb = floor(c / 8), jb = floor(d / 8), Zi(gb, jb, itemIdx + Bb, 0)
     }
 }
-m.fff = cl;
+mainWindow.fff = cl;
 
 function cl(a) {
     var b;
@@ -2743,7 +2743,7 @@ function cl(a) {
     63 == X[a] && (A(58) && 3600 > gj && C(58), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     A(69) && 72 == X[a] && C(69)
 }
-m.fff = yg;
+mainWindow.fff = yg;
 
 function yg() {
     var a;
@@ -2763,7 +2763,7 @@ function yg() {
         }
     }
 }
-m.fff = Ok;
+mainWindow.fff = Ok;
 
 function Ok(a) {
     var b, c = itemCatalogArray[X[a]][itemAttr6];
@@ -2792,7 +2792,7 @@ function Ok(a) {
     }
     return a
 }
-m.fff = Pk;
+mainWindow.fff = Pk;
 
 function Pk(a) {
     var b, c = itemCatalogArray[X[a]][itemAttr6];
@@ -2831,7 +2831,7 @@ function Pk(a) {
     }
     return a
 }
-m.fff = Qk;
+mainWindow.fff = Qk;
 
 function Qk(a) {
     var b, c = new Vec2;
@@ -2903,7 +2903,7 @@ function Qk(a) {
     }
     return a
 }
-m.fff = Rk;
+mainWindow.fff = Rk;
 
 function Rk(a) {
     var b, c, d, f = new Vec2;
@@ -2947,7 +2947,7 @@ function Rk(a) {
     }
     return a
 }
-m.fff = Sk;
+mainWindow.fff = Sk;
 
 function Sk(a) {
     var b;
@@ -3002,7 +3002,7 @@ function Sk(a) {
     }
     return a
 }
-m.fff = Tk;
+mainWindow.fff = Tk;
 
 function Tk(a) {
     var b;
@@ -3035,7 +3035,7 @@ function Tk(a) {
     }
     return a
 }
-m.fff = Uk;
+mainWindow.fff = Uk;
 
 function Uk(a) {
     var b;
@@ -3075,7 +3075,7 @@ function Uk(a) {
     }
     return a
 }
-m.fff = Vk;
+mainWindow.fff = Vk;
 
 function Vk(a) {
     var b, c, d, f = new Vec2,
@@ -3137,7 +3137,7 @@ function Vk(a) {
     }
     return a
 }
-m.fff = Wk;
+mainWindow.fff = Wk;
 
 function Wk(a) {
     var b;
@@ -3220,7 +3220,7 @@ function Wk(a) {
     }
     return a
 }
-m.fff = Xk;
+mainWindow.fff = Xk;
 
 function Xk(a) {
     var b, c = new Vec2,
@@ -3273,7 +3273,7 @@ function Xk(a) {
     }
     return a
 }
-m.fff = Cg;
+mainWindow.fff = Cg;
 
 function Cg() {
     var a, b;
@@ -3319,7 +3319,7 @@ function Cg() {
     }
     for (a = 0; a < ej; a++) 0 >= Ek[a] || (Ek[a]--, 0 >= jj[a] || (b = itemCatalogArray[X[a]][itemAttr6], sg(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), sg(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, floor(14 * b * jj[a] / itemCatalogArray[X[a]][itemAttr10]), 1, 52224)))
 }
-m.fff = Ch;
+mainWindow.fff = Ch;
 
 function Ch(a, b, c, d) {
     var f = itemCatalogArray[a][itemAttr2],
@@ -3377,9 +3377,9 @@ var W = 0,
     hl = new Int32Array(1E3),
     il = new Int32Array(1E3),
     jl = Array(1E3);
-for (iterIdxTemp = 0; 1E3 > iterIdxTemp; iterIdxTemp++) jl[iterIdxTemp] = new Vec2;
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) jl[iterIdxTemp_1] = new Vec2;
 var kl = Array(1E3);
-for (iterIdxTemp = 0; 1E3 > iterIdxTemp; iterIdxTemp++) kl[iterIdxTemp] = new Vec2;
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) kl[iterIdxTemp_1] = new Vec2;
 var ll = new Int32Array(1E3),
     ml = new Int32Array(1E3),
     nl = new Int32Array(1E3),
@@ -3430,18 +3430,18 @@ var ll = new Int32Array(1E3),
     fm = new Int32Array(1E3),
     gm = new Int32Array(1E3),
     hm = new Int32Array(1E3);
-m.fff = im;
+mainWindow.fff = im;
 
 function im() {
     W = 0
 }
-m.fff = zi;
+mainWindow.fff = zi;
 
 function zi(a, b, c, d, f, g, h, k, p, t, l, n, w, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, ob, Bb, gc, Qb, Rb, gb, jb, La, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc) {
     1E3 != W && (hl[W] = a, il[W] = b, Vec2Set(jl[W], c, d), Vec2Set(kl[W], f, g), ll[W] = 0, ml[W] = h, nl[W] = k, ol[W] = p, pl[W] = t, ql[W] = l, rl[W] = n, sl[W] = w, tl[W] = B, ul[W] = M, vl[W] = floor(E(J)), wl[W] = y, xl[W] = x, yl[W] = K, zl[W] = ba, Al[W] = U, Bl[W] = na, Cl[W] = Fa, Dl[W] = Ga, El[W] = Ca, Fl[W] = ua, Gl[W] = fb, Hl[W] = ob, Il[W] = Bb, Jl[W] = gc, Kl[W] = Qb, Ll[W] = Rb, Ml[W] = gb, Nl[W] = jb, Ol[W] = La, Pl[W] = hc, Ql[W] = Ib, Rl[W] = ic, Sl[W] =
         jc, Tl[W] = kc, Ul[W] = lc, Vl[W] = mc, Wl[W] = nc, Xl[W] = oc, Yl[W] = pc, Zl[W] = qc, $l[W] = rc, am[W] = sc, bm[W] = tc, cm[W] = uc, dm[W] = vc, em[W] = wc, fm[W] = xc, gm[W] = yc, hm[W] = zc, W++)
 }
-m.fff = jm;
+mainWindow.fff = jm;
 
 function jm(a) {
     hl[a] = hl[W - 1];
@@ -3500,7 +3500,7 @@ function jm(a) {
     hm[a] = hm[W - 1];
     W--
 }
-m.fff = km;
+mainWindow.fff = km;
 
 function km(a, b) {
     var c = 0;
@@ -3510,7 +3510,7 @@ function km(a, b) {
     for (var f, g, h = 0; h < d; h++) f = jl[a].y + b.y, g = ri(jl[a].x, f), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].y = f : 3 == Dl[a] ? (b.y = -b.y, kl[a].y = -kl[a].y) : 4 == Dl[a] && (0 < kl[a].y ? c = 1 : kl[a].y = 0) : jl[a].y = f, f = jl[a].x + b.x, g = ri(f, jl[a].y), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].x = f : 3 == Dl[a] ? (b.x = -b.x, kl[a].x = -kl[a].x) : 4 == Dl[a] && (kl[a].x = 0) : jl[a].x = f;
     return c
 }
-m.fff = Bg;
+mainWindow.fff = Bg;
 
 function Bg() {
     var a, b, c, d = new Vec2,
@@ -3569,7 +3569,7 @@ function Bg() {
             (Vec2Norm(k), Vec2Scale(k, hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
     }
 }
-m.fff = Eg;
+mainWindow.fff = Eg;
 
 function Eg() {
     var a, b, c, d, f = new Vec2,
@@ -3678,23 +3678,23 @@ function Eg() {
 }
 var aj = 0,
     rm = Array(1E3);
-for (iterIdxTemp = 0; 1E3 > iterIdxTemp; iterIdxTemp++) rm[iterIdxTemp] = new Vec2;
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) rm[iterIdxTemp_1] = new Vec2;
 var sm = Array(1E3);
-for (iterIdxTemp = 0; 1E3 > iterIdxTemp; iterIdxTemp++) sm[iterIdxTemp] = new Vec2;
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) sm[iterIdxTemp_1] = new Vec2;
 var tm = Array(1E3),
     um = new Int32Array(1E3),
     vm = new Int32Array(1E3);
-m.fff = wm;
+mainWindow.fff = wm;
 
 function wm() {
     aj = 0
 }
-m.fff = Lg;
+mainWindow.fff = Lg;
 
 function Lg(a, b, c, d, f, g) {
     1E3 != aj && (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(rm[aj], a, b), Vec2Set(sm[aj], c, -2), 0 != c && (sm[aj].x += R(-.2, .2), sm[aj].y += R(-.2, .2)), tm[aj] = d, um[aj] = f, vm[aj] = g, aj++)
 }
-m.fff = xm;
+mainWindow.fff = xm;
 
 function xm(a) {
     rm[a].set(rm[aj - 1]);
@@ -3704,7 +3704,7 @@ function xm(a) {
     vm[a] = vm[aj - 1];
     aj--
 }
-m.fff = Ag;
+mainWindow.fff = Ag;
 
 function Ag() {
     var a;
@@ -3722,7 +3722,7 @@ function Ag() {
         0 >= um[a] && xm(a--)
     }
 }
-m.fff = Fg;
+mainWindow.fff = Fg;
 
 function Fg() {
     var a, b, c, d, f;
@@ -3730,26 +3730,26 @@ function Fg() {
 }
 var ym = 0,
     zm = Array(100);
-for (iterIdxTemp = 0; 100 > iterIdxTemp; iterIdxTemp++) zm[iterIdxTemp] = new Vec2;
+for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) zm[iterIdxTemp_1] = new Vec2;
 var Am = Array(100);
-for (iterIdxTemp = 0; 100 > iterIdxTemp; iterIdxTemp++) Am[iterIdxTemp] = new Vec2;
+for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) Am[iterIdxTemp_1] = new Vec2;
 var Bm = new Int32Array(100),
     Cm = new Int32Array(100),
     Dm = new Int32Array(100),
     Em = new Int32Array(100),
     Fm = 0;
-m.fff = bj;
+mainWindow.fff = bj;
 
 function bj() {
     Fm = ym = 0
 }
-m.fff = Gh;
+mainWindow.fff = Gh;
 
 function Gh(a, b, c, d, f) {
     if (100 != ym)
         for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = pg < a ? R(-.5, -1) : R(.5, 1), Am[ym].y = R(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
 }
-m.fff = Gm;
+mainWindow.fff = Gm;
 
 function Gm(a) {
     ym--;
@@ -3761,7 +3761,7 @@ function Gm(a) {
     Em[a] = Em[ym];
     for (a = Fm = 0; a < ym; a++) Fm += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a]
 }
-m.fff = dl;
+mainWindow.fff = dl;
 
 function dl(a) {
     if (2 == a) return !0;
@@ -3770,7 +3770,7 @@ function dl(a) {
         if (Bm[b] == a) return !1;
     return !0
 }
-m.fff = zg;
+mainWindow.fff = zg;
 
 function zg() {
     var a, b, c;
@@ -3779,7 +3779,7 @@ function zg() {
     for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && C(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (Wa = clamp(Wa + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
         $b[Bm[a]] < Cm[a] && ($b[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && C(24), Gm(a--)))
 }
-m.fff = Dg;
+mainWindow.fff = Dg;
 
 function Dg() {
     var a;
@@ -3792,25 +3792,25 @@ var Hm = document,
     Im = Gf.getContext("2d"),
     Jm = Im.createImageData(640, 432),
     Km = new Uint32Array(Jm.data.buffer),
-    Lm = m.console,
+    Lm = mainWindow.console,
     fromCharCode = String.fromCharCode,
     $f = setTimeout,
     Hostname = "dan-ball.jp";//location.hostname;
-m.fff = Om;
+mainWindow.fff = Om;
 
 function Om(a, b, c) {
     try {
         Gf = Hm.getElementById("cv"), Im = Gf.getContext("2d"), Im.putImageData(a, b, c)
     } catch (d) {}
 }
-m.fff = Ef;
+mainWindow.fff = Ef;
 
 function Ef(a) {
     try {
         Lm.log(a)
     } catch (b) {}
 }
-m.Init = Df;
+mainWindow.Init = Df;
 var Ih = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     Ff = "Copyright (C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     Pm = "./data/", //fromCharCode(46, 47, 100, 97, 116, 97, 47),
@@ -3821,7 +3821,7 @@ var Ih = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 4
         //fromCharCode(48, 49, 87, 116, 67, 112, 108, 120, 97, 121, 102, 84, 118, 113, 99, 104, 72, 109, 65, 57, 42, 74, 90, 79, 114, 105, 54, 86, 78, 55, 76, 52, 119, 56, 100, 85, 71, 101, 46, 83, 51, 70, 73, 68, 122, 115, 110, 80, 98, 69, 107, 81, 88,
         //89, 77, 82, 103, 117, 50, 53, 66, 106, 111, 75),
     sf = [];
-for (iterIdxTemp = 0; 64 > iterIdxTemp; iterIdxTemp++) sf[pf[iterIdxTemp]] = iterIdxTemp;
+for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) sf[pf[iterIdxTemp_1]] = iterIdxTemp_1;
 var Sm = 0,
     Tm = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
     F = new Int32Array(276480),
@@ -4237,7 +4237,7 @@ function S(a, b, c, d) {
     Vec2Scale(nn, d);
     a.add(nn)
 }
-m.full_screen = toggleFullscreen;
+mainWindow.full_screen = toggleFullscreen;
 
 function toggleFullscreen() {
     Hm.fullscreenEnabled && (Hm.fullscreenElement ? Hm.exitFullscreen() : Gf.requestFullscreen())
@@ -4331,7 +4331,7 @@ Hm.onkeyup = function(a) {
     if (0 != b && rn) return !1
 };
 var rn = !1,
-    qf = m.localStorage;
+    qf = mainWindow.localStorage;
 
 function promptInput(a, b) {
     var c = null;

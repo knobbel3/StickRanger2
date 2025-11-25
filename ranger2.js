@@ -931,9 +931,10 @@ function gameInit(a, b) {
         setupAnimRequest()
     }
 }
-mainWindow.fff = dg;
+mainWindow.fff = drawCanvas;
 
-function dg() {
+function drawCanvas() {
+    console.log("dg");
     if (0 < iterIdxTemp_3) iterIdxTemp_3++;
     else {
         var a, b, c;
@@ -3872,7 +3873,7 @@ function setupAnimRequest() {
     for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = false;
     Tf = Tf + floor(1024 * rand()) & 1023;
     Uf = floor(512 * rand()) | 1;
-    dg();
+    drawCanvas();
     var canvasBufferLength = targetHostname.length == hostnameCheckIdx ? CANVAS_WIDTH * CANVAS_HEIGHT : 0;
     if (1 <= ug)
         for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (F[a] & 255) << 16 | F[a] & 65280 | F[a] >> 16 & 255;

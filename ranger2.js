@@ -695,7 +695,7 @@ function mf() {
     gf += pf[f];
     gf += pf[c >> 6 & 63];
     b = gf += pf[c >> 0 & 63];
-    qf && ("" != b ? qf.setItem("ranger2", b) : qf.removeItem("ranger2"));
+    currentStorage && ("" != b ? currentStorage.setItem("ranger2", b) : currentStorage.removeItem("ranger2"));
     hf = 50
 }
 mainWindow.fff = rf;
@@ -777,9 +777,9 @@ var tf = 0,
     xf = [],
     yf = [],
     zf = 0;
-mainWindow.fff = Af;
+mainWindow.fff = hashAdjust;
 
-function Af(a, b) {
+function hashAdjust(a, b) {
     a += (b | 1) * (a & 255 | 1);
     return (a >> 16) + (a & 65535)
 }
@@ -787,23 +787,23 @@ function Af(a, b) {
 function Bf() {
     var a, b, c;
     uf = c = floor(E(1024));
-    c = Af(c, 0);
-    c = Af(c, q);
-    c = Af(c, r);
-    c = Af(c, Ua);
-    c = Af(c, Va);
-    c = Af(c, Wa);
-    for (a = 0; 4 > a; a++) c = Af(c, Xa[a]), c = Af(c, Ya[a]), c = Af(c, Za[a]), c = Af(c, $a[a]), c = Af(c, ab[a]), c = Af(c, bb[a]), c = Af(c, lb[a]), c = Af(c, mb[a]), c = Af(c, nb[a]), c = Af(c, pb[a]), c = Af(c, qb[a]), c = Af(c, rb[a]), c = Af(c, sb[a]);
+    c = hashAdjust(c, 0);
+    c = hashAdjust(c, q);
+    c = hashAdjust(c, r);
+    c = hashAdjust(c, Ua);
+    c = hashAdjust(c, Va);
+    c = hashAdjust(c, Wa);
+    for (a = 0; 4 > a; a++) c = hashAdjust(c, Xa[a]), c = hashAdjust(c, Ya[a]), c = hashAdjust(c, Za[a]), c = hashAdjust(c, $a[a]), c = hashAdjust(c, ab[a]), c = hashAdjust(c, bb[a]), c = hashAdjust(c, lb[a]), c = hashAdjust(c, mb[a]), c = hashAdjust(c, nb[a]), c = hashAdjust(c, pb[a]), c = hashAdjust(c, qb[a]), c = hashAdjust(c, rb[a]), c = hashAdjust(c, sb[a]);
     for (a = 0; 4 > a; a++)
-        for (b = 0; 8 > b; b++) c = Af(c, Yb[a][b]);
-    for (a = 0; 256 > a; a++) c = Af(c, $b[a]);
-    for (a = 0; 9 > a; a++) c = Af(c, db[a]);
-    c = Af(c, eb);
-    for (a = 0; a < dc; a++) c = Af(c, ec[a]);
-    for (a = 0; a < itemCount; a++) c = Af(c, Bc[a]);
+        for (b = 0; 8 > b; b++) c = hashAdjust(c, Yb[a][b]);
+    for (a = 0; 256 > a; a++) c = hashAdjust(c, $b[a]);
+    for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
+    c = hashAdjust(c, eb);
+    for (a = 0; a < dc; a++) c = hashAdjust(c, ec[a]);
+    for (a = 0; a < itemCount; a++) c = hashAdjust(c, Bc[a]);
     for (a = 0; a < Cc; a++) c =
-        Af(c, Dc[a]);
-    for (a = 0; a < Ec; a++) c = Af(c, Fc[a]);
+        hashAdjust(c, Dc[a]);
+    for (a = 0; a < Ec; a++) c = hashAdjust(c, Fc[a]);
     tf = c ^ 16777215
 }
 
@@ -908,24 +908,24 @@ function gameInit(a, b) {
         Zf ? _setTimeout(gameInit, ag()) : gameInitStage++
     }
     if (2 == gameInitStage) {
-        qf ? (c = qf.getItem("ranger2"),
+        currentStorage ? (c = currentStorage.getItem("ranger2"),
             gf = null == c ? "" : c) : gf = "";
         jf = rf(gf);
         kf = 100;
         wf = Array(256);
         for (c = 0; 256 > c; c++)
             if (wf[c] = 0, itemList[c])
-                for (d = 1; d < itemList[c].length; d++) wf[c] = Af(wf[c], itemList[c][d]);
+                for (d = 1; d < itemList[c].length; d++) wf[c] = hashAdjust(wf[c], itemList[c][d]);
         xf = Array(levelListArray.length);
         for (c = 0; c < levelListArray.length; c++)
             if (xf[c] = 0, levelListArray[c])
-                for (d = 2; d < levelListArray[c].length; d++) xf[c] = Af(xf[c], levelListArray[c][d]);
+                for (d = 2; d < levelListArray[c].length; d++) xf[c] = hashAdjust(xf[c], levelListArray[c][d]);
         yf = Array(itemCatalogArray.length);
         for (c = 0; c < itemCatalogArray.length; c++)
             if (yf[c] = 0, itemCatalogArray[c])
-                for (d = 0; d < itemCatalogArray[c].length; d++) yf[c] = Af(yf[c], itemCatalogArray[c][d]);
+                for (d = 0; d < itemCatalogArray[c].length; d++) yf[c] = hashAdjust(yf[c], itemCatalogArray[c][d]);
         for (c = zf = 0; c < Jc.length; c++)
-            for (d = 0; d < Jc[c].length; d++) zf = Af(zf, Jc[c][d]);
+            for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
         Bf();
         bg(ga, 640, 432);
         setupAnimRequest()
@@ -955,44 +955,58 @@ function dg() {
         }
         if (0 > hb || 9 < hb) F = null;
         d = uf;
-        d = Af(d, 0);
-        d = Af(d, q);
-        d = Af(d, r);
-        d = Af(d, Ua);
-        d = Af(d, Va);
-        d = Af(d,
+        d = hashAdjust(d, 0);
+        d = hashAdjust(d, q);
+        d = hashAdjust(d, r);
+        d = hashAdjust(d, Ua);
+        d = hashAdjust(d, Va);
+        d = hashAdjust(d,
             Wa);
-        for (a = 0; 4 > a; a++) d = Af(d, Xa[a]), d = Af(d, Ya[a]), d = Af(d, Za[a]), d = Af(d, $a[a]), d = Af(d, ab[a]), d = Af(d, bb[a]), d = Af(d, lb[a]), d = Af(d, mb[a]), d = Af(d, nb[a]), d = Af(d, pb[a]), d = Af(d, qb[a]), d = Af(d, rb[a]), d = Af(d, sb[a]);
+        for (a = 0; 4 > a; a++) 
+            d = hashAdjust(d, Xa[a]), 
+            d = hashAdjust(d, Ya[a]), 
+            d = hashAdjust(d, Za[a]), 
+            d = hashAdjust(d, $a[a]), 
+            d = hashAdjust(d, ab[a]), 
+            d = hashAdjust(d, bb[a]), 
+            d = hashAdjust(d, lb[a]), 
+            d = hashAdjust(d, mb[a]), 
+            d = hashAdjust(d, nb[a]), 
+            d = hashAdjust(d, pb[a]), 
+            d = hashAdjust(d, qb[a]), 
+            d = hashAdjust(d, rb[a]), 
+            d = hashAdjust(d, sb[a]);
+        
         for (a = 0; 4 > a; a++)
-            for (b = 0; 8 > b; b++) d = Af(d, Yb[a][b]);
-        for (a = 0; 256 > a; a++) d = Af(d, $b[a]);
-        for (a = 0; 9 > a; a++) d = Af(d, db[a]);
-        d = Af(d, eb);
-        for (a = 0; a < dc; a++) d = Af(d, ec[a]);
-        for (a = 0; a < itemCount; a++) d = Af(d, Bc[a]);
-        for (a = 0; a < Cc; a++) d = Af(d, Dc[a]);
-        for (a = 0; a < Ec; a++) d = Af(d, Fc[a]);
+            for (b = 0; 8 > b; b++) d = hashAdjust(d, Yb[a][b]);
+        for (a = 0; 256 > a; a++) d = hashAdjust(d, $b[a]);
+        for (a = 0; 9 > a; a++) d = hashAdjust(d, db[a]);
+        d = hashAdjust(d, eb);
+        for (a = 0; a < dc; a++) d = hashAdjust(d, ec[a]);
+        for (a = 0; a < itemCount; a++) d = hashAdjust(d, Bc[a]);
+        for (a = 0; a < Cc; a++) d = hashAdjust(d, Dc[a]);
+        for (a = 0; a < Ec; a++) d = hashAdjust(d, Fc[a]);
         d != (tf ^ 16777215) && (F = null);
         for (a = vf; 256 > a; a += 64) {
             d = 0;
             if (itemList[a])
-                for (b = 1; b < itemList[a].length; b++) d = Af(d, itemList[a][b]);
+                for (b = 1; b < itemList[a].length; b++) d = hashAdjust(d, itemList[a][b]);
             d != wf[a] && (F = null)
         }
         for (a = vf; a < levelListArray.length; a += 64) {
             d = 0;
             if (levelListArray[a])
-                for (b = 2; b < levelListArray[a].length; b++) d = Af(d, levelListArray[a][b]);
+                for (b = 2; b < levelListArray[a].length; b++) d = hashAdjust(d, levelListArray[a][b]);
             d != xf[a] && (F = null)
         }
         for (a = vf; a < itemCatalogArray.length; a += 64) {
             d = 0;
             if (itemCatalogArray[a])
-                for (b = 0; b < itemCatalogArray[a].length; b++) d = Af(d, itemCatalogArray[a][b]);
+                for (b = 0; b < itemCatalogArray[a].length; b++) d = hashAdjust(d, itemCatalogArray[a][b]);
             d != yf[a] && (F = null)
         }
         for (a = d = 0; a < Jc.length; a++)
-            for (b = 0; b < Jc[a].length; b++) d = Af(d, Jc[a][b]);
+            for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
         d != zf && (F = null);
         vf = vf + 1 & 63;
         if (!ra) q = 0, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 45, gg[1] = 45, gg[2] = 45, gg[3] = 45, ra++;
@@ -4350,7 +4364,7 @@ domDocument.onkeyup = function(a) {
     if (0 != b && rn) return false
 };
 var rn = false,
-    qf = mainWindow.localStorage;
+    currentStorage = mainWindow.localStorage;
 
 function promptInput(a, b) {
     var c = null;

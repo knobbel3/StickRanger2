@@ -1,6 +1,10 @@
 /*
  The games source code use is permission :-)
 */
+
+const CANVAS_WIDTH = 640;
+const CANVAS_HEIGHT = 432;
+
 var iterIdxTemp_1, iterIdxTemp_2, mainWindow = window,
     ca, da = [0, 0, 0, 0, 0, 0, 0, 0],
     ea, ga = new Sprite,
@@ -901,7 +905,7 @@ function gameInit(a, b) {
         Yf(oa);
         Yf(pa);
         Yf(qa);
-        Zf ? $f(gameInit, ag()) : gameInitStage++
+        Zf ? _setTimeout(gameInit, ag()) : gameInitStage++
     }
     if (2 == gameInitStage) {
         qf ? (c = qf.getItem("ranger2"),
@@ -924,7 +928,7 @@ function gameInit(a, b) {
             for (d = 0; d < Jc[c].length; d++) zf = Af(zf, Jc[c][d]);
         Bf();
         bg(ga, 640, 432);
-        cg()
+        setupAnimRequest()
     }
 }
 mainWindow.fff = dg;
@@ -3796,8 +3800,8 @@ var domDocument = document,
     canvasBuffer = new Uint32Array(canvasImage.data.buffer),
     mainConsole = mainWindow.console,
     fromCharCode = String.fromCharCode,
-    $f = setTimeout,
-    Hostname = "dan-ball.jp";//location.hostname;
+    _setTimeout = setTimeout,
+    hostname = "dan-ball.jp";//location.hostname;
 mainWindow.fff = canvasDrawImage;
 
 function canvasDrawImage(a, b, c) {
@@ -3834,9 +3838,9 @@ var hostnameCheckIdx = 0,
     qm = new Float32Array(432),
     pm = new Float32Array(432);
 
-function cg() {
+function setupAnimRequest() {
     if (requestAnim) {
-        requestAnim(cg);
+        requestAnim(setupAnimRequest);
         Vm++;
         timestampAnim = Date.now();
         var a = floor(60 * (timestampAnim - Xm) / 1E3 + .5);
@@ -3855,21 +3859,21 @@ function cg() {
     Tf = Tf + floor(1024 * rand()) & 1023;
     Uf = floor(512 * rand()) | 1;
     dg();
-    var b = 11 == hostnameCheckIdx ? 276480 : 0;
+    var canvasBufferLength = targetHostname.length == hostnameCheckIdx ? CANVAS_WIDTH * CANVAS_HEIGHT : 0;
     if (1 <= ug)
-        for (a = 0; a < b; a++) canvasBuffer[a] = 4278190080 | (F[a] & 255) << 16 | F[a] & 65280 | F[a] >> 16 & 255;
+        for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (F[a] & 255) << 16 | F[a] & 65280 | F[a] >> 16 & 255;
     else
-        for (a = 0; a < b; a++) canvasBuffer[a] = 4278190080 | (F[a] & 255) * ug << 16 | (F[a] >> 8 & 255) * ug << 8 | (F[a] >> 16 & 255) * ug << 0;
+        for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (F[a] & 255) * ug << 16 | (F[a] >> 8 & 255) * ug << 8 | (F[a] >> 16 & 255) * ug << 0;
     canvasDrawImage(canvasImage, 0, 0);
-    requestAnim || $f(cg, ag())
+    requestAnim || _setTimeout(setupAnimRequest, ag())
 }
 var iterIdxTemp_3 = 1;
 
 /** Checks hostname */
 function hostnameCheck() {
-    if (Hostname.length != targetHostname.length) return true;
-    for (iterIdxTemp_3 = 0; hostnameCheckIdx < Hostname.length; hostnameCheckIdx++)
-        if (Hostname[hostnameCheckIdx] != targetHostname[hostnameCheckIdx]) return true;
+    if (hostname.length != targetHostname.length) return true;
+    for (iterIdxTemp_3 = 0; hostnameCheckIdx < hostname.length; hostnameCheckIdx++)
+        if (hostname[hostnameCheckIdx] != targetHostname[hostnameCheckIdx]) return true;
     return false
 }
 var requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,

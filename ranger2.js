@@ -17,19 +17,19 @@ var ka = new fa,
     ra = 0,
     sa = 0,
     q = 0,
-    ta = !1,
-    va = !1,
-    wa = !1,
-    xa = !1,
-    ya = !1,
-    za = !1,
-    Aa = !1,
-    Ba = !1,
-    Da = !1,
-    Ea = !1,
-    Ha = !1,
-    Ia = !1,
-    Ja = !1,
+    ta = false,
+    va = false,
+    wa = false,
+    xa = false,
+    ya = false,
+    za = false,
+    Aa = false,
+    Ba = false,
+    Da = false,
+    Ea = false,
+    Ha = false,
+    Ia = false,
+    Ja = false,
     Ka = 0,
     Ma = 0,
     Na = 0,
@@ -131,7 +131,7 @@ mainWindow.fff = cc;
 
 function cc() {
     sa = 0;
-    Ba = Da = Ea = Ha = Ia = Ja = ta = va = wa = xa = ya = za = Aa = !1;
+    Ba = Da = Ea = Ha = Ia = Ja = ta = va = wa = xa = ya = za = Aa = false;
     Gc = Hc = Ic = Ka = Ma = Na = Oa = Pa = 0
 }
 var Jc = [
@@ -321,7 +321,7 @@ function Ye(a, b, c) {
 mainWindow.fff = Ze;
 
 function Ze(a, b) {
-    return u[Yb[a][3]][ee] == b || u[Yb[a][4]][ee] == b ? !0 : !1
+    return u[Yb[a][3]][ee] == b || u[Yb[a][4]][ee] == b ? true : false
 }
 mainWindow.fff = $e;
 
@@ -583,7 +583,7 @@ var ef = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 13
 mainWindow.fff = A;
 
 function A(a) {
-    return q == badgeArray[a][2] && Dc[a] != badgeArray[a][4] ? !0 : !1
+    return q == badgeArray[a][2] && Dc[a] != badgeArray[a][4] ? true : false
 }
 mainWindow.fff = C;
 
@@ -808,7 +808,7 @@ function Df(a, b) {
     var c;
     if (!Cf) {
         null != a ? ca = a : ca = "";
-        ea = "0" == b ? !0 : !1;
+        ea = "0" == b ? true : false;
         if (8 == ca.length)
             for (c = 0; 8 > c; c++) da[c] = sf[ca[c]];
         Ef(Ff); // Copyright text
@@ -822,7 +822,7 @@ function Df(a, b) {
         }
         Hf[c][0] = Hf[0][0];
         Hf[c][1] = Hf[0][1];
-        for (c = 0; 256 > c; c++) Jf[c] = !1, Kf[c] = !1, Lf[c] = !1, Mf[c] = 0, Nf[c] = 0;
+        for (c = 0; 256 > c; c++) Jf[c] = false, Kf[c] = false, Lf[c] = false, Mf[c] = 0, Nf[c] = 0;
         for (c = 0; 10 > c; c++) Mf[48 + c] = 48 + c;
         for (c = 0; 9 > c; c++) Nf[49 + c] = 33 + c;
         for (c = 0; 4 > c; c++) Mf[37 + c] = 37 + c;
@@ -992,7 +992,7 @@ function dg() {
         if (!ra) q = 0, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 45, gg[1] = 45, gg[2] = 45, gg[3] = 45, ra++;
         else if (1 == ra) hg(0) && ra++;
         else if (2 == ra || 3 == ra) {
-            ta = !1;
+            ta = false;
             ig();
             jg();
             kg();
@@ -1026,8 +1026,8 @@ function dg() {
         } else if (4 == ra || 5 == ra) 4 == ra ? (bc(), Yb[0][0] = 4, q = $b[4] = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40, tg()) : 5 == ra && (cc(), q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), ug = 0, ra = 10;
         else if (10 == ra) hg(q) && (1 == q && (Gc >>= 1), sa = 0, ra++);
         else if (11 == ra || 12 == ra || 13 == ra || 30 == ra)
-            if (ng && (ta = !1, 360 <= qg && (ta = !0), va && vg(8, 8, 204, 196) && (ta = !0),
-                    wa && vg(218, 8, 204, 260) && (ta = !0), xa && vg(428, 8, 204, 180) && (ta = !0), ya && vg(428, 8, 204, 180) && (ta = !0), za && vg(428, 196, 204, 148) && (ta = !0), Aa && vg(218, 8, 204, 180) && (ta = !0)), tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), Gg = 1, sg(4, 4, 8 * levelListArray[q][Hg].length + 8, 20, 2151694400), Gg = 0, N(Vf, 8, 8, levelListArray[q][Hg], 16777215, 0), Ig(), 11 == ra) c = 255, 50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)), Jg(Vf, 320, 180, levelListArray[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), a = -1E3 + floor(500 * sa / 20), L(a, 164, a + 1E3, 164, 8421504), a = 640 - floor(500 * sa / 20), L(a, 193, a + 1E3, 193, 8421504),
+            if (ng && (ta = false, 360 <= qg && (ta = true), va && vg(8, 8, 204, 196) && (ta = true),
+                    wa && vg(218, 8, 204, 260) && (ta = true), xa && vg(428, 8, 204, 180) && (ta = true), ya && vg(428, 8, 204, 180) && (ta = true), za && vg(428, 196, 204, 148) && (ta = true), Aa && vg(218, 8, 204, 180) && (ta = true)), tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), Gg = 1, sg(4, 4, 8 * levelListArray[q][Hg].length + 8, 20, 2151694400), Gg = 0, N(Vf, 8, 8, levelListArray[q][Hg], 16777215, 0), Ig(), 11 == ra) c = 255, 50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)), Jg(Vf, 320, 180, levelListArray[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), a = -1E3 + floor(500 * sa / 20), L(a, 164, a + 1E3, 164, 8421504), a = 640 - floor(500 * sa / 20), L(a, 193, a + 1E3, 193, 8421504),
                 sa++, ug = clamp(sa / 30, 0, 1), 70 <= sa && (ug = 1, sa = 0, ra++);
             else if (12 == ra) {
             for (a = b = 0; a < r; a++) b += Ya[a];
@@ -1062,7 +1062,7 @@ function dg() {
             mf()
         }
         Bf();
-        0 < bf && (bf--, a = badgeArray[cf][3], Qg(qa, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, !0), b = 440, a = min(120 - bf - 0, 4), 0 < a && N(G, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && N(G, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && N(G, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
+        0 < bf && (bf--, a = badgeArray[cf][3], Qg(qa, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true), b = 440, a = min(120 - bf - 0, 4), 0 < a && N(G, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && N(G, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && N(G, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
             bf - 6, 4), 0 < a && N(G, b + 20, 342 + 2 * a, "M", 16777215, 0), a = min(120 - bf - 8, 4), 0 < a && N(G, b + 25, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 10, 4), 0 < a && N(G, b + 30, 342 + 2 * a, "D", 16777215, 0), a = min(120 - bf - 12, 4), 0 < a && N(G, b + 35, 342 + 2 * a, "A", 16777215, 0), a = min(120 - bf - 14, 4), 0 < a && N(G, b + 40, 342 + 2 * a, "L", 16777215, 0));
         0 < kf ? (kf--, 10 > kf ? c = floor(255 * kf / 10) : c = 255, Tg(Vf, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = floor(255 * hf / 10) : c = 255, Tg(Vf, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
     }
@@ -1089,19 +1089,19 @@ function Wg(a, b, c, d, f, g) {
     var h;
     if (vg(a, b, c, d))
         if (Xg(a, b, c, d, 6684672), ng && 0 != f) {
-            (wa = wa && Jc[Na][28 * Oa + Pa] == f ? !1 : !0) && (Aa = !1);
+            (wa = wa && Jc[Na][28 * Oa + Pa] == f ? false : true) && (Aa = false);
             for (a = 0; a < Jc.length; a++) {
                 for (h = 0; h < Jc[a].length && Jc[a][h] != f; h++);
                 if (Jc[a][h] == f) break
             }
             a != Jc.length && (Na = a, Oa = floor(h / 28), Pa = h % 28)
-        } else ng && ((wa = wa && Na == g ? !1 : !0) && (Aa = !1), Na = g, Pa = Oa = 0)
+        } else ng && ((wa = wa && Na == g ? false : true) && (Aa = false), Na = g, Pa = Oa = 0)
 }
 mainWindow.fff = Ig;
 
 function Ig() {
     var a, b, c, d, f, g, h, k;
-    Jf[32] && (va || wa || xa || ya || za || Aa ? (Ba = va, Da = wa, Ea = xa, Ha = ya, Ia = za, Ja = Aa, va = wa = xa = ya = za = Aa = !1) : (va = Ba, wa = Da, xa = Ea, ya = Ha, za = Ia, Aa = Ja));
+    Jf[32] && (va || wa || xa || ya || za || Aa ? (Ba = va, Da = wa, Ea = xa, Ha = ya, Ia = za, Ja = Aa, va = wa = xa = ya = za = Aa = false) : (va = Ba, wa = Da, xa = Ea, ya = Ha, za = Ia, Aa = Ja));
     sg(0, 361, 640, 70, levelListArray[q][Yg]);
     f = 8;
     g = 348;
@@ -1151,7 +1151,7 @@ function Ig() {
             k = f + a * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             sg(k, n, 16, 16, 0);
-            0 != c && (fh = 2, h = u[c][Mc], 2 == b ? Qg(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc], u[c][$d], !0) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), u[c][Pc], u[c][$d]) : hh(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0);
+            0 != c && (fh = 2, h = u[c][Mc], 2 == b ? Qg(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc], u[c][$d], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), u[c][Pc], u[c][$d]) : hh(oa, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0);
             Wg(k, n, 16, 16, c, b);
             vg(k, n, 16, 16) && ng && 0 != c && (Ka = a)
         }
@@ -1170,9 +1170,9 @@ function Ig() {
         }
     }
     og(f + 0 * d, g, 1, "STATUS", va ? 16750950 : 16777215) && ng && (va = !va);
-    og(f + 1 * d, g, 2, "ITEM", wa ? 16750950 : 16777215) && ng && (wa = !wa) && (Aa = !1);
-    og(f + 2 * d, g, 3, "MONSTER", xa ? 16750950 : 16777215) && ng && (xa = !xa) && (ya = !1);
-    og(f + 3 * d, g, 4, "MEDAL", ya ? 16750950 : 16777215) && ng && (ya = !ya) && (xa = !1);
+    og(f + 1 * d, g, 2, "ITEM", wa ? 16750950 : 16777215) && ng && (wa = !wa) && (Aa = false);
+    og(f + 2 * d, g, 3, "MONSTER", xa ? 16750950 : 16777215) && ng && (xa = !xa) && (ya = false);
+    og(f + 3 * d, g, 4, "MEDAL", ya ? 16750950 : 16777215) && ng && (ya = !ya) && (xa = false);
     og(f + 4 * d, g, 5, "OPTION", za ? 16750950 : 16777215) && ng && (za = !za);
     c = 0;
     for (b = ac.length - 1; 0 <= b; b--) c += ac[b];
@@ -1198,8 +1198,8 @@ function Ig() {
         Vf.a = 1;
         lg(Vf, 54, 296, "SMITH", 16777215, 8409120);
         mg(52, 308, 56, 40) && (Vf.a = 1, lg(Vf, 54, 296, "SMITH", 15908203, 8409120), ng && !ta && (wa = !wa) &&
-            (Aa = !1))
-    } else 12 == q && (Vf.a = 1, lg(Vf, 418, 104, "SHRINE", 16777215, 8409120), mg(416, 108, 48, 40) && (Vf.a = 1, lg(Vf, 418, 104, "SHRINE", 15908203, 8409120), ng && !ta && (Aa = !Aa) && (wa = !1)));
+            (Aa = false))
+    } else 12 == q && (Vf.a = 1, lg(Vf, 418, 104, "SHRINE", 16777215, 8409120), mg(416, 108, 48, 40) && (Vf.a = 1, lg(Vf, 418, 104, "SHRINE", 15908203, 8409120), ng && !ta && (Aa = !Aa) && (wa = false)));
     if (va) {
         g = f = 14;
         sg(f - 6, g - 6, 204, 196, levelListArray[q][Yg]);
@@ -1212,7 +1212,7 @@ function Ig() {
         c = [999, 999, 999, 999, 999, 999, 25];
         for (a = 0; 7 > a; a++) kh(f +
             12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? lh && (Ma = a) : 0 < Xa[Ka] && tb[Ma][Ka] < c[Ma] && (N(Wf, pg - 5, qg - 8, "UP", 16776960, 1118481), lh && (tb[Ma][Ka]++, Xa[Ka]--)));
-        mh(f + 188, g + 4) && ng && (va = !1);
+        mh(f + 188, g + 4) && ng && (va = false);
         g += 64;
         for (a = 0; 2 > a; a++) c = Yb[Ka][a], 0 != u[c][Nc] && (10 > u[c][Nc] ? (G.a = 4, h = $b[c], Ze(Ka, le) && 3 == u[c][Lc] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == u[c][Lc] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == u[c][Lc] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == u[c][Lc] && (h += af(Ka, ne)), N(G, f + 96 * a, g + 0, "" + u[c][Kc] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
             "-" + Eb[4 * a + Ka], 10 <= u[c][Ad] && 11 >= u[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(Ye(Ka, c, ld) * Ye(Ka, c, Ed) / 60) : 0 != u[c][Ad] ? (b = Ye(Ka, c, Ed), Ze(Ka, Ae) && 3 == u[c][td] && 20 == u[c][Ad] && (b += $e(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == Ye(Ka, c, Uc) ? h += " all" : 1 < Ye(Ka, c, Uc) && (h += " " + Ye(Ka, c, Uc) + "hit"), N(G, f + 96 * a, g + 12, h, 16777215, 0), a || N(G, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || N(G, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? N(G, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : N(G, f + 96 * a, g + 48, "EMIT " +
@@ -1235,9 +1235,9 @@ function Ig() {
             0 < a && (N(G, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (N(G, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (N(G, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && N(G, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (G.a = 4, N(G, f, g + 0, "" + u[c][Kc], -1, 0), 0 != u[c][ge] && N(G, f, g + 12, u[c][fe] + u[c][ge] + u[c][he], 16777215, 0), 0 != u[c][je] && N(G, f, g + 24, u[c][ie] + u[c][je] + u[c][ke], 16777215, 0)));
         Zb = -1;
         k = Na;
-        mh(f + 188, g + 4) && ng && (wa = !1);
+        mh(f + 188, g + 4) && ng && (wa = false);
         for (a = 0; 28 > a; a++) c = Jc[Na][28 * Oa + a], b = f + a % 7 * 28, d = g + 84 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0),
-            0 < $b[c] && (fh = 2, h = u[c][Mc], 2 == Na ? Qg(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc], u[c][$d], !0) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), u[c][Pc], u[c][$d]) : hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? lh && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(Wf, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[Ka][k] = c)) : h == Ka ? (N(Wf, pg - 25, qg - 8, "REMOVE", 16777215,
+            0 < $b[c] && (fh = 2, h = u[c][Mc], 2 == Na ? Qg(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc], u[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), u[c][Pc], u[c][$d]) : hh(oa, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? lh && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(Wf, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[Ka][k] = c)) : h == Ka ? (N(Wf, pg - 25, qg - 8, "REMOVE", 16777215,
                 0), lh && (Yb[Ka][k] = 0)) : (N(Wf, pg - 25, qg - 16, "REMOVE", 16777215, 0), N(Wf, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[h][k] = 0, Yb[Ka][k] = c)))), lh && (ac[c] = 0)), 0 < ac[c] && N(Wf, b, d, "NEW", 16776960, -1), 0 != c && (Yb[0][k] == c ? N(Wf, b + 14, d + 17, "E1", 16777215, -1) : Yb[1][k] == c ? N(Wf, b + 14, d + 17, "E2", 16777215, -1) : Yb[2][k] == c ? N(Wf, b + 14, d + 17, "E3", 16777215, -1) : Yb[3][k] == c && N(Wf, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (a = 0; 5 > a; a++) {
@@ -1257,7 +1257,7 @@ function Ig() {
         f = 434;
         g = 14;
         sg(f - 6, g - 6, 204, 180, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (xa = !1);
+        mh(f + 188, g + 4) && ng && (xa = false);
         Ra = clamp(Ra, 0, oh[Qa].length - 1);
         c = oh[Qa][Ra];
         if (0 == ec[ph[Qa]]) lg(Vf, f + 96, g + 48, "Not reached", -1, 0);
@@ -1267,7 +1267,7 @@ function Ig() {
             else if (N(G, f, g + 0, "LV " + itemCatalogArray[c][itemAttr1], 16777215, 0), N(G, f, g + 12, "LP " + itemCatalogArray[c][itemAttr10], 16777215, 0), N(G, f, g + 24, "GOLD " + itemCatalogArray[c][itemAttr66], 16777215, 0), N(G, f, g + 36, "EXP " + itemCatalogArray[c][itemAttr65], 16777215, 0), b = 0, 0 != itemCatalogArray[c][itemAttr40] && (wh(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != itemCatalogArray[c][itemAttr41] && (wh(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != itemCatalogArray[c][itemAttr42] && (wh(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != itemCatalogArray[c][itemAttr43] && (wh(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != itemCatalogArray[c][itemAttr44] && (wh(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && N(G, f, g + 48, "RES ", 16777215, 0), N(G, f + 80, g + 0,
                     "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], nh(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 2);
             else
-                for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = u[a][Mc], 10 == u[a][Nc] ? Qg(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc], u[a][$d], !0) : 20 == u[a][Nc] || 30 == u[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), u[a][Pc], u[a][$d]) : hh(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc]), fh = 0, G.a = 4, N(G, f + 100, g + 12 + 20 * d + 4, u[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
+                for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = u[a][Mc], 10 == u[a][Nc] ? Qg(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc], u[a][$d], true) : 20 == u[a][Nc] || 30 == u[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), u[a][Pc], u[a][$d]) : hh(oa, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, u[a][Pc]), fh = 0, G.a = 4, N(G, f + 100, g + 12 + 20 * d + 4, u[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), sg(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
             for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0), a == Ra && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), ng && (Ra = a)), Ch(c, b + 12, d + 20, 2)
         }
@@ -1282,10 +1282,10 @@ function Ig() {
         g = 14;
         sg(f -
             6, g - 6, 204, 180, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (ya = !1);
+        mh(f + 188, g + 4) && ng && (ya = false);
         if (0 == ec[ph[Sa]]) lg(Vf, f + 96, g + 48, "Not reached", -1, 0);
         else
-            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, !0)) : (hh(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (G.b = -1, lg(G, b + 3, d + 10, "" + Dc[c], 16777215, -1))), G.a = 3, 0 == badgeArray[c][1].length ? N(G, b + 40, d + 6, badgeArray[c][0], 16777215,
+            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (hh(qa, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (G.b = -1, lg(G, b + 3, d + 10, "" + Dc[c], 16777215, -1))), G.a = 3, 0 == badgeArray[c][1].length ? N(G, b + 40, d + 6, badgeArray[c][0], 16777215,
                 0) : (N(G, b + 40, d + 1, badgeArray[c][0], 16777215, 0), G.a = 3, N(G, b + 40, d + 11, badgeArray[c][1], 16777215, 0)));
         kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Sa--;
         kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Sa++;
@@ -1298,7 +1298,7 @@ function Ig() {
         g = 202;
         d = 32;
         sg(f - 6, g - 6, 204, 148, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (za = !1);
+        mh(f + 188, g + 4) && ng && (za = false);
         c = ["ON", "OFF"];
         N(G, f + 0, g + 48, "Auto move", 16777215, 0);
         for (a = 0; a < r; a++) {
@@ -1316,13 +1316,13 @@ function Ig() {
         1 == q ? lg(G, f + 96, g + 100, "Return to TITLE", -1, 0) : lg(G, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = levelListArray[q][Eh];
-        nh(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), 1 == q ? ra = 0 : (ug = 0, ra = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = !1)
+        nh(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), 1 == q ? ra = 0 : (ug = 0, ra = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = false)
     }
     if (Aa) {
         f = 224;
         g = 14;
         sg(f - 6, g - 6, 204, 180, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (Aa = !1);
+        mh(f + 188, g + 4) && ng && (Aa = false);
         for (a = h = 0; a < badgeArray.length; a++) badgeArray[a] && Dc[a] == badgeArray[a][4] && h++;
         G.a = 3;
         N(G, f + 27, g + 6, "Achievement Medal", 16777215, 0);
@@ -1332,7 +1332,7 @@ function Ig() {
         for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, sg(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (Wf.b = -2, Jg(Wf,
             b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (Wf.a = 3, Wf.b = -3, Jg(Wf, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(ia, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : vg(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && ng && (c = a)), G.a = 3, G.b = 1, N(G, b + 40, d + 6, ff[a][0], 16777215, 0);
         if (!c)
-            for (Fc[c] = 1, Aa = !1, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
+            for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
             for (Fc[c] = 1, a = 0; 4 > a; a++)
                 for (b = 0; b < tb.length; b++) Xa[a] += tb[b][a],
@@ -1886,7 +1886,7 @@ function eh(a, b, c, d, f, g, h) {
     ih(~~b[0].x - 2, ~~b[0].y - 2, 5, 5, f);
     f = u[Yb[a][2]][Mc];
     0 != f && (0 == gi[a][2] ? Qg(oa, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 0, 16 * (f >> 4), 16, 16, u[Yb[a][2]][Pc],
-        u[Yb[a][2]][$d], !1) : Qg(oa, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 16, 16 * (f >> 4), -16, 16, u[Yb[a][2]][Pc], u[Yb[a][2]][$d], !1));
+        u[Yb[a][2]][$d], false) : Qg(oa, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 16, 16 * (f >> 4), -16, 16, u[Yb[a][2]][Pc], u[Yb[a][2]][$d], false));
     for (f = 0; 2 > f; f++) {
         var p = Yb[a][f ? d : c];
         g = u[p][Nc];
@@ -1970,7 +1970,7 @@ mainWindow.fff = hg;
 function hg(a) {
     Wi != a && (Wi = a, ka = new fa, ka.f("m" + a + ".png"));
     Yf(ka);
-    if (Zf) return !1;
+    if (Zf) return false;
     Mg = q;
     ec[q] = 1;
     si = ka.i;
@@ -2003,7 +2003,7 @@ function hg(a) {
     aj = W = 0;
     bj();
     cj();
-    return !0
+    return true
 }
 mainWindow.fff = ri;
 
@@ -3764,11 +3764,11 @@ function Gm(a) {
 mainWindow.fff = dl;
 
 function dl(a) {
-    if (2 == a) return !0;
+    if (2 == a) return true;
     var b;
     for (b = 0; b < ym; b++)
-        if (Bm[b] == a) return !1;
-    return !0
+        if (Bm[b] == a) return false;
+    return true
 }
 mainWindow.fff = zg;
 
@@ -3849,7 +3849,7 @@ function cg() {
     (wi = an) ? bn++ : bn = 0;
     pg = cn;
     qg = dn;
-    for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = !1;
+    for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = false;
     Tf = Tf + floor(1024 * rand()) & 1023;
     Uf = floor(512 * rand()) | 1;
     dg();
@@ -3866,10 +3866,10 @@ var eg = 1;
 
 /** Checks hostname */
 function Xf() {
-    if (Hostname.length != Tm.length) return !0;
+    if (Hostname.length != Tm.length) return true;
     for (eg = 0; Sm < Hostname.length; Sm++)
-        if (Hostname[Sm] != Tm[Sm]) return !0;
-    return !1
+        if (Hostname[Sm] != Tm[Sm]) return true;
+    return false
 }
 var Um = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     Vm = 0,
@@ -4242,10 +4242,10 @@ mainWindow.full_screen = toggleFullscreen;
 function toggleFullscreen() {
     Hm.fullscreenEnabled && (Hm.fullscreenElement ? Hm.exitFullscreen() : Gf.requestFullscreen())
 }
-var ng = !1,
-    lh = !1,
-    wi = !1,
-    an = !1,
+var ng = false,
+    lh = false,
+    wi = false,
+    an = false,
     bn = 0,
     pg = 0,
     qg = 0,
@@ -4254,7 +4254,7 @@ var ng = !1,
     pn = 0;
 
 function vg(a, b, c, d) {
-    return pg < a || a + c <= pg || qg < b || b + d <= qg ? !1 : !0
+    return pg < a || a + c <= pg || qg < b || b + d <= qg ? false : true
 }
 
 function mg(a, b, c, d) {
@@ -4273,15 +4273,15 @@ function onMouseMove(a) {
 Hm.onmousemove = onMouseMove;
 Hm.onmousedown = function(a) {
     onMouseMove(a);
-    rn = !1;
-    if (!(0 > cn || 640 <= cn || 0 > dn || 432 <= dn) && (rn = !0, 0 == a.button && (an = !0), rn)) return !1
+    rn = false;
+    if (!(0 > cn || 640 <= cn || 0 > dn || 432 <= dn) && (rn = true, 0 == a.button && (an = true), rn)) return false
 };
 Hm.onmouseup = function(a) {
     onMouseMove(a);
-    0 == a.button && (an = !1)
+    0 == a.button && (an = false)
 };
 Hm.oncontextmenu = function() {
-    if (rn) return !1
+    if (rn) return false
 };
 
 function sn(a) {
@@ -4297,21 +4297,21 @@ function sn(a) {
 }
 Gf.ontouchstart = function(a) {
     sn(a);
-    1 == pn ? (an = !0, pg = cn, qg = dn) : 2 == pn && (an = !1, pg = cn, qg = dn);
-    return !1
+    1 == pn ? (an = true, pg = cn, qg = dn) : 2 == pn && (an = false, pg = cn, qg = dn);
+    return false
 };
 Gf.ontouchmove = function(a) {
     sn(a);
-    return !1
+    return false
 };
 Gf.ontouchend = function(a) {
     sn(a);
-    0 == pn ? an = !1 : 1 == pn ? (pg = cn, qg = dn) : 2 == pn && (pg = cn, qg = dn);
-    return !1
+    0 == pn ? an = false : 1 == pn ? (pg = cn, qg = dn) : 2 == pn && (pg = cn, qg = dn);
+    return false
 };
 Gf.ontouchcancel = function() {
     pn = 0;
-    an = !1
+    an = false
 };
 var Jf = Array(256),
     Kf = Array(256),
@@ -4321,16 +4321,16 @@ var Jf = Array(256),
 Hm.onkeydown = function(a) {
     var b = a.keyCode;
     65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? Nf[b] : Mf[b];
-    0 <= b && 256 > b && (Lf[b] = !0, Kf[b] = !0);
-    if (0 != b && rn) return !1
+    0 <= b && 256 > b && (Lf[b] = true, Kf[b] = true);
+    if (0 != b && rn) return false
 };
 Hm.onkeyup = function(a) {
     var b = a.keyCode;
     65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? Nf[b] : Mf[b];
-    0 <= b && 256 > b && (Lf[b] = !1);
-    if (0 != b && rn) return !1
+    0 <= b && 256 > b && (Lf[b] = false);
+    if (0 != b && rn) return false
 };
-var rn = !1,
+var rn = false,
     qf = mainWindow.localStorage;
 
 function promptInput(a, b) {
@@ -4493,7 +4493,7 @@ function og(a, b, c, d, f) {
     Gg = 0;
     Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, f);
     6 <= d.length ? mn(a, b + 10, d, f) : lg(Wf, a, b + 10, d, f, -1);
-    return mg(a, b, 32, 32) ? (Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : lg(Wf, a, b + 10, d, 16750950, -1), !0) : !1
+    return mg(a, b, 32, 32) ? (Ii(ia, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : lg(Wf, a, b + 10, d, 16750950, -1), true) : false
 }
 
 function kh(a, b, c, d, f) {
@@ -4502,7 +4502,7 @@ function kh(a, b, c, d, f) {
     Gg = 0;
     Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, f);
     6 <= d.length ? mn(a, b + 8, d, f) : lg(Wf, a, b + 8, d, f, -1);
-    return mg(a, b, 24, 24) ? (Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : lg(Wf, a, b + 8, d, 16737894, -1), !0) : !1
+    return mg(a, b, 24, 24) ? (Ii(ia, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : lg(Wf, a, b + 8, d, 16737894, -1), true) : false
 }
 
 function mh(a, b) {
@@ -4510,11 +4510,11 @@ function mh(a, b) {
     Ni(a, b, 20, 20, 2147483648);
     Gg = 0;
     Ii(ia, a, b, 16, 16, 96, 24, 16, 16, 16777215);
-    return mg(a, b, 20, 20) ? (Ii(ia, a, b, 16, 16, 96, 24, 16, 16, 16737894), !0) : !1
+    return mg(a, b, 20, 20) ? (Ii(ia, a, b, 16, 16, 96, 24, 16, 16, 16737894), true) : false
 }
 
 function nh(a, b, c, d, f) {
     Ni(a, b, c, d, 0);
     lg(Vf, a, b, f, 16777215, 8409120);
-    return mg(a, b, c, d) ? (Xg(a - (c >> 1), b - (d >> 1), c, d, 6684672), !0) : !1
+    return mg(a, b, c, d) ? (Xg(a - (c >> 1), b - (d >> 1), c, d, 6684672), true) : false
 };

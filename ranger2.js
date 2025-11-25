@@ -3864,11 +3864,11 @@ function setupAnimRequest() {
         Zm = a;
         $m++
     }
-    ng = 0 == wi && 1 == an;
-    lh = 1 == wi && 0 == an;
-    (wi = an) ? bn++ : bn = 0;
-    pg = cn;
-    qg = dn;
+    ng = 0 == wi && 1 == isMouseDown;
+    lh = 1 == wi && 0 == isMouseDown;
+    (wi = isMouseDown) ? bn++ : bn = 0;
+    pg = mouseXRel;
+    qg = mouseYRel;
     for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = false;
     Tf = Tf + floor(1024 * rand()) & 1023;
     Uf = floor(512 * rand()) | 1;
@@ -4282,12 +4282,12 @@ function toggleFullscreen() {
 var ng = false,
     lh = false,
     wi = false,
-    an = false,
+    isMouseDown = false,
     bn = 0,
     pg = 0,
     qg = 0,
-    cn = 0,
-    dn = 0,
+    mouseXRel = 0,
+    mouseYRel = 0,
     pn = 0;
 
 function vg(a, b, c, d) {
@@ -4298,27 +4298,45 @@ function mg(a, b, c, d) {
     return vg(a - c / 2, b - d / 2, c, d)
 }
 
-function onMouseMove(a) {
-    var b = canvasElement.getBoundingClientRect(),
-        c = b.right - b.left,
-        d = b.bottom - b.top,
-        f = min(c / 640, d / 432),
-        d = floor(d / 2 - 432 * f / 2);
-    cn = floor((a.clientX - b.left - floor(c / 2 - 640 * f / 2)) / f);
-    dn = floor((a.clientY - b.top - d) / f)
+function onMouseMove(mouseState) {
+    var clientRect = canvasElement.getBoundingClientRect(),
+        rectWidth = clientRect.right - clientRect.left,
+        rectHeight = clientRect.bottom - clientRect.top,
+        f = min(rectWidth / CANVAS_WIDTH, rectHeight / CANVAS_HEIGHT),
+        rectHeight = floor(rectHeight / 2 - CANVAS_HEIGHT * f / 2);
+    mouseXRel = floor((mouseState.clientX - clientRect.left - floor(rectWidth / 2 - CANVAS_WIDTH * f / 2)) / f);
+    mouseYRel = floor((mouseState.clientY - clientRect.top - rectHeight) / f)
+    LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
 }
+
+
 domDocument.onmousemove = onMouseMove;
 domDocument.onmousedown = function(a) {
     onMouseMove(a);
-    rn = false;
-    if (!(0 > cn || 640 <= cn || 0 > dn || 432 <= dn) && (rn = true, 0 == a.button && (an = true), rn)) return false
+    isCanvasFocused = false;
+
+    const insideCanvas =
+        mouseXRel >= 0 && mouseXRel < CANVAS_WIDTH &&
+        mouseYRel >= 0 && mouseYRel < CANVAS_HEIGHT;
+    
+    if (insideCanvas) {
+        isCanvasFocused = true;
+        if (a.button === 0) {
+            isMouseDown = true;
+        }
+        return false;
+    }
+    // if (
+    //     !(0 > mouseXRel || CANVAS_WIDTH <= mouseXRel || 0 > mouseYRel || CANVAS_HEIGHT <= mouseYRel) && 
+    //     (isCanvasFocused = true, 0 == a.button && (isMouseDown = true), isCanvasFocused)
+    // ) return false
 };
 domDocument.onmouseup = function(a) {
     onMouseMove(a);
-    0 == a.button && (an = false)
+    0 == a.button && (isMouseDown = false)
 };
 domDocument.oncontextmenu = function() {
-    if (rn) return false
+    if (isCanvasFocused) return false
 };
 
 function sn(a) {
@@ -4330,11 +4348,11 @@ function sn(a) {
         d = floor(d / 2 - 432 * f / 2);
     a = a.touches;
     pn = a.length;
-    1 == pn ? (cn = floor((a[0].clientX - b.left - c) / f), dn = floor((a[0].clientY - b.top - d) / f)) : 2 == pn && (cn = floor((a[0].clientX - b.left - c) / f), dn = floor((a[0].clientY - b.top - d) / f), d = floor((a[1].clientY - b.top - d) / f), cn = floor((cn + floor((a[1].clientX - b.left - c) / f)) / 2), dn = floor((dn + d) / 2))
+    1 == pn ? (mouseXRel = floor((a[0].clientX - b.left - c) / f), mouseYRel = floor((a[0].clientY - b.top - d) / f)) : 2 == pn && (mouseXRel = floor((a[0].clientX - b.left - c) / f), mouseYRel = floor((a[0].clientY - b.top - d) / f), d = floor((a[1].clientY - b.top - d) / f), mouseXRel = floor((mouseXRel + floor((a[1].clientX - b.left - c) / f)) / 2), mouseYRel = floor((mouseYRel + d) / 2))
 }
 canvasElement.ontouchstart = function(a) {
     sn(a);
-    1 == pn ? (an = true, pg = cn, qg = dn) : 2 == pn && (an = false, pg = cn, qg = dn);
+    1 == pn ? (isMouseDown = true, pg = mouseXRel, qg = mouseYRel) : 2 == pn && (isMouseDown = false, pg = mouseXRel, qg = mouseYRel);
     return false
 };
 canvasElement.ontouchmove = function(a) {
@@ -4343,12 +4361,12 @@ canvasElement.ontouchmove = function(a) {
 };
 canvasElement.ontouchend = function(a) {
     sn(a);
-    0 == pn ? an = false : 1 == pn ? (pg = cn, qg = dn) : 2 == pn && (pg = cn, qg = dn);
+    0 == pn ? isMouseDown = false : 1 == pn ? (pg = mouseXRel, qg = mouseYRel) : 2 == pn && (pg = mouseXRel, qg = mouseYRel);
     return false
 };
 canvasElement.ontouchcancel = function() {
     pn = 0;
-    an = false
+    isMouseDown = false
 };
 var Jf = Array(256),
     Kf = Array(256),
@@ -4359,15 +4377,15 @@ domDocument.onkeydown = function(a) {
     var b = a.keyCode;
     65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? Nf[b] : Mf[b];
     0 <= b && 256 > b && (Lf[b] = true, Kf[b] = true);
-    if (0 != b && rn) return false
+    if (0 != b && isCanvasFocused) return false
 };
 domDocument.onkeyup = function(a) {
     var b = a.keyCode;
     65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? Nf[b] : Mf[b];
     0 <= b && 256 > b && (Lf[b] = false);
-    if (0 != b && rn) return false
+    if (0 != b && isCanvasFocused) return false
 };
-var rn = false,
+var isCanvasFocused = false,
     currentStorage = mainWindow.localStorage;
 
 function promptInput(a, b) {

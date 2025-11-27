@@ -48,12 +48,12 @@ for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) Ta[iterIdxTemp_1] =
 Ta[98] = 9999999;
 Ta[99] = 9999999;
 var r = 1,
-    Ua = 1,
-    Va = 0,
-    Wa = 0,
-    Xa = [0, 0, 0, 0],
-    Ya = [50, 50, 50, 50],
-    Za = [50, 50, 50, 50],
+    partyLevel = 1,
+    partyEXPAccum = 0,
+    partyGold = 0,
+    partySP = [0, 0, 0, 0],
+    partyLP = [50, 50, 50, 50],
+    partyMaxLP = [50, 50, 50, 50],
     $a = [0, 0, 0, 0],
     ab = [0, 0, 0, 0],
     bb = [0, 0, 0, 0],
@@ -99,7 +99,7 @@ var r = 1,
     Vb = 0,
     Wb = 0,
     Xb = 0,
-    Yb = [
+    partyEquipmentTable = [
         [4, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -116,13 +116,13 @@ mainWindow.fff = bc;
 function bc() {
     var a, b;
     cc();
-    Ua = r = 1;
-    for (a = Wa = Va = 0; 4 > a; a++) Xa[a] = 0, Ya[a] = 50, Za[a] = 50, $a[a] = 0;
+    partyLevel = r = 1;
+    for (a = partyGold = partyEXPAccum = 0; 4 > a; a++) partySP[a] = 0, partyLP[a] = 50, partyMaxLP[a] = 50, $a[a] = 0;
     for (a = 0; 9 > a; a++) db[a] = 0;
     for (b = hb = eb = 0; b < tb.length; b++)
         for (a = 0; 4 > a; a++) tb[b][a] = 0;
     for (a = 0; 4 > a; a++)
-        for (b = 0; 8 > b; b++) Yb[a][b] = 0;
+        for (b = 0; 8 > b; b++) partyEquipmentTable[a][b] = 0;
     for (a = 0; 256 > a; a++) $b[a] = 0, ac[a] = 0;
     for (a = 0; a < dc; a++) ec[a] = 0;
     for (a = 0; a < itemCount; a++) Bc[a] = 0;
@@ -324,23 +324,26 @@ function Ye(a, b, c) {
 }
 mainWindow.fff = Ze;
 
-function Ze(a, b) {
-    return itemList[Yb[a][3]][ee] == b || itemList[Yb[a][4]][ee] == b ? true : false
+function Ze(partyIdx, itemIdx) {
+    return itemList[partyEquipmentTable[partyIdx][3]][ee] == itemIdx || 
+        itemList[partyEquipmentTable[partyIdx][4]][ee] == itemIdx 
+    ? true 
+    : false
 }
 mainWindow.fff = $e;
 
 function $e(a, b) {
     var c = 0;
-    itemList[Yb[a][3]][ee] == b && (c += itemList[Yb[a][3]][ge]);
-    itemList[Yb[a][4]][ee] == b && (c += itemList[Yb[a][4]][ge]);
+    itemList[partyEquipmentTable[a][3]][ee] == b && (c += itemList[partyEquipmentTable[a][3]][ge]);
+    itemList[partyEquipmentTable[a][4]][ee] == b && (c += itemList[partyEquipmentTable[a][4]][ge]);
     return c
 }
 mainWindow.fff = af;
 
 function af(a, b) {
     var c = 0;
-    itemList[Yb[a][3]][ee] == b && (c += itemList[Yb[a][3]][je]);
-    itemList[Yb[a][4]][ee] == b && (c += itemList[Yb[a][4]][je]);
+    itemList[partyEquipmentTable[a][3]][ee] == b && (c += itemList[partyEquipmentTable[a][3]][je]);
+    itemList[partyEquipmentTable[a][4]][ee] == b && (c += itemList[partyEquipmentTable[a][4]][je]);
     return c
 }
 var itemList = Array(256);
@@ -633,23 +636,23 @@ function mf() {
     D[a++] = q >> 0 & 63;
     for (b = 0; 4 > b; b++) D[a++] = 0, D[a++] = 0, D[a++] = 0;
     D[a++] = r;
-    D[a++] = Ua >> 6 & 63;
-    D[a++] = Ua >> 0 & 63;
-    D[a++] = Va >> 18 & 63;
-    D[a++] = Va >> 12 & 63;
-    D[a++] = Va >> 6 & 63;
-    D[a++] = Va >> 0 & 63;
-    D[a++] = Wa >> 18 & 63;
-    D[a++] = Wa >> 12 & 63;
-    D[a++] = Wa >> 6 & 63;
-    D[a++] = Wa >> 0 & 63;
-    for (b = 0; 4 > b; b++) D[a++] = Xa[b] >> 6 & 63, D[a++] = Xa[b] >> 0 & 63;
-    for (b = 0; 4 > b; b++) D[a++] = Ya[b] >> 12 & 63, D[a++] = Ya[b] >> 6 & 63, D[a++] = Ya[b] >> 0 & 63;
+    D[a++] = partyLevel >> 6 & 63;
+    D[a++] = partyLevel >> 0 & 63;
+    D[a++] = partyEXPAccum >> 18 & 63;
+    D[a++] = partyEXPAccum >> 12 & 63;
+    D[a++] = partyEXPAccum >> 6 & 63;
+    D[a++] = partyEXPAccum >> 0 & 63;
+    D[a++] = partyGold >> 18 & 63;
+    D[a++] = partyGold >> 12 & 63;
+    D[a++] = partyGold >> 6 & 63;
+    D[a++] = partyGold >> 0 & 63;
+    for (b = 0; 4 > b; b++) D[a++] = partySP[b] >> 6 & 63, D[a++] = partySP[b] >> 0 & 63;
+    for (b = 0; 4 > b; b++) D[a++] = partyLP[b] >> 12 & 63, D[a++] = partyLP[b] >> 6 & 63, D[a++] = partyLP[b] >> 0 & 63;
     for (b =
         0; 4 > b; b++)
         for (c = 0; c < tb.length; c++) D[a++] = tb[c][b] >> 6 & 63, D[a++] = tb[c][b] >> 0 & 63;
     for (b = 0; 4 > b; b++)
-        for (c = 0; 8 > c; c++) D[a++] = Yb[b][c] >> 6 & 63, D[a++] = Yb[b][c] >> 0 & 63;
+        for (c = 0; 8 > c; c++) D[a++] = partyEquipmentTable[b][c] >> 6 & 63, D[a++] = partyEquipmentTable[b][c] >> 0 & 63;
     D[a++] = 4;
     for (b = D[a++] = 0; 256 > b; b++) D[a++] = $b[b];
     D[a++] = 0;
@@ -732,15 +735,15 @@ function rf(a) {
     a++;
     for (b = 0; 4 > b; b++) a++, a++, a++;
     r = D[a++];
-    Ua = (D[a++] << 6) + D[a++];
-    Va = (D[a++] << 18) + (D[a++] << 12) + (D[a++] << 6) + D[a++];
-    Wa = (D[a++] << 18) + (D[a++] << 12) + (D[a++] << 6) + D[a++];
-    for (b = 0; 4 > b; b++) Xa[b] = (D[a++] << 6) + D[a++];
-    for (b = 0; 4 > b; b++) Ya[b] = (D[a++] << 12) + (D[a++] << 6) + D[a++];
+    partyLevel = (D[a++] << 6) + D[a++];
+    partyEXPAccum = (D[a++] << 18) + (D[a++] << 12) + (D[a++] << 6) + D[a++];
+    partyGold = (D[a++] << 18) + (D[a++] << 12) + (D[a++] << 6) + D[a++];
+    for (b = 0; 4 > b; b++) partySP[b] = (D[a++] << 6) + D[a++];
+    for (b = 0; 4 > b; b++) partyLP[b] = (D[a++] << 12) + (D[a++] << 6) + D[a++];
     for (b = 0; 4 > b; b++)
         for (c = 0; c < tb.length; c++) tb[c][b] = (D[a++] << 6) + D[a++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; 8 > c; c++) Yb[b][c] = (D[a++] << 6) + D[a++];
+        for (c = 0; 8 > c; c++) partyEquipmentTable[b][c] = (D[a++] << 6) + D[a++];
     g = (D[a++] << 6) + D[a++];
     for (b = 0; b < g; b++) $b[b] = D[a++];
     g = (D[a++] << 6) + D[a++];
@@ -773,9 +776,9 @@ function rf(a) {
 var tf = 0,
     uf = 0,
     vf = 0,
-    wf = [],
-    xf = [],
-    yf = [],
+    itemHashTable = [],
+    levelHashTable = [],
+    itemCatalogHashTable = [],
     zf = 0;
 mainWindow.fff = hashAdjust;
 
@@ -790,12 +793,12 @@ function Bf() {
     c = hashAdjust(c, 0);
     c = hashAdjust(c, q);
     c = hashAdjust(c, r);
-    c = hashAdjust(c, Ua);
-    c = hashAdjust(c, Va);
-    c = hashAdjust(c, Wa);
-    for (a = 0; 4 > a; a++) c = hashAdjust(c, Xa[a]), c = hashAdjust(c, Ya[a]), c = hashAdjust(c, Za[a]), c = hashAdjust(c, $a[a]), c = hashAdjust(c, ab[a]), c = hashAdjust(c, bb[a]), c = hashAdjust(c, lb[a]), c = hashAdjust(c, mb[a]), c = hashAdjust(c, nb[a]), c = hashAdjust(c, pb[a]), c = hashAdjust(c, qb[a]), c = hashAdjust(c, rb[a]), c = hashAdjust(c, sb[a]);
+    c = hashAdjust(c, partyLevel);
+    c = hashAdjust(c, partyEXPAccum);
+    c = hashAdjust(c, partyGold);
+    for (a = 0; 4 > a; a++) c = hashAdjust(c, partySP[a]), c = hashAdjust(c, partyLP[a]), c = hashAdjust(c, partyMaxLP[a]), c = hashAdjust(c, $a[a]), c = hashAdjust(c, ab[a]), c = hashAdjust(c, bb[a]), c = hashAdjust(c, lb[a]), c = hashAdjust(c, mb[a]), c = hashAdjust(c, nb[a]), c = hashAdjust(c, pb[a]), c = hashAdjust(c, qb[a]), c = hashAdjust(c, rb[a]), c = hashAdjust(c, sb[a]);
     for (a = 0; 4 > a; a++)
-        for (b = 0; 8 > b; b++) c = hashAdjust(c, Yb[a][b]);
+        for (b = 0; 8 > b; b++) c = hashAdjust(c, partyEquipmentTable[a][b]);
     for (a = 0; 256 > a; a++) c = hashAdjust(c, $b[a]);
     for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
     c = hashAdjust(c, eb);
@@ -912,18 +915,18 @@ function gameInit(a, b) {
             gf = null == c ? "" : c) : gf = "";
         jf = rf(gf);
         kf = 100;
-        wf = Array(256);
+        itemHashTable = Array(256);
         for (c = 0; 256 > c; c++)
-            if (wf[c] = 0, itemList[c])
-                for (d = 1; d < itemList[c].length; d++) wf[c] = hashAdjust(wf[c], itemList[c][d]);
-        xf = Array(levelListArray.length);
+            if (itemHashTable[c] = 0, itemList[c])
+                for (d = 1; d < itemList[c].length; d++) itemHashTable[c] = hashAdjust(itemHashTable[c], itemList[c][d]);
+        levelHashTable = Array(levelListArray.length);
         for (c = 0; c < levelListArray.length; c++)
-            if (xf[c] = 0, levelListArray[c])
-                for (d = 2; d < levelListArray[c].length; d++) xf[c] = hashAdjust(xf[c], levelListArray[c][d]);
-        yf = Array(itemCatalogArray.length);
+            if (levelHashTable[c] = 0, levelListArray[c])
+                for (d = 2; d < levelListArray[c].length; d++) levelHashTable[c] = hashAdjust(levelHashTable[c], levelListArray[c][d]);
+        itemCatalogHashTable = Array(itemCatalogArray.length);
         for (c = 0; c < itemCatalogArray.length; c++)
-            if (yf[c] = 0, itemCatalogArray[c])
-                for (d = 0; d < itemCatalogArray[c].length; d++) yf[c] = hashAdjust(yf[c], itemCatalogArray[c][d]);
+            if (itemCatalogHashTable[c] = 0, itemCatalogArray[c])
+                for (d = 0; d < itemCatalogArray[c].length; d++) itemCatalogHashTable[c] = hashAdjust(itemCatalogHashTable[c], itemCatalogArray[c][d]);
         for (c = zf = 0; c < Jc.length; c++)
             for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
         Bf();
@@ -997,23 +1000,23 @@ function drawCanvas() {
         //     d = 0;
         //     if (itemList[a])
         //         for (b = 1; b < itemList[a].length; b++) d = hashAdjust(d, itemList[a][b]);
-        //     d != wf[a] && (frameBufferArray = null)
+        //     d != itemHashTable[a] && (frameBufferArray = null)
         // }
         // for (a = vf; a < levelListArray.length; a += 64) {
         //     d = 0;
         //     if (levelListArray[a])
         //         for (b = 2; b < levelListArray[a].length; b++) d = hashAdjust(d, levelListArray[a][b]);
-        //     d != xf[a] && (frameBufferArray = null)
+        //     d != levelHashTable[a] && (frameBufferArray = null)
         // }
         // for (a = vf; a < itemCatalogArray.length; a += 64) {
         //     d = 0;
         //     if (itemCatalogArray[a])
         //         for (b = 0; b < itemCatalogArray[a].length; b++) d = hashAdjust(d, itemCatalogArray[a][b]);
-        //     d != yf[a] && (frameBufferArray = null)
+        //     d != itemCatalogHashTable[a] && (frameBufferArray = null)
         // }
-        // for (a = d = 0; a < Jc.length; a++)
-        //     for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
-        // d != zf && (frameBufferArray = null);
+        for (a = d = 0; a < Jc.length; a++)
+            for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
+        d != zf && (frameBufferArray = null);
 
         vf = vf + 1 & 63;
         if (!drawState) 
@@ -1106,7 +1109,7 @@ function drawCanvas() {
             4 == drawState 
             ? (
                 bc(), 
-                Yb[0][0] = 4, 
+                partyEquipmentTable[0][0] = 4, 
                 q = $b[4] = 1, 
                 fg[0] = 20, 
                 fg[1] = 28, 
@@ -1179,24 +1182,24 @@ function drawCanvas() {
 
             else if (12 == drawState) {
             for (a = b = 0; a < r; a++) 
-                b += Ya[a];
+                b += partyLP[a];
             if (0 == b) {
                 sa = 0;
                 drawState = 30;
                 Gc = Hc = Ic = 0;
-                c = floor(Wa / 10 / r);
+                c = floor(partyGold / 10 / r);
                 if (0 < c) {
                     for (a = 0; a < r; a++) 
                         Lg(O[a][0].x, O[a][0].y, 0, -c, 60, 16776960);
-                    Wa = clamp(Wa - c * r, 0, 9999999)
+                    partyGold = clamp(partyGold - c * r, 0, 9999999)
                 }
                 for (a = 0; a < r; a++) 
-                    Ya[a] = 1, 
+                    partyLP[a] = 1, 
                     $a[a] = 0;
                 
                 mf();
                 for (a = 0; a < r; a++) 
-                    Ya[a] = 0
+                    partyLP[a] = 0
             } else q != Mg && (
                 sa = 0, 
                 drawState = 13, 
@@ -1222,7 +1225,7 @@ function drawCanvas() {
                 Jg(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24), 
                 100 == sa && isMouseClicked
             )) {
-            for (a = 0; 4 > a; a++) Ya[a] = 1, $a[a] = 0;
+            for (a = 0; 4 > a; a++) partyLP[a] = 1, $a[a] = 0;
             ug = 0;
             drawState = 10;
             q = 1;
@@ -1237,24 +1240,124 @@ function drawCanvas() {
             mf()
         }
         Bf();
-        0 < bf && (bf--, a = badgeArray[cf][3], Qg(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true), b = 440, a = min(120 - bf - 0, 4), 0 < a && drawTooltip(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0), a = min(120 - bf - 2, 4), 0 < a && drawTooltip(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 4, 4), 0 < a && drawTooltip(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0), b = 438, a = min(120 -
-            bf - 6, 4), 0 < a && drawTooltip(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0), a = min(120 - bf - 8, 4), 0 < a && drawTooltip(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0), a = min(120 - bf - 10, 4), 0 < a && drawTooltip(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0), a = min(120 - bf - 12, 4), 0 < a && drawTooltip(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0), a = min(120 - bf - 14, 4), 0 < a && drawTooltip(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0));
-        0 < kf ? (kf--, 10 > kf ? c = floor(255 * kf / 10) : c = 255, Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)) : 0 < hf && (hf--, 10 > hf ? c = floor(255 * hf / 10) : c = 255, Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12))
+        0 < bf && (
+            bf--, 
+            a = badgeArray[cf][3], 
+            Qg(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true), 
+            b = 440, 
+            a = min(120 - bf - 0, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0), 
+            a = min(120 - bf - 2, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0), 
+            a = min(120 - bf - 4, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0), 
+            b = 438, 
+            a = min(120 - bf - 6, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0), 
+            a = min(120 - bf - 8, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0), 
+            a = min(120 - bf - 10, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0), 
+            a = min(120 - bf - 12, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0), 
+            a = min(120 - bf - 14, 4), 
+            0 < a && drawTooltip(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0)
+        );
+        0 < kf 
+        ? (
+            kf--, 
+            10 > kf 
+            ? c = floor(255 * kf / 10) 
+            : c = 255, Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)
+        ) 
+        : 0 < hf && (
+            hf--, 
+            10 > hf 
+            ? c = floor(255 * hf / 10) 
+            : c = 255, Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12)
+        )
     }
 }
 mainWindow.fff = tg;
 
 function tg() {
     var a, b, c, d, f, g;
-    for (a = 0; 4 > a; a++) ub[a] = 10 * lb[a], vb[a] = 5 * mb[a], wb[a] = 5 * nb[a], xb[a] = 5 * pb[a], yb[a] = 5 * qb[a], zb[a] = 5 * rb[a], Ab[a] = 2 * sb[a], b = Ye(a, Yb[a][2], ae), c = Ye(a, Yb[a][2], be), d = Ye(a, Yb[a][2], ce), f = Ye(a, Yb[a][2], de), Jb[a] = c, Ze(a, Ke) && (Jb[a] += $e(a, Ke)), Kb[a] = c, Ze(a, Ke) && (Kb[a] += $e(a, Ke)), Lb[a] = d, Ze(a, Le) && (Lb[a] += $e(a, Le)), Mb[a] = Ab[a] + f, Ze(a, ve) && (Mb[a] += $e(a, ve)), Nb[a] = yb[a], Ob[a] = zb[a], Pb[a] = zb[a], Sb[a] = zb[a], Tb[a] = zb[a], Za[a] = floor((50 + b) * (100 + ub[a]) / 100), Ze(a, Oe) && (Za[a] = floor(Za[a] * (100 + $e(a,
-        Oe)) / 100)), Ya[a] = clamp(Ya[a], 0, Za[a]), bb[a] = Ye(a, Yb[a][0], vd), Ze(a, Ne) && 0 < bb[a] && (bb[a] = max(bb[a] + $e(a, Ne), 1)), ab[a] = Ye(a, Yb[a][1], vd), Ze(a, te) && 0 < ab[a] && (ab[a] = max(ab[a] - $e(a, te), 1)), $a[a] = clamp($a[a], 0, ab[a]);
+    for (a = 0; 4 > a; a++) 
+        ub[a] = 10 * lb[a], 
+        vb[a] = 5 * mb[a], 
+        wb[a] = 5 * nb[a], 
+        xb[a] = 5 * pb[a], 
+        yb[a] = 5 * qb[a], 
+        zb[a] = 5 * rb[a], 
+        Ab[a] = 2 * sb[a], 
+        b = Ye(a, partyEquipmentTable[a][2], ae), 
+        c = Ye(a, partyEquipmentTable[a][2], be), 
+        d = Ye(a, partyEquipmentTable[a][2], ce), 
+        f = Ye(a, partyEquipmentTable[a][2], de), 
+        Jb[a] = c, Ze(a, Ke) && (Jb[a] += $e(a, Ke)), 
+        Kb[a] = c, Ze(a, Ke) && (Kb[a] += $e(a, Ke)), 
+        Lb[a] = d, Ze(a, Le) && (Lb[a] += $e(a, Le)), 
+        Mb[a] = Ab[a] + f, 
+        Ze(a, ve) && (Mb[a] += $e(a, ve)), 
+        Nb[a] = yb[a], 
+        Ob[a] = zb[a], 
+        Pb[a] = zb[a], 
+        Sb[a] = zb[a], 
+        Tb[a] = zb[a], 
+        partyMaxLP[a] = floor((50 + b) * (100 + ub[a]) / 100), 
+        Ze(a, Oe) && (partyMaxLP[a] = floor(partyMaxLP[a] * (100 + $e(a, Oe)) / 100)), 
+        partyLP[a] = clamp(partyLP[a], 0, partyMaxLP[a]), 
+        bb[a] = Ye(a, partyEquipmentTable[a][0], vd), 
+        Ze(a, Ne) && 0 < bb[a] && (bb[a] = max(bb[a] + $e(a, Ne), 1)), 
+        ab[a] = Ye(a, partyEquipmentTable[a][1], vd), 
+        Ze(a, te) && 0 < ab[a] && (ab[a] = max(ab[a] - $e(a, te), 1)), 
+        $a[a] = clamp($a[a], 0, ab[a]);
     for (b = 0; 2 > b; b++)
-        for (a = 0; 4 > a; a++) d = Yb[a][b], 0 != d && (f = Ye(a, d, Oc), g = Ye(a, d, td), c = 4 * b + a, Db[c] = Ye(a, d, Vc), Eb[c] = Ye(a, d, Wc), Db[c] = floor(Db[c] * (100 + Cb[f][a]) / 100), Eb[c] = floor(Eb[c] * (100 + Cb[f][a]) / 100), Db[c] = floor(Db[c] * (100 + Ub[g][a]) / 100), Eb[c] = floor(Eb[c] * (100 + Ub[g][a]) / 100), Ze(a, oe) && (Db[c] = floor(Db[c] * (100 + $e(a, oe)) / 100),
-            Eb[c] = floor(Eb[c] * (100 + $e(a, oe)) / 100)), Ze(a, Ge) && 1 == g && (Db[c] = floor(Db[c] * (100 + $e(a, Ge)) / 100), Eb[c] = floor(Eb[c] * (100 + $e(a, Ge)) / 100)), Ze(a, He) && 2 == g && (Db[c] = floor(Db[c] * (100 + $e(a, He)) / 100), Eb[c] = floor(Eb[c] * (100 + $e(a, He)) / 100)), Ze(a, ze) && 3 == g && (Eb[c] = floor(Eb[c] * (100 + $e(a, ze)) / 100)), Ze(a, Be) && 4 == g && (Db[c] = floor(Db[c] * (100 + $e(a, Be)) / 100), Eb[c] = floor(Eb[c] * (100 + $e(a, Be)) / 100)), Fb[c] = Ye(a, d, Xc), Ze(a, ue) && 1 < Fb[c] && (Fb[c] += $e(a, ue)), b || (Gb[a] = Ye(a, d, Zc), Ze(a, pe) && (Gb[a] -= $e(a, pe)), Hb[a] = Ye(a, d, $c), !Ze(a, qe) || 4 != itemList[d][Nc] && 5 != itemList[d][Nc] ||
-            (Hb[a] += $e(a, qe))));
+        for (a = 0; 4 > a; a++) 
+            d = partyEquipmentTable[a][b], 
+            0 != d && (
+                f = Ye(a, d, Oc), 
+                g = Ye(a, d, td), 
+                c = 4 * b + a, 
+                Db[c] = Ye(a, d, Vc), 
+                Eb[c] = Ye(a, d, Wc), 
+                Db[c] = floor(Db[c] * (100 + Cb[f][a]) / 100), 
+                Eb[c] = floor(Eb[c] * (100 + Cb[f][a]) / 100), 
+                Db[c] = floor(Db[c] * (100 + Ub[g][a]) / 100), 
+                Eb[c] = floor(Eb[c] * (100 + Ub[g][a]) / 100), 
+                Ze(a, oe) && (
+                    Db[c] = floor(Db[c] * (100 + $e(a, oe)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + $e(a, oe)) / 100)
+                ), 
+                Ze(a, Ge) && 1 == g && (
+                    Db[c] = floor(Db[c] * (100 + $e(a, Ge)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + $e(a, Ge)) / 100)
+                ), 
+                Ze(a, He) && 2 == g && (
+                    Db[c] = floor(Db[c] * (100 + $e(a, He)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + $e(a, He)) / 100)
+                ), 
+                Ze(a, ze) && 3 == g && (Eb[c] = floor(Eb[c] * (100 + $e(a, ze)) / 100)), 
+                Ze(a, Be) && 4 == g && (
+                    Db[c] = floor(Db[c] * (100 + $e(a, Be)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + $e(a, Be)) / 100)
+                ), 
+                Fb[c] = Ye(a, d, Xc), 
+                Ze(a, ue) && 1 < Fb[c] && (Fb[c] += $e(a, ue)), 
+                b || (
+                    Gb[a] = Ye(a, d, Zc), 
+                    Ze(a, pe) && (Gb[a] -= $e(a, pe)), 
+                    Hb[a] = Ye(a, d, $c), 
+                    !Ze(a, qe) || 4 != itemList[d][Nc] && 5 != itemList[d][Nc] || (Hb[a] += $e(a, qe))
+                )
+            );
     Xb = Wb = Vb = 0;
     Vg = 180;
-    for (a = 0; 4 > a; a++) Ze(a, Ce) && (Vb += $e(a, Ce)), Ze(a, Ee) && (Wb += $e(a, Ee)), Ze(a, Fe) && (Xb += $e(a, Fe)), Ze(a, Me) && (Vg += 60 * $e(a, Me));
+    for (a = 0; 4 > a; a++) 
+        Ze(a, Ce) && (Vb += $e(a, Ce)), 
+        Ze(a, Ee) && (Wb += $e(a, Ee)), 
+        Ze(a, Fe) && (Xb += $e(a, Fe)), 
+        Ze(a, Me) && (Vg += 60 * $e(a, Me));
     Ic = clamp(Ic, 0, Vg);
     for (a = hb = 0; 9 > a; a++) 1 == db[a] && hb++
 }
@@ -1280,12 +1383,12 @@ function drawStartingMenu() {
     drawRect(0, 361, 640, 70, levelListArray[q][Yg]);
     f = 8;
     g = 348;
-    drawTooltip(gameFont, f, g, "LV " + Ua, 16777215, 0);
-    if (99 > Ua) {
-        var p = Ta[Ua - 1];
-        drawTooltip(gameFont, f + 48, g, "EXP " + Va + "(" + floor(100 * (Va - p) / (Ta[Ua] - p)) + "%)", 16777215, 0)
-    } else drawTooltip(gameFont, f + 48, g, "EXP " + Va + "(MAX)", 16777215, 0);
-    drawTooltip(gameFont, f + 184, g, "G " + Wa, 16777215, 0);
+    drawTooltip(gameFont, f, g, "LV " + partyLevel, 16777215, 0);
+    if (99 > partyLevel) {
+        var p = Ta[partyLevel - 1];
+        drawTooltip(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + floor(100 * (partyEXPAccum - p) / (Ta[partyLevel] - p)) + "%)", 16777215, 0)
+    } else drawTooltip(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(MAX)", 16777215, 0);
+    drawTooltip(gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
     drawRect(f + 264, g, 90, 11, 2236962);
     drawRect(f + 264, g, floor(90 * Ic / Vg), 11, 12281344);
     p = 10 + floor(Hc / 10);
@@ -1294,7 +1397,7 @@ function drawStartingMenu() {
     drawTooltip(gameFontMed, f +
         265, g + 2, h, 12281344, 0);
     10 <= Hc && (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
-    0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + r - 1) / r), Wa = clamp(Wa + $g * r, 0, 9999999), A(1) && 100 <= Hc && C(1), A(26) && 300 <= Hc && C(26), A(36) && 500 <= Hc && C(36), A(56) && 600 <= Hc && C(56)), Hc = 0));
+    0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + r - 1) / r), partyGold = clamp(partyGold + $g * r, 0, 9999999), A(1) && 100 <= Hc && C(1), A(26) && 300 <= Hc && C(26), A(36) && 500 <= Hc && C(36), A(56) && 600 <= Hc && C(56)), Hc = 0));
     p = 100 + Gc;
     gameFontMed.a = 4;
     drawTooltip(gameFontMed, f + 356, g + 2, "CB *" + p / 100, 16777215, 0);
@@ -1316,13 +1419,13 @@ function drawStartingMenu() {
         eh(a, l, 0, 1, 15908203, c, 2);
         drawTooltip(gameFontSmall, f + a * d + 28, g, "P" + (a + 1), 3355443, -1);
         drawRect(f + a * d + 28, g + 8, 48, 7, 1114112);
-        drawRect(f + a * d + 28, g + 8, floor(48 * Ya[a] / Za[a]), 7, 10027008);
-        drawTooltip(gameFontSmall, f + a * d + 28, g + 8, "" + Ya[a], 16764108, -1);
+        drawRect(f + a * d + 28, g + 8, floor(48 * partyLP[a] / partyMaxLP[a]), 7, 10027008);
+        drawTooltip(gameFontSmall, f + a * d + 28, g + 8, "" + partyLP[a], 16764108, -1);
         drawRect(f + a * d + 28, g + 17, 48, 5, 17);
         drawRect(f + a * d + 28, g + 17, 48 * $a[a] / max(ab[a], 1), 5, 221);
         buttonCheck(f + a * d, g, 24, 24) && (Xg(f + a * d, g, 24, 24, 8388608), isMouseClicked && Ka == a && (va = !va), isMouseClicked && (Ka = a));
         for (b = 0; 5 > b; b++) {
-            c = Yb[a][b];
+            c = partyEquipmentTable[a][b];
             k = f + a * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             drawRect(k, n, 16, 16, 0);
@@ -1336,10 +1439,10 @@ function drawStartingMenu() {
     g = 379;
     d = 36;
     if (drawIconButton(f + -1 * d, g, 13, "" + eb + "/" + hb, 16777215) && isMouseClicked) {
-        for (a = c = 0; a < r; a++) c += Za[a] - Ya[a];
+        for (a = c = 0; a < r; a++) c += partyMaxLP[a] - partyLP[a];
         if (0 < c && 0 < eb) {
-            for (a = 0; a < r; a++) Ya[a] !=
-                Za[a] && Lg(O[a][0].x, O[a][0].y, 0, Za[a] - Ya[a], 60, 65280), Ya[a] = Za[a];
+            for (a = 0; a < r; a++) partyLP[a] !=
+                partyMaxLP[a] && Lg(O[a][0].x, O[a][0].y, 0, partyMaxLP[a] - partyLP[a], 60, 65280), partyLP[a] = partyMaxLP[a];
             eb--;
             jh++
         }
@@ -1357,17 +1460,17 @@ function drawStartingMenu() {
         drawText(gameFont, 530,
             168, "INN", 16777215, 8409120);
         if (buttonCheckCentered(528, 180, 48, 40)) {
-            for (a = c = 0; a < r; a++) c += Za[a] - Ya[a];
+            for (a = c = 0; a < r; a++) c += partyMaxLP[a] - partyLP[a];
             0 < c && (c = 10);
             c += 10 * (hb - eb);
             gameFont.a = 1;
             drawText(gameFont, 530, 168, "INN", 15908203, 8409120);
             drawText(gameFont, 528, 187, "G " + c, 16777215, 8409120);
-            if (0 < c && c <= Wa && isMouseClicked && !ta) {
-                for (a = 0; a < r; a++) Ya[a] != Za[a] && Lg(O[a][0].x, O[a][0].y, 0, Za[a] - Ya[a], 60, 65280), Ya[a] = Za[a];
+            if (0 < c && c <= partyGold && isMouseClicked && !ta) {
+                for (a = 0; a < r; a++) partyLP[a] != partyMaxLP[a] && Lg(O[a][0].x, O[a][0].y, 0, partyMaxLP[a] - partyLP[a], 60, 65280), partyLP[a] = partyMaxLP[a];
                 eb != hb && Lg(436, 380, 0, hb - eb, 60, 65280);
                 eb = hb;
-                Wa = clamp(Wa - c, 0, 9999999)
+                partyGold = clamp(partyGold - c, 0, 9999999)
             }
         }
         gameFont.a = 1;
@@ -1379,23 +1482,23 @@ function drawStartingMenu() {
         g = f = 14;
         drawRect(f - 6, g - 6, 204, 196, levelListArray[q][Yg]);
         gameFont.a = 1;
-        drawTooltip(gameFont, f, g, "LP " + Ya[Ka] + "/" + Za[Ka] + " SP (" + Xa[Ka] + ")", 16777215, 0);
+        drawTooltip(gameFont, f, g, "LP " + partyLP[Ka] + "/" + partyMaxLP[Ka] + " SP (" + partySP[Ka] + ")", 16777215, 0);
         k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
         gameFont.a = 1;
         drawTooltip(gameFont, f, g + 20, k[Ma], 16777215, 0);
         k = [9, 0, 20, 21, 17, 22, 23];
         c = [999, 999, 999, 999, 999, 999, 25];
         for (a = 0; 7 > a; a++) drawMenuButton(f +
-            12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? isMouseReleased && (Ma = a) : 0 < Xa[Ka] && tb[Ma][Ka] < c[Ma] && (drawTooltip(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (tb[Ma][Ka]++, Xa[Ka]--)));
+            12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? isMouseReleased && (Ma = a) : 0 < partySP[Ka] && tb[Ma][Ka] < c[Ma] && (drawTooltip(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (tb[Ma][Ka]++, partySP[Ka]--)));
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (va = false);
         g += 64;
-        for (a = 0; 2 > a; a++) c = Yb[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = $b[c], Ze(Ka, le) && 3 == itemList[c][Lc] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == itemList[c][Lc] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == itemList[c][Lc] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == itemList[c][Lc] && (h += af(Ka, ne)), drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
+        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = $b[c], Ze(Ka, le) && 3 == itemList[c][Lc] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == itemList[c][Lc] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == itemList[c][Lc] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == itemList[c][Lc] && (h += af(Ka, ne)), drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
             "-" + Eb[4 * a + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(Ye(Ka, c, ld) * Ye(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = Ye(Ka, c, Ed), Ze(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += $e(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == Ye(Ka, c, Uc) ? h += " all" : 1 < Ye(Ka, c, Uc) && (h += " " + Ye(Ka, c, Uc) + "hit"), drawTooltip(gameFontMed, f + 96 * a, g + 12, h, 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT " +
                 ab[Ka], 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), drawTooltip(gameFontMed, f + 96 * a, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f + 96 * a, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && (h = Ye(Ka, c, ud), Ze(Ka, ye) && (h += $e(Ka, ye)), drawTooltip(gameFontMed, f + 96 * a, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
             itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], 16777215, 0)));
         g += 96;
         k = ["ARMS", "CHARGE"];
-        for (a = 0; 2 > a; a++) c = Yb[Ka][a], b = f + 28 * a, d = g, drawRect(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, drawText(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
+        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], b = f + 28 * a, d = g, drawRect(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, drawText(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
     }
     if (wa) {
         f = 224;
@@ -1403,7 +1506,7 @@ function drawStartingMenu() {
         drawRect(f - 6, g - 6, 204, 260, levelListArray[q][Yg]);
         c = Jc[Na][28 * Oa + Pa];
         0 != $b[c] && 1 == q && 2 >= Na && (drawText(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
-            a = Ve(c, wd), 0 == a ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= Wa && (Zb = c, isMouseClicked && (Zb = -1, Wa = clamp(Wa - h, 0, 9999999), $b[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
+            a = Ve(c, wd), 0 == a ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), $b[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
         0 != $b[c] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawTooltip(gameFontMed,
             f, g + 12, h, 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawTooltip(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawTooltip(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawTooltip(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    physical", 10066329,
             0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][Kc], -1, 0) : drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, ae),
@@ -1412,8 +1515,8 @@ function drawStartingMenu() {
         k = Na;
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (wa = false);
         for (a = 0; 28 > a; a++) c = Jc[Na][28 * Oa + a], b = f + a % 7 * 28, d = g + 84 + 28 * ~~(a / 7), drawRect(b, d, 24, 24, 0),
-            0 < $b[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? isMouseReleased && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (Yb[Ka][k] = c)) : h == Ka ? (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
-                0), isMouseReleased && (Yb[Ka][k] = 0)) : (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (Yb[h][k] = 0, Yb[Ka][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawTooltip(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (Yb[0][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : Yb[1][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : Yb[2][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : Yb[3][k] == c && drawTooltip(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
+            0 < $b[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? isMouseReleased && (Pa = a) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[Ka][k] = c)) : h == Ka ? (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+                0), isMouseReleased && (partyEquipmentTable[Ka][k] = 0)) : (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[Ka][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawTooltip(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawTooltip(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (a = 0; 5 > a; a++) {
             drawMenuButton(f + 12 + 28 * a, g + 238, a, k[a], Na == a ? 16737894 : 16777215) && isMouseClicked && (Na = a);
@@ -1437,10 +1540,10 @@ function drawStartingMenu() {
         c = oh[Qa][Ra];
         if (0 == ec[ph[Qa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else {
-            if (0 == Bc[c]) h = itemCatalogArray[c][itemAttr67], drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= Wa &&
-                isMouseClicked && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 1);
+            if (0 == Bc[c]) h = itemCatalogArray[c][itemAttr67], drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold &&
+                isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 1);
             else if (drawTooltip(gameFontMed, f, g + 0, "LV " + itemCatalogArray[c][itemAttr1], 16777215, 0), drawTooltip(gameFontMed, f, g + 12, "LP " + itemCatalogArray[c][itemAttr10], 16777215, 0), drawTooltip(gameFontMed, f, g + 24, "GOLD " + itemCatalogArray[c][itemAttr66], 16777215, 0), drawTooltip(gameFontMed, f, g + 36, "EXP " + itemCatalogArray[c][itemAttr65], 16777215, 0), b = 0, 0 != itemCatalogArray[c][itemAttr40] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != itemCatalogArray[c][itemAttr41] && (drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != itemCatalogArray[c][itemAttr42] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != itemCatalogArray[c][itemAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != itemCatalogArray[c][itemAttr44] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && drawTooltip(gameFontMed, f, g + 48, "RES ", 16777215, 0), drawTooltip(gameFontMed, f + 80, g + 0,
-                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && isMouseClicked && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 2);
+                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 2);
             else
                 for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, drawTooltip(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][Kc], -1, 0), 0 < $b[a] && (drawRect(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
@@ -1491,7 +1594,7 @@ function drawStartingMenu() {
         1 == q ? drawText(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : drawText(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = levelListArray[q][Eh];
-        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && isMouseClicked && (Wa = clamp(Wa - h, 0, 9999999), 1 == q ? drawState = 0 : (ug = 0, drawState = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = false)
+        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == q ? drawState = 0 : (ug = 0, drawState = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = false)
     }
     if (Aa) {
         f = 224;
@@ -1510,15 +1613,15 @@ function drawStartingMenu() {
             for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
             for (Fc[c] = 1, a = 0; 4 > a; a++)
-                for (b = 0; b < tb.length; b++) Xa[a] += tb[b][a],
+                for (b = 0; b < tb.length; b++) partySP[a] += tb[b][a],
                     tb[b][a] = 0;
         else if (2 == c) Fc[c] = 1, db[3] = 1, eb++;
         else if (3 == c)
             for (Fc[c] = 1, a = 0; 2 > a; a++)
-                if (99 > Ua) {
-                    Va = Ta[Ua];
-                    Ua++;
-                    for (b = 0; 4 > b; b++) Xa[b] += 2;
+                if (99 > partyLevel) {
+                    partyEXPAccum = Ta[partyLevel];
+                    partyLevel++;
+                    for (b = 0; 4 > b; b++) partySP[b] += 2;
                     Hh = 60
                 }
     }
@@ -1702,11 +1805,11 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
                     continue
                 } else 5 == c && (bh[x] = floor(d / 10));
                 A(43) && 1 == c && 0 < ch[x] && 0 < phIdxWrapped[x] && C(43);
-                Ya[x] -= y;
+                partyLP[x] -= y;
                 Lg(O[x][0].x, O[x][0].y, M, y, 60, J);
                 Og += y;
-                if (0 > Ya[x])
-                    for (y = max(~~-Ya[x], 1), n = Ya[x] = 0; n < r; n++) x != n && (Ya[n] = clamp(Ya[n] - y, 0, Za[n]), Lg(O[n][0].x, O[n][0].y, M, y, 60, J), Og += y);
+                if (0 > partyLP[x])
+                    for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < r; n++) x != n && (partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]), Lg(O[n][0].x, O[n][0].y, M, y, 60, J), Og += y);
                 y = x;
                 if (0 == b) break
             }
@@ -1734,7 +1837,7 @@ mainWindow.fff = xi;
 
 function xi(a, b, c, d, f, g) {
     var h = new Vec2,
-        k = Yb[a][c],
+        k = partyEquipmentTable[a][c],
         p = itemList[k],
         t = p[Qc];
     0 == t ? t = -1 : 1 == t ? t = b : 2 == t ? t = b & 65280 | 1 : 3 == t ? t = b & 65280 | b >> 8 : 5 == t && (t = 257);
@@ -1872,8 +1975,8 @@ function updatePlayerParty() {
         h = new Vec2;
     vi();
     for (a = 0; a < r; a++) {
-        if (0 < phIdxWrapped[a] && (phIdxWrapped[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, E(60) < b && (d += 1), Ya[a] -= d, Og += d, 0 > Ya[a]))
-            for (c = 0 == gi[a][2] ? 1 : -1, d = max(~~-Ya[a], 1), b = Ya[a] = 0; b < r; b++) a != b && (Ya[b] = clamp(Ya[b] - d, 0, Za[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
+        if (0 < phIdxWrapped[a] && (phIdxWrapped[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, E(60) < b && (d += 1), partyLP[a] -= d, Og += d, 0 > partyLP[a]))
+            for (c = 0 == gi[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < r; b++) a != b && (partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
         if (0 < bh[a]) bh[a]--;
         else {
             if (0 < ch[a] && (ch[a]--, E(100) < hi[a])) continue;
@@ -1886,24 +1989,24 @@ function updatePlayerParty() {
                 Xh[a]) S(O[a][0], Mh[a][0], -.2, .99), S(O[a][1], Mh[a][1], 0, .99), S(O[a][2], Mh[a][2], -.1, .99), S(O[a][3], Mh[a][3], 0, .99), S(O[a][4], Mh[a][4], 0, .99), S(O[a][5], Mh[a][5], 0, .99), S(O[a][6], Mh[a][6], 0, .99), S(O[a][7], Mh[a][7], 0, .99), S(O[a][8], Mh[a][8], 0, .99), S(O[a][9], Mh[a][9], .3, .99), S(O[a][10], Mh[a][10], .3, .99);
             else
                 for (b = 0; 11 > b; b++) Ze(a, Pe) ? S(O[a][b], Mh[a][b], .05 / $e(a, Pe), .99) : S(O[a][b], Mh[a][b], .05, .99);
-            for (b = d = 0; b < r; b++) d += Ya[b];
+            for (b = d = 0; b < r; b++) d += partyLP[b];
             if (0 == d && Wh[a] != Lh)
                 for (Wh[a] = Lh, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += R(-2, 2), O[a][b].y +=
                     R(-1, -3);
             if (Wh[a] != Lh) {
-                1 == q && Ya[a] < Za[a] && 1 > E(100) && (Ya[a] = clamp(Ya[a] + 5, 0, Za[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
+                1 == q && partyLP[a] < partyMaxLP[a] && 1 > E(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
                 bi == a && (O[bi][ci].x += .2 * (mouseXCurrent - O[bi][ci].x), O[bi][ci].y += .2 * (mouseYCurrent - O[bi][ci].y));
-                b = itemList[Yb[a][0]][Nc];
+                b = itemList[partyEquipmentTable[a][0]][Nc];
                 c = Hb[a];
                 d = O[a][1].x;
                 var k = O[a][1].y;
-                c = Ei(d, k, c, c); - 1 == ab[a] && (0 < cb[a] && cb[a]--, 0 == cb[a] && (k = Ei(d, k, 999, 999), -1 != k && (xi(a, 1540, 1, O[a][6].x, O[a][6].y, k), cb[a] = itemList[Yb[a][1]][ld])));
+                c = Ei(d, k, c, c); - 1 == ab[a] && (0 < cb[a] && cb[a]--, 0 == cb[a] && (k = Ei(d, k, 999, 999), -1 != k && (xi(a, 1540, 1, O[a][6].x, O[a][6].y, k), cb[a] = itemList[partyEquipmentTable[a][1]][ld])));
                 if (0 < Zh[a]) Zh[a]--;
                 else if (bi != a && 0 != b && -1 != c) {
                     Zh[a] = Gb[a] + Fh(-1, 1);
                     gi[a][2] = d < Q[c][yi].x ? 1 : 0;
                     k = 0; - 1 == ab[a] ? ($a[a] =
-                        0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = clamp($a[a] + bb[a], 0, ab[a]), fi[a] = 0, Ze(a, re) && 100 * rand() < $e(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = itemList[Yb[a][1]][Nc], Ze(a, se) && 100 * rand() < $e(a, se) && ($a[a] = ab[a]));
+                        0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = clamp($a[a] + bb[a], 0, ab[a]), fi[a] = 0, Ze(a, re) && 100 * rand() < $e(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][Nc], Ze(a, se) && 100 * rand() < $e(a, se) && ($a[a] = ab[a]));
                     if (0 != b)
                         if (3 == b) Vec2Sub(g, Q[c][yi], O[a][5]), Vec2Sub(h, Q[c][yi], O[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), O[a][5].add(g), O[a][4].sub(g), f.set(O[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), O[a][6].add(h), O[a][3].sub(h), f.set(O[a][6]), k = 1540, ei[a] = 1), Uh[a].set(Q[c][yi]), Vh[a] = 5;
                         else if (4 == b) {
@@ -1932,7 +2035,7 @@ function updatePlayerParty() {
             Oh[a][Rh[a]].set(O[a][3]);
             Ph[a][Rh[a]].set(O[a][6]);
             Qh[a][Rh[a]].set(O[a][4]);
-            0 < Sh[a] && (Sh[a]--, b = itemList[Yb[a][fi[a]]][Nc], 2 != b && (Sh[a] = 0));
+            0 < Sh[a] && (Sh[a]--, b = itemList[partyEquipmentTable[a][fi[a]]][Nc], 2 != b && (Sh[a] = 0));
             0 == Zh[a] && (f.set(O[a][1]), f.x += 0 == gi[a][2] ? -50 : 50, Vec2Scale(f, .1),
                 Vec2Scale(Uh[a], .9), Uh[a].add(f));
             0 < Vh[a] && Vh[a]--;
@@ -1968,7 +2071,7 @@ function drawPlayerParty() {
         isSolidRender = fh = 0;
         eh(a, O[a], gi[a][0], gi[a][1], d, f, Wh[a]);
         if (0 < Sh[a]) {
-            b = Yb[a][fi[a]];
+            b = partyEquipmentTable[a][fi[a]];
             c = itemList[b][id];
             d = itemList[b][cd];
             f = d >> 24 & 255;
@@ -2059,11 +2162,11 @@ function eh(a, b, c, d, f, g, h) {
     drawLine(b[7].x, b[7].y, b[9].x, b[9].y, g);
     drawLine(b[8].x, b[8].y, b[10].x, b[10].y, g);
     drawRectOutline(~~b[0].x - 2, ~~b[0].y - 2, 5, 5, f);
-    f = itemList[Yb[a][2]][Mc];
-    0 != f && (0 == gi[a][2] ? Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 0, 16 * (f >> 4), 16, 16, itemList[Yb[a][2]][Pc],
-        itemList[Yb[a][2]][$d], false) : Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 16, 16 * (f >> 4), -16, 16, itemList[Yb[a][2]][Pc], itemList[Yb[a][2]][$d], false));
+    f = itemList[partyEquipmentTable[a][2]][Mc];
+    0 != f && (0 == gi[a][2] ? Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 0, 16 * (f >> 4), 16, 16, itemList[partyEquipmentTable[a][2]][Pc],
+        itemList[partyEquipmentTable[a][2]][$d], false) : Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 16, 16 * (f >> 4), -16, 16, itemList[partyEquipmentTable[a][2]][Pc], itemList[partyEquipmentTable[a][2]][$d], false));
     for (f = 0; 2 > f; f++) {
-        var p = Yb[a][f ? d : c];
+        var p = partyEquipmentTable[a][f ? d : c];
         g = itemList[p][Nc];
         var p = itemList[p][Pc],
             t = b[5 + f],
@@ -2218,13 +2321,19 @@ function wg() {
         a = levelListArray[q][b + 0];
         var f = levelListArray[q][b + 1],
             c = levelListArray[q][b + 2],
-            g = levelListArray[q][b +
-                3
-            ],
+            g = levelListArray[q][b + 3],
             d = levelListArray[q][b + 4],
             h = levelListArray[q][b + 5],
             k = levelListArray[q][b + 6];
-        !(c <= Xi[(b - Vi) / 7]) && V[(b - Vi) / 7] < f && 1E3 * rand() < levelListArray[q][Ui] && (c = Fh(g, h + 1), d = Fh(d, k + 1), 25 >= P[d][c] || (Zi(c, d, a, (b - Vi) / 7), V[(b - Vi) / 7]++, Xi[(b - Vi) / 7]++))
+        !(c <= Xi[(b - Vi) / 7]) && V[(b - Vi) / 7] < f && 1E3 * rand() < levelListArray[q][Ui] && (
+            c = Fh(g, h + 1), 
+            d = Fh(d, k + 1), 
+            25 >= P[d][c] || (
+                Zi(c, d, a, (b - Vi) / 7), 
+                V[(b - Vi) / 7]++, 
+                Xi[(b - Vi) / 7]++
+            )
+        )
     }
     a = d = 0;
     for (b = Vi; b < levelListArray[q].length; b += 7) a = (b - Vi) / 7, c = levelListArray[q][b + 2], (0 != V[a] || Xi[a] < c) && d++;
@@ -2232,7 +2341,7 @@ function wg() {
     if (!d && 0 == Mi) {
         for (a = 0; 20 > a; a++) Mi += Xi[a];
         Mi = floor((Mi + r - 1) / r);
-        0 < Mi && (b = 100 + Gc, Gc += Mi, Mi = floor(Mi * b / 100), di = 60, Wa = clamp(Wa + Mi * r, 0, 9999999), A(0) && C(0), A(10) && 3600 > gj && C(10), A(15) && !jh && C(15), A(20) && 87 <= Hc && C(20), A(25) && 100 <=
+        0 < Mi && (b = 100 + Gc, Gc += Mi, Mi = floor(Mi * b / 100), di = 60, partyGold = clamp(partyGold + Mi * r, 0, 9999999), A(0) && C(0), A(10) && 3600 > gj && C(10), A(15) && !jh && C(15), A(20) && 87 <= Hc && C(20), A(25) && 100 <=
             Gc && C(25), A(30) && 111 <= Hc && C(30), A(35) && !jh && C(35), A(40) && 3600 > gj && C(40), A(45) && 7200 > gj && C(45), A(50) && !jh && C(50), A(55) && 227 <= Hc && C(55), A(60) && C(60), A(65) && !jh && C(65), A(70) && 9E3 > gj && C(70), 19 == q && 0 == of [1] && (of [1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
     }
 }
@@ -2284,7 +2393,7 @@ function cj() {
     jh = Hi = ij = hj = gj = Pg = Og = 0;
     var a, b, c, d;
     if (17 == q) {
-        b = Wa % 100;
+        b = partyGold % 100;
         for (a = 0; a < b;) c = ~~R(27, 70), d = E(2.1), d = 3 + ~~(d * d * d), 32 == P[d][c] && (dj(c, d, c, d, 39), a++);
         A(67) && 99 == b && C(67)
     } else if (19 == q)
@@ -2298,10 +2407,19 @@ function xg() {
         p = 0,
         t = 59,
         l = 0;
-    gj++; - 1 != bi && (b = clamp(O[bi][2].x, 0, 8 * Gi - 1) >> 3, f = clamp(O[bi][2].y, 0, 8 * si - 1) >> 3);
+    gj++; - 1 != bi && (
+        b = clamp(O[bi][2].x, 0, 8 * Gi - 1) >> 3, 
+        f = clamp(O[bi][2].y, 0, 8 * si - 1) >> 3
+    );
     g = clamp(O[Ka][2].x, 0, 8 * Gi - 1) >> 3;
     h = clamp(O[Ka][2].y, 0, 8 * si - 1) >> 3;
-    for (a = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, k > c && (k = c), p < c && (p = c), t > d && (t = d), l < d && (l = d);
+    for (a = 0; a < r; a++) 
+        c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, 
+        d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 
+        k > c && (k = c), 
+        p < c && (p = c), 
+        t > d && (t = d), 
+        l < d && (l = d);
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
@@ -2890,13 +3008,13 @@ mainWindow.fff = cl;
 
 function cl(a) {
     var b;
-    b = abs(itemCatalogArray[X[a]][itemAttr1] - Ua);
+    b = abs(itemCatalogArray[X[a]][itemAttr1] - partyLevel);
     var c = floor(itemCatalogArray[X[a]][itemAttr65] * (100 + Xb) / 100);
-    $i + 10 <= Ua ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
-    Va = clamp(Va + c, 0, 9999999);
-    if (Ta[Ua] <= Va && 99 > Ua) {
-        Ua++;
-        for (b = 0; 4 > b; b++) Xa[b] += 2;
+    $i + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
+    partyEXPAccum = clamp(partyEXPAccum + c, 0, 9999999);
+    if (Ta[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
+        partyLevel++;
+        for (b = 0; 4 > b; b++) partySP[b] += 2;
         Hh = 60
     }
     for (b = itemAttr68; b < itemAttr68 + 8; b += 2)
@@ -3951,7 +4069,7 @@ function zg() {
     var a, b, c;
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (frameBufferArray = null);
-    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && C(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (Wa = clamp(Wa + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
+    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && C(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
         $b[Bm[a]] < Cm[a] && ($b[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && C(24), Gm(a--)))
 }
 mainWindow.fff = Dg;

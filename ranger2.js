@@ -18,7 +18,7 @@ var currentLevelSprite = new Sprite,
     itemsSpriteSheet = new Sprite,
     effectSpriteSheet = new Sprite,
     medalSpriteSheet = new Sprite,
-    ra = 0,
+    drawState = 0,
     sa = 0,
     q = 0,
     ta = false,
@@ -1009,9 +1009,19 @@ function drawCanvas() {
             for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
         d != zf && (F = null);
         vf = vf + 1 & 63;
-        if (!ra) q = 0, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 45, gg[1] = 45, gg[2] = 45, gg[3] = 45, ra++;
-        else if (1 == ra) hg(0) && ra++;
-        else if (2 == ra || 3 == ra) {
+        if (!drawState) 
+            q = 0, 
+            fg[0] = 20, 
+            fg[1] = 28, 
+            fg[2] = 36, 
+            fg[3] = 44, 
+            gg[0] = 45, 
+            gg[1] = 45, 
+            gg[2] = 45, 
+            gg[3] = 45, 
+            drawState++;
+        else if (1 == drawState) hg(0) && drawState++;
+        else if (2 == drawState || 3 == drawState) {
             ta = false;
             ig();
             jg();
@@ -1035,41 +1045,175 @@ function drawCanvas() {
             b = 0 > b ? 0 : ~~b;
             n = 640 * b + a;
             for (w = 640 - (d - a); b < f; b++, n += w, h += p)
-                for (B = ((h >> 8) * titleSprite.h << 8) + g, l = a; l < d; l++, n++, B += k) M = t[B >> 8], -1 != M && (F[n] = M);
-            2 == ra ? (lg(gameFont, 320, 220, "NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 0 == jf ? 3 : 4), L(256, 228, 384, 228, 11141120)), 0 == jf && (lg(gameFont, 320, 260, "LOAD GAME", 16777215,
-                10053171), mg(320, 260, 128, 24) && (ng && (ra = 5), L(256, 268, 384, 268, 11141120)))) : 3 == ra && (lg(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171), mg(320, 220, 128, 24) && (ng && (ra = 4), L(192, 228, 448, 228, 11141120)), lg(gameFont, 320, 260, "CANCEL", 16777215, 10053171), mg(320, 260, 128, 24) && (ng && (ra = 2), L(256, 268, 384, 268, 11141120)));
-            og(608, 312, 8, "IMPORT", 16777215) && (8 != ca.length ? N(gameFont, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && (a = promptInput("Import Game Data", "")) && (jf = rf(a), kf = 100));
-            og(608, 352, 9, "EXPORT", 16777215) && (8 != ca.length ?
-                N(gameFont, pg - 72, qg - 6, "User only", 16777215, 13158) : ng && promptInput("Export Game Data", gf));
+                for (B = ((h >> 8) * titleSprite.h << 8) + g, l = a; l < d; l++, n++, B += k) 
+                    M = t[B >> 8], 
+                    -1 != M && (F[n] = M);
+
+            2 == drawState 
+            ? (
+                drawText(gameFont, 320, 220, "NEW GAME", 16777215, 10053171),
+                buttonCheckCentered(320, 220, 128, 24) && 
+                    (isMouseClicked && 
+                        (drawState = (0 == jf) ? 3 : 4), 
+                        L(256, 228, 384, 228, 11141120)
+                    ), 0 == jf && (
+                        drawText(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171), 
+                        buttonCheckCentered(320, 260, 128, 24) && (
+                            isMouseClicked && (drawState = 5), 
+                            L(256, 268, 384, 268, 11141120)
+                        )
+                    )
+                ) 
+            : 3 == drawState && (
+                drawText(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171), 
+                buttonCheckCentered(320, 220, 128, 24) && (
+                    isMouseClicked && (drawState = 4), 
+                    L(192, 228, 448, 228, 11141120)
+                ), 
+                drawText(gameFont, 320, 260, "CANCEL", 16777215, 10053171), 
+                buttonCheckCentered(320, 260, 128, 24) && (
+                    isMouseClicked && (drawState = 2), 
+                    L(256, 268, 384, 268, 11141120)
+                )
+            );
+            
+            og(608, 312, 8, "IMPORT", 16777215) && (
+                8 != ca.length 
+                ? N(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158) 
+                : isMouseClicked && (
+                    a = promptInput("Import Game Data", "")) && (
+                        jf = rf(a), 
+                        kf = 100
+                    )
+            );
+
+            og(608, 352, 9, "EXPORT", 16777215) && (
+                8 != ca.length 
+                ? N(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158) 
+                : isMouseClicked && promptInput("Export Game Data", gf)
+            );
             sg(0, 408, 640, 16, 0);
-            lg(gameFont, 320, 417, copyrightText2, -1, 6697728)
-        } else if (4 == ra || 5 == ra) 4 == ra ? (bc(), Yb[0][0] = 4, q = $b[4] = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40, tg()) : 5 == ra && (cc(), q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), ug = 0, ra = 10;
-        else if (10 == ra) hg(q) && (1 == q && (Gc >>= 1), sa = 0, ra++);
-        else if (11 == ra || 12 == ra || 13 == ra || 30 == ra)
-            if (ng && (ta = false, 360 <= qg && (ta = true), va && vg(8, 8, 204, 196) && (ta = true),
-                    wa && vg(218, 8, 204, 260) && (ta = true), xa && vg(428, 8, 204, 180) && (ta = true), ya && vg(428, 8, 204, 180) && (ta = true), za && vg(428, 196, 204, 148) && (ta = true), Aa && vg(218, 8, 204, 180) && (ta = true)), tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), Gg = 1, sg(4, 4, 8 * levelListArray[q][Hg].length + 8, 20, 2151694400), Gg = 0, N(gameFont, 8, 8, levelListArray[q][Hg], 16777215, 0), Ig(), 11 == ra) c = 255, 50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)), Jg(gameFont, 320, 180, levelListArray[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), a = -1E3 + floor(500 * sa / 20), L(a, 164, a + 1E3, 164, 8421504), a = 640 - floor(500 * sa / 20), L(a, 193, a + 1E3, 193, 8421504),
-                sa++, ug = clamp(sa / 30, 0, 1), 70 <= sa && (ug = 1, sa = 0, ra++);
-            else if (12 == ra) {
-            for (a = b = 0; a < r; a++) b += Ya[a];
+            drawText(gameFont, 320, 417, copyrightText2, -1, 6697728)
+
+        } else if (4 == drawState || 5 == drawState) 
+            4 == drawState 
+            ? (
+                bc(), 
+                Yb[0][0] = 4, 
+                q = $b[4] = 1, 
+                fg[0] = 20, 
+                fg[1] = 28, 
+                fg[2] = 36, 
+                fg[3] = 44, 
+                gg[0] = 40, 
+                gg[1] = 40, 
+                gg[2] = 40, 
+                gg[3] = 40, 
+                tg()
+            ) 
+            : 5 == drawState && (
+                    cc(), 
+                    q = 1, 
+                    fg[0] = 20, 
+                    fg[1] = 28, 
+                    fg[2] = 36, 
+                    fg[3] = 44, 
+                    gg[0] = 40, 
+                    gg[1] = 40, 
+                    gg[2] = 40, 
+                    gg[3] = 40
+                ), 
+                ug = 0, 
+                drawState = 10;
+
+        else if (10 == drawState) 
+            hg(q) && (
+                1 == q && (Gc >>= 1), 
+                sa = 0, 
+                drawState++
+            );
+        else if (11 == drawState || 12 == drawState || 13 == drawState || 30 == drawState)
+            if (isMouseClicked && (
+                    ta = false, 
+                    360 <= mouseYCurrent && (ta = true), 
+                    va && buttonCheck(8, 8, 204, 196) && (ta = true),
+                    wa && buttonCheck(218, 8, 204, 260) && (ta = true), 
+                    xa && buttonCheck(428, 8, 204, 180) && (ta = true), 
+                    ya && buttonCheck(428, 8, 204, 180) && (ta = true), 
+                    za && buttonCheck(428, 196, 204, 148) && (ta = true), 
+                    Aa && buttonCheck(218, 8, 204, 180) && (ta = true)
+                ), 
+                tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), 
+                Gg = 1, 
+                sg(4, 4, 8 * levelListArray[q][Hg].length + 8, 20, 2151694400), 
+                Gg = 0, 
+                N(gameFont, 8, 8, levelListArray[q][Hg], 16777215, 0), 
+                Ig(), 
+                11 == drawState
+                ) 
+                    c = 255, 
+                    50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)), 
+                    Jg(gameFont, 320, 180, levelListArray[q][Hg], 255, 255, 255, c, 64, 64, 64, c, 16, 24), 
+                    a = -1E3 + floor(500 * sa / 20), 
+                    L(a, 164, a + 1E3, 164, 8421504), 
+                    a = 640 - floor(500 * sa / 20), 
+                    L(a, 193, a + 1E3, 193, 8421504),
+                    sa++, 
+                    ug = clamp(sa / 30, 0, 1), 
+                    70 <= sa && (
+                        ug = 1, 
+                        sa = 0, 
+                        drawState++
+                    );
+
+            else if (12 == drawState) {
+            for (a = b = 0; a < r; a++) 
+                b += Ya[a];
             if (0 == b) {
                 sa = 0;
-                ra = 30;
+                drawState = 30;
                 Gc = Hc = Ic = 0;
                 c = floor(Wa / 10 / r);
                 if (0 < c) {
-                    for (a = 0; a < r; a++) Lg(O[a][0].x, O[a][0].y, 0, -c, 60, 16776960);
+                    for (a = 0; a < r; a++) 
+                        Lg(O[a][0].x, O[a][0].y, 0, -c, 60, 16776960);
                     Wa = clamp(Wa - c * r, 0, 9999999)
                 }
-                for (a = 0; a < r; a++) Ya[a] = 1, $a[a] = 0;
+                for (a = 0; a < r; a++) 
+                    Ya[a] = 1, 
+                    $a[a] = 0;
+                
                 mf();
-                for (a = 0; a < r; a++) Ya[a] = 0
-            } else q != Mg && (sa = 0, ra = 13, A(6) && (2 == Ng && 4 == Mg || 4 == Ng && 2 == Mg) && 0 == Og && 0 == Pg && C(6), A(51) && (13 == Ng && 15 == Mg || 15 == Ng && 13 == Mg) && 0 == Og && 0 == Pg && C(51))
-        } else if (13 == ra) sa++, ug = clamp(1 - sa / 20, 0, 1), 20 == sa && (ug = 0, ra = 10, Ng = q, q = Mg, mf());
-        else if (30 ==
-            ra && (100 > sa && sa++, c = floor(255 * sa / 100), Jg(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24), 100 == sa && ng)) {
+                for (a = 0; a < r; a++) 
+                    Ya[a] = 0
+            } else q != Mg && (
+                sa = 0, 
+                drawState = 13, 
+                A(6) && (2 == Ng && 4 == Mg || 4 == Ng && 2 == Mg) && 
+                    0 == Og && 0 == Pg && C(6), 
+                    A(51) && (13 == Ng && 15 == Mg || 15 == Ng && 13 == Mg) 
+                    && 0 == Og && 0 == Pg && C(51)
+                )
+        } else if (13 == drawState) 
+            sa++, 
+            ug = clamp(1 - sa / 20, 0, 1), 
+            20 == sa && (
+                ug = 0, 
+                drawState = 10, 
+                Ng = q, 
+                q = Mg, 
+                mf()
+            );
+        else if (
+            30 == drawState && (
+                100 > sa && sa++, 
+                c = floor(255 * sa / 100), 
+                Jg(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24), 
+                100 == sa && isMouseClicked
+            )) {
             for (a = 0; 4 > a; a++) Ya[a] = 1, $a[a] = 0;
             ug = 0;
-            ra = 10;
+            drawState = 10;
             q = 1;
             fg[0] = 20;
             fg[1] = 28;
@@ -1107,15 +1251,15 @@ mainWindow.fff = Wg;
 
 function Wg(a, b, c, d, f, g) {
     var h;
-    if (vg(a, b, c, d))
-        if (Xg(a, b, c, d, 6684672), ng && 0 != f) {
+    if (buttonCheck(a, b, c, d))
+        if (Xg(a, b, c, d, 6684672), isMouseClicked && 0 != f) {
             (wa = wa && Jc[Na][28 * Oa + Pa] == f ? false : true) && (Aa = false);
             for (a = 0; a < Jc.length; a++) {
                 for (h = 0; h < Jc[a].length && Jc[a][h] != f; h++);
                 if (Jc[a][h] == f) break
             }
             a != Jc.length && (Na = a, Oa = floor(h / 28), Pa = h % 28)
-        } else ng && ((wa = wa && Na == g ? false : true) && (Aa = false), Na = g, Pa = Oa = 0)
+        } else isMouseClicked && ((wa = wa && Na == g ? false : true) && (Aa = false), Na = g, Pa = Oa = 0)
 }
 mainWindow.fff = Ig;
 
@@ -1165,7 +1309,7 @@ function Ig() {
         N(gameFontSmall, f + a * d + 28, g + 8, "" + Ya[a], 16764108, -1);
         sg(f + a * d + 28, g + 17, 48, 5, 17);
         sg(f + a * d + 28, g + 17, 48 * $a[a] / max(ab[a], 1), 5, 221);
-        vg(f + a * d, g, 24, 24) && (Xg(f + a * d, g, 24, 24, 8388608), ng && Ka == a && (va = !va), ng && (Ka = a));
+        buttonCheck(f + a * d, g, 24, 24) && (Xg(f + a * d, g, 24, 24, 8388608), isMouseClicked && Ka == a && (va = !va), isMouseClicked && (Ka = a));
         for (b = 0; 5 > b; b++) {
             c = Yb[a][b];
             k = f + a * d + b % 3 * 20;
@@ -1173,14 +1317,14 @@ function Ig() {
             sg(k, n, 16, 16, 0);
             0 != c && (fh = 2, h = itemList[c][Mc], 2 == b ? Qg(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : hh(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0);
             Wg(k, n, 16, 16, c, b);
-            vg(k, n, 16, 16) && ng && 0 != c && (Ka = a)
+            buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (Ka = a)
         }
     }
     ih(f + Ka * d - 1, g - 1, 26, 26, 16711680);
     f = 472;
     g = 379;
     d = 36;
-    if (og(f + -1 * d, g, 13, "" + eb + "/" + hb, 16777215) && ng) {
+    if (og(f + -1 * d, g, 13, "" + eb + "/" + hb, 16777215) && isMouseClicked) {
         for (a = c = 0; a < r; a++) c += Za[a] - Ya[a];
         if (0 < c && 0 < eb) {
             for (a = 0; a < r; a++) Ya[a] !=
@@ -1189,26 +1333,26 @@ function Ig() {
             jh++
         }
     }
-    og(f + 0 * d, g, 1, "STATUS", va ? 16750950 : 16777215) && ng && (va = !va);
-    og(f + 1 * d, g, 2, "ITEM", wa ? 16750950 : 16777215) && ng && (wa = !wa) && (Aa = false);
-    og(f + 2 * d, g, 3, "MONSTER", xa ? 16750950 : 16777215) && ng && (xa = !xa) && (ya = false);
-    og(f + 3 * d, g, 4, "MEDAL", ya ? 16750950 : 16777215) && ng && (ya = !ya) && (xa = false);
-    og(f + 4 * d, g, 5, "OPTION", za ? 16750950 : 16777215) && ng && (za = !za);
+    og(f + 0 * d, g, 1, "STATUS", va ? 16750950 : 16777215) && isMouseClicked && (va = !va);
+    og(f + 1 * d, g, 2, "ITEM", wa ? 16750950 : 16777215) && isMouseClicked && (wa = !wa) && (Aa = false);
+    og(f + 2 * d, g, 3, "MONSTER", xa ? 16750950 : 16777215) && isMouseClicked && (xa = !xa) && (ya = false);
+    og(f + 3 * d, g, 4, "MEDAL", ya ? 16750950 : 16777215) && isMouseClicked && (ya = !ya) && (xa = false);
+    og(f + 4 * d, g, 5, "OPTION", za ? 16750950 : 16777215) && isMouseClicked && (za = !za);
     c = 0;
     for (b = ac.length - 1; 0 <= b; b--) c += ac[b];
     0 < c && N(gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
     if (1 == q) {
         gameFont.a = 1;
-        lg(gameFont, 530,
+        drawText(gameFont, 530,
             168, "INN", 16777215, 8409120);
-        if (mg(528, 180, 48, 40)) {
+        if (buttonCheckCentered(528, 180, 48, 40)) {
             for (a = c = 0; a < r; a++) c += Za[a] - Ya[a];
             0 < c && (c = 10);
             c += 10 * (hb - eb);
             gameFont.a = 1;
-            lg(gameFont, 530, 168, "INN", 15908203, 8409120);
-            lg(gameFont, 528, 187, "G " + c, 16777215, 8409120);
-            if (0 < c && c <= Wa && ng && !ta) {
+            drawText(gameFont, 530, 168, "INN", 15908203, 8409120);
+            drawText(gameFont, 528, 187, "G " + c, 16777215, 8409120);
+            if (0 < c && c <= Wa && isMouseClicked && !ta) {
                 for (a = 0; a < r; a++) Ya[a] != Za[a] && Lg(O[a][0].x, O[a][0].y, 0, Za[a] - Ya[a], 60, 65280), Ya[a] = Za[a];
                 eb != hb && Lg(436, 380, 0, hb - eb, 60, 65280);
                 eb = hb;
@@ -1216,10 +1360,10 @@ function Ig() {
             }
         }
         gameFont.a = 1;
-        lg(gameFont, 54, 296, "SMITH", 16777215, 8409120);
-        mg(52, 308, 56, 40) && (gameFont.a = 1, lg(gameFont, 54, 296, "SMITH", 15908203, 8409120), ng && !ta && (wa = !wa) &&
+        drawText(gameFont, 54, 296, "SMITH", 16777215, 8409120);
+        buttonCheckCentered(52, 308, 56, 40) && (gameFont.a = 1, drawText(gameFont, 54, 296, "SMITH", 15908203, 8409120), isMouseClicked && !ta && (wa = !wa) &&
             (Aa = false))
-    } else 12 == q && (gameFont.a = 1, lg(gameFont, 418, 104, "SHRINE", 16777215, 8409120), mg(416, 108, 48, 40) && (gameFont.a = 1, lg(gameFont, 418, 104, "SHRINE", 15908203, 8409120), ng && !ta && (Aa = !Aa) && (wa = false)));
+    } else 12 == q && (gameFont.a = 1, drawText(gameFont, 418, 104, "SHRINE", 16777215, 8409120), buttonCheckCentered(416, 108, 48, 40) && (gameFont.a = 1, drawText(gameFont, 418, 104, "SHRINE", 15908203, 8409120), isMouseClicked && !ta && (Aa = !Aa) && (wa = false)));
     if (va) {
         g = f = 14;
         sg(f - 6, g - 6, 204, 196, levelListArray[q][Yg]);
@@ -1231,8 +1375,8 @@ function Ig() {
         k = [9, 0, 20, 21, 17, 22, 23];
         c = [999, 999, 999, 999, 999, 999, 25];
         for (a = 0; 7 > a; a++) kh(f +
-            12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? lh && (Ma = a) : 0 < Xa[Ka] && tb[Ma][Ka] < c[Ma] && (N(gameFontSmall, pg - 5, qg - 8, "UP", 16776960, 1118481), lh && (tb[Ma][Ka]++, Xa[Ka]--)));
-        mh(f + 188, g + 4) && ng && (va = false);
+            12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? isMouseReleased && (Ma = a) : 0 < Xa[Ka] && tb[Ma][Ka] < c[Ma] && (N(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (tb[Ma][Ka]++, Xa[Ka]--)));
+        mh(f + 188, g + 4) && isMouseClicked && (va = false);
         g += 64;
         for (a = 0; 2 > a; a++) c = Yb[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = $b[c], Ze(Ka, le) && 3 == itemList[c][Lc] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == itemList[c][Lc] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == itemList[c][Lc] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == itemList[c][Lc] && (h += af(Ka, ne)), N(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
             "-" + Eb[4 * a + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(Ye(Ka, c, ld) * Ye(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = Ye(Ka, c, Ed), Ze(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += $e(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == Ye(Ka, c, Uc) ? h += " all" : 1 < Ye(Ka, c, Uc) && (h += " " + Ye(Ka, c, Uc) + "hit"), N(gameFontMed, f + 96 * a, g + 12, h, 16777215, 0), a || N(gameFontMed, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || N(gameFontMed, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? N(gameFontMed, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : N(gameFontMed, f + 96 * a, g + 48, "EMIT " +
@@ -1240,85 +1384,85 @@ function Ig() {
             itemList[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && N(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, N(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], 16777215, 0)));
         g += 96;
         k = ["ARMS", "CHARGE"];
-        for (a = 0; 2 > a; a++) c = Yb[Ka][a], b = f + 28 * a, d = g, sg(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], hh(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, lg(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
+        for (a = 0; 2 > a; a++) c = Yb[Ka][a], b = f + 28 * a, d = g, sg(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], hh(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, drawText(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
     }
     if (wa) {
         f = 224;
         g = 14;
         sg(f - 6, g - 6, 204, 260, levelListArray[q][Yg]);
         c = Jc[Na][28 * Oa + Pa];
-        0 != $b[c] && 1 == q && 2 >= Na && (lg(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
-            a = Ve(c, wd), 0 == a ? nh(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], nh(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= Wa && (Zb = c, ng && (Zb = -1, Wa = clamp(Wa - h, 0, 9999999), $b[c]++))) : nh(f + 138, g + 48 - 2, 80, 24, "MAX"));
+        0 != $b[c] && 1 == q && 2 >= Na && (drawText(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
+            a = Ve(c, wd), 0 == a ? nh(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], nh(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= Wa && (Zb = c, isMouseClicked && (Zb = -1, Wa = clamp(Wa - h, 0, 9999999), $b[c]++))) : nh(f + 138, g + 48 - 2, 80, 24, "MAX"));
         0 != $b[c] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, N(gameFontMed, f, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), N(gameFontMed,
             f, g + 12, h, 16777215, 0), 0 == Na && N(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && N(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? N(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? N(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : N(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), N(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && N(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && N(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && N(gameFontMed, f, g + 60, "    long", 16764057, 0), N(gameFontMed, f, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && N(gameFontMed, f, g + 72, "    physical", 10066329,
             0), 1 == itemList[c][td] && N(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && N(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && N(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && N(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && N(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && N(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && N(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? N(gameFontMed, f, g + 0, "" + itemList[c][Kc], -1, 0) : N(gameFontMed, f, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, ae),
             0 < a && (N(gameFontMed, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (N(gameFontMed, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (N(gameFontMed, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && N(gameFontMed, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (gameFontMed.a = 4, N(gameFontMed, f, g + 0, "" + itemList[c][Kc], -1, 0), 0 != itemList[c][ge] && N(gameFontMed, f, g + 12, itemList[c][fe] + itemList[c][ge] + itemList[c][he], 16777215, 0), 0 != itemList[c][je] && N(gameFontMed, f, g + 24, itemList[c][ie] + itemList[c][je] + itemList[c][ke], 16777215, 0)));
         Zb = -1;
         k = Na;
-        mh(f + 188, g + 4) && ng && (wa = false);
+        mh(f + 188, g + 4) && isMouseClicked && (wa = false);
         for (a = 0; 28 > a; a++) c = Jc[Na][28 * Oa + a], b = f + a % 7 * 28, d = g + 84 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0),
-            0 < $b[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : hh(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? lh && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(gameFontSmall, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[Ka][k] = c)) : h == Ka ? (N(gameFontSmall, pg - 25, qg - 8, "REMOVE", 16777215,
-                0), lh && (Yb[Ka][k] = 0)) : (N(gameFontSmall, pg - 25, qg - 16, "REMOVE", 16777215, 0), N(gameFontSmall, pg - 20, qg - 8, "EQUIP", 16777215, 1118481), lh && (Yb[h][k] = 0, Yb[Ka][k] = c)))), lh && (ac[c] = 0)), 0 < ac[c] && N(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (Yb[0][k] == c ? N(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : Yb[1][k] == c ? N(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : Yb[2][k] == c ? N(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : Yb[3][k] == c && N(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
+            0 < $b[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : hh(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && ih(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? isMouseReleased && (Pa = a) : (h = -1, Yb[0][k] == c ? h = 0 : Yb[1][k] == c ? h = 1 : Yb[2][k] == c ? h = 2 : Yb[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (N(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (Yb[Ka][k] = c)) : h == Ka ? (N(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+                0), isMouseReleased && (Yb[Ka][k] = 0)) : (N(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), N(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (Yb[h][k] = 0, Yb[Ka][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && N(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (Yb[0][k] == c ? N(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : Yb[1][k] == c ? N(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : Yb[2][k] == c ? N(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : Yb[3][k] == c && N(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (a = 0; 5 > a; a++) {
-            kh(f + 12 + 28 * a, g + 238, a, k[a], Na == a ? 16737894 : 16777215) && ng && (Na = a);
+            kh(f + 12 + 28 * a, g + 238, a, k[a], Na == a ? 16737894 : 16777215) && isMouseClicked && (Na = a);
             c =
                 0;
             for (b = Jc[a].length - 1; 0 <= b; b--) c += ac[Jc[a][b]];
             0 < c && N(gameFontSmall, f + 12 + 28 * a - 12, g + 238 - 12, "NEW", 16776960, -1)
         }
-        kh(f + 96 - 42, g + 209, 7, "PREV", 16777215) && ng && Oa--;
-        kh(f + 138, g + 209, 8, "NEXT", 16777215) && ng && Oa++;
+        kh(f + 96 - 42, g + 209, 7, "PREV", 16777215) && isMouseClicked && Oa--;
+        kh(f + 138, g + 209, 8, "NEXT", 16777215) && isMouseClicked && Oa++;
         h = ~~(Jc[Na].length / 28);
         Oa = clamp(Oa, 0, h - 1);
-        lg(gameFontSmall, f + 96, g + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
+        drawText(gameFontSmall, f + 96, g + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
     }
     if (xa) {
         f = 434;
         g = 14;
         sg(f - 6, g - 6, 204, 180, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (xa = false);
+        mh(f + 188, g + 4) && isMouseClicked && (xa = false);
         Ra = clamp(Ra, 0, oh[Qa].length - 1);
         c = oh[Qa][Ra];
-        if (0 == ec[ph[Qa]]) lg(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        if (0 == ec[ph[Qa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else {
             if (0 == Bc[c]) h = itemCatalogArray[c][itemAttr67], nh(f + 96, g + 48, 96, 24, "G " + h) && h <= Wa &&
-                ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 1);
+                isMouseClicked && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 1);
             else if (N(gameFontMed, f, g + 0, "LV " + itemCatalogArray[c][itemAttr1], 16777215, 0), N(gameFontMed, f, g + 12, "LP " + itemCatalogArray[c][itemAttr10], 16777215, 0), N(gameFontMed, f, g + 24, "GOLD " + itemCatalogArray[c][itemAttr66], 16777215, 0), N(gameFontMed, f, g + 36, "EXP " + itemCatalogArray[c][itemAttr65], 16777215, 0), b = 0, 0 != itemCatalogArray[c][itemAttr40] && (wh(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != itemCatalogArray[c][itemAttr41] && (wh(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != itemCatalogArray[c][itemAttr42] && (wh(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != itemCatalogArray[c][itemAttr43] && (wh(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != itemCatalogArray[c][itemAttr44] && (wh(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && N(gameFontMed, f, g + 48, "RES ", 16777215, 0), N(gameFontMed, f + 80, g + 0,
-                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], nh(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 2);
+                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], nh(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= Wa && isMouseClicked && (Wa = clamp(Wa - h, 0, 9999999), Bc[c] = 2);
             else
                 for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (sg(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : hh(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, N(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][Kc], -1, 0), 0 < $b[a] && (sg(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), sg(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
-            for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0), a == Ra && ih(b, d, 24, 24, 16711680), vg(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), ng && (Ra = a)), Ch(c, b + 12, d + 20, 2)
+            for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), sg(b, d, 24, 24, 0), a == Ra && ih(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (Ra = a)), Ch(c, b + 12, d + 20, 2)
         }
-        kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Qa--;
-        kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Qa++;
+        kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Qa--;
+        kh(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Qa++;
         Qa = phIdxWrapped(Qa);
-        lg(gameFontSmall, f + 96, g + 156, "" + (Qa + 1) + "/" + ph.length, 3355443, -1);
-        1 == ec[ph[Qa]] && lg(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Qa]][Hg], -1, 0)
+        drawText(gameFontSmall, f + 96, g + 156, "" + (Qa + 1) + "/" + ph.length, 3355443, -1);
+        1 == ec[ph[Qa]] && drawText(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Qa]][Hg], -1, 0)
     }
     if (ya) {
         f = 434;
         g = 14;
         sg(f -
             6, g - 6, 204, 180, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (ya = false);
-        if (0 == ec[ph[Sa]]) lg(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        mh(f + 188, g + 4) && isMouseClicked && (ya = false);
+        if (0 == ec[ph[Sa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
-            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (hh(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (gameFontMed.b = -1, lg(gameFontMed, b + 3, d + 10, "" + Dc[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeArray[c][1].length ? N(gameFontMed, b + 40, d + 6, badgeArray[c][0], 16777215,
+            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, sg(b - 1, d + 5, 10, 10, 0), sg(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (hh(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (hh(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (gameFontMed.b = -1, drawText(gameFontMed, b + 3, d + 10, "" + Dc[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeArray[c][1].length ? N(gameFontMed, b + 40, d + 6, badgeArray[c][0], 16777215,
                 0) : (N(gameFontMed, b + 40, d + 1, badgeArray[c][0], 16777215, 0), gameFontMed.a = 3, N(gameFontMed, b + 40, d + 11, badgeArray[c][1], 16777215, 0)));
-        kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && ng && Sa--;
-        kh(f + 138, g + 156, 8, "NEXT", 16777215) && ng && Sa++;
+        kh(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Sa--;
+        kh(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Sa++;
         Sa = phIdxWrapped(Sa);
-        lg(gameFontSmall, f + 96, g + 156, "" + (Sa + 1) + "/" + ph.length, 3355443, -1);
-        1 == ec[ph[Sa]] && lg(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Sa]][Hg], -1, 0)
+        drawText(gameFontSmall, f + 96, g + 156, "" + (Sa + 1) + "/" + ph.length, 3355443, -1);
+        1 == ec[ph[Sa]] && drawText(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Sa]][Hg], -1, 0)
     }
     if (za) {
         f = 434;
         g = 202;
         d = 32;
         sg(f - 6, g - 6, 204, 148, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (za = false);
+        mh(f + 188, g + 4) && isMouseClicked && (za = false);
         c = ["ON", "OFF"];
         N(gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
         for (a = 0; a < r; a++) {
@@ -1327,22 +1471,22 @@ function Ig() {
             L(f + 72 + a * d + 6, g + 43, f + 72 + a * d + 17, g + 43, 15908203);
             for (b = 0; 11 > b; b++) l[b].x = f + 72 + a * d + p[b], l[b].y = g + 20 + t[b];
             eh(a, l, 0, 1, 15908203, 16777215, 2);
-            lg(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16777215, 0);
-            mg(f + 84 + a * d, g + 40, 32, 40) && (Xg(f + 72 + a * d, g + 20, 24, 24, 8388608), lg(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16711680, 0), ng && (ib[a] = 1 - ib[a]))
+            drawText(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16777215, 0);
+            buttonCheckCentered(f + 84 + a * d, g + 40, 32, 40) && (Xg(f + 72 + a * d, g + 20, 24, 24, 8388608), drawText(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16711680, 0), isMouseClicked && (ib[a] = 1 - ib[a]))
         }
         N(gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
         N(gameFontMed, f + 78, g + 64, c[kb], 16777215, 0);
-        vg(f + 0, g + 64 - 2, 192, 12) && (N(gameFontMed, f + 78, g + 64, c[kb], 16711680, 0), ng && (kb = 1 - kb));
-        1 == q ? lg(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : lg(gameFontMed, f + 96, g + 100, "Return to Village",
+        buttonCheck(f + 0, g + 64 - 2, 192, 12) && (N(gameFontMed, f + 78, g + 64, c[kb], 16711680, 0), isMouseClicked && (kb = 1 - kb));
+        1 == q ? drawText(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : drawText(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = levelListArray[q][Eh];
-        nh(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && ng && (Wa = clamp(Wa - h, 0, 9999999), 1 == q ? ra = 0 : (ug = 0, ra = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = false)
+        nh(f + 96, g + 120, 96, 24, "G " + h) && h <= Wa && isMouseClicked && (Wa = clamp(Wa - h, 0, 9999999), 1 == q ? drawState = 0 : (ug = 0, drawState = 10, q = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), za = false)
     }
     if (Aa) {
         f = 224;
         g = 14;
         sg(f - 6, g - 6, 204, 180, levelListArray[q][Yg]);
-        mh(f + 188, g + 4) && ng && (Aa = false);
+        mh(f + 188, g + 4) && isMouseClicked && (Aa = false);
         for (a = h = 0; a < badgeArray.length; a++) badgeArray[a] && Dc[a] == badgeArray[a][4] && h++;
         gameFontMed.a = 3;
         N(gameFontMed, f + 27, g + 6, "Achievement Medal", 16777215, 0);
@@ -1350,7 +1494,7 @@ function Ig() {
         N(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
         for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, sg(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
-            b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : vg(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && ng && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, N(gameFontMed, b + 40, d + 6, ff[a][0], 16777215, 0);
+            b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (sg(b - 1, d + 5, 10, 10, 0), hh(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && isMouseClicked && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, N(gameFontMed, b + 40, d + 6, ff[a][0], 16777215, 0);
         if (!c)
             for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
@@ -1563,17 +1707,17 @@ function vi() {
     var a = new Vec2,
         b, c;
     if (-1 == bi) {
-        if (ng && !ta) {
+        if (isMouseClicked && !ta) {
             b = 20;
-            a.x = pg - Mh[Ka][0].x;
-            a.y = qg - (Mh[Ka][0].y - 8);
+            a.x = mouseXCurrent - Mh[Ka][0].x;
+            a.y = mouseYCurrent - (Mh[Ka][0].y - 8);
             c = Vec2Mag(a);
             20 > c && c < b && (b = c, bi = Ka, ci = 0);
             for (var d = 0; d < r; d++)
                 if (Wh[d] != Lh)
-                    for (var f = 0; 10 > f; f++) a.x = pg - Mh[d][f].x, a.y = qg - Mh[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, Ka = d)
+                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - Mh[d][f].x, a.y = mouseYCurrent - Mh[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, Ka = d)
         }
-    } else wi || (bi = -1, ci = 0)
+    } else wasMouseDown || (bi = -1, ci = 0)
 }
 mainWindow.fff = xi;
 
@@ -1737,7 +1881,7 @@ function ig() {
                     R(-1, -3);
             if (Wh[a] != Lh) {
                 1 == q && Ya[a] < Za[a] && 1 > E(100) && (Ya[a] = clamp(Ya[a] + 5, 0, Za[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
-                bi == a && (O[bi][ci].x += .2 * (pg - O[bi][ci].x), O[bi][ci].y += .2 * (qg - O[bi][ci].y));
+                bi == a && (O[bi][ci].x += .2 * (mouseXCurrent - O[bi][ci].x), O[bi][ci].y += .2 * (mouseYCurrent - O[bi][ci].y));
                 b = itemList[Yb[a][0]][Nc];
                 c = Hb[a];
                 d = O[a][1].x;
@@ -2043,7 +2187,7 @@ mainWindow.fff = wg;
 
 function wg() {
     var a;
-    if (12 == ra)
+    if (12 == drawState)
         for (a = 0; a < r; a++)
             if (Wh[a] != Lh) {
                 var b = O[a][1].x,
@@ -2150,9 +2294,9 @@ function xg() {
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
-        var n = clamp(pg + c[a] >> 3, 0, Gi - 1),
-            w = clamp(qg + d[a] >> 3, 0, si - 1);
-        if (ng) {
+        var n = clamp(mouseXCurrent + c[a] >> 3, 0, Gi - 1),
+            w = clamp(mouseYCurrent + d[a] >> 3, 0, si - 1);
+        if (isMouseClicked) {
             if (39 == P[w][n]) {
                 dj(n, w, n, w, 32);
                 a = 1;
@@ -2168,13 +2312,13 @@ function xg() {
             }
             if (47 == P[w][n]) {
                 2 == q && A(4) && C(4);
-                11 == q && (c = 8 * n + 4 - pg, d = 8 * w + 4 - qg, abs(c) >= abs(d) ? 0 < c && 32 == P[w][n + 1] ? (dj(n + 1, w, n + 1, w, 47), dj(n, w, n, w, 32), n += 1) : 0 > c && 32 == P[w][n - 1] && (dj(n - 1, w, n - 1, w, 47), dj(n, w, n, w, 32), --n) : 0 < d && 32 == P[w + 1][n] ? (dj(n, w + 1, n, w + 1, 47), dj(n, w, n, w, 32), w += 1) : 0 > d && 32 == P[w - 1][n] && (dj(n, w - 1, n, w - 1, 47), dj(n, w, n, w, 32), --w), A(44) && (c = abs(64 - n), d = abs(11 - w), Lg(pg, qg, 0, "" + c + d, 30, 10066431), 0 ==
+                11 == q && (c = 8 * n + 4 - mouseXCurrent, d = 8 * w + 4 - mouseYCurrent, abs(c) >= abs(d) ? 0 < c && 32 == P[w][n + 1] ? (dj(n + 1, w, n + 1, w, 47), dj(n, w, n, w, 32), n += 1) : 0 > c && 32 == P[w][n - 1] && (dj(n - 1, w, n - 1, w, 47), dj(n, w, n, w, 32), --n) : 0 < d && 32 == P[w + 1][n] ? (dj(n, w + 1, n, w + 1, 47), dj(n, w, n, w, 32), w += 1) : 0 > d && 32 == P[w - 1][n] && (dj(n, w - 1, n, w - 1, 47), dj(n, w, n, w, 32), --w), A(44) && (c = abs(64 - n), d = abs(11 - w), Lg(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431), 0 ==
                     c && 0 == d && C(44)));
                 break
             }
         }
     }
-    if (1 == q) 12 == ra && 1 == ec[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, fg[0] = 33, gg[0] = 24, fg[1] = 35, gg[1] = 24, fg[2] = 44, gg[2] = 24, fg[3] = 46, gg[3] = 24), 12 == ra && 1 == ec[12] && 1 > h && (Mg = 12, fg[0] = 67, gg[0] = 42, fg[1] = 69, gg[1] = 42, fg[2] = 71, gg[2] = 42, fg[3] = 73, gg[3] = 42);
+    if (1 == q) 12 == drawState && 1 == ec[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, fg[0] = 33, gg[0] = 24, fg[1] = 35, gg[1] = 24, fg[2] = 44, gg[2] = 24, fg[3] = 46, gg[3] = 24), 12 == drawState && 1 == ec[12] && 1 > h && (Mg = 12, fg[0] = 67, gg[0] = 42, fg[1] = 69, gg[1] = 42, fg[2] = 71, gg[2] = 42, fg[3] = 73, gg[3] = 42);
     else if (2 != q)
         if (3 == q) {
             1 == r && 0 == V[0] && (li(r, 25, 14), r++);
@@ -2205,7 +2349,7 @@ function xg() {
             for (a = b = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
             4 == b && C(19)
         }
-    } else if (6 == q) 12 == ra && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (Mg = 1, fg[0] = 18, gg[0] = 24, fg[1] = 20, gg[1] = 24, fg[2] = 29, gg[2] = 24, fg[3] = 31, gg[3] = 24);
+    } else if (6 == q) 12 == drawState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (Mg = 1, fg[0] = 18, gg[0] = 24, fg[1] = 20, gg[1] = 24, fg[2] = 29, gg[2] = 24, fg[3] = 31, gg[3] = 24);
     else if (7 == q) {
         if (0 == Xi[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
             if (c = 0, 39 == P[34][75] && c++, 39 == P[35][72] && c++, 39 == P[35][74] && c++, 39 == P[36][75] && c++, 39 == P[38][76] && c++, 1 == c || 2 == c) Zi(66, 42, 24, 1), V[1]++, Xi[1]++;
@@ -2644,7 +2788,7 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
                     if (Fa < U + 2) continue
                 }
                 0 == a && (n = g + floor(E(h - g + 1)), 4 == d ? (Jk[l] = max(Jk[l], max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr44] / 100))), Ik[l] = max(Ik[l], f - floor(f * itemCatalogArray[X[l]][itemAttr44] / 100))) : (0 == d ? n = max(1, n - itemCatalogArray[X[l]][itemAttr40]) : 1 == d ? n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr41] / 100)) : 2 == d ? n = max(1, n - floor(n *
-                    itemCatalogArray[X[l]][itemAttr42] / 100)) : 3 == d && (n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr43] / 100))), jj[l] = max(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - floor(120 * itemCatalogArray[X[l]][itemAttr42] / 100), Hk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr42] / 100)) : 5 == d && (Kk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr45] / 100)), Ek[l] = 120, 30 != ra && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
+                    itemCatalogArray[X[l]][itemAttr42] / 100)) : 3 == d && (n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr43] / 100))), jj[l] = max(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - floor(120 * itemCatalogArray[X[l]][itemAttr42] / 100), Hk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr42] / 100)) : 5 == d && (Kk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr45] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
                 n = l;
                 c--;
                 if (0 >= c) break
@@ -2750,7 +2894,7 @@ function cl(a) {
             2 == c ? (c = floor(itemCatalogArray[X[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * itemCatalogArray[X[a]][b + 1] * 100 < d && 1 > $b[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
         } c = floor(itemCatalogArray[X[a]][itemAttr66] * (100 + Vb) / 100);
     1 > 3 * rand() && Gh(Q[a][0].x, Q[a][0].y, 2, c, 0);
-    30 != ra && Hc++;
+    30 != drawState && Hc++;
     A(2) && 3 == X[a] &&
         C(2);
     A(5) && 4 == X[a] && C(5);
@@ -3746,7 +3890,7 @@ mainWindow.fff = Fg;
 
 function Fg() {
     var a, b, c, d, f;
-    for (a = 0; a < aj; a++) 20 <= um[a] ? lg(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), Jg(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
+    for (a = 0; a < aj; a++) 20 <= um[a] ? drawText(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), Jg(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
 }
 var ym = 0,
     zm = Array(100);
@@ -3767,7 +3911,7 @@ mainWindow.fff = Gh;
 
 function Gh(a, b, c, d, f) {
     if (100 != ym)
-        for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = pg < a ? R(-.5, -1) : R(.5, 1), Am[ym].y = R(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
+        for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = mouseXCurrent < a ? R(-.5, -1) : R(.5, 1), Am[ym].y = R(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
 }
 mainWindow.fff = Gm;
 
@@ -3864,15 +4008,16 @@ function setupAnimRequest() {
         Zm = a;
         $m++
     }
-    ng = 0 == wi && 1 == isMouseDown;
-    lh = 1 == wi && 0 == isMouseDown;
-    (wi = isMouseDown) ? bn++ : bn = 0;
-    pg = mouseXRel;
-    qg = mouseYRel;
+    isMouseClicked = 0 == wasMouseDown && 1 == isMouseDown;
+    isMouseReleased = 1 == wasMouseDown && 0 == isMouseDown;
+    (wasMouseDown = isMouseDown) ? bn++ : bn = 0;
+    mouseXCurrent = mouseXRel;
+    mouseYCurrent = mouseYRel;
     for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = false;
     Tf = Tf + floor(1024 * rand()) & 1023;
     Uf = floor(512 * rand()) | 1;
     drawCanvas();
+
     var canvasBufferLength = targetHostname.length == hostnameCheckIdx ? CANVAS_WIDTH * CANVAS_HEIGHT : 0;
     if (1 <= ug)
         for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (F[a] & 255) << 16 | F[a] & 65280 | F[a] >> 16 & 255;
@@ -4020,7 +4165,7 @@ function N(a, b, c, d, f, g) {
     a.a = 0
 }
 
-function lg(a, b, c, d, f, g) {
+function drawText(a, b, c, d, f, g) {
     b -= d.length * (a.c + a.b) >> 1;
     c -= a.j >> 1;
     N(a, b, c, d, f, g)
@@ -4037,7 +4182,7 @@ function mn(a, b, c, d) {
     var f = gameFontSmall;
     f.b = -1;
     f.a = 0;
-    lg(f, a, b, c, d, -1)
+    drawText(f, a, b, c, d, -1)
 }
 
 function Tg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) {
@@ -4279,23 +4424,23 @@ mainWindow.full_screen = toggleFullscreen;
 function toggleFullscreen() {
     domDocument.fullscreenEnabled && (domDocument.fullscreenElement ? domDocument.exitFullscreen() : canvasElement.requestFullscreen())
 }
-var ng = false,
-    lh = false,
-    wi = false,
+var isMouseClicked = false,
+    isMouseReleased = false,
+    wasMouseDown = false,
     isMouseDown = false,
     bn = 0,
-    pg = 0,
-    qg = 0,
+    mouseXCurrent = 0,
+    mouseYCurrent = 0,
     mouseXRel = 0,
     mouseYRel = 0,
     pn = 0;
 
-function vg(a, b, c, d) {
-    return pg < a || a + c <= pg || qg < b || b + d <= qg ? false : true
+function buttonCheck(x, y, w, h) {
+    return mouseXCurrent < x || x + w <= mouseXCurrent || mouseYCurrent < y || y + h <= mouseYCurrent ? false : true
 }
 
-function mg(a, b, c, d) {
-    return vg(a - c / 2, b - d / 2, c, d)
+function buttonCheckCentered(x, y, w, h) {
+    return buttonCheck(x - w / 2, y - h / 2, w, h)
 }
 
 function onMouseMove(mouseState) {
@@ -4306,13 +4451,13 @@ function onMouseMove(mouseState) {
         rectHeight = floor(rectHeight / 2 - CANVAS_HEIGHT * f / 2);
     mouseXRel = floor((mouseState.clientX - clientRect.left - floor(rectWidth / 2 - CANVAS_WIDTH * f / 2)) / f);
     mouseYRel = floor((mouseState.clientY - clientRect.top - rectHeight) / f)
-    LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
+    // LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
 }
 
 
 domDocument.onmousemove = onMouseMove;
-domDocument.onmousedown = function(a) {
-    onMouseMove(a);
+domDocument.onmousedown = function(mouseState) {
+    onMouseMove(mouseState);
     isCanvasFocused = false;
 
     const insideCanvas =
@@ -4321,7 +4466,7 @@ domDocument.onmousedown = function(a) {
     
     if (insideCanvas) {
         isCanvasFocused = true;
-        if (a.button === 0) {
+        if (mouseState.button === 0) {
             isMouseDown = true;
         }
         return false;
@@ -4331,37 +4476,48 @@ domDocument.onmousedown = function(a) {
     //     (isCanvasFocused = true, 0 == a.button && (isMouseDown = true), isCanvasFocused)
     // ) return false
 };
-domDocument.onmouseup = function(a) {
-    onMouseMove(a);
-    0 == a.button && (isMouseDown = false)
+domDocument.onmouseup = function(mouseState) {
+    onMouseMove(mouseState);
+    if (mouseState.button === 0) {
+        isMouseDown = false;
+    }
+    //0 == mouseState.button && (isMouseDown = false)
 };
 domDocument.oncontextmenu = function() {
     if (isCanvasFocused) return false
 };
 
-function sn(a) {
-    var b = canvasElement.getBoundingClientRect(),
-        c = b.right - b.left,
-        d = b.bottom - b.top,
-        f = min(c / 640, d / 432),
-        c = floor(c / 2 - 640 * f / 2),
-        d = floor(d / 2 - 432 * f / 2);
+function handleTouch(a) {
+    var clientRect = canvasElement.getBoundingClientRect(),
+        rectWidth = clientRect.right - clientRect.left,
+        rectHeight = clientRect.bottom - clientRect.top,
+        f = min(rectWidth / 640, rectHeight / 432),
+        rectWidth = floor(rectWidth / 2 - 640 * f / 2),
+        rectHeight = floor(rectHeight / 2 - 432 * f / 2);
     a = a.touches;
+    console.log(a);
     pn = a.length;
-    1 == pn ? (mouseXRel = floor((a[0].clientX - b.left - c) / f), mouseYRel = floor((a[0].clientY - b.top - d) / f)) : 2 == pn && (mouseXRel = floor((a[0].clientX - b.left - c) / f), mouseYRel = floor((a[0].clientY - b.top - d) / f), d = floor((a[1].clientY - b.top - d) / f), mouseXRel = floor((mouseXRel + floor((a[1].clientX - b.left - c) / f)) / 2), mouseYRel = floor((mouseYRel + d) / 2))
+    1 == pn 
+    ? (mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f), 
+        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f)) 
+    : 2 == pn && (mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f), 
+        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f), 
+        rectHeight = floor((a[1].clientY - clientRect.top - rectHeight) / f), 
+        mouseXRel = floor((mouseXRel + floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2), 
+        mouseYRel = floor((mouseYRel + rectHeight) / 2))
 }
 canvasElement.ontouchstart = function(a) {
-    sn(a);
-    1 == pn ? (isMouseDown = true, pg = mouseXRel, qg = mouseYRel) : 2 == pn && (isMouseDown = false, pg = mouseXRel, qg = mouseYRel);
+    handleTouch(a);
+    1 == pn ? (isMouseDown = true, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == pn && (isMouseDown = false, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
     return false
 };
 canvasElement.ontouchmove = function(a) {
-    sn(a);
+    handleTouch(a);
     return false
 };
 canvasElement.ontouchend = function(a) {
-    sn(a);
-    0 == pn ? isMouseDown = false : 1 == pn ? (pg = mouseXRel, qg = mouseYRel) : 2 == pn && (pg = mouseXRel, qg = mouseYRel);
+    handleTouch(a);
+    0 == pn ? isMouseDown = false : 1 == pn ? (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == pn && (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
     return false
 };
 canvasElement.ontouchcancel = function() {
@@ -4547,8 +4703,8 @@ function og(a, b, c, d, f) {
     Ni(a, b, 32, 32, 2147483648);
     Gg = 0;
     Ii(iconSpriteSheet, a, b - 3, 24, 24, 24 * c, 0, 24, 24, f);
-    6 <= d.length ? mn(a, b + 10, d, f) : lg(gameFontSmall, a, b + 10, d, f, -1);
-    return mg(a, b, 32, 32) ? (Ii(iconSpriteSheet, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : lg(gameFontSmall, a, b + 10, d, 16750950, -1), true) : false
+    6 <= d.length ? mn(a, b + 10, d, f) : drawText(gameFontSmall, a, b + 10, d, f, -1);
+    return buttonCheckCentered(a, b, 32, 32) ? (Ii(iconSpriteSheet, a, b - 3, 24, 24, 24 * c, 0, 24, 24, 16750950), 6 <= d.length ? mn(a, b + 10, d, 16750950) : drawText(gameFontSmall, a, b + 10, d, 16750950, -1), true) : false
 }
 
 function kh(a, b, c, d, f) {
@@ -4556,8 +4712,8 @@ function kh(a, b, c, d, f) {
     Ni(a, b, 24, 24, 2147483648);
     Gg = 0;
     Ii(iconSpriteSheet, a, b - 3, 16, 16, 16 * c, 24, 16, 16, f);
-    6 <= d.length ? mn(a, b + 8, d, f) : lg(gameFontSmall, a, b + 8, d, f, -1);
-    return mg(a, b, 24, 24) ? (Ii(iconSpriteSheet, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : lg(gameFontSmall, a, b + 8, d, 16737894, -1), true) : false
+    6 <= d.length ? mn(a, b + 8, d, f) : drawText(gameFontSmall, a, b + 8, d, f, -1);
+    return buttonCheckCentered(a, b, 24, 24) ? (Ii(iconSpriteSheet, a, b - 3, 16, 16, 16 * c, 24, 16, 16, 16737894), 6 <= d.length ? mn(a, b + 8, d, 16737894) : drawText(gameFontSmall, a, b + 8, d, 16737894, -1), true) : false
 }
 
 function mh(a, b) {
@@ -4565,11 +4721,11 @@ function mh(a, b) {
     Ni(a, b, 20, 20, 2147483648);
     Gg = 0;
     Ii(iconSpriteSheet, a, b, 16, 16, 96, 24, 16, 16, 16777215);
-    return mg(a, b, 20, 20) ? (Ii(iconSpriteSheet, a, b, 16, 16, 96, 24, 16, 16, 16737894), true) : false
+    return buttonCheckCentered(a, b, 20, 20) ? (Ii(iconSpriteSheet, a, b, 16, 16, 96, 24, 16, 16, 16737894), true) : false
 }
 
 function nh(a, b, c, d, f) {
     Ni(a, b, c, d, 0);
-    lg(gameFont, a, b, f, 16777215, 8409120);
-    return mg(a, b, c, d) ? (Xg(a - (c >> 1), b - (d >> 1), c, d, 6684672), true) : false
+    drawText(gameFont, a, b, f, 16777215, 8409120);
+    return buttonCheckCentered(a, b, c, d) ? (Xg(a - (c >> 1), b - (d >> 1), c, d, 6684672), true) : false
 };

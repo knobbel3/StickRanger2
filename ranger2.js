@@ -1415,7 +1415,7 @@ function drawStartingMenu() {
         drawLine(f + a * d + 6, g + 23, f + a * d + 17, g + 23, 15908203);
         for (b = 0; 11 > b; b++) l[b].x = f + a * d + p[b], l[b].y = g + t[b];
         c = 16777215;
-        0 < bh[a] ? c = 5934817 : 0 < ch[a] ? c = 1989840 : 0 < phIdxWrapped[a] && (c = 3407616);
+        0 < bh[a] ? c = 5934817 : 0 < ch[a] ? c = 1989840 : 0 < dh[a] && (c = 3407616);
         eh(a, l, 0, 1, 15908203, c, 2);
         drawTooltip(gameFontSmall, f + a * d + 28, g, "P" + (a + 1), 3355443, -1);
         drawRect(f + a * d + 28, g + 8, 48, 7, 1114112);
@@ -1718,7 +1718,7 @@ function li(a, b, c) {
     fi[a] = 0;
     ch[a] = 0;
     hi[a] = 0;
-    phIdxWrapped[a] = 0;
+    dh[a] = 0;
     ii[a] = 0;
     bh[a] = 0;
     ji[a] = 0
@@ -1798,13 +1798,13 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
                 if (2 == c) ch[x] = 120, hi[x] = d, Ze(x, Re) && (hi[x] = max(floor(hi[x] * (100 - $e(x, Re)) / 100), 0));
                 else if (3 == c) Ze(x, Se) && E(100) < $e(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
                 else if (4 == c) {
-                    phIdxWrapped[x] = d;
+                    dh[x] = d;
                     ii[x] = y;
-                    Ze(x, Te) && (phIdxWrapped[x] = max(phIdxWrapped[x] - 60 * $e(x, Te), 0));
+                    Ze(x, Te) && (dh[x] = max(dh[x] - 60 * $e(x, Te), 0));
                     y = x;
                     continue
                 } else 5 == c && (bh[x] = floor(d / 10));
-                A(43) && 1 == c && 0 < ch[x] && 0 < phIdxWrapped[x] && C(43);
+                A(43) && 1 == c && 0 < ch[x] && 0 < dh[x] && C(43);
                 partyLP[x] -= y;
                 Lg(O[x][0].x, O[x][0].y, M, y, 60, J);
                 Og += y;
@@ -1975,7 +1975,7 @@ function updatePlayerParty() {
         h = new Vec2;
     vi();
     for (a = 0; a < r; a++) {
-        if (0 < phIdxWrapped[a] && (phIdxWrapped[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, E(60) < b && (d += 1), partyLP[a] -= d, Og += d, 0 > partyLP[a]))
+        if (0 < dh[a] && (dh[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, E(60) < b && (d += 1), partyLP[a] -= d, Og += d, 0 > partyLP[a]))
             for (c = 0 == gi[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < r; b++) a != b && (partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
         if (0 < bh[a]) bh[a]--;
         else {
@@ -2064,7 +2064,7 @@ function drawPlayerParty() {
     for (a = 0; a < r; a++) {
         d = 15908203;
         f = 16777215;
-        0 < bh[a] ? (d = 1989840, f = 5934817) : 0 < ch[a] ? (d = 9840, f = 1989840) : 0 < phIdxWrapped[a] && (d = 3381504, f = 3407616);
+        0 < bh[a] ? (d = 1989840, f = 5934817) : 0 < ch[a] ? (d = 9840, f = 1989840) : 0 < dh[a] && (d = 3381504, f = 3407616);
         0 < $h[a] && ($h[a]--, f = 16711680);
         fh = isSolidRender = 1;
         for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(O[a][c].x), floor(O[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
@@ -2526,7 +2526,7 @@ function xg() {
         A(37) && 0 == V[1] && V[0] == Xi[0] && C(37);
         A(38) && 0 == V[3] && 0 == Og && C(38);
         if (A(39)) {
-            for (a = b = 0; a < r; a++) 0 < phIdxWrapped[a] && b++;
+            for (a = b = 0; a < r; a++) 0 < dh[a] && b++;
             4 == b && C(39)
         }
     } else if (11 == q) A(41) &&
@@ -2567,7 +2567,7 @@ function xg() {
         }
         A(64) && 0 == p && 0 < f && 0 < k && 100 == V[11] && C(64)
     } else if (17 == q) {
-        for (a = 0; a < r; a++) 0 < phIdxWrapped[a] && (Hi = 1);
+        for (a = 0; a < r; a++) 0 < dh[a] && (Hi = 1);
         A(66) && 0 == V[0] && !Hi && C(66);
         A(68) && 0 == V[6] && 5 == V[5] && C(68)
     } else 18 == q ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = nf(3), Zi(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > E(60) && (c = Fh(8, 23), Zi(c, 10, 83, 10), V[10]++,

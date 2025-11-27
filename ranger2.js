@@ -937,76 +937,84 @@ function drawCanvas() {
     if (0 < iterIdxTemp_3) iterIdxTemp_3++;
     else {
         var a, b, c;
-        for (a = 276479; 0 <= a; a--) frameBufferArray[a] = 0;
+        for (a = CANVAS_WIDTH * CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
         var d;
-        if (0 > r || 4 < r) frameBufferArray = null;
-        if (0 > Ua || 99 < Ua) frameBufferArray = null;
-        if (0 > Va || 9999999 < Va) frameBufferArray = null;
-        if (0 > Wa || 9999999 < Wa) frameBufferArray = null;
-        for (a = 0; 4 > a; a++) {
-            if (0 > Xa[a] || 196 < Xa[a]) frameBufferArray = null;
-            if (0 > lb[a] || 196 < lb[a]) frameBufferArray = null;
-            if (0 > mb[a] || 196 < mb[a]) frameBufferArray = null;
-            if (0 > nb[a] || 196 < nb[a]) frameBufferArray = null;
-            if (0 > pb[a] || 196 < pb[a]) frameBufferArray = null;
-            if (0 > qb[a] || 196 < qb[a]) frameBufferArray = null;
-            if (0 > rb[a] || 196 < rb[a]) frameBufferArray = null;
-            if (0 > sb[a] || 25 < sb[a]) frameBufferArray = null
-        }
-        if (0 > hb || 9 < hb) frameBufferArray = null;
-        d = uf;
-        d = hashAdjust(d, 0);
-        d = hashAdjust(d, q);
-        d = hashAdjust(d, r);
-        d = hashAdjust(d, Ua);
-        d = hashAdjust(d, Va);
-        d = hashAdjust(d, Wa);
-        for (a = 0; 4 > a; a++) 
-            d = hashAdjust(d, Xa[a]), 
-            d = hashAdjust(d, Ya[a]), 
-            d = hashAdjust(d, Za[a]), 
-            d = hashAdjust(d, $a[a]), 
-            d = hashAdjust(d, ab[a]), 
-            d = hashAdjust(d, bb[a]), 
-            d = hashAdjust(d, lb[a]), 
-            d = hashAdjust(d, mb[a]), 
-            d = hashAdjust(d, nb[a]), 
-            d = hashAdjust(d, pb[a]), 
-            d = hashAdjust(d, qb[a]), 
-            d = hashAdjust(d, rb[a]), 
-            d = hashAdjust(d, sb[a]);
+
+        // This part is probably for detecting if the game state has been tampered to prevent cheating.
+        // It literally destroys the frame buffer if tampering is detected. 
+        // Well done, ha55ii... 
         
-        for (a = 0; 4 > a; a++)
-            for (b = 0; 8 > b; b++) d = hashAdjust(d, Yb[a][b]);
-        for (a = 0; 256 > a; a++) d = hashAdjust(d, $b[a]);
-        for (a = 0; 9 > a; a++) d = hashAdjust(d, db[a]);
-        d = hashAdjust(d, eb);
-        for (a = 0; a < dc; a++) d = hashAdjust(d, ec[a]);
-        for (a = 0; a < itemCount; a++) d = hashAdjust(d, Bc[a]);
-        for (a = 0; a < Cc; a++) d = hashAdjust(d, Dc[a]);
-        for (a = 0; a < Ec; a++) d = hashAdjust(d, Fc[a]);
-        d != (tf ^ 16777215) && (frameBufferArray = null);
-        for (a = vf; 256 > a; a += 64) {
-            d = 0;
-            if (itemList[a])
-                for (b = 1; b < itemList[a].length; b++) d = hashAdjust(d, itemList[a][b]);
-            d != wf[a] && (frameBufferArray = null)
-        }
-        for (a = vf; a < levelListArray.length; a += 64) {
-            d = 0;
-            if (levelListArray[a])
-                for (b = 2; b < levelListArray[a].length; b++) d = hashAdjust(d, levelListArray[a][b]);
-            d != xf[a] && (frameBufferArray = null)
-        }
-        for (a = vf; a < itemCatalogArray.length; a += 64) {
-            d = 0;
-            if (itemCatalogArray[a])
-                for (b = 0; b < itemCatalogArray[a].length; b++) d = hashAdjust(d, itemCatalogArray[a][b]);
-            d != yf[a] && (frameBufferArray = null)
-        }
-        for (a = d = 0; a < Jc.length; a++)
-            for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
-        d != zf && (frameBufferArray = null);
+        // if (0 > r || 4 < r) frameBufferArray = null;
+        // if (0 > Ua || 99 < Ua) frameBufferArray = null;
+        // if (0 > Va || 9999999 < Va) frameBufferArray = null;
+        // if (0 > Wa || 9999999 < Wa) frameBufferArray = null;
+        // for (a = 0; 4 > a; a++) {
+        //     if (0 > Xa[a] || 196 < Xa[a]) frameBufferArray = null;
+        //     if (0 > lb[a] || 196 < lb[a]) frameBufferArray = null;
+        //     if (0 > mb[a] || 196 < mb[a]) frameBufferArray = null;
+        //     if (0 > nb[a] || 196 < nb[a]) frameBufferArray = null;
+        //     if (0 > pb[a] || 196 < pb[a]) frameBufferArray = null;
+        //     if (0 > qb[a] || 196 < qb[a]) frameBufferArray = null;
+        //     if (0 > rb[a] || 196 < rb[a]) frameBufferArray = null;
+        //     if (0 > sb[a] || 25 < sb[a]) frameBufferArray = null
+        // }
+        // if (0 > hb || 9 < hb) frameBufferArray = null;
+        
+        // d = uf;
+        // d = hashAdjust(d, 0);
+        // d = hashAdjust(d, q);
+        // d = hashAdjust(d, r);
+        // d = hashAdjust(d, Ua);
+        // d = hashAdjust(d, Va);
+        // d = hashAdjust(d, Wa);
+        // for (a = 0; 4 > a; a++) 
+        //     d = hashAdjust(d, Xa[a]), 
+        //     d = hashAdjust(d, Ya[a]), 
+        //     d = hashAdjust(d, Za[a]), 
+        //     d = hashAdjust(d, $a[a]), 
+        //     d = hashAdjust(d, ab[a]), 
+        //     d = hashAdjust(d, bb[a]), 
+        //     d = hashAdjust(d, lb[a]), 
+        //     d = hashAdjust(d, mb[a]), 
+        //     d = hashAdjust(d, nb[a]), 
+        //     d = hashAdjust(d, pb[a]), 
+        //     d = hashAdjust(d, qb[a]), 
+        //     d = hashAdjust(d, rb[a]), 
+        //     d = hashAdjust(d, sb[a]);
+        
+        // for (a = 0; 4 > a; a++)
+        //     for (b = 0; 8 > b; b++) d = hashAdjust(d, Yb[a][b]);
+        // for (a = 0; 256 > a; a++) d = hashAdjust(d, $b[a]);
+        // for (a = 0; 9 > a; a++) d = hashAdjust(d, db[a]);
+        // d = hashAdjust(d, eb);
+        // for (a = 0; a < dc; a++) d = hashAdjust(d, ec[a]);
+        // for (a = 0; a < itemCount; a++) d = hashAdjust(d, Bc[a]);
+        // for (a = 0; a < Cc; a++) d = hashAdjust(d, Dc[a]);
+        // for (a = 0; a < Ec; a++) d = hashAdjust(d, Fc[a]);
+        // d != (tf ^ 16777215) && (frameBufferArray = null);
+        
+        // for (a = vf; 256 > a; a += 64) {
+        //     d = 0;
+        //     if (itemList[a])
+        //         for (b = 1; b < itemList[a].length; b++) d = hashAdjust(d, itemList[a][b]);
+        //     d != wf[a] && (frameBufferArray = null)
+        // }
+        // for (a = vf; a < levelListArray.length; a += 64) {
+        //     d = 0;
+        //     if (levelListArray[a])
+        //         for (b = 2; b < levelListArray[a].length; b++) d = hashAdjust(d, levelListArray[a][b]);
+        //     d != xf[a] && (frameBufferArray = null)
+        // }
+        // for (a = vf; a < itemCatalogArray.length; a += 64) {
+        //     d = 0;
+        //     if (itemCatalogArray[a])
+        //         for (b = 0; b < itemCatalogArray[a].length; b++) d = hashAdjust(d, itemCatalogArray[a][b]);
+        //     d != yf[a] && (frameBufferArray = null)
+        // }
+        // for (a = d = 0; a < Jc.length; a++)
+        //     for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
+        // d != zf && (frameBufferArray = null);
+
         vf = vf + 1 & 63;
         if (!drawState) 
             q = 0, 

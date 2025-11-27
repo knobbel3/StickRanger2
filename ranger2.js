@@ -628,8 +628,8 @@ function mf() {
     D[a++] = 1;
     D[a++] = 0;
     D[a++] = 0;
-    D[a++] = nf(64);
-    D[a++] = nf(64);
+    D[a++] = randInt(64);
+    D[a++] = randInt(64);
     for (b = 0; 8 > b; b++) D[a++] = da[b];
     D[a++] = 0;
     D[a++] = q >> 6 & 63;
@@ -646,11 +646,17 @@ function mf() {
     D[a++] = partyGold >> 12 & 63;
     D[a++] = partyGold >> 6 & 63;
     D[a++] = partyGold >> 0 & 63;
-    for (b = 0; 4 > b; b++) D[a++] = partySP[b] >> 6 & 63, D[a++] = partySP[b] >> 0 & 63;
-    for (b = 0; 4 > b; b++) D[a++] = partyLP[b] >> 12 & 63, D[a++] = partyLP[b] >> 6 & 63, D[a++] = partyLP[b] >> 0 & 63;
-    for (b =
-        0; 4 > b; b++)
-        for (c = 0; c < tb.length; c++) D[a++] = tb[c][b] >> 6 & 63, D[a++] = tb[c][b] >> 0 & 63;
+    for (b = 0; 4 > b; b++) 
+        D[a++] = partySP[b] >> 6 & 63, 
+        D[a++] = partySP[b] >> 0 & 63;
+    for (b = 0; 4 > b; b++) 
+        D[a++] = partyLP[b] >> 12 & 63, 
+        D[a++] = partyLP[b] >> 6 & 63, 
+        D[a++] = partyLP[b] >> 0 & 63;
+    for (b = 0; 4 > b; b++)
+        for (c = 0; c < tb.length; c++) 
+            D[a++] = tb[c][b] >> 6 & 63, 
+            D[a++] = tb[c][b] >> 0 & 63;
     for (b = 0; 4 > b; b++)
         for (c = 0; 8 > c; c++) D[a++] = partyEquipmentTable[b][c] >> 6 & 63, D[a++] = partyEquipmentTable[b][c] >> 0 & 63;
     D[a++] = 4;
@@ -689,8 +695,8 @@ function mf() {
         if (c = D[b++], lf[d++] = c, 1 >= c) {
             for (f = 0; b < a && 63 != f && c == D[b]; b++) f++;
             lf[d++] = f
-        } a = nf(64);
-    f = nf(64);
+        } a = randInt(64);
+    f = randInt(64);
     gf = "";
     c = a + d & 63;
     for (b = 0; b < d; b++) gf += pf[lf[b] + c & 63], c = (c * c >> 4) + lf[b] + b + f & 65535;
@@ -773,8 +779,8 @@ function rf(a) {
     for (b = 0; b < g; b++) of [b] = D[a++];
     return 0
 }
-var tf = 0,
-    uf = 0,
+var partyChecksum = 0,
+    basePartyChecksum = 0,
     vf = 0,
     itemHashTable = [],
     levelHashTable = [],
@@ -787,27 +793,41 @@ function hashAdjust(a, b) {
     return (a >> 16) + (a & 65535)
 }
 
-function Bf() {
+function updatePartyChecksum() {
     var a, b, c;
-    uf = c = floor(E(1024));
+    basePartyChecksum = c = floor(randFloat(1024));
     c = hashAdjust(c, 0);
     c = hashAdjust(c, q);
     c = hashAdjust(c, r);
     c = hashAdjust(c, partyLevel);
     c = hashAdjust(c, partyEXPAccum);
     c = hashAdjust(c, partyGold);
-    for (a = 0; 4 > a; a++) c = hashAdjust(c, partySP[a]), c = hashAdjust(c, partyLP[a]), c = hashAdjust(c, partyMaxLP[a]), c = hashAdjust(c, $a[a]), c = hashAdjust(c, ab[a]), c = hashAdjust(c, bb[a]), c = hashAdjust(c, lb[a]), c = hashAdjust(c, mb[a]), c = hashAdjust(c, nb[a]), c = hashAdjust(c, pb[a]), c = hashAdjust(c, qb[a]), c = hashAdjust(c, rb[a]), c = hashAdjust(c, sb[a]);
+    for (a = 0; 4 > a; a++) 
+        c = hashAdjust(c, partySP[a]), 
+        c = hashAdjust(c, partyLP[a]), 
+        c = hashAdjust(c, partyMaxLP[a]), 
+        c = hashAdjust(c, $a[a]), 
+        c = hashAdjust(c, ab[a]), 
+        c = hashAdjust(c, bb[a]), 
+        c = hashAdjust(c, lb[a]), 
+        c = hashAdjust(c, mb[a]), 
+        c = hashAdjust(c, nb[a]), 
+        c = hashAdjust(c, pb[a]), 
+        c = hashAdjust(c, qb[a]), 
+        c = hashAdjust(c, rb[a]), 
+        c = hashAdjust(c, sb[a]);
     for (a = 0; 4 > a; a++)
-        for (b = 0; 8 > b; b++) c = hashAdjust(c, partyEquipmentTable[a][b]);
+        for (b = 0; 8 > b; b++) 
+            c = hashAdjust(c, partyEquipmentTable[a][b]);
+
     for (a = 0; 256 > a; a++) c = hashAdjust(c, $b[a]);
     for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
     c = hashAdjust(c, eb);
     for (a = 0; a < dc; a++) c = hashAdjust(c, ec[a]);
     for (a = 0; a < itemCount; a++) c = hashAdjust(c, Bc[a]);
-    for (a = 0; a < Cc; a++) c =
-        hashAdjust(c, Dc[a]);
+    for (a = 0; a < Cc; a++) c = hashAdjust(c, Dc[a]);
     for (a = 0; a < Ec; a++) c = hashAdjust(c, Fc[a]);
-    tf = c ^ 16777215
+    partyChecksum = c ^ 16777215
 }
 
 var gameInitStage = 0;
@@ -877,11 +897,13 @@ function gameInit(a, b) {
         Mf[160] = 94;
         Nf[160] = 126;
         var f;
-        for (c = 0; 1024 > c; c++) Of[c] = c / 1024;
-        for (c = 0; 1024 >
-            c; c++) d = floor(1024 * rand()), f = Of[c], Of[c] = Of[d], Of[d] = f;
-        Tf = floor(1024 * rand()) & 1023;
-        Uf = floor(512 * rand()) | 1;
+        for (c = 0; 1024 > c; c++) randLUT[c] = c / 1024;
+        for (c = 0; 1024 > c; c++) d = floor(1024 * rand()), 
+            f = randLUT[c], 
+            randLUT[c] = randLUT[d], 
+            randLUT[d] = f;
+        randSeed = floor(1024 * rand()) & 1023;
+        randSeedStep = floor(512 * rand()) | 1;
         for (c = 0; 276480 > c; c++) frameBufferArray[c] = 0;
         gameFont.f("font.png", 8, 12);
         gameFontSmall.f("font_s.png", 5, 7);
@@ -929,7 +951,7 @@ function gameInit(a, b) {
                 for (d = 0; d < itemCatalogArray[c].length; d++) itemCatalogHashTable[c] = hashAdjust(itemCatalogHashTable[c], itemCatalogArray[c][d]);
         for (c = zf = 0; c < Jc.length; c++)
             for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
-        Bf();
+        updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
         setupAnimRequest()
     }
@@ -1239,7 +1261,7 @@ function drawCanvas() {
             gg[3] = 40;
             mf()
         }
-        Bf();
+        updatePartyChecksum();
         0 < bf && (
             bf--, 
             a = badgeArray[cf][3], 
@@ -1610,7 +1632,7 @@ function drawStartingMenu() {
         for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, drawRect(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
             b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && isMouseClicked && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, drawTooltip(gameFontMed, b + 40, d + 6, ff[a][0], 16777215, 0);
         if (!c)
-            for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = Fh(2, 78), g = Fh(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
+            for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
             for (Fc[c] = 1, a = 0; 4 > a; a++)
                 for (b = 0; b < tb.length; b++) partySP[a] += tb[b][a],
@@ -1702,7 +1724,7 @@ function li(a, b, c) {
     var d;
     b *= 8;
     c *= 8;
-    for (d = 0; 21 > d; d++) Vec2Set(O[a][d], b + E(4), c + E(4)), Mh[a][d].set(O[a][d]);
+    for (d = 0; 21 > d; d++) Vec2Set(O[a][d], b + randFloat(4), c + randFloat(4)), Mh[a][d].set(O[a][d]);
     for (d = 0; 16 > d; d++) Nh[a][d].set(O[a][5]), Oh[a][d].set(O[a][3]), Ph[a][d].set(O[a][6]), Qh[a][d].set(O[a][4]);
     Rh[a] = 0;
     Sh[a] = 0;
@@ -1787,16 +1809,16 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
                 w.add(B)
             }
             if (!(n <= M)) {
-                y = f + floor(E(g - f + 1));
+                y = f + floor(randFloat(g - f + 1));
                 M = 0 == gi[x][2] ? 1 : -1;
                 J = 16711680;
                 $h[x] = 2;
                 0 == c ? y = max(y - Jb[x], 1) : 6 == c ? y = max(y - Kb[x], 1) : 1 <= c && (y = max(floor(y * (100 - Lb[x]) / 100), 1));
-                E(100) < Mb[x] && (y = 0, J = 16744576, $h[x] = 0);
+                randFloat(100) < Mb[x] && (y = 0, J = 16744576, $h[x] = 0);
                 1 == c && Ze(x,
                     Qe) && (y = max(y - $e(x, Qe), 1));
                 if (2 == c) ch[x] = 120, hi[x] = d, Ze(x, Re) && (hi[x] = max(floor(hi[x] * (100 - $e(x, Re)) / 100), 0));
-                else if (3 == c) Ze(x, Se) && E(100) < $e(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
+                else if (3 == c) Ze(x, Se) && randFloat(100) < $e(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
                 else if (4 == c) {
                     dh[x] = d;
                     ii[x] = y;
@@ -1868,7 +1890,7 @@ function xi(a, b, c, d, f, g) {
         Rb = Ye(a, k, Uc),
         gb = Db[4 * c + a],
         jb = Eb[4 * c + a];
-    Ze(a, we) && 0 == p[td] && E(100) < $e(a, we) && (gb = floor(gb *
+    Ze(a, we) && 0 == p[td] && randFloat(100) < $e(a, we) && (gb = floor(gb *
         (100 + af(a, we)) / 100), jb = floor(jb * (100 + af(a, we)) / 100));
     c = Fb[4 * c + a];
     var La = p[Yc],
@@ -1908,13 +1930,13 @@ function xi(a, b, c, d, f, g) {
     if (0 != l)
         if (1 == l)
             for (l = 0; l < c; l++) {
-                g = R(-n, n);
+                g = randFloatRange(-n, n);
                 var Dd = -w,
                     Rd = 0,
                     De = -.1 * La;
                 zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p)
             } else if (2 == l)
-                for (h = Ac - d, h /= abs(h), l = 0; l < c; l++) g = d + h * n, Dd = f + R(-w, w), Rd = h * La * .1, zi(a, t, g, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
+                for (h = Ac - d, h /= abs(h), l = 0; l < c; l++) g = d + h * n, Dd = f + randFloatRange(-w, w), Rd = h * La * .1, zi(a, t, g, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
             else if (3 == l) {
         Vec2Set(h, Ac - d, Rg - f);
         var We =
@@ -1924,13 +1946,13 @@ function xi(a, b, c, d, f, g) {
         Ac -= floor((c - 1) * We / 2);
         for (l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), Ac += We
     } else if (4 == l)
-        for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = nf(512), g = E(We), h.x += Hf[w][0] * g, h.y += Hf[w][1] *
+        for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = randInt(512), g = randFloat(We), h.x += Hf[w][0] * g, h.y += Hf[w][1] *
             g), g = d, Dd = f, Rd = h.x / La, De = (h.y - .5 * La * La * b * .01) / La, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
     else if (5 == l)
         for (Ac = 256 + 256 * gi[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
             tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), Ac += We;
     else if (6 == l)
-        for (d = floor(512 / c), w = floor(E(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), w += d
+        for (d = floor(512 / c), w = floor(randFloat(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), w += d
 }
 mainWindow.fff = Di;
 
@@ -1963,7 +1985,7 @@ function Di(a) {
                     O[a][k].x += 4 * f;
                     O[a][k].y -=
                         3 * g
-                } 2 == Yh[a] && (b < Q[d][yi].x ? (O[a][0].x += .25, O[a][1].x += .25, gi[a][2] = 1) : (O[a][0].x -= .25, O[a][1].x -= .25, gi[a][2] = 0), c < Q[d][yi].y ? (O[a][0].y += .25, O[a][1].y += .25) : (O[a][0].y -= .25, O[a][1].y -= .25), O[a][0].x += R(-.25, .25), O[a][0].y += R(-.25, .25), O[a][1].x += R(-.25, .25), O[a][1].y += R(-.25, .25))
+                } 2 == Yh[a] && (b < Q[d][yi].x ? (O[a][0].x += .25, O[a][1].x += .25, gi[a][2] = 1) : (O[a][0].x -= .25, O[a][1].x -= .25, gi[a][2] = 0), c < Q[d][yi].y ? (O[a][0].y += .25, O[a][1].y += .25) : (O[a][0].y -= .25, O[a][1].y -= .25), O[a][0].x += randFloatRange(-.25, .25), O[a][0].y += randFloatRange(-.25, .25), O[a][1].x += randFloatRange(-.25, .25), O[a][1].y += randFloatRange(-.25, .25))
         }
     }
 }
@@ -1975,11 +1997,11 @@ function updatePlayerParty() {
         h = new Vec2;
     vi();
     for (a = 0; a < r; a++) {
-        if (0 < dh[a] && (dh[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, E(60) < b && (d += 1), partyLP[a] -= d, Og += d, 0 > partyLP[a]))
+        if (0 < dh[a] && (dh[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, randFloat(60) < b && (d += 1), partyLP[a] -= d, Og += d, 0 > partyLP[a]))
             for (c = 0 == gi[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < r; b++) a != b && (partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
         if (0 < bh[a]) bh[a]--;
         else {
-            if (0 < ch[a] && (ch[a]--, E(100) < hi[a])) continue;
+            if (0 < ch[a] && (ch[a]--, randFloat(100) < hi[a])) continue;
             Xh[a]++;
             if (Wh[a] == Lh)
                 for (b = 0; 11 > b; b++) S(O[a][b], Mh[a][b], .05, .99);
@@ -1991,10 +2013,10 @@ function updatePlayerParty() {
                 for (b = 0; 11 > b; b++) Ze(a, Pe) ? S(O[a][b], Mh[a][b], .05 / $e(a, Pe), .99) : S(O[a][b], Mh[a][b], .05, .99);
             for (b = d = 0; b < r; b++) d += partyLP[b];
             if (0 == d && Wh[a] != Lh)
-                for (Wh[a] = Lh, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += R(-2, 2), O[a][b].y +=
-                    R(-1, -3);
+                for (Wh[a] = Lh, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
+                    randFloatRange(-1, -3);
             if (Wh[a] != Lh) {
-                1 == q && partyLP[a] < partyMaxLP[a] && 1 > E(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
+                1 == q && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
                 bi == a && (O[bi][ci].x += .2 * (mouseXCurrent - O[bi][ci].x), O[bi][ci].y += .2 * (mouseYCurrent - O[bi][ci].y));
                 b = itemList[partyEquipmentTable[a][0]][Nc];
                 c = Hb[a];
@@ -2003,7 +2025,7 @@ function updatePlayerParty() {
                 c = Ei(d, k, c, c); - 1 == ab[a] && (0 < cb[a] && cb[a]--, 0 == cb[a] && (k = Ei(d, k, 999, 999), -1 != k && (xi(a, 1540, 1, O[a][6].x, O[a][6].y, k), cb[a] = itemList[partyEquipmentTable[a][1]][ld])));
                 if (0 < Zh[a]) Zh[a]--;
                 else if (bi != a && 0 != b && -1 != c) {
-                    Zh[a] = Gb[a] + Fh(-1, 1);
+                    Zh[a] = Gb[a] + randIntRange(-1, 1);
                     gi[a][2] = d < Q[c][yi].x ? 1 : 0;
                     k = 0; - 1 == ab[a] ? ($a[a] =
                         0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = clamp($a[a] + bb[a], 0, ab[a]), fi[a] = 0, Ze(a, re) && 100 * rand() < $e(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][Nc], Ze(a, se) && 100 * rand() < $e(a, se) && ($a[a] = ab[a]));
@@ -2044,7 +2066,7 @@ function updatePlayerParty() {
                     for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(O[a][b].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[a][b].y, 0, 8 * si - 1) >> 3, 30 == P[c][d] && zi(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 d = clamp(O[a][0].x, 0, 8 * Gi - 1) >> 3;
                 c = clamp(O[a][0].y, 0, 8 * si - 1) >> 3;
-                31 == P[c][d] && 1 > E(50) && (b = R(-1, 2), zi(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                31 == P[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), zi(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
             } else ji[a] = 0;
             5 == q && Yh[a] & 1 && (Hi |= 1);
@@ -2274,7 +2296,7 @@ function loadLevelData(a) {
         f = levelListArray[q][a + 4];
         p = levelListArray[q][a + 5];
         t = levelListArray[q][a + 6];
-        for (b = 0; b < d; b++) h = Fh(k, p + 1), g = Fh(f, t + 1), 25 >= P[g][h] || (Zi(h, g, c, (a - Vi) / 7), V[(a - Vi) / 7]++, Xi[(a - Vi) / 7]++);
+        for (b = 0; b < d; b++) h = randIntRange(k, p + 1), g = randIntRange(f, t + 1), 25 >= P[g][h] || (Zi(h, g, c, (a - Vi) / 7), V[(a - Vi) / 7]++, Xi[(a - Vi) / 7]++);
         b = itemCatalogArray[c][itemAttr1];
         $i < b && ($i = b)
     }
@@ -2326,8 +2348,8 @@ function wg() {
             h = levelListArray[q][b + 5],
             k = levelListArray[q][b + 6];
         !(c <= Xi[(b - Vi) / 7]) && V[(b - Vi) / 7] < f && 1E3 * rand() < levelListArray[q][Ui] && (
-            c = Fh(g, h + 1), 
-            d = Fh(d, k + 1), 
+            c = randIntRange(g, h + 1), 
+            d = randIntRange(d, k + 1), 
             25 >= P[d][c] || (
                 Zi(c, d, a, (b - Vi) / 7), 
                 V[(b - Vi) / 7]++, 
@@ -2367,8 +2389,8 @@ function drawGameLevel() {
                     for (; k < g; k++, d++) l = f.g[d], -1 != l && (frameBufferArray[k] = l)
             } for (c = 0; c < si; c++)
         for (b = 1; b < Gi - 1; b++) 30 == P[c][b] ? (30 != P[c][b - 1] && Xg(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != P[c][b + 1] && Xg(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == P[c][b] && (31 != P[c][b - 1] && Xg(8 * b - 2, 8 * c, 2, 8, 21913), 31 != P[c][b + 1] && Xg(8 * b + 8, 8 * c, 2, 8, 21913));
-    if (1 == q) 1 == ec[6] && (b = 184 + R(4, 28), c = 192 + R(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-    else if (6 == q) b = 304 + R(4, 28), c = 192 + R(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    if (1 == q) 1 == ec[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+    else if (6 == q) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (14 == q) b = 2 * Hf[gj >> 2 & 511][0], c = 2 * Hf[gj >> 2 & 511][1], zi(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (17 == q) 70 == gj % 360 && zi(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -2394,7 +2416,7 @@ function cj() {
     var a, b, c, d;
     if (17 == q) {
         b = partyGold % 100;
-        for (a = 0; a < b;) c = ~~R(27, 70), d = E(2.1), d = 3 + ~~(d * d * d), 32 == P[d][c] && (dj(c, d, c, d, 39), a++);
+        for (a = 0; a < b;) c = ~~randFloatRange(27, 70), d = randFloat(2.1), d = 3 + ~~(d * d * d), 32 == P[d][c] && (dj(c, d, c, d, 39), a++);
         A(67) && 99 == b && C(67)
     } else if (19 == q)
         for (b = [14, 13, 13, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 19, 19, 19, 17, 17, 17, 0, 0, 0, 0, 17, 17, 17, 19, 19, 19, 20], a = 0; 39 > a; a++) 0 != b[a] && (Zi(19 + a, b[a], 88, 6), V[6]++, Xi[6]++)
@@ -2429,7 +2451,7 @@ function xg() {
             if (39 == P[w][n]) {
                 dj(n, w, n, w, 32);
                 a = 1;
-                1 > E(200) ? a = 100 : 1 > E(14) && (a = 7);
+                1 > randFloat(200) ? a = 100 : 1 > randFloat(14) && (a = 7);
                 a = floor(a * (100 + Vb) / 100);
                 Gh(8 * n +
                     4, 8 * w + 4, 2, a, 0);
@@ -2466,7 +2488,7 @@ function xg() {
             r++);
         3 <= r && (dj(55, 39, 55, 40, 32), dj(77, 38, 77, 41, 32));
         if (2 == r && 0 == Xi[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
-            for (a = 0; 20 > a; a++) Zi(Fh(56, 76), Fh(33, 38), 5, 0), V[0]++, Xi[0]++;
+            for (a = 0; 20 > a; a++) Zi(randIntRange(56, 76), randIntRange(33, 38), 5, 0), V[0]++, Xi[0]++;
         (3 <= r || 0 == V[0] && 0 != Xi[0]) && 0 == Xi[1] && (Zi(65, 35, 16, 1), V[1] = 1, Xi[1] = 1);
         A(11) && 0 == V[6] && 20 == Xi[6] && !Hi && C(11);
         A(12) && 0 == V[4] && 3 == Xi[4] && 8 == V[3] && C(12);
@@ -2484,19 +2506,19 @@ function xg() {
             if (c = 0, 39 == P[34][75] && c++, 39 == P[35][72] && c++, 39 == P[35][74] && c++, 39 == P[36][75] && c++, 39 == P[38][76] && c++, 1 == c || 2 == c) Zi(66, 42, 24, 1), V[1]++, Xi[1]++;
             else
                 for (5 ==
-                    c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) Zi(Fh(56, 69), Fh(42, 43), c, 1), V[1]++, Xi[1]++;
+                    c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) Zi(randIntRange(56, 69), randIntRange(42, 43), c, 1), V[1]++, Xi[1]++;
         c = 43;
         d = 30;
         1 == db[2] ? dj(c, d, c, d, 63) : 32 == P[d][c] ? 0 == V[2] && dj(c, d, c, d, 55) : 55 == P[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (dj(c, d, c, d, 63), Gh(8 * c + 4, 8 * d + 4, 3, 2, 0));
         if (1 == Xi[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
-            for (a = 0; 15 > a; a++) Zi(Fh(61, 76), 21, 28, 9), V[9]++, Xi[9]++;
+            for (a = 0; 15 > a; a++) Zi(randIntRange(61, 76), 21, 28, 9), V[9]++, Xi[9]++;
         A(21) && 0 == V[2] && 0 == Og && C(21);
         if (A(23)) {
             for (a = b = 0; a < r; a++) 0 < ch[a] && b++;
             4 == b && C(23)
         }
     } else if (8 == q) {
-        30 > Xi[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > E(60) && (a = [5, 18, 3, 20], g = [18, 16, 21, 22], b = nf(4), Zi(a[b], g[b], 32, 3), V[3]++, Xi[3]++);
+        30 > Xi[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > randFloat(60) && (a = [5, 18, 3, 20], g = [18, 16, 21, 22], b = randInt(4), Zi(a[b], g[b], 32, 3), V[3]++, Xi[3]++);
         if (A(27)) {
             for (a = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (Hi = 1);
             0 != V[4] || Hi || C(27)
@@ -2510,7 +2532,7 @@ function xg() {
         b = -1;
         for (a = 0; a < ej; a++) 36 == X[a] && 0 != jj[a] && (b = a);
         if (-1 != b && 10 < Y[b] && 500 > jj[b])
-            for (jj[b] += 1500, Y[b]--, c = 2 * (19 - Y[b] + 1), a = 0; a < c; a++) Zi(Fh(25, 57), Fh(25, 39), 35, 1), V[1]++, Xi[1]++;
+            for (jj[b] += 1500, Y[b]--, c = 2 * (19 - Y[b] + 1), a = 0; a < c; a++) Zi(randIntRange(25, 57), randIntRange(25, 39), 35, 1), V[1]++, Xi[1]++;
         A(31) && 0 == V[3] && 2 == Xi[1] && C(31);
         A(32) && 100 <= ej && C(32);
         if (A(33)) {
@@ -2521,8 +2543,8 @@ function xg() {
         A(34) && 10 == Mg && 1 >= g && 41 <= h && C(34)
     } else if (10 == q) {
         if (25 >= Xi[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
-            for (a = 0; 15 > a; a++) Zi(Fh(32, 53), Fh(33, 34), 37, 0), V[0]++, Xi[0]++;
-        40 > Xi[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > E(60) && (a = [24, 25, 29, 30], g = [4, 4, 3, 3], b = nf(4), Zi(a[b], g[b], 41, 4), V[4]++, Xi[4]++);
+            for (a = 0; 15 > a; a++) Zi(randIntRange(32, 53), randIntRange(33, 34), 37, 0), V[0]++, Xi[0]++;
+        40 > Xi[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > randFloat(60) && (a = [24, 25, 29, 30], g = [4, 4, 3, 3], b = randInt(4), Zi(a[b], g[b], 41, 4), V[4]++, Xi[4]++);
         A(37) && 0 == V[1] && V[0] == Xi[0] && C(37);
         A(38) && 0 == V[3] && 0 == Og && C(38);
         if (A(39)) {
@@ -2540,7 +2562,7 @@ function xg() {
         }
         A(54) && 39 == P[12][44] && 39 == P[12][45] && 39 == P[13][43] && 39 != P[13][44] && 39 != P[13][45] && 39 == P[13][46] && 39 == P[14][43] && 39 != P[14][44] && 39 != P[14][45] && 39 == P[14][46] && 39 != P[15][43] && 39 == P[15][44] && 39 == P[15][45] && C(54)
     } else if (15 == q) 60 > Xi[1] && 42 <= g && 67 >= g &&
-        18 <= h && 24 >= h && 4 > E(60) && (a = [44, 45, 46, 66], g = [24, 24, 24, 24], b = nf(4), Zi(a[b], g[b], 60, 1), V[1]++, Xi[1]++), 0 == V[5] && Xi[6] < 150 - (Xi[0] - V[0]) && (c = Fh(15, 65), d = Fh(1, 18), 25 < P[d][c] && (Zi(c, d, 59, 6), V[6]++, Xi[6]++)), A(57) && 0 == V[3] && 0 == Og && C(57), A(59) && 198 <= V[0] + V[6] && C(59);
+        18 <= h && 24 >= h && 4 > randFloat(60) && (a = [44, 45, 46, 66], g = [24, 24, 24, 24], b = randInt(4), Zi(a[b], g[b], 60, 1), V[1]++, Xi[1]++), 0 == V[5] && Xi[6] < 150 - (Xi[0] - V[0]) && (c = randIntRange(15, 65), d = randIntRange(1, 18), 25 < P[d][c] && (Zi(c, d, 59, 6), V[6]++, Xi[6]++)), A(57) && 0 == V[3] && 0 == Og && C(57), A(59) && 198 <= V[0] + V[6] && C(59);
     else if (16 == q) {
         f = V[0] + V[1];
         k = V[2] + V[3];
@@ -2549,9 +2571,9 @@ function xg() {
         0 == f && 0 < k && 0 < p && (b = 65);
         0 == k && 0 < f && 0 < p && (b = 66);
         0 == p && 0 < f && 0 < k && (b = 67);
-        0 < b && 100 > Xi[11] && (c = Fh(4, 59), d = Fh(30, 33), 25 < P[d][c] && (Zi(c, d, b, 11), V[11]++, Xi[11]++));
+        0 < b && 100 > Xi[11] && (c = randIntRange(4, 59), d = randIntRange(30, 33), 25 < P[d][c] && (Zi(c, d, b, 11), V[11]++, Xi[11]++));
         60 > Xi[12] && 70 <= g && 76 >= g &&
-            34 <= h && 41 >= h && (c = Fh(5, 70), d = Fh(42, 43), 25 < P[d][c] && (Zi(c, d, 68, 12), V[12]++, Xi[12]++));
+            34 <= h && 41 >= h && (c = randIntRange(5, 70), d = randIntRange(42, 43), 25 < P[d][c] && (Zi(c, d, 68, 12), V[12]++, Xi[12]++));
         b = -1;
         for (a = 0; a < ej; a++) 70 == X[a] && 0 != jj[a] && (b = a);
         if (-1 != b && 10 < Y[b] && jj[b] < 1E4 * (Y[b] - 10) - 5E3)
@@ -2570,8 +2592,8 @@ function xg() {
         for (a = 0; a < r; a++) 0 < dh[a] && (Hi = 1);
         A(66) && 0 == V[0] && !Hi && C(66);
         A(68) && 0 == V[6] && 5 == V[5] && C(68)
-    } else 18 == q ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = nf(3), Zi(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > E(60) && (c = Fh(8, 23), Zi(c, 10, 83, 10), V[10]++,
-        Xi[10]++), !A(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || C(71), !A(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || C(72)) : 19 == q ? (Xi[7] < 20 * (35 - V[6]) && 15 > E(60) && (c = Fh(19, 59), d = Fh(26, 33), 33 == P[d][c] && (19 == Xi[7] % 20 ? Zi(c, d, 89, 7) : Zi(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (Zi(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of [1] && (dj(47, 15, 50, 15, 24), dj(1, 31, 1, 35, 32))) : 20 == q && (1 == db[4] ? dj(70, 34, 70, 34, 63) : 55 == P[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (dj(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
+    } else 18 == q ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = randInt(3), Zi(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60) && (c = randIntRange(8, 23), Zi(c, 10, 83, 10), V[10]++,
+        Xi[10]++), !A(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || C(71), !A(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || C(72)) : 19 == q ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == P[d][c] && (19 == Xi[7] % 20 ? Zi(c, d, 89, 7) : Zi(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (Zi(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of [1] && (dj(47, 15, 50, 15, 24), dj(1, 31, 1, 35, 32))) : 20 == q && (1 == db[4] ? dj(70, 34, 70, 34, 63) : 55 == P[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (dj(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
 }
 iterIdxTemp_1 = 0;
 var itemAttr1 = iterIdxTemp_1++,
@@ -2790,7 +2812,7 @@ function Zi(a, b, c, d) {
     if (999 != ej) {
         a *= 8;
         b *= 8;
-        for (var f = 0; 21 > f; f++) Vec2Set(Q[ej][f], a + E(1), b + E(1)), Z[ej][f].set(Q[ej][f]);
+        for (var f = 0; 21 > f; f++) Vec2Set(Q[ej][f], a + randFloat(1), b + randFloat(1)), Z[ej][f].set(Q[ej][f]);
         X[ej] = c;
         Bk[ej] = itemCatalogArray[c][itemAttr2];
         Y[ej] = 0;
@@ -2916,7 +2938,7 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
                     }
                     if (Fa < U + 2) continue
                 }
-                0 == a && (n = g + floor(E(h - g + 1)), 4 == d ? (Jk[l] = max(Jk[l], max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr44] / 100))), Ik[l] = max(Ik[l], f - floor(f * itemCatalogArray[X[l]][itemAttr44] / 100))) : (0 == d ? n = max(1, n - itemCatalogArray[X[l]][itemAttr40]) : 1 == d ? n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr41] / 100)) : 2 == d ? n = max(1, n - floor(n *
+                0 == a && (n = g + floor(randFloat(h - g + 1)), 4 == d ? (Jk[l] = max(Jk[l], max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr44] / 100))), Ik[l] = max(Ik[l], f - floor(f * itemCatalogArray[X[l]][itemAttr44] / 100))) : (0 == d ? n = max(1, n - itemCatalogArray[X[l]][itemAttr40]) : 1 == d ? n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr41] / 100)) : 2 == d ? n = max(1, n - floor(n *
                     itemCatalogArray[X[l]][itemAttr42] / 100)) : 3 == d && (n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr43] / 100))), jj[l] = max(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - floor(120 * itemCatalogArray[X[l]][itemAttr42] / 100), Hk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr42] / 100)) : 5 == d && (Kk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr45] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
                 n = l;
                 c--;
@@ -2984,7 +3006,7 @@ function bl(a, b, c, d) {
         zc = ti(c, d, La, La, 0);
     if (-1 != zc)
         if (0 < Fk[a]) Fk[a]--;
-        else if (!(E(1E3) >= jb)) {
+        else if (!(randFloat(1E3) >= jb)) {
         Fk[a] = gb;
         var Qd;
         if (!p) zi(b, k, 0, 0, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
@@ -2996,9 +3018,9 @@ function bl(a, b, c, d) {
             for (3 == p ? Vec2Set(itemPos, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / PI2), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = Hf[a & 511][0], itemPos.y = -Hf[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
                 vc, wc, xc, yc, selectedItem), a += itemIdx;
         else if (4 == p)
-            for (p = 0; p < Qb; p++) Vec2Set(itemPos, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(E(512)), itemIdx = E(10) * itemIdx, itemPos.x += Hf[La][0] * itemIdx, itemPos.y += Hf[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+            for (p = 0; p < Qb; p++) Vec2Set(itemPos, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += Hf[La][0] * itemIdx, itemPos.y += Hf[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
         else if (5 == p)
-            for (p = 0; p < Qb; p++) gb = c + R(-La, La), jb = d + R(-La, 0), zi(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
+            for (p = 0; p < Qb; p++) gb = c + randFloatRange(-La, La), jb = d + randFloatRange(-La, 0), zi(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
                 hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
         else if (7 == p)
             for (p = 0; p < Qb; p++) gb = floor(c / 8), jb = floor(d / 8), Zi(gb, jb, itemIdx + Bb, 0)
@@ -3045,13 +3067,13 @@ function yg() {
             Ik[a]--;
             var b = floor(Jk[a] / 60),
                 c = Jk[a] - 60 * b;
-            E(60) < c && (b += 1);
+            randFloat(60) < c && (b += 1);
             jj[a] = max(jj[a] - b, 0);
             Pg += b
         }
         if (0 < Kk[a] && 0 < jj[a]) Kk[a]--;
         else {
-            if (0 < Gk[a] && 0 < jj[a] && (Gk[a]--, E(100) < Hk[a])) continue;
+            if (0 < Gk[a] && 0 < jj[a] && (Gk[a]--, randFloat(100) < Hk[a])) continue;
             a = Yk[Bk[a]](a)
         }
     }
@@ -3064,15 +3086,15 @@ function Ok(a) {
         Q[a][0].x += 4;
         Q[a][0].y += 6;
         for (b = 0; 1 > b; b++) Z[a][b].set(Q[a][b]);
-        Y[a] = el(1, 2)
+        Y[a] = randSelect(1, 2)
     } else if (1 == Y[a] || 2 == Y[a]) {
         S(Q[a][0], Z[a][0], .03, .99);
-        0 < (Dk[a] & 2) && (5 > E(100) && (Q[a][0].x += E(1 == Y[a] ? -.2 : .2), Q[a][0].y -= E(.5)), 1 > E(100) && (Y[a] = el(1, 2)));
+        0 < (Dk[a] & 2) && (5 > randFloat(100) && (Q[a][0].x += randFloat(1 == Y[a] ? -.2 : .2), Q[a][0].y -= randFloat(.5)), 1 > randFloat(100) && (Y[a] = randSelect(1, 2)));
         var d = Nk[itemCatalogArray[X[a]][itemAttr5]];
         bl(a, 0, Q[a][0].x, Q[a][0].y - d * c + 1);
         Dk[a] = 0;
         if (0 >= jj[a])
-            for (b = 0; 1 > b; b++) Q[a][b].x += R(-.3, .3), Q[a][b].y -= R(1, 2);
+            for (b = 0; 1 > b; b++) Q[a][b].x += randFloatRange(-.3, .3), Q[a][b].y -= randFloatRange(1, 2);
         for (b = 0; 1 > b; b++) $k(a, b, .5);
         Q[a][yi].x = Q[a][0].x;
         Q[a][yi].y = Q[a][0].y - d * c + 1;
@@ -3100,7 +3122,7 @@ function Pk(a) {
         S(Q[a][1], Z[a][1], .05, .9);
         S(Q[a][2], Z[a][2], .05, .9);
         var d = ti(Q[a][0].x, Q[a][0].y, 200, 50, 0); - 1 != d && (Q[a][0].x += O[d][2].x < Q[a][0].x ? -.001 : .001);
-        0 < (Dk[a] & 2) && (b = 0, -1 != d ? b = O[d][2].x < Q[a][0].x ? -1 : 1 : b = el(-1, 1), 10 > E(100) && (Q[a][0].x += R(.4, .6) * b, Q[a][0].y += R(-1.5, -2)));
+        0 < (Dk[a] & 2) && (b = 0, -1 != d ? b = O[d][2].x < Q[a][0].x ? -1 : 1 : b = randSelect(-1, 1), 10 > randFloat(100) && (Q[a][0].x += randFloatRange(.4, .6) * b, Q[a][0].y += randFloatRange(-1.5, -2)));
         T(Q[a][0], Q[a][1], 0, 0, .01);
         T(Q[a][1], Q[a][2], 0, 0, .01);
         d =
@@ -3108,7 +3130,7 @@ function Pk(a) {
         bl(a, 0, Q[a][0].x, Q[a][0].y - d * c + 1);
         Dk[a] = 0;
         if (0 >= jj[a])
-            for (b = 0; 3 > b; b++) Q[a][b].x += R(-.5, .5), Q[a][b].y -= R(2, 3);
+            for (b = 0; 3 > b; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
         $k(a, 0, .5);
         b = Dk[a];
         $k(a, 1, .5);
@@ -3158,11 +3180,11 @@ function Qk(a) {
         var d = ti(Q[a][0].x,
             Q[a][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, O[d][2], Q[a][0]), d = Vec2Norm(c), d -= itemCatalogArray[X[a]][itemAttr37] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
         Q[a][0].add(c);
-        10 > E(100) && (Q[a][0].x += R(-1, 1), Q[a][0].y += R(-1, 1));
-        Q[a][2].x += R(0, -.1);
-        Q[a][3].x += R(0, -.1);
-        Q[a][5].x += R(0, .1);
-        Q[a][6].x += R(0, .1);
+        10 > randFloat(100) && (Q[a][0].x += randFloatRange(-1, 1), Q[a][0].y += randFloatRange(-1, 1));
+        Q[a][2].x += randFloatRange(0, -.1);
+        Q[a][3].x += randFloatRange(0, -.1);
+        Q[a][5].x += randFloatRange(0, .1);
+        Q[a][6].x += randFloatRange(0, .1);
         c = .5;
         d = 6 * b;
         T(Q[a][0], Q[a][1], 3 * b, c, c);
@@ -3177,7 +3199,7 @@ function Qk(a) {
         Dk[a] = 0;
         if (0 >=
             jj[a])
-            for (b = 0; 7 > b; b++) Q[a][b].x += R(-1, 1), Q[a][b].y -= R(1, 2);
+            for (b = 0; 7 > b; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
         for (b = 0; 7 > b; b++) $k(a, b, 1);
         Q[a][yi].set(Q[a][0]);
         0 >= jj[a] && (Y[a] = 3, cl(a))
@@ -3217,7 +3239,7 @@ function Rk(a) {
         if (28 >= d || 24 > c) f.y += .03;
         d = ri(b, c + 24);
         if (28 >= d || c > 8 * si - 24) f.y -= .03;
-        3 > E(100) && (f.x += R(-.1, .1), f.y += R(-.1, .1));
+        3 > randFloat(100) && (f.x += randFloatRange(-.1, .1), f.y += randFloatRange(-.1, .1));
         Q[a][0].add(f);
         f = .013;
         c = 5;
@@ -3226,7 +3248,7 @@ function Rk(a) {
             Q[a][0].y);
         Dk[a] = 0;
         if (0 >= jj[a])
-            for (b = 0; b < Y[a]; b++) Q[a][b].x += R(-1, 1), Q[a][b].y -= R(1, 2);
+            for (b = 0; b < Y[a]; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
         for (b = 0; b < Y[a]; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][0]);
         0 >= jj[a] && (Y[a] += 20, Ck[a] = 0, cl(a))
@@ -3249,13 +3271,13 @@ function Sk(a) {
     else if (1 == Y[a] || 2 == Y[a]) {
         Bk[a] == tk ? (S(Q[a][0], Z[a][0], -.2, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.1, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4], Z[a][4], 0, .99), S(Q[a][5], Z[a][5], 0, .99), S(Q[a][6], Z[a][6], 0, .99), S(Q[a][7], Z[a][7], 0, .99), S(Q[a][8], Z[a][8], 0, .99), S(Q[a][9], Z[a][9], .3, .99), S(Q[a][10], Z[a][10], .3, .99)) : Bk[a] == Ak && (S(Q[a][0], Z[a][0], -.02, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.01, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4],
             Z[a][4], 0, .99), S(Q[a][5], Z[a][5], 0, .99), S(Q[a][6], Z[a][6], 0, .99), S(Q[a][7], Z[a][7], 0, .99), S(Q[a][8], Z[a][8], 0, .99), S(Q[a][9], Z[a][9], .1, .99), S(Q[a][10], Z[a][10], .1, .99));
-        if (50 > E(100) && 0 < (Dk[a] & 2)) {
-            var c = ti(Q[a][0].x, Q[a][0].y, 200, 50, 0); - 1 != c ? Y[a] = O[c][2].x < Q[a][0].x ? 1 : 2 : 10 > E(100) && (Y[a] = el(1, 2));
+        if (50 > randFloat(100) && 0 < (Dk[a] & 2)) {
+            var c = ti(Q[a][0].x, Q[a][0].y, 200, 50, 0); - 1 != c ? Y[a] = O[c][2].x < Q[a][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[a] = randSelect(1, 2));
             var d = c = 1,
                 f = 0;
             Bk[a] == Ak && (c = .25, d = .3, f = .25);
-            1 == Y[a] ? (Q[a][9].x < Q[a][10].x ? (Q[a][10].x += E(-c), Q[a][10].y += -d) : (Q[a][9].x += E(-c), Q[a][9].y += -d), Q[a][5].x += E(-f), Q[a][6].x += E(-f)) : (Q[a][9].x < Q[a][10].x ? (Q[a][9].x +=
-                E(c), Q[a][9].y += -d) : (Q[a][10].x += E(c), Q[a][10].y += -d), Q[a][5].x += E(f), Q[a][6].x += E(f))
+            1 == Y[a] ? (Q[a][9].x < Q[a][10].x ? (Q[a][10].x += randFloat(-c), Q[a][10].y += -d) : (Q[a][9].x += randFloat(-c), Q[a][9].y += -d), Q[a][5].x += randFloat(-f), Q[a][6].x += randFloat(-f)) : (Q[a][9].x < Q[a][10].x ? (Q[a][9].x +=
+                randFloat(c), Q[a][9].y += -d) : (Q[a][10].x += randFloat(c), Q[a][10].y += -d), Q[a][5].x += randFloat(f), Q[a][6].x += randFloat(f))
         }
         c = .5;
         d = 1.2 * b;
@@ -3278,7 +3300,7 @@ function Sk(a) {
         Q[a][yi].set(Q[a][1]);
         if (0 >= jj[a]) {
             Y[a] = 3;
-            for (b = Ck[a] = 0; 11 > b; b++) Q[a][b].x += R(-1, 1), Q[a][b].y -= R(1, 2);
+            for (b = Ck[a] = 0; 11 > b; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
             cl(a)
         }
     } else {
@@ -3300,7 +3322,7 @@ mainWindow.fff = Tk;
 function Tk(a) {
     var b;
     if (0 == Y[a])
-        for (Y[a] = floor(R(itemCatalogArray[X[a]][itemAttr3] + 1, itemCatalogArray[X[a]][itemAttr4] + 2)), b = 0; b < Y[a]; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
+        for (Y[a] = floor(randFloatRange(itemCatalogArray[X[a]][itemAttr3] + 1, itemCatalogArray[X[a]][itemAttr4] + 2)), b = 0; b < Y[a]; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
     else if (20 >= Y[a]) {
         if (Bk[a] == uk) {
             for (b = 0; b < Y[a] - 1; b++) S(Q[a][b], Z[a][b], -.04, .99);
@@ -3309,14 +3331,14 @@ function Tk(a) {
             for (b = 0; b < Y[a] - 1; b++) S(Q[a][b], Z[a][b], .04, .99);
             S(Q[a][b], Z[a][b], -1, .99)
         }
-        10 > E(100) && (b = floor(E(Y[a] - 1)), Q[a][b].x += R(-.5, .5));
+        10 > randFloat(100) && (b = floor(randFloat(Y[a] - 1)), Q[a][b].x += randFloatRange(-.5, .5));
         T(Q[a][0], Q[a][1], 8, .2, .2);
         for (b = 1; b < Y[a] - 2; b++) T(Q[a][b], Q[a][b + 1], 6, .2, .2);
         T(Q[a][b], Q[a][b + 1], 6, .2, 0);
         bl(a, 0, Q[a][0].x, Q[a][0].y);
         Dk[a] = 0;
         if (0 >= jj[a])
-            for (b = 0; b < Y[a]; b++) Q[a][b].x += R(-.5, .5), Q[a][b].y -= R(2, 3);
+            for (b = 0; b < Y[a]; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
         for (b = 0; b < Y[a]; b++) $k(a, b, .5);
         Q[a][yi].x = .5 * (Q[a][0].x + Q[a][Y[a] - 1].x);
         Q[a][yi].y = .5 * (Q[a][0].y + Q[a][Y[a] - 1].y);
@@ -3344,8 +3366,8 @@ function Uk(a) {
         S(Q[a][2], Z[a][2], .05, .9);
         b = ti(Q[a][0].x, Q[a][0].y, 200, 50, 0); - 1 != b && (Q[a][0].x += O[b][2].x < Q[a][0].x ? -.001 : .001);
         if (0 < (Dk[a] & 2)) {
-            var c = 0; - 1 != b ? c = O[b][2].x < Q[a][0].x ? -1 : 1 : c = el(-1, 1);
-            10 > E(100) && (Q[a][0].x += R(.4, .6) * c, Q[a][0].y += R(-1.5, -2))
+            var c = 0; - 1 != b ? c = O[b][2].x < Q[a][0].x ? -1 : 1 : c = randSelect(-1, 1);
+            10 > randFloat(100) && (Q[a][0].x += randFloatRange(.4, .6) * c, Q[a][0].y += randFloatRange(-1.5, -2))
         }
         T(Q[a][0], Q[a][1], 0, 0, .01);
         T(Q[a][1], Q[a][2], 0, 0, .01);
@@ -3353,7 +3375,7 @@ function Uk(a) {
             Q[a][0].y);
         Dk[a] = 0;
         if (0 >= jj[a])
-            for (b = 0; 3 > b; b++) Q[a][b].x += R(-.5, .5), Q[a][b].y -= R(2, 3);
+            for (b = 0; 3 > b; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
         $k(a, 0, .5);
         b = Dk[a];
         $k(a, 1, .5);
@@ -3403,7 +3425,7 @@ function Vk(a) {
         30 >= d && (f.y += .05);
         d = ri(b, c + 8);
         30 >= d && (f.y -= .05);
-        3 > E(100) && (f.x += R(-.1, .1), f.y += R(-.1, .1));
+        3 > randFloat(100) && (f.x += randFloatRange(-.1, .1), f.y += randFloatRange(-.1, .1));
         Q[a][0].add(f);
         c = 360 / g * PI / 180;
         f.x = Math.cos(0) * h - Math.cos(c) * h;
@@ -3418,7 +3440,7 @@ function Vk(a) {
         if (0 >= jj[a]) {
             Y[a] =
                 3;
-            for (b = Ck[a] = 0; b <= g; b++) Q[a][b].x += R(-.5, .5), Q[a][b].y -= R(2, 3);
+            for (b = Ck[a] = 0; b <= g; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
             cl(a)
         }
     } else {
@@ -3467,10 +3489,10 @@ function Wk(a) {
         S(Q[a][6], Z[a][6], .8, .99);
         S(Q[a][7], Z[a][7], -.1, .99);
         S(Q[a][8], Z[a][8], .8, .99);
-        if (50 > E(100) && 0 < (Dk[a] & 2)) {
-            var c = ti(Q[a][0].x, Q[a][0].y, 500, 25, 0); - 1 != c ? Y[a] = O[c][2].x < Q[a][0].x ? 1 : 2 : 10 > E(100) && (Y[a] = el(1, 2));
-            1 == Y[a] ? (Q[a][2].x < Q[a][6].x ? (Q[a][6].x += E(-1), Q[a][6].y += R(-1, -1)) : (Q[a][2].x += E(-1), Q[a][2].y += R(-1, -1)), Q[a][4].x < Q[a][8].x ? (Q[a][8].x += E(-1), Q[a][8].y += R(-1, -1)) : (Q[a][4].x += E(-1), Q[a][4].y += R(-1, -1)), 1 > E(100) && (--Q[a][0].x, Q[a][0].y -= 3)) : (Q[a][2].x < Q[a][6].x ?
-                (Q[a][2].x += E(1), Q[a][2].y += R(-1, -1)) : (Q[a][6].x += E(1), Q[a][6].y += R(-1, -1)), Q[a][4].x < Q[a][8].x ? (Q[a][4].x += E(1), Q[a][4].y += R(-1, -1)) : (Q[a][8].x += E(1), Q[a][8].y += R(-1, -1)), 1 > E(100) && (Q[a][0].x += 1, Q[a][0].y -= 3))
+        if (50 > randFloat(100) && 0 < (Dk[a] & 2)) {
+            var c = ti(Q[a][0].x, Q[a][0].y, 500, 25, 0); - 1 != c ? Y[a] = O[c][2].x < Q[a][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[a] = randSelect(1, 2));
+            1 == Y[a] ? (Q[a][2].x < Q[a][6].x ? (Q[a][6].x += randFloat(-1), Q[a][6].y += randFloatRange(-1, -1)) : (Q[a][2].x += randFloat(-1), Q[a][2].y += randFloatRange(-1, -1)), Q[a][4].x < Q[a][8].x ? (Q[a][8].x += randFloat(-1), Q[a][8].y += randFloatRange(-1, -1)) : (Q[a][4].x += randFloat(-1), Q[a][4].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (--Q[a][0].x, Q[a][0].y -= 3)) : (Q[a][2].x < Q[a][6].x ?
+                (Q[a][2].x += randFloat(1), Q[a][2].y += randFloatRange(-1, -1)) : (Q[a][6].x += randFloat(1), Q[a][6].y += randFloatRange(-1, -1)), Q[a][4].x < Q[a][8].x ? (Q[a][4].x += randFloat(1), Q[a][4].y += randFloatRange(-1, -1)) : (Q[a][8].x += randFloat(1), Q[a][8].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (Q[a][0].x += 1, Q[a][0].y -= 3))
         }
         c = .3;
         b = 2.2 * b;
@@ -3496,7 +3518,7 @@ function Wk(a) {
         if (0 >= jj[a]) {
             Y[a] = 3;
             Ck[a] = 0;
-            for (b = 1; 9 > b; b++) Q[a][b].x += R(-1, 1), Q[a][b].y -= R(1, 2);
+            for (b = 1; 9 > b; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
             cl(a)
         }
     } else {
@@ -3519,7 +3541,7 @@ function Xk(a) {
     var b, c = new Vec2,
         d = itemCatalogArray[X[a]][itemAttr6];
     if (0 == Y[a]) {
-        1 > E(2) ? (Q[a][0].x += 0, Q[a][1].x += 2, Q[a][2].x += 4, Q[a][3].x += 6, Q[a][4].x += 6) : (Q[a][0].x += 6, Q[a][1].x += 4, Q[a][2].x += 2, Q[a][3].x += 0, Q[a][4].x += 0);
+        1 > randFloat(2) ? (Q[a][0].x += 0, Q[a][1].x += 2, Q[a][2].x += 4, Q[a][3].x += 6, Q[a][4].x += 6) : (Q[a][0].x += 6, Q[a][1].x += 4, Q[a][2].x += 2, Q[a][3].x += 0, Q[a][4].x += 0);
         for (b = 0; 5 > b; b++) Z[a][b].set(Q[a][b]);
         Y[a] = 1
     } else if (1 == Y[a] || 2 == Y[a]) {
@@ -3537,7 +3559,7 @@ function Xk(a) {
         0 <= b && 23 >= b && (c.y += .03);
         b = ri(Q[a][0].x, Q[a][0].y + 8);
         0 <= b && 23 >= b && (c.y -= .03);
-        2 > E(100) && (c.x += R(-.5, .5), c.y += R(-.5, .5));
+        2 > randFloat(100) && (c.x += randFloatRange(-.5, .5), c.y += randFloatRange(-.5, .5));
         Q[a][0].add(c);
         c = .1;
         T(Q[a][0], Q[a][1], 6 * d, 0, c);
@@ -3551,7 +3573,7 @@ function Xk(a) {
         Q[a][yi].set(Q[a][0]);
         if (0 >= jj[a]) {
             Y[a] = 3;
-            for (b = Ck[a] = 0; 5 > b; b++) Q[a][b].x += R(-2, 2), Q[a][b].y -= R(2, 4);
+            for (b = Ck[a] = 0; 5 > b; b++) Q[a][b].x += randFloatRange(-2, 2), Q[a][b].y -= randFloatRange(2, 4);
             cl(a)
         }
     } else {
@@ -3731,7 +3753,7 @@ function im() {
 mainWindow.fff = zi;
 
 function zi(a, b, c, d, f, g, h, k, p, t, l, n, w, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, ob, Bb, gc, Qb, Rb, gb, jb, La, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc) {
-    1E3 != W && (hl[W] = a, il[W] = b, Vec2Set(jl[W], c, d), Vec2Set(kl[W], f, g), ll[W] = 0, ml[W] = h, nl[W] = k, ol[W] = p, pl[W] = t, ql[W] = l, rl[W] = n, sl[W] = w, tl[W] = B, ul[W] = M, vl[W] = floor(E(J)), wl[W] = y, xl[W] = x, yl[W] = K, zl[W] = ba, Al[W] = U, Bl[W] = na, Cl[W] = Fa, Dl[W] = Ga, El[W] = Ca, Fl[W] = ua, Gl[W] = fb, Hl[W] = ob, Il[W] = Bb, Jl[W] = gc, Kl[W] = Qb, Ll[W] = Rb, Ml[W] = gb, Nl[W] = jb, Ol[W] = La, Pl[W] = hc, Ql[W] = Ib, Rl[W] = ic, Sl[W] =
+    1E3 != W && (hl[W] = a, il[W] = b, Vec2Set(jl[W], c, d), Vec2Set(kl[W], f, g), ll[W] = 0, ml[W] = h, nl[W] = k, ol[W] = p, pl[W] = t, ql[W] = l, rl[W] = n, sl[W] = w, tl[W] = B, ul[W] = M, vl[W] = floor(randFloat(J)), wl[W] = y, xl[W] = x, yl[W] = K, zl[W] = ba, Al[W] = U, Bl[W] = na, Cl[W] = Fa, Dl[W] = Ga, El[W] = Ca, Fl[W] = ua, Gl[W] = fb, Hl[W] = ob, Il[W] = Bb, Jl[W] = gc, Kl[W] = Qb, Ll[W] = Rb, Ml[W] = gb, Nl[W] = jb, Ol[W] = La, Pl[W] = hc, Ql[W] = Ib, Rl[W] = ic, Sl[W] =
         jc, Tl[W] = kc, Ul[W] = lc, Vl[W] = mc, Wl[W] = nc, Xl[W] = oc, Yl[W] = pc, Zl[W] = qc, $l[W] = rc, am[W] = sc, bm[W] = tc, cm[W] = uc, dm[W] = vc, em[W] = wc, fm[W] = xc, gm[W] = yc, hm[W] = zc, W++)
 }
 mainWindow.fff = jm;
@@ -3817,7 +3839,7 @@ function Bg() {
         else if (0 < vl[a]) vl[a]--;
     else if (1 == ll[a]) xl[a]++, xl[a] >= yl[a] && jm(a--);
     else {
-        0 < El[a] && (b = El[a], b = 0 <= hl[a] ? Ei(jl[a].x, jl[a].y, b, b) : ti(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, O[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + R(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + R(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
+        0 < El[a] && (b = El[a], b = 0 <= hl[a] ? Ei(jl[a].x, jl[a].y, b, b) : ti(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, O[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + randFloatRange(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
         0 == zl[a] ? kl[a].y += .01 * Al[a] : (-1 == zl[a] ?
             d.set(jl[a]) : (c = hl[a], l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, Vec2Sub(d, jl[a], l[c][zl[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -Al[a]), kl[a].add(d));
         Vec2Scale(kl[a], .01 * Bl[a]);
@@ -3826,7 +3848,7 @@ function Bg() {
         0 > il[a] ? (h.set(jl[a]), k.set(kl[a])) : (c = hl[a], p = il[a] >> 8, t = il[a] & 255, l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], jl[a]), k.set(kl[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * jl[a].x + g.x * jl[a].y + l[c][p].x, h.y = f.y * jl[a].x + g.y * jl[a].y + l[c][p].y, k.x = f.x * kl[a].x + g.x * kl[a].y, k.y = f.y * kl[a].x + g.y * kl[a].y));
         p = 1;
         1 == Jl[a] && 0 == Ml[a] &&
-            Kl[a] <= E(60) && (p = 0);
+            Kl[a] <= randFloat(60) && (p = 0);
         0 < wl[a] && (wl[a]--, p = 0);
         c = -1;
         if (1 == p) {
@@ -3839,26 +3861,26 @@ function Bg() {
         2 == Ll[a] && 1 == xl[a] && (b = 1);
         if (1 == b || -1 != c)
             if (ll[a] = 1, xl[a] = 0, 1 <= Ml[a] && 9 >= Ml[a])
-                for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(E(512)), p = R(.1, hm[a]), d.x = Hf[c][0] * p, d.y = Hf[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
-                    Vec2Scale(k, R(.1, .1 * Nl[a])), c = floor(E(512)), p = R(0, .1 * hm[a]), d.x = k.x + Hf[c][0] * p, d.y = k.y + Hf[c][1] * p), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, hm[a]), d.x = Hf[c][0] * p, d.y = Hf[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
+                    Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + Hf[c][0] * p, d.y = k.y + Hf[c][1] * p), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             else if (-1 != c && 20 <= Ml[a] && 29 >= Ml[a])
-            for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / PI2), c = c + R(-Nl[a], Nl[a]) & 511, d.x = Hf[c][0] * hm[a], d.y = -Hf[c][1] * hm[a]), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
+            for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / PI2), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = Hf[c][0] * hm[a], d.y = -Hf[c][1] * hm[a]), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
                 Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], Ml[a], Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], gm[a], hm[a]);
         0 < xl[a] && xl[a]--;
         0 == xl[a] && (ll[a] = 1);
-        if (10 == Ml[a]) E(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
+        if (10 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
             Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-        else if (11 == Ml[a]) E(60) < gm[a] && (Vec2Norm(k), p = R(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-        else if (12 == Ml[a]) E(60) < gm[a] && (c = floor(E(512)), p = R(.1 * Nl[a], .1 * hm[a]), k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y,
+        else if (11 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), p = randFloatRange(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+        else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y,
             k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
         else if (13 == Ml[a]) {
-            if (E(60) < Nl[a])
-                for (c = floor(E(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
+            if (randFloat(60) < Nl[a])
+                for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         } else if (14 == Ml[a]) {
-            if (E(60) < Nl[a] && (c = Ei(h.x, h.y, 200, 200), -1 != c))
-                for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(E(512)), p = .1 * E(gm[a] - 1), k.x = d.x * hm[a] * .1 + Hf[c][0] * p, k.y = d.y * hm[a] * .1 + Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        } else 15 == Ml[a] && E(60) < gm[a] &&
+            if (randFloat(60) < Nl[a] && (c = Ei(h.x, h.y, 200, 200), -1 != c))
+                for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + Hf[c][0] * p, k.y = d.y * hm[a] * .1 + Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        } else 15 == Ml[a] && randFloat(60) < gm[a] &&
             (Vec2Norm(k), Vec2Scale(k, hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
     }
 }
@@ -3985,7 +4007,7 @@ function wm() {
 mainWindow.fff = Lg;
 
 function Lg(a, b, c, d, f, g) {
-    1E3 != aj && (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(rm[aj], a, b), Vec2Set(sm[aj], c, -2), 0 != c && (sm[aj].x += R(-.2, .2), sm[aj].y += R(-.2, .2)), tm[aj] = d, um[aj] = f, vm[aj] = g, aj++)
+    1E3 != aj && (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(rm[aj], a, b), Vec2Set(sm[aj], c, -2), 0 != c && (sm[aj].x += randFloatRange(-.2, .2), sm[aj].y += randFloatRange(-.2, .2)), tm[aj] = d, um[aj] = f, vm[aj] = g, aj++)
 }
 mainWindow.fff = xm;
 
@@ -4040,7 +4062,7 @@ mainWindow.fff = Gh;
 
 function Gh(a, b, c, d, f) {
     if (100 != ym)
-        for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = mouseXCurrent < a ? R(-.5, -1) : R(.5, 1), Am[ym].y = R(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
+        for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = mouseXCurrent < a ? randFloatRange(-.5, -1) : randFloatRange(.5, 1), Am[ym].y = randFloatRange(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
 }
 mainWindow.fff = Gm;
 
@@ -4143,8 +4165,8 @@ function setupAnimRequest() {
     mouseXCurrent = mouseXRel;
     mouseYCurrent = mouseYRel;
     for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = false;
-    Tf = Tf + floor(1024 * rand()) & 1023;
-    Uf = floor(512 * rand()) | 1;
+    randSeed = randSeed + floor(1024 * rand()) & 1023;
+    randSeedStep = floor(512 * rand()) | 1;
     drawCanvas();
 
     var canvasBufferLength = targetHostname.length == hostnameCheckIdx ? CANVAS_WIDTH * CANVAS_HEIGHT : 0;
@@ -4235,7 +4257,7 @@ function drawSprite(sprite) {
                 ? -1 
                 : d[imgWidth + 0] << 16 | d[imgWidth + 1] << 8 | d[imgWidth + 2];
         delete sprite.a;
-        sprite.c = 1
+        sprite.c = 1 
     }
 }
 var jn = [
@@ -4781,38 +4803,38 @@ function Vec2Angle(a) {
     0 < a.y && (b = PI2 - b);
     return b
 }
-var Of = new Float32Array(1024),
-    Tf = 0,
-    Uf = 0;
+var randLUT = new Float32Array(1024),
+    randSeed = 0,
+    randSeedStep = 0;
 
-function E(a) {
-    Tf += Uf;
-    Tf &= 1023;
-    return Of[Tf] * a
+function randFloat(scale) {
+    randSeed += randSeedStep;
+    randSeed &= 1023;
+    return randLUT[randSeed] * scale
 }
 
-function R(a, b) {
-    Tf += Uf;
-    Tf &= 1023;
-    return Of[Tf] * (b - a) + a
+function randFloatRange(minValue, maxValue) {
+    randSeed += randSeedStep;
+    randSeed &= 1023;
+    return randLUT[randSeed] * (maxValue - minValue) + minValue
 }
 
-function el(a, b) {
-    Tf += Uf;
-    Tf &= 1023;
-    return .5 > Of[Tf] ? a : b
+function randSelect(a, b) {
+    randSeed += randSeedStep;
+    randSeed &= 1023;
+    return .5 > randLUT[randSeed] ? a : b
 }
 
-function nf(a) {
-    Tf += Uf;
-    Tf &= 1023;
-    return ~~(Of[Tf] * a)
+function randInt(maxInt) {
+    randSeed += randSeedStep;
+    randSeed &= 1023;
+    return ~~(randLUT[randSeed] * maxInt)
 }
 
-function Fh(a, b) {
-    Tf += Uf;
-    Tf &= 1023;
-    return ~~(Of[Tf] * (b - a) + a)
+function randIntRange(a, b) {
+    randSeed += randSeedStep;
+    randSeed &= 1023;
+    return ~~(randLUT[randSeed] * (b - a) + a)
 }
 
 var Hf = Array(513),

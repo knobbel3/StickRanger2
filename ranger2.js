@@ -1027,12 +1027,12 @@ function drawCanvas() {
             gg[2] = 45, 
             gg[3] = 45, 
             drawState++;
-        else if (1 == drawState) hg(0) && drawState++;
-        else if (2 == drawState || 3 == drawState) {
+        else if (1 == drawState) loadLevelData(0) && drawState++;
+        else if (2 == drawState || 3 == drawState) { // first menu
             ta = false;
-            ig();
-            jg();
-            kg();
+            updatePlayerParty();
+            drawGameLevel();
+            drawPlayerParty();
             a = 145;
             b = 26;
             d = 350;
@@ -1133,8 +1133,8 @@ function drawCanvas() {
                 ug = 0, 
                 drawState = 10;
 
-        else if (10 == drawState) 
-            hg(q) && (
+        else if (10 == drawState)
+            loadLevelData(q) && (
                 1 == q && (Gc >>= 1), 
                 sa = 0, 
                 drawState++
@@ -1150,7 +1150,11 @@ function drawCanvas() {
                     za && buttonCheck(428, 196, 204, 148) && (ta = true), 
                     Aa && buttonCheck(218, 8, 204, 180) && (ta = true)
                 ), 
-                tg(), wg(), xg(), jg(), ig(), yg(), zg(), Ag(), Bg(), Cg(), Dg(), kg(), Eg(), Fg(), 
+                tg(), wg(), xg(), 
+                drawGameLevel(), updatePlayerParty(), 
+                yg(), zg(), Ag(), Bg(), Cg(), Dg(), 
+                drawPlayerParty(), 
+                Eg(), Fg(), 
                 isSolidRender = 1, 
                 drawRect(4, 4, 8 * levelListArray[q][Hg].length + 8, 20, 2151694400), 
                 isSolidRender = 0, 
@@ -1860,9 +1864,9 @@ function Di(a) {
         }
     }
 }
-mainWindow.fff = ig;
+mainWindow.fff = updatePlayerParty;
 
-function ig() {
+function updatePlayerParty() {
     var a, b, c, d, f = new Vec2,
         g = new Vec2,
         h = new Vec2;
@@ -1949,9 +1953,9 @@ function ig() {
         }
     }
 }
-mainWindow.fff = kg;
+mainWindow.fff = drawPlayerParty;
 
-function kg() {
+function drawPlayerParty() {
     var a, b, c, d, f, g, h = new Vec2,
         k = new Vec2;
     for (a = 0; a < r; a++) {
@@ -2128,7 +2132,7 @@ var ph = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     si = 60,
     P = Array(si);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < si; iterIdxTemp_1++) P[iterIdxTemp_1] = Array(Gi);
-var Wi = -1,
+var loadedLevelIndex = -1,
     Mg = 0,
     Ng = 0,
     fg = [0, 0, 0, 0],
@@ -2136,10 +2140,10 @@ var Wi = -1,
     V = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     Xi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     Mi = 0;
-mainWindow.fff = hg;
+mainWindow.fff = loadLevelData;
 
-function hg(a) {
-    Wi != a && (Wi = a, currentLevelSprite = new Sprite, currentLevelSprite.f("m" + a + ".png"));
+function loadLevelData(a) {
+    loadedLevelIndex != a && (loadedLevelIndex = a, currentLevelSprite = new Sprite, currentLevelSprite.f("m" + a + ".png"));
     drawSprite(currentLevelSprite);
     if (Zf) return false;
     Mg = q;
@@ -2232,9 +2236,9 @@ function wg() {
             Gc && C(25), A(30) && 111 <= Hc && C(30), A(35) && !jh && C(35), A(40) && 3600 > gj && C(40), A(45) && 7200 > gj && C(45), A(50) && !jh && C(50), A(55) && 227 <= Hc && C(55), A(60) && C(60), A(65) && !jh && C(65), A(70) && 9E3 > gj && C(70), 19 == q && 0 == of [1] && (of [1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
     }
 }
-mainWindow.fff = jg;
+mainWindow.fff = drawGameLevel;
 
-function jg() {
+function drawGameLevel() {
     var a, b, c, d;
     a = levelListArray[q][Pi];
     for (c = 0; c < si; c++)

@@ -99,6 +99,7 @@ var r = 1,
     Vb = 0,
     Wb = 0,
     Xb = 0,
+    /** [partyN][Idk] */
     partyEquipmentTable = [
         [4, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -124,7 +125,7 @@ function bc() {
     for (a = 0; 4 > a; a++)
         for (b = 0; 8 > b; b++) partyEquipmentTable[a][b] = 0;
     for (a = 0; 256 > a; a++) $b[a] = 0, ac[a] = 0;
-    for (a = 0; a < dc; a++) ec[a] = 0;
+    for (a = 0; a < levelCount; a++) ec[a] = 0;
     for (a = 0; a < itemCount; a++) Bc[a] = 0;
     for (a = 0; a < Cc; a++) Dc[a] = 0;
     for (a = 0; a < Ec; a++) Fc[a] = 0;
@@ -608,7 +609,7 @@ function C(a) {
 var Ec = 10,
     Fc = Array(Ec);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < Ec; iterIdxTemp_1++) Dc[iterIdxTemp_1] = 0;
-var ff = [
+var shrineRewardOptions = [
         ["Gold Shower", 15],
         ["Clear Status", 30],
         ["ONIGIRI", 45],
@@ -665,9 +666,9 @@ function mf() {
     D[a++] = 10;
     for (b = 0; 9 > b; b++) D[a++] = db[b];
     D[a++] = eb;
-    D[a++] = dc >> 6 & 63;
-    D[a++] = dc >> 0 & 63;
-    for (b = 0; b < dc; b++) D[a++] = ec[b];
+    D[a++] = levelCount >> 6 & 63;
+    D[a++] = levelCount >> 0 & 63;
+    for (b = 0; b < levelCount; b++) D[a++] = ec[b];
     D[a++] = itemCount >> 6 & 63;
     D[a++] = itemCount >> 0 & 63;
     for (b = 0; b < itemCount; b++) D[a++] = Bc[b];
@@ -823,7 +824,7 @@ function updatePartyChecksum() {
     for (a = 0; 256 > a; a++) c = hashAdjust(c, $b[a]);
     for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
     c = hashAdjust(c, eb);
-    for (a = 0; a < dc; a++) c = hashAdjust(c, ec[a]);
+    for (a = 0; a < levelCount; a++) c = hashAdjust(c, ec[a]);
     for (a = 0; a < itemCount; a++) c = hashAdjust(c, Bc[a]);
     for (a = 0; a < Cc; a++) c = hashAdjust(c, Dc[a]);
     for (a = 0; a < Ec; a++) c = hashAdjust(c, Fc[a]);
@@ -1560,7 +1561,7 @@ function drawStartingMenu() {
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (xa = false);
         Ra = clamp(Ra, 0, oh[Qa].length - 1);
         c = oh[Qa][Ra];
-        if (0 == ec[ph[Qa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        if (0 == ec[stageIndexOrder[Qa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else {
             if (0 == Bc[c]) h = itemCatalogArray[c][itemAttr67], drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold &&
                 isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 1);
@@ -1573,9 +1574,9 @@ function drawStartingMenu() {
         }
         drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Qa--;
         drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Qa++;
-        Qa = phIdxWrapped(Qa);
-        drawText(gameFontSmall, f + 96, g + 156, "" + (Qa + 1) + "/" + ph.length, 3355443, -1);
-        1 == ec[ph[Qa]] && drawText(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Qa]][Hg], -1, 0)
+        Qa = wrapStageIndex(Qa);
+        drawText(gameFontSmall, f + 96, g + 156, "" + (Qa + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        1 == ec[stageIndexOrder[Qa]] && drawText(gameFontMed, f + 96, g + 156 - 20, levelListArray[stageIndexOrder[Qa]][Hg], -1, 0)
     }
     if (ya) {
         f = 434;
@@ -1583,15 +1584,15 @@ function drawStartingMenu() {
         drawRect(f -
             6, g - 6, 204, 180, levelListArray[q][Yg]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (ya = false);
-        if (0 == ec[ph[Sa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        if (0 == ec[stageIndexOrder[Sa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
             for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeArray[c] && (b = f + 6, d = g + 6 + 24 * a, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeArray[c][3], Dc[c] == badgeArray[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < Dc[c] && (gameFontMed.b = -1, drawText(gameFontMed, b + 3, d + 10, "" + Dc[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeArray[c][1].length ? drawTooltip(gameFontMed, b + 40, d + 6, badgeArray[c][0], 16777215,
                 0) : (drawTooltip(gameFontMed, b + 40, d + 1, badgeArray[c][0], 16777215, 0), gameFontMed.a = 3, drawTooltip(gameFontMed, b + 40, d + 11, badgeArray[c][1], 16777215, 0)));
         drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Sa--;
         drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Sa++;
-        Sa = phIdxWrapped(Sa);
-        drawText(gameFontSmall, f + 96, g + 156, "" + (Sa + 1) + "/" + ph.length, 3355443, -1);
-        1 == ec[ph[Sa]] && drawText(gameFontMed, f + 96, g + 156 - 20, levelListArray[ph[Sa]][Hg], -1, 0)
+        Sa = wrapStageIndex(Sa);
+        drawText(gameFontSmall, f + 96, g + 156, "" + (Sa + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        1 == ec[stageIndexOrder[Sa]] && drawText(gameFontMed, f + 96, g + 156 - 20, levelListArray[stageIndexOrder[Sa]][Hg], -1, 0)
     }
     if (za) {
         f = 434;
@@ -1629,8 +1630,8 @@ function drawStartingMenu() {
         gameFont.a = 1;
         drawTooltip(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
-        for (a = 0; a < ff.length; a++) b = f + 6, d = g + 26 + 24 * a, drawRect(b + 14, d, 20, 20, 0), 100 > ff[a][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
-            b + 23, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + ff[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), ff[a][1] <= h && isMouseClicked && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, drawTooltip(gameFontMed, b + 40, d + 6, ff[a][0], 16777215, 0);
+        for (a = 0; a < shrineRewardOptions.length; a++) b = f + 6, d = g + 26 + 24 * a, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[a][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
+            b + 23, d + 10, "" + shrineRewardOptions[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[a][1] <= h && isMouseClicked && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, drawTooltip(gameFontMed, b + 40, d + 6, shrineRewardOptions[a][0], 16777215, 0);
         if (!c)
             for (Fc[c] = 1, Aa = false, a = 0; 100 > a;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
         else if (1 == c)
@@ -1859,72 +1860,79 @@ mainWindow.fff = xi;
 
 function xi(a, b, c, d, f, g) {
     var h = new Vec2,
-        k = partyEquipmentTable[a][c],
-        p = itemList[k],
-        t = p[Qc];
-    0 == t ? t = -1 : 1 == t ? t = b : 2 == t ? t = b & 65280 | 1 : 3 == t ? t = b & 65280 | b >> 8 : 5 == t && (t = 257);
-    var l = p[Rc],
-        n = p[Sc],
-        w = p[Tc],
-        B = p[ad],
-        M = p[bd],
-        J = p[cd],
-        y = p[dd],
-        x = p[ed],
-        K = p[fd],
-        ba = p[gd],
-        U = Ye(a, k, hd),
-        na = Ye(a, k, id),
-        Fa = Ye(a, k, jd),
-        Ga = p[kd],
-        Ca = Ye(a, k, ld);
-    !Ze(a, qe) || 4 != p[Nc] && 5 != p[Nc] || (Ca += af(a, qe));
-    var ua = p[md],
-        fb = p[nd];
+        selectedItemIdx = partyEquipmentTable[a][c],
+        selectedItem = itemList[selectedItemIdx],
+        t = selectedItem[Qc];
+    0 == t 
+        ? t = -1 
+        : 1 == t 
+            ? t = b 
+            : 2 == t 
+                ? t = b & 65280 | 1 
+                : 3 == t 
+                    ? t = b & 65280 | b >> 8 
+                    : 5 == t && (t = 257);
+    var l = selectedItem[Rc],
+        n = selectedItem[Sc],
+        w = selectedItem[Tc],
+        B = selectedItem[ad],
+        M = selectedItem[bd],
+        J = selectedItem[cd],
+        y = selectedItem[dd],
+        x = selectedItem[ed],
+        K = selectedItem[fd],
+        ba = selectedItem[gd],
+        U = Ye(a, selectedItemIdx, hd),
+        na = Ye(a, selectedItemIdx, id),
+        Fa = Ye(a, selectedItemIdx, jd),
+        Ga = selectedItem[kd],
+        Ca = Ye(a, selectedItemIdx, ld);
+    !Ze(a, qe) || 4 != selectedItem[Nc] && 5 != selectedItem[Nc] || (Ca += af(a, qe));
+    var ua = selectedItem[md],
+        fb = selectedItem[nd];
     2 == fb && (fb = b >> 8);
-    b = p[od];
-    var ob = p[pd],
-        Bb = p[qd],
-        gc = p[rd],
-        Qb = p[sd],
-        Rb = Ye(a, k, Uc),
+    b = selectedItem[od];
+    var ob = selectedItem[pd],
+        Bb = selectedItem[qd],
+        gc = selectedItem[rd],
+        Qb = selectedItem[sd],
+        Rb = Ye(a, selectedItemIdx, Uc),
         gb = Db[4 * c + a],
         jb = Eb[4 * c + a];
-    Ze(a, we) && 0 == p[td] && randFloat(100) < $e(a, we) && (gb = floor(gb *
+    Ze(a, we) && 0 == selectedItem[td] && randFloat(100) < $e(a, we) && (gb = floor(gb *
         (100 + af(a, we)) / 100), jb = floor(jb * (100 + af(a, we)) / 100));
     c = Fb[4 * c + a];
-    var La = p[Yc],
-        hc = p[td],
-        Ib = Ye(a, k, ud);
-    Ze(a, xe) && 1 == p[td] && (Ib += $e(a, xe));
-    Ze(a, ye) && 2 == p[td] && (Ib += $e(a, ye));
-    Ze(a, Ie) && 4 == p[td] && (Ib += 60 * $e(a, Ie));
-    var ic = p[zd],
-        jc = p[Ad],
-        kc = p[Bd],
-        lc = p[Gd],
-        mc = p[Hd],
-        nc = p[Id],
-        oc = p[Jd],
-        pc = p[Kd],
-        qc = p[Ld],
-        rc = p[Md],
-        sc = p[Nd],
-        tc = p[Od],
-        uc = p[Pd],
-        vc = p[Sd],
-        wc = Ye(a, k, Td),
-        xc = p[Ud],
-        yc = p[Vd],
-        zc = p[Wd],
-        Qd = p[Xd],
-        Qf = p[Yd],
-        Rf = p[Zd],
-        Sf = p[Cd],
-        k = Ye(a, k, Ed);
-    Ze(a, Ae) && 3 == p[td] && 20 == p[Ad] && (k += $e(a, Ae));
-    var p = p[Fd],
-        Ac, Rg;
+    var La = selectedItem[Yc],
+        hc = selectedItem[td],
+        Ib = Ye(a, selectedItemIdx, ud);
+    Ze(a, xe) && 1 == selectedItem[td] && (Ib += $e(a, xe));
+    Ze(a, ye) && 2 == selectedItem[td] && (Ib += $e(a, ye));
+    Ze(a, Ie) && 4 == selectedItem[td] && (Ib += 60 * $e(a, Ie));
+    var ic = selectedItem[zd],
+        jc = selectedItem[Ad],
+        kc = selectedItem[Bd],
+        lc = selectedItem[Gd],
+        mc = selectedItem[Hd],
+        nc = selectedItem[Id],
+        oc = selectedItem[Jd],
+        pc = selectedItem[Kd],
+        qc = selectedItem[Ld],
+        rc = selectedItem[Md],
+        sc = selectedItem[Nd],
+        tc = selectedItem[Od],
+        uc = selectedItem[Pd],
+        vc = selectedItem[Sd],
+        wc = Ye(a, selectedItemIdx, Td),
+        xc = selectedItem[Ud],
+        yc = selectedItem[Vd],
+        zc = selectedItem[Wd],
+        Qd = selectedItem[Xd],
+        Qf = selectedItem[Yd],
+        Rf = selectedItem[Zd],
+        Sf = selectedItem[Cd],
+        selectedItemIdx = Ye(a, selectedItemIdx, Ed);
+    Ze(a, Ae) && 3 == selectedItem[td] && 20 == selectedItem[Ad] && (selectedItemIdx += $e(a, Ae));
+    var selectedItem = selectedItem[Fd], Ac, Rg;
     Ac = Q[g][yi].x;
     Rg = Q[g][yi].y;
     if (0 != l)
@@ -1934,9 +1942,9 @@ function xi(a, b, c, d, f, g) {
                 var Dd = -w,
                     Rd = 0,
                     De = -.1 * La;
-                zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p)
+                zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem)
             } else if (2 == l)
-                for (h = Ac - d, h /= abs(h), l = 0; l < c; l++) g = d + h * n, Dd = f + randFloatRange(-w, w), Rd = h * La * .1, zi(a, t, g, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
+                for (h = Ac - d, h /= abs(h), l = 0; l < c; l++) g = d + h * n, Dd = f + randFloatRange(-w, w), Rd = h * La * .1, zi(a, t, g, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem);
             else if (3 == l) {
         Vec2Set(h, Ac - d, Rg - f);
         var We =
@@ -1944,15 +1952,15 @@ function xi(a, b, c, d, f, g) {
         Ze(a, Je) && (We = floor(We / $e(a, Je)));
         Ac = floor(512 * Vec2Angle(h) / PI2);
         Ac -= floor((c - 1) * We / 2);
-        for (l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), Ac += We
+        for (l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We
     } else if (4 == l)
         for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = randInt(512), g = randFloat(We), h.x += Hf[w][0] * g, h.y += Hf[w][1] *
-            g), g = d, Dd = f, Rd = h.x / La, De = (h.y - .5 * La * La * b * .01) / La, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p);
+            g), g = d, Dd = f, Rd = h.x / La, De = (h.y - .5 * La * La * b * .01) / La, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem);
     else if (5 == l)
         for (Ac = 256 + 256 * gi[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
-            tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), Ac += We;
+            tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We;
     else if (6 == l)
-        for (d = floor(512 / c), w = floor(randFloat(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, k, p), w += d
+        for (d = floor(512 / c), w = floor(randFloat(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), w += d
 }
 mainWindow.fff = Di;
 
@@ -2197,8 +2205,8 @@ function eh(a, b, c, d, f, g, h) {
             f ? drawLine(t.x - 5 * k.x, t.y - 5 * k.y, Uh[a].x, Uh[a].y, p) : drawLine(t.x - 5 * k.x, t.y - 5 * k.y, t.x + 20 * k.x, t.y + 20 * k.y, p)) : 4 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? drawLine(l.x, l.y, l.x + 4 * k.x, l.y + 4 * k.y, p) : drawLine(l.x, l.y, l.x + 8 * k.x, l.y + 8 * k.y, p), drawLine(t.x, t.y, t.x - 2 * k.x + 4 * k.y, t.y - 2 * k.y - 4 * k.x, 8421504), drawLine(t.x, t.y, t.x - 2 * k.x - 4 * k.y, t.y - 2 * k.y + 4 * k.x, 8421504)) : 5 == g && (isSolidRender = 2, fh = 1, drawSpriteSheetPartCentered(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), isSolidRender = fh = 0)
     }
 }
-var dc = 32,
-    levelListArray = Array(dc);
+var levelCount = 32,
+    levelListArray = Array(levelCount);
 iterIdxTemp_1 = 0;
 var Hg = iterIdxTemp_1++,
     Pi = iterIdxTemp_1++,
@@ -2231,9 +2239,9 @@ levelListArray[17] = ["Limestone cave 5", 2, 8686715, 14, 18, 0, 16, 0, 50, 71, 
 levelListArray[18] = ["Limestone cave 6", 2, 8686715, 15, 19, 17, 0, 0, 50, 77, 1, 3, 29, 42, 29, 42, 77, 1, 3, 44, 42, 44, 42, 77, 1, 3, 59, 42, 59, 42, 78, 2, 0, 7, 34, 15, 34, 78, 1, 0, 7, 18, 14, 18, 79, 20, 80, 4, 26, 17, 26, 80, 1, 0, 39, 4, 53, 8, 81, 99, 99, 23, 14, 67, 28, 82, 1, 0, 47, 20, 47, 20];
 levelListArray[19] = ["Limestone cave 7", 2, 8686715, 16, 0, 18, 20, 0, 50, 84, 20, 0, 10, 36, 18, 36, 84, 10, 0, 29, 38, 34, 38, 85, 1, 0, 63, 28, 63, 28, 85, 1, 0, 13, 25, 13, 25];
 levelListArray[20] = ["Limestone cave 8", 2, 8686715, 17, 0, 15, 0, 19, 50, 0, 0, 0, 0, 0, 0, 0];
-var ec = Array(dc);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < dc; iterIdxTemp_1++) ec[iterIdxTemp_1] = 0;
-var ph = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+var ec = Array(levelCount);
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < levelCount; iterIdxTemp_1++) ec[iterIdxTemp_1] = 0;
+var stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     oh = [
         [0, 1, 2, 5, 3],
         [4, 7, 6, 9, 8, 14, 15],
@@ -4605,7 +4613,7 @@ var isMouseClicked = false,
     mouseYCurrent = 0,
     mouseXRel = 0,
     mouseYRel = 0,
-    pn = 0;
+    activeTouchCount = 0;
 
 function buttonCheck(x, y, w, h) {
     return mouseXCurrent < x || x + w <= mouseXCurrent || mouseYCurrent < y || y + h <= mouseYCurrent ? false : true
@@ -4668,11 +4676,11 @@ function handleTouch(a) {
         rectHeight = floor(rectHeight / 2 - 432 * f / 2);
     a = a.touches;
     console.log(a);
-    pn = a.length;
-    1 == pn 
+    activeTouchCount = a.length;
+    1 == activeTouchCount 
     ? (mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f), 
         mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f)) 
-    : 2 == pn && (mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f), 
+    : 2 == activeTouchCount && (mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f), 
         mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f), 
         rectHeight = floor((a[1].clientY - clientRect.top - rectHeight) / f), 
         mouseXRel = floor((mouseXRel + floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2), 
@@ -4680,7 +4688,7 @@ function handleTouch(a) {
 }
 canvasElement.ontouchstart = function(a) {
     handleTouch(a);
-    1 == pn ? (isMouseDown = true, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == pn && (isMouseDown = false, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
+    1 == activeTouchCount ? (isMouseDown = true, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == activeTouchCount && (isMouseDown = false, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
     return false
 };
 canvasElement.ontouchmove = function(a) {
@@ -4689,11 +4697,11 @@ canvasElement.ontouchmove = function(a) {
 };
 canvasElement.ontouchend = function(a) {
     handleTouch(a);
-    0 == pn ? isMouseDown = false : 1 == pn ? (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == pn && (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
+    0 == activeTouchCount ? isMouseDown = false : 1 == activeTouchCount ? (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == activeTouchCount && (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
     return false
 };
 canvasElement.ontouchcancel = function() {
-    pn = 0;
+    activeTouchCount = 0;
     isMouseDown = false
 };
 var Jf = Array(256),
@@ -4701,9 +4709,13 @@ var Jf = Array(256),
     Lf = Array(256),
     Mf = Array(256),
     Nf = Array(256);
+
 domDocument.onkeydown = function(a) {
     var b = a.keyCode;
-    65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? Nf[b] : Mf[b];
+    65 <= b & 90 >= b 
+        ? a.shiftKey || (b += 32) 
+        : b = a.shiftKey ? Nf[b] : Mf[b];
+
     0 <= b && 256 > b && (Lf[b] = true, Kf[b] = true);
     if (0 != b && isCanvasFocused) return false
 };
@@ -4716,10 +4728,10 @@ domDocument.onkeyup = function(a) {
 var isCanvasFocused = false,
     currentStorage = mainWindow.localStorage;
 
-function promptInput(a, b) {
+function promptInput(message, _default) {
     var c = null;
     try {
-        c = prompt(a, b)
+        c = prompt(message, _default)
     } catch (d) {}
     return c
 }
@@ -4807,18 +4819,22 @@ var randLUT = new Float32Array(1024),
     randSeed = 0,
     randSeedStep = 0;
 
-function randFloat(scale) {
+    
+/** Returns a random number between [0, a) */
+function randFloat(a) {
     randSeed += randSeedStep;
     randSeed &= 1023;
-    return randLUT[randSeed] * scale
+    return randLUT[randSeed] * a
 }
 
-function randFloatRange(minValue, maxValue) {
+/** Returns a random number between [a, b] */
+function randFloatRange(a, b) {
     randSeed += randSeedStep;
     randSeed &= 1023;
-    return randLUT[randSeed] * (maxValue - minValue) + minValue
+    return randLUT[randSeed] * (b - a) + a
 }
 
+/** Randomly selects a or b */
 function randSelect(a, b) {
     randSeed += randSeedStep;
     randSeed &= 1023;
@@ -4861,8 +4877,8 @@ function clamp(a, b, c) {
     return a < b ? b : a > c ? c : a
 }
 
-function phIdxWrapped(a) {
-    var b = ph.length - 1;
+function wrapStageIndex(a) {
+    var b = stageIndexOrder.length - 1;
     return 0 > a ? b : a > b ? 0 : a
 }
 

@@ -42,11 +42,11 @@ var currentLevelSprite = new Sprite,
     Qa = 0,
     Ra = 0,
     Sa = 0,
-    Ta = Array(100);
-Ta[0] = 0;
-for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) Ta[iterIdxTemp_1] = Ta[iterIdxTemp_1 - 1] + 1E3 * iterIdxTemp_1;
-Ta[98] = 9999999;
-Ta[99] = 9999999;
+    LevelExpThresholds = Array(100);
+LevelExpThresholds[0] = 0;
+for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) LevelExpThresholds[iterIdxTemp_1] = LevelExpThresholds[iterIdxTemp_1 - 1] + 1E3 * iterIdxTemp_1;
+LevelExpThresholds[98] = 9999999;
+LevelExpThresholds[99] = 9999999;
 var partyMemberCount = 1,
     partyLevel = 1,
     partyEXPAccum = 0,
@@ -138,7 +138,7 @@ mainWindow.fff = cc;
 function cc() {
     sa = 0;
     Ba = Da = Ea = Ha = Ia = Ja = ta = isMemberUIVisible = isInventoryVisible = isBestiaryVisible = isBadgesUIVisible = isOptionsVisible = isShrineUIVisible = false;
-    Gc = Hc = Ic = Ka = Ma = Na = Oa = Pa = 0
+    comboMultBonus = Hc = Ic = Ka = Ma = Na = Oa = Pa = 0
 }
 var Jc = [
     [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -1187,7 +1187,7 @@ function drawCanvas() {
 
         else if (10 == drawState)
             loadLevelData(currentStage) && (
-                1 == currentStage && (Gc >>= 1), 
+                1 == currentStage && (comboMultBonus >>= 1), 
                 sa = 0, 
                 drawState++
             );
@@ -1237,7 +1237,7 @@ function drawCanvas() {
             if (0 == b) {
                 sa = 0;
                 drawState = 30;
-                Gc = Hc = Ic = 0;
+                comboMultBonus = Hc = Ic = 0;
                 c = floor(partyGold / 10 / partyMemberCount);
                 if (0 < c) {
                     for (a = 0; a < partyMemberCount; a++) 
@@ -1429,60 +1429,107 @@ function Wg(a, b, c, d, f, g) {
 mainWindow.fff = drawGameUI;
 
 function drawGameUI() {
-    var a, b, c, d, f, g, h, k;
-    Jf[32] && (isMemberUIVisible || isInventoryVisible || isBestiaryVisible || isBadgesUIVisible || isOptionsVisible || isShrineUIVisible ? (Ba = isMemberUIVisible, Da = isInventoryVisible, Ea = isBestiaryVisible, Ha = isBadgesUIVisible, Ia = isOptionsVisible, Ja = isShrineUIVisible, isMemberUIVisible = isInventoryVisible = isBestiaryVisible = isBadgesUIVisible = isOptionsVisible = isShrineUIVisible = false) : (isMemberUIVisible = Ba, isInventoryVisible = Da, isBestiaryVisible = Ea, isBadgesUIVisible = Ha, isOptionsVisible = Ia, isShrineUIVisible = Ja));
-    drawRect(0, 361, 640, 70, stageListArray[currentStage][Yg]);
+    var hidx, b, c, d, f, g, h, k;
+    Jf[32] && (
+        (isMemberUIVisible || 
+        isInventoryVisible || 
+        isBestiaryVisible || 
+        isBadgesUIVisible || 
+        isOptionsVisible || 
+        isShrineUIVisible) ? (
+            Ba = isMemberUIVisible, 
+            Da = isInventoryVisible, 
+            Ea = isBestiaryVisible, 
+            Ha = isBadgesUIVisible, 
+            Ia = isOptionsVisible, 
+            Ja = isShrineUIVisible, 
+            isMemberUIVisible = isInventoryVisible = isBestiaryVisible = isBadgesUIVisible = isOptionsVisible = isShrineUIVisible = false
+        ) : (
+            isMemberUIVisible = Ba, 
+            isInventoryVisible = Da, 
+            isBestiaryVisible = Ea, 
+            isBadgesUIVisible = Ha, 
+            isOptionsVisible = Ia, 
+            isShrineUIVisible = Ja
+        )
+    );
+    drawRect(0, 361, 640, 70, stageListArray[currentStage][stageUIBgColorCol]);
     f = 8;
     g = 348;
     drawTooltip(gameFont, f, g, "LV " + partyLevel, 16777215, 0);
     if (99 > partyLevel) {
-        var p = Ta[partyLevel - 1];
-        drawTooltip(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + floor(100 * (partyEXPAccum - p) / (Ta[partyLevel] - p)) + "%)", 16777215, 0)
+        var p = LevelExpThresholds[partyLevel - 1];
+        drawTooltip(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + floor(100 * (partyEXPAccum - p) / (LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0)
     } else drawTooltip(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(MAX)", 16777215, 0);
     drawTooltip(gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
-    drawRect(f + 264, g, 90, 11, 2236962);
-    drawRect(f + 264, g, floor(90 * Ic / Vg), 11, 12281344);
+
+    drawRect(f + 264, g, 90, 11, 2236962); // combo bar bg
+    drawRect(f + 264, g, floor(90 * Ic / Vg), 11, 12281344); // combo bar fg
     p = 10 + floor(Hc / 10);
     h = "CB " + Hc;
     gameFontMed.a = 4;
-    drawTooltip(gameFontMed, f +
-        265, g + 2, h, 12281344, 0);
-    10 <= Hc && (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
-    0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + partyMemberCount - 1) / partyMemberCount), partyGold = clamp(partyGold + $g * partyMemberCount, 0, 9999999), A(1) && 100 <= Hc && IncrementBadgeCount(1), A(26) && 300 <= Hc && IncrementBadgeCount(26), A(36) && 500 <= Hc && IncrementBadgeCount(36), A(56) && 600 <= Hc && IncrementBadgeCount(56)), Hc = 0));
-    p = 100 + Gc;
+    drawTooltip(gameFontMed, f + 265, g + 2, h, 12281344, 0); // combo count 
+    //10 <= Hc && (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
+    if (Hc >= 10) {
+        gameFontMed.a = 4;
+        drawTooltip(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0);
+    }
+    // 0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + partyMemberCount - 1) / partyMemberCount), partyGold = clamp(partyGold + $g * partyMemberCount, 0, 9999999), A(1) && 100 <= Hc && IncrementBadgeCount(1), A(26) && 300 <= Hc && IncrementBadgeCount(26), A(36) && 500 <= Hc && IncrementBadgeCount(36), A(56) && 600 <= Hc && IncrementBadgeCount(56)), Hc = 0));
+    if (Ic > 0) {
+        Ic--;
+        if (Ic == 0) {
+            if (Hc >= 4) {
+                Zg = 60;
+                $g = floor((Hc * p / 10 + partyMemberCount - 1) / partyMemberCount);
+                partyGold = clamp(partyGold + $g * partyMemberCount, 0, 9999999);
+                A(1) && 100 <= Hc && IncrementBadgeCount(1);
+                A(26) && 300 <= Hc && IncrementBadgeCount(26);
+                A(36) && 500 <= Hc && IncrementBadgeCount(36);
+                A(56) && 600 <= Hc && IncrementBadgeCount(56);
+            }
+            Hc = 0;
+        }
+    }
+    p = 100 + comboMultBonus;
     gameFontMed.a = 4;
-    drawTooltip(gameFontMed, f + 356, g + 2, "CB *" + p / 100, 16777215, 0);
+    drawTooltip(gameFontMed, f + 356, g + 2, "CB *" + p / 100, 16777215, 0); // combo multiplier
     f = 8;
     g = 364;
     d = 80;
     var p = [12, 12, 12, 8, 16, 5, 19, 9, 14, 9, 14],
         t = [6, 10, 14, 13, 13, 13, 13, 18, 17, 21, 21],
         l = Array(11);
-    for (iterIdxTemp_1 = 0; 11 > iterIdxTemp_1; iterIdxTemp_1++) l[iterIdxTemp_1] = new Vec2;
-    for (a = 0; a < partyMemberCount; a++) {
-        drawRect(f + a * d, g, 24, 24, 0);
-        drawLine(f + a * d + 7, g + 22, f + a * d +
-            16, g + 22, 15908203);
-        drawLine(f + a * d + 6, g + 23, f + a * d + 17, g + 23, 15908203);
-        for (b = 0; 11 > b; b++) l[b].x = f + a * d + p[b], l[b].y = g + t[b];
+    for (iterIdxTemp_1 = 0; 11 > iterIdxTemp_1; iterIdxTemp_1++) 
+        l[iterIdxTemp_1] = new Vec2;
+
+    for (hidx = 0; hidx < partyMemberCount; hidx++) { // draw party
+        drawRect(f + hidx * d, g, 24, 24, 0); // bg behind hero
+        drawLine(f + hidx * d + 7, g + 22, f + hidx * d + 16, g + 22, 15908203);
+        drawLine(f + hidx * d + 6, g + 23, f + hidx * d + 17, g + 23, 15908203);
+        
+        for (b = 0; 11 > b; b++) 
+            l[b].x = f + hidx * d + p[b], 
+            l[b].y = g + t[b];
+            
         c = 16777215;
-        0 < bh[a] ? c = 5934817 : 0 < ch[a] ? c = 1989840 : 0 < dh[a] && (c = 3407616);
-        eh(a, l, 0, 1, 15908203, c, 2);
-        drawTooltip(gameFontSmall, f + a * d + 28, g, "P" + (a + 1), 3355443, -1);
-        drawRect(f + a * d + 28, g + 8, 48, 7, 1114112);
-        drawRect(f + a * d + 28, g + 8, floor(48 * partyLP[a] / partyMaxLP[a]), 7, 10027008);
-        drawTooltip(gameFontSmall, f + a * d + 28, g + 8, "" + partyLP[a], 16764108, -1);
-        drawRect(f + a * d + 28, g + 17, 48, 5, 17);
-        drawRect(f + a * d + 28, g + 17, 48 * $a[a] / max(ab[a], 1), 5, 221);
-        buttonCheck(f + a * d, g, 24, 24) && (Xg(f + a * d, g, 24, 24, 8388608), isMouseClicked && Ka == a && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (Ka = a));
+        0 < bh[hidx] ? c = 5934817 : 0 < ch[hidx] ? c = 1989840 : 0 < dh[hidx] && (c = 3407616);
+        drawHero(hidx, l, 0, 1, 15908203, c, 2);
+        
+        drawTooltip(gameFontSmall, f + hidx * d + 28, g, "P" + (hidx + 1), 3355443, -1);
+        drawRect(f + hidx * d + 28, g + 8, 48, 7, 1114112);
+        drawRect(f + hidx * d + 28, g + 8, floor(48 * partyLP[hidx] / partyMaxLP[hidx]), 7, 10027008);
+        drawTooltip(gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
+        drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
+        drawRect(f + hidx * d + 28, g + 17, 48 * $a[hidx] / max(ab[hidx], 1), 5, 221);
+        buttonCheck(f + hidx * d, g, 24, 24) && (Xg(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && Ka == hidx && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (Ka = hidx));
         for (b = 0; 5 > b; b++) {
-            c = partyEquipmentTable[a][b];
-            k = f + a * d + b % 3 * 20;
+            c = partyEquipmentTable[hidx][b];
+            k = f + hidx * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             drawRect(k, n, 16, 16, 0);
             0 != c && (fh = 2, h = itemList[c][Mc], 2 == b ? Qg(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0);
             Wg(k, n, 16, 16, c, b);
-            buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (Ka = a)
+            buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (Ka = hidx)
         }
     }
     drawRectOutline(f + Ka * d - 1, g - 1, 26, 26, 16711680);
@@ -1490,10 +1537,10 @@ function drawGameUI() {
     g = 379;
     d = 36;
     if (drawIconButton(f + -1 * d, g, 13, "" + eb + "/" + hb, 16777215) && isMouseClicked) {
-        for (a = c = 0; a < partyMemberCount; a++) c += partyMaxLP[a] - partyLP[a];
+        for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
         if (0 < c && 0 < eb) {
-            for (a = 0; a < partyMemberCount; a++) partyLP[a] !=
-                partyMaxLP[a] && Lg(O[a][0].x, O[a][0].y, 0, partyMaxLP[a] - partyLP[a], 60, 65280), partyLP[a] = partyMaxLP[a];
+            for (hidx = 0; hidx < partyMemberCount; hidx++) partyLP[hidx] !=
+                partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280), partyLP[hidx] = partyMaxLP[hidx];
             eb--;
             jh++
         }
@@ -1511,14 +1558,14 @@ function drawGameUI() {
         drawText(gameFont, 530,
             168, "INN", 16777215, 8409120);
         if (buttonCheckCentered(528, 180, 48, 40)) {
-            for (a = c = 0; a < partyMemberCount; a++) c += partyMaxLP[a] - partyLP[a];
+            for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
             0 < c && (c = 10);
             c += 10 * (hb - eb);
             gameFont.a = 1;
             drawText(gameFont, 530, 168, "INN", 15908203, 8409120);
             drawText(gameFont, 528, 187, "G " + c, 16777215, 8409120);
             if (0 < c && c <= partyGold && isMouseClicked && !ta) {
-                for (a = 0; a < partyMemberCount; a++) partyLP[a] != partyMaxLP[a] && Lg(O[a][0].x, O[a][0].y, 0, partyMaxLP[a] - partyLP[a], 60, 65280), partyLP[a] = partyMaxLP[a];
+                for (hidx = 0; hidx < partyMemberCount; hidx++) partyLP[hidx] != partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280), partyLP[hidx] = partyMaxLP[hidx];
                 eb != hb && Lg(436, 380, 0, hb - eb, 60, 65280);
                 eb = hb;
                 partyGold = clamp(partyGold - c, 0, 9999999)
@@ -1531,7 +1578,7 @@ function drawGameUI() {
     } else 12 == currentStage && (gameFont.a = 1, drawText(gameFont, 418, 104, "SHRINE", 16777215, 8409120), buttonCheckCentered(416, 108, 48, 40) && (gameFont.a = 1, drawText(gameFont, 418, 104, "SHRINE", 15908203, 8409120), isMouseClicked && !ta && (isShrineUIVisible = !isShrineUIVisible) && (isInventoryVisible = false)));
     if (isMemberUIVisible) {
         g = f = 14;
-        drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][Yg]);
+        drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][stageUIBgColorCol]);
         gameFont.a = 1;
         drawTooltip(gameFont, f, g, "LP " + partyLP[Ka] + "/" + partyMaxLP[Ka] + " SP (" + partySP[Ka] + ")", 16777215, 0);
         k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
@@ -1539,41 +1586,41 @@ function drawGameUI() {
         drawTooltip(gameFont, f, g + 20, k[Ma], 16777215, 0);
         k = [9, 0, 20, 21, 17, 22, 23];
         c = [999, 999, 999, 999, 999, 999, 25];
-        for (a = 0; 7 > a; a++) drawMenuButton(f +
-            12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + partyStats[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? isMouseReleased && (Ma = a) : 0 < partySP[Ka] && partyStats[Ma][Ka] < c[Ma] && (drawTooltip(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (partyStats[Ma][Ka]++, partySP[Ka]--)));
+        for (hidx = 0; 7 > hidx; hidx++) drawMenuButton(f +
+            12 + hidx % 7 * 28, g + 46 + 28 * ~~(hidx / 7), k[hidx], "" + partyStats[hidx][Ka], Ma == hidx ? 16737894 : 16777215) && (Ma != hidx ? isMouseReleased && (Ma = hidx) : 0 < partySP[Ka] && partyStats[Ma][Ka] < c[Ma] && (drawTooltip(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (partyStats[Ma][Ka]++, partySP[Ka]--)));
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isMemberUIVisible = false);
         g += 64;
-        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = itemForgeLvls[c], heroHasAccessoryEffect(Ka, accessoryArmsBonusCol0) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol0)), heroHasAccessoryEffect(Ka, accessoryChargeBonusCol) && 4 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryChargeBonusCol)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol1)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 4 == itemList[c][itemDropIconCol] && (h += sumAccessorySecondaryValues(Ka, accessoryArmsBonusCol1)), drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
-            "-" + Eb[4 * a + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(getModifiedStatVal(Ka, c, ld) * getModifiedStatVal(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = getModifiedStatVal(Ka, c, Ed), heroHasAccessoryEffect(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += countAccessoryLvlBonuses(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == getModifiedStatVal(Ka, c, Uc) ? h += " all" : 1 < getModifiedStatVal(Ka, c, Uc) && (h += " " + getModifiedStatVal(Ka, c, Uc) + "hit"), drawTooltip(gameFontMed, f + 96 * a, g + 12, h, 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT " + ab[Ka], 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), drawTooltip(gameFontMed, f + 96 * a, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f + 96 * a, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && (h = getModifiedStatVal(Ka, c, ud), heroHasAccessoryEffect(Ka, ye) && (h += countAccessoryLvlBonuses(Ka, ye)), drawTooltip(gameFontMed, f + 96 * a, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
-            itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], 16777215, 0)));
+        for (hidx = 0; 2 > hidx; hidx++) c = partyEquipmentTable[Ka][hidx], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = itemForgeLvls[c], heroHasAccessoryEffect(Ka, accessoryArmsBonusCol0) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol0)), heroHasAccessoryEffect(Ka, accessoryChargeBonusCol) && 4 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryChargeBonusCol)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol1)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 4 == itemList[c][itemDropIconCol] && (h += sumAccessorySecondaryValues(Ka, accessoryArmsBonusCol1)), drawTooltip(gameFontMed, f + 96 * hidx, g + 0, "" + itemList[c][itemNameCol] + " " + h, -1, 0), h = "AT " + Db[4 * hidx + Ka] +
+            "-" + Eb[4 * hidx + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * hidx + Ka] + ">" + ~~(getModifiedStatVal(Ka, c, ld) * getModifiedStatVal(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = getModifiedStatVal(Ka, c, Ed), heroHasAccessoryEffect(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += countAccessoryLvlBonuses(Ka, Ae)), h += " *" + Fb[4 * hidx + Ka] + ">" + b) : 1 < Fb[4 * hidx + Ka] && (h += " *" + Fb[4 * hidx + Ka]), 99 == getModifiedStatVal(Ka, c, Uc) ? h += " all" : 1 < getModifiedStatVal(Ka, c, Uc) && (h += " " + getModifiedStatVal(Ka, c, Uc) + "hit"), drawTooltip(gameFontMed, f + 96 * hidx, g + 12, h, 16777215, 0), hidx || drawTooltip(gameFontMed, f + 96 * hidx, g + 24, "AGI " + Gb[Ka], 16777215, 0), hidx || drawTooltip(gameFontMed, f + 96 * hidx, g + 36, "RANGE " + Hb[Ka], 16777215, 0), hidx ? -1 == ab[Ka] ? drawTooltip(gameFontMed, f + 96 * hidx, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f + 96 * hidx, g + 48, "EMIT " + ab[Ka], 16777215, 0) : drawTooltip(gameFontMed, f + 96 * hidx, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), drawTooltip(gameFontMed, f + 96 * hidx, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * hidx, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * hidx, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * hidx, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f + 96 * hidx, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * hidx, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * hidx, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && (h = getModifiedStatVal(Ka, c, ud), heroHasAccessoryEffect(Ka, ye) && (h += countAccessoryLvlBonuses(Ka, ye)), drawTooltip(gameFontMed, f + 96 * hidx, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
+            itemList[c][td] && drawTooltip(gameFontMed, f + 96 * hidx, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * hidx, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 96 * hidx, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], 16777215, 0)));
         g += 96;
         k = ["ARMS", "CHARGE"];
-        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], b = f + 28 * a, d = g, drawRect(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, drawText(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
+        for (hidx = 0; 2 > hidx; hidx++) c = partyEquipmentTable[Ka][hidx], b = f + 28 * hidx, d = g, drawRect(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, drawText(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), Wg(b, d, 24, 24, c, hidx)
     }
     if (isInventoryVisible) {
         f = 224;
         g = 14;
-        drawRect(f - 6, g - 6, 204, 260, stageListArray[currentStage][Yg]);
+        drawRect(f - 6, g - 6, 204, 260, stageListArray[currentStage][stageUIBgColorCol]);
         c = Jc[Na][28 * Oa + Pa];
         0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na && (drawText(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
-            a = Ve(c, wd), 0 == a ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : itemForgeLvls[c] < a ? (Zb = -1, h = Ve(c, xd) * itemForgeLvls[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), itemForgeLvls[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
+            hidx = Ve(c, wd), 0 == hidx ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : itemForgeLvls[c] < hidx ? (Zb = -1, h = Ve(c, xd) * itemForgeLvls[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), itemForgeLvls[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
         0 != itemForgeLvls[c] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawTooltip(gameFontMed,
             f, g + 12, h, 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawTooltip(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawTooltip(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawTooltip(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    physical", 10066329,
-            0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), d = 1, a = Ve(c, heroHealthModifierCol),
-            0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && drawTooltip(gameFontMed, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][accessoryPrimaryValueCol] && drawTooltip(gameFontMed, f, g + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 0 != itemList[c][accessorySecondaryValueCol] && drawTooltip(gameFontMed, f, g + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)));
+            0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    poison", 52224, 0), hidx = Xe(c, hd), -1 != hidx && drawTooltip(gameFontMed, f + 84, g + 72, "RANGE +" + hidx + "%", 16777215, 0), hidx = Xe(c, ld), -1 != hidx && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0), hidx = Xe(c, Td), -1 != hidx && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), d = 1, hidx = Ve(c, heroHealthModifierCol),
+            0 < hidx && (drawTooltip(gameFontMed, f, g + 12 * d, "LP +" + hidx, 16777215, 0), d++), hidx = Ve(c, be), 0 < hidx && (drawTooltip(gameFontMed, f, g + 12 * d, "DF +" + hidx, 16777215, 0), d++), hidx = Ve(c, ce), 0 < hidx && (drawTooltip(gameFontMed, f, g + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0), d++), hidx = Ve(c, de), 0 < hidx && drawTooltip(gameFontMed, f, g + 12 * d, "DODGE +" + hidx, 16777215, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][accessoryPrimaryValueCol] && drawTooltip(gameFontMed, f, g + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 0 != itemList[c][accessorySecondaryValueCol] && drawTooltip(gameFontMed, f, g + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)));
         Zb = -1;
         k = Na;
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isInventoryVisible = false);
-        for (a = 0; 28 > a; a++) c = Jc[Na][28 * Oa + a], b = f + a % 7 * 28, d = g + 84 + 28 * ~~(a / 7), drawRect(b, d, 24, 24, 0),
-            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? isMouseReleased && (Pa = a) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[Ka][k] = c)) : h == Ka ? (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+        for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = f + hidx % 7 * 28, d = g + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
+            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[Ka][k] = c)) : h == Ka ? (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[Ka][k] = 0)) : (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[Ka][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawTooltip(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawTooltip(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
-        for (a = 0; 5 > a; a++) {
-            drawMenuButton(f + 12 + 28 * a, g + 238, a, k[a], Na == a ? 16737894 : 16777215) && isMouseClicked && (Na = a);
+        for (hidx = 0; 5 > hidx; hidx++) {
+            drawMenuButton(f + 12 + 28 * hidx, g + 238, hidx, k[hidx], Na == hidx ? 16737894 : 16777215) && isMouseClicked && (Na = hidx);
             c =
                 0;
-            for (b = Jc[a].length - 1; 0 <= b; b--) c += ac[Jc[a][b]];
-            0 < c && drawTooltip(gameFontSmall, f + 12 + 28 * a - 12, g + 238 - 12, "NEW", 16776960, -1)
+            for (b = Jc[hidx].length - 1; 0 <= b; b--) c += ac[Jc[hidx][b]];
+            0 < c && drawTooltip(gameFontSmall, f + 12 + 28 * hidx - 12, g + 238 - 12, "NEW", 16776960, -1)
         }
         drawMenuButton(f + 96 - 42, g + 209, 7, "PREV", 16777215) && isMouseClicked && Oa--;
         drawMenuButton(f + 138, g + 209, 8, "NEXT", 16777215) && isMouseClicked && Oa++;
@@ -1584,7 +1631,7 @@ function drawGameUI() {
     if (isBestiaryVisible) {
         f = 434;
         g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][Yg]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBestiaryVisible = false);
         Ra = clamp(Ra, 0, oh[Qa].length - 1);
         c = oh[Qa][Ra];
@@ -1595,9 +1642,9 @@ function drawGameUI() {
             else if (drawTooltip(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyAttr0], 16777215, 0), drawTooltip(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][enemyHealthCol], 16777215, 0), drawTooltip(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][enemyAttr65], 16777215, 0), drawTooltip(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][enemyAttr64], 16777215, 0), b = 0, 0 != enemyCatalog[c][enemyAttr39] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != enemyCatalog[c][enemyAttr40] && (drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != enemyCatalog[c][enemyAttr41] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != enemyCatalog[c][enemyAttr42] && (drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != enemyCatalog[c][enemyAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && drawTooltip(gameFontMed, f, g + 48, "RES ", 16777215, 0), drawTooltip(gameFontMed, f + 80, g + 0,
                     "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = enemyCatalog[c][enemyAttr66], drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 2);
             else
-                for (d = b = 0; 4 > b; b++) a = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= a || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, drawTooltip(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][itemNameCol], -1, 0), 0 < itemForgeLvls[a] && (drawRect(f +
-                    80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
-            for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), drawRect(b, d, 24, 24, 0), a == Ra && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (Ra = a)), Ch(c, b + 12, d + 20, 2)
+                for (d = b = 0; 4 > b; b++) hidx = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= hidx || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[hidx][Mc], 10 == itemList[hidx][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][Pc], itemList[hidx][$d], true) : 20 == itemList[hidx][Nc] || 30 == itemList[hidx][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[hidx][Pc], itemList[hidx][$d]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][Pc]), fh = 0, gameFontMed.a = 4, drawTooltip(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][itemNameCol], -1, 0), 0 < itemForgeLvls[hidx] && (drawRect(f +
+                    80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0)), d++);
+            for (hidx = 0; hidx < oh[Qa].length; hidx++) c = oh[Qa][hidx], b = f + hidx % 7 * 28, d = g + 96 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0), hidx == Ra && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (Ra = hidx)), Ch(c, b + 12, d + 20, 2)
         }
         drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Qa--;
         drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Qa++;
@@ -1609,11 +1656,11 @@ function drawGameUI() {
         f = 434;
         g = 14;
         drawRect(f -
-            6, g - 6, 204, 180, stageListArray[currentStage][Yg]);
+            6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBadgesUIVisible = false);
         if (0 == ec[stageIndexOrder[Sa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
-            for (a = 0; a < df[Sa].length; a++) c = df[Sa][a], badgeList[c] && (b = f + 6, d = g + 6 + 24 * a, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeList[c][3], badgeCounterArray[c] == badgeList[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < badgeCounterArray[c] && (gameFontMed.b = -1, drawText(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeList[c][1].length ? drawTooltip(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215,
+            for (hidx = 0; hidx < df[Sa].length; hidx++) c = df[Sa][hidx], badgeList[c] && (b = f + 6, d = g + 6 + 24 * hidx, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeList[c][3], badgeCounterArray[c] == badgeList[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < badgeCounterArray[c] && (gameFontMed.b = -1, drawText(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeList[c][1].length ? drawTooltip(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215,
                 0) : (drawTooltip(gameFontMed, b + 40, d + 1, badgeList[c][0], 16777215, 0), gameFontMed.a = 3, drawTooltip(gameFontMed, b + 40, d + 11, badgeList[c][1], 16777215, 0)));
         drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Sa--;
         drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Sa++;
@@ -1625,18 +1672,18 @@ function drawGameUI() {
         f = 434;
         g = 202;
         d = 32;
-        drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][Yg]);
+        drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isOptionsVisible = false);
         c = ["ON", "OFF"];
         drawTooltip(gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
-        for (a = 0; a < partyMemberCount; a++) {
-            drawRect(f + 72 + a * d, g + 20, 24, 24, 0);
-            drawLine(f + 72 + a * d + 7, g + 42, f + 72 + a * d + 16, g + 42, 15908203);
-            drawLine(f + 72 + a * d + 6, g + 43, f + 72 + a * d + 17, g + 43, 15908203);
-            for (b = 0; 11 > b; b++) l[b].x = f + 72 + a * d + p[b], l[b].y = g + 20 + t[b];
-            eh(a, l, 0, 1, 15908203, 16777215, 2);
-            drawText(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16777215, 0);
-            buttonCheckCentered(f + 84 + a * d, g + 40, 32, 40) && (Xg(f + 72 + a * d, g + 20, 24, 24, 8388608), drawText(gameFontMed, f + 84 + a * d, g + 52, c[ib[a]], 16711680, 0), isMouseClicked && (ib[a] = 1 - ib[a]))
+        for (hidx = 0; hidx < partyMemberCount; hidx++) {
+            drawRect(f + 72 + hidx * d, g + 20, 24, 24, 0);
+            drawLine(f + 72 + hidx * d + 7, g + 42, f + 72 + hidx * d + 16, g + 42, 15908203);
+            drawLine(f + 72 + hidx * d + 6, g + 43, f + 72 + hidx * d + 17, g + 43, 15908203);
+            for (b = 0; 11 > b; b++) l[b].x = f + 72 + hidx * d + p[b], l[b].y = g + 20 + t[b];
+            drawHero(hidx, l, 0, 1, 15908203, 16777215, 2);
+            drawText(gameFontMed, f + 84 + hidx * d, g + 52, c[ib[hidx]], 16777215, 0);
+            buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40) && (Xg(f + 72 + hidx * d, g + 20, 24, 24, 8388608), drawText(gameFontMed, f + 84 + hidx * d, g + 52, c[ib[hidx]], 16711680, 0), isMouseClicked && (ib[hidx] = 1 - ib[hidx]))
         }
         drawTooltip(gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
         drawTooltip(gameFontMed, f + 78, g + 64, c[kb], 16777215, 0);
@@ -1649,27 +1696,27 @@ function drawGameUI() {
     if (isShrineUIVisible) {
         f = 224;
         g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][Yg]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isShrineUIVisible = false);
-        for (a = h = 0; a < badgeList.length; a++) badgeList[a] && badgeCounterArray[a] == badgeList[a][4] && h++;
+        for (hidx = h = 0; hidx < badgeList.length; hidx++) badgeList[hidx] && badgeCounterArray[hidx] == badgeList[hidx][4] && h++;
         gameFontMed.a = 3;
         drawTooltip(gameFontMed, f + 27, g + 6, "Achievement Medal", 16777215, 0);
         gameFont.a = 1;
         drawTooltip(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
-        for (a = 0; a < shrineRewardOptions.length; a++) b = f + 6, d = g + 26 + 24 * a, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[a][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
-            b + 23, d + 10, "" + shrineRewardOptions[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[a][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[a] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[a][1] <= h && isMouseClicked && (c = a)), gameFontMed.a = 3, gameFontMed.b = 1, drawTooltip(gameFontMed, b + 40, d + 6, shrineRewardOptions[a][0], 16777215, 0);
+        for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
+            b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawTooltip(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         if (!c)
-            for (Fc[c] = 1, isShrineUIVisible = false, a = 0; 100 > a;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), a++);
+            for (Fc[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         else if (1 == c)
-            for (Fc[c] = 1, a = 0; 4 > a; a++)
-                for (b = 0; b < partyStats.length; b++) partySP[a] += partyStats[b][a],
-                    partyStats[b][a] = 0;
+            for (Fc[c] = 1, hidx = 0; 4 > hidx; hidx++)
+                for (b = 0; b < partyStats.length; b++) partySP[hidx] += partyStats[b][hidx],
+                    partyStats[b][hidx] = 0;
         else if (2 == c) Fc[c] = 1, db[3] = 1, eb++;
         else if (3 == c)
-            for (Fc[c] = 1, a = 0; 2 > a; a++)
+            for (Fc[c] = 1, hidx = 0; 2 > hidx; hidx++)
                 if (99 > partyLevel) {
-                    partyEXPAccum = Ta[partyLevel];
+                    partyEXPAccum = LevelExpThresholds[partyLevel];
                     partyLevel++;
                     for (b = 0; 4 > b; b++) partySP[b] += 2;
                     Hh = 60
@@ -1679,7 +1726,7 @@ function drawGameUI() {
     Tg(gameFontSmall, 476, 421, copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
     Tg(gameFontSmall, 607, 421, "" + currentFPS + fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7)
 }
-var Lh = 1,
+var areUpperJointsDisabled = 1,
     O = Array(4);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) O[iterIdxTemp_1] = Array(21);
 var Mh = Array(4);
@@ -1725,10 +1772,10 @@ var Vh = Array(4),
     Vg = 0,
     Hc = 0,
     $g = 0,
-    Gc = 0,
+    comboMultBonus = 0,
     ei = new Int32Array(4),
     fi = new Int32Array(4),
-    gi = [
+    partyBodyDrawOptions = [
         [0, 1, 0],
         [0, 1, 0],
         [0, 1, 0],
@@ -1799,7 +1846,7 @@ function ti(a, b, c, d, f) {
         B = -1;
     f = 0 == f ? 29 : 23;
     for (var M = 0; M < partyMemberCount; M++)
-        if (Wh[M] != Lh && (k = O[M][2], !(k.x > c || k.x < g || k.y > d || k.y < h))) {
+        if (Wh[M] != areUpperJointsDisabled && (k = O[M][2], !(k.x > c || k.x < g || k.y > d || k.y < h))) {
             t.x = k.x - a;
             t.y = k.y - b;
             l = Vec2Mag(t);
@@ -1824,7 +1871,7 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
     p = h + p + 5;
     t = k + t + 10;
     for (var n, w = new Vec2, B = new Vec2, M, J, y = -1, x = 0; x < partyMemberCount; x++)
-        if (Wh[x] != Lh && (n = O[x][2], !(n.x > p || n.x < a || n.y > t || n.y < l))) {
+        if (Wh[x] != areUpperJointsDisabled && (n = O[x][2], !(n.x > p || n.x < a || n.y > t || n.y < l))) {
             B.x = n.x - h;
             B.y = n.y - k;
             n = Vec2Mag(B);
@@ -1838,7 +1885,7 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
             }
             if (!(n <= M)) {
                 y = f + floor(randFloat(g - f + 1));
-                M = 0 == gi[x][2] ? 1 : -1;
+                M = 0 == partyBodyDrawOptions[x][2] ? 1 : -1;
                 J = 16711680;
                 $h[x] = 2;
                 0 == c ? y = max(y - Jb[x], 1) : 6 == c ? y = max(y - Kb[x], 1) : 1 <= c && (y = max(floor(y * (100 - Lb[x]) / 100), 1));
@@ -1878,7 +1925,7 @@ function vi() {
             c = Vec2Mag(a);
             20 > c && c < b && (b = c, bi = Ka, ci = 0);
             for (var d = 0; d < partyMemberCount; d++)
-                if (Wh[d] != Lh)
+                if (Wh[d] != areUpperJointsDisabled)
                     for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - Mh[d][f].x, a.y = mouseYCurrent - Mh[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, Ka = d)
         }
     } else wasMouseDown || (bi = -1, ci = 0)
@@ -1984,7 +2031,7 @@ function xi(a, b, c, d, f, g) {
         for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = randInt(512), g = randFloat(We), h.x += Hf[w][0] * g, h.y += Hf[w][1] *
             g), g = d, Dd = f, Rd = h.x / La, De = (h.y - .5 * La * La * b * .01) / La, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem);
     else if (5 == l)
-        for (Ac = 256 + 256 * gi[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
+        for (Ac = 256 + 256 * partyBodyDrawOptions[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
             tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We;
     else if (6 == l)
         for (d = floor(512 / c), w = floor(randFloat(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), w += d
@@ -2009,7 +2056,7 @@ function Di(a) {
                     h = ri(b + 14 * f, c - 3);
                     0 <= h && 26 >= h && (g = 4);
                     var k;
-                    1 == f ? (k = O[a][9].x < O[a][10].x ? 7 : 8, gi[a][2] = 1) : (k = O[a][9].x > O[a][10].x ? 7 : 8, gi[a][2] = 0);
+                    1 == f ? (k = O[a][9].x < O[a][10].x ? 7 : 8, partyBodyDrawOptions[a][2] = 1) : (k = O[a][9].x > O[a][10].x ? 7 : 8, partyBodyDrawOptions[a][2] = 0);
                     if (!kb) {
                         h = ri(b + 20 * f, c + 8 + 0);
                         var p = ri(b + 20 * f, c + 8 + 8),
@@ -2020,7 +2067,7 @@ function Di(a) {
                     O[a][k].x += 4 * f;
                     O[a][k].y -=
                         3 * g
-                } 2 == Yh[a] && (b < Q[d][yi].x ? (O[a][0].x += .25, O[a][1].x += .25, gi[a][2] = 1) : (O[a][0].x -= .25, O[a][1].x -= .25, gi[a][2] = 0), c < Q[d][yi].y ? (O[a][0].y += .25, O[a][1].y += .25) : (O[a][0].y -= .25, O[a][1].y -= .25), O[a][0].x += randFloatRange(-.25, .25), O[a][0].y += randFloatRange(-.25, .25), O[a][1].x += randFloatRange(-.25, .25), O[a][1].y += randFloatRange(-.25, .25))
+                } 2 == Yh[a] && (b < Q[d][yi].x ? (O[a][0].x += .25, O[a][1].x += .25, partyBodyDrawOptions[a][2] = 1) : (O[a][0].x -= .25, O[a][1].x -= .25, partyBodyDrawOptions[a][2] = 0), c < Q[d][yi].y ? (O[a][0].y += .25, O[a][1].y += .25) : (O[a][0].y -= .25, O[a][1].y -= .25), O[a][0].x += randFloatRange(-.25, .25), O[a][0].y += randFloatRange(-.25, .25), O[a][1].x += randFloatRange(-.25, .25), O[a][1].y += randFloatRange(-.25, .25))
         }
     }
 }
@@ -2033,12 +2080,12 @@ function updatePlayerParty() {
     vi();
     for (a = 0; a < partyMemberCount; a++) {
         if (0 < dh[a] && (dh[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, randFloat(60) < b && (d += 1), partyLP[a] -= d, Og += d, 0 > partyLP[a]))
-            for (c = 0 == gi[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++) a != b && (partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
+            for (c = 0 == partyBodyDrawOptions[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++) a != b && (partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]), Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680), Og += d);
         if (0 < bh[a]) bh[a]--;
         else {
             if (0 < ch[a] && (ch[a]--, randFloat(100) < hi[a])) continue;
             Xh[a]++;
-            if (Wh[a] == Lh)
+            if (Wh[a] == areUpperJointsDisabled)
                 for (b = 0; 11 > b; b++) S(O[a][b], Mh[a][b], .05, .99);
             else if (2 == Yh[a])
                 for (b = 0; 11 > b; b++) S(O[a][b], Mh[a][b], .01, .99);
@@ -2047,10 +2094,10 @@ function updatePlayerParty() {
             else
                 for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, Pe) ? S(O[a][b], Mh[a][b], .05 / countAccessoryLvlBonuses(a, Pe), .99) : S(O[a][b], Mh[a][b], .05, .99);
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
-            if (0 == d && Wh[a] != Lh)
-                for (Wh[a] = Lh, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
+            if (0 == d && Wh[a] != areUpperJointsDisabled)
+                for (Wh[a] = areUpperJointsDisabled, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
                     randFloatRange(-1, -3);
-            if (Wh[a] != Lh) {
+            if (Wh[a] != areUpperJointsDisabled) {
                 1 == currentStage && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
                 bi == a && (O[bi][ci].x += .2 * (mouseXCurrent - O[bi][ci].x), O[bi][ci].y += .2 * (mouseYCurrent - O[bi][ci].y));
                 b = itemList[partyEquipmentTable[a][0]][Nc];
@@ -2061,7 +2108,7 @@ function updatePlayerParty() {
                 if (0 < Zh[a]) Zh[a]--;
                 else if (bi != a && 0 != b && -1 != c) {
                     Zh[a] = Gb[a] + randIntRange(-1, 1);
-                    gi[a][2] = d < Q[c][yi].x ? 1 : 0;
+                    partyBodyDrawOptions[a][2] = d < Q[c][yi].x ? 1 : 0;
                     k = 0; - 1 == ab[a] ? ($a[a] =
                         0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = clamp($a[a] + bb[a], 0, ab[a]), fi[a] = 0, heroHasAccessoryEffect(a, re) && 100 * rand() < countAccessoryLvlBonuses(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][Nc], heroHasAccessoryEffect(a, se) && 100 * rand() < countAccessoryLvlBonuses(a, se) && ($a[a] = ab[a]));
                     if (0 != b)
@@ -2078,12 +2125,12 @@ function updatePlayerParty() {
                     } else 5 == b ? (d < Q[c][yi].x ? (O[a][5].x += 1, O[a][6].x += 1, O[a][1].x -= 2) : (--O[a][5].x, --O[a][6].x, O[a][1].x += 2), O[a][5].y < O[a][6].y ? (f.set(O[a][5]), k = 1283, ei[a] = 0) : (f.set(O[a][6]), k = 1540, ei[a] = 1), T(O[a][5], O[a][6], 5, .1, .1)) : d < Q[c][yi].x ? O[a][5].x < O[a][6].x ? (O[a][5].x += 4, O[a][4].x -= 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x += 4, O[a][3].x -= 4, f.set(O[a][6]), k =
                         1540, ei[a] = 1) : O[a][5].x > O[a][6].x ? (O[a][5].x -= 4, O[a][4].x += 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x -= 4, O[a][3].x += 4, f.set(O[a][6]), k = 1540, ei[a] = 1);
                     2 == b && (Sh[a] = 30);
-                    gi[a][ei[a]] = fi[a];
+                    partyBodyDrawOptions[a][ei[a]] = fi[a];
                     xi(a, k, fi[a], f.x, f.y, c)
                 }
                 bi != a && 0 != b && -1 == c && Di(a)
             }
-            Wh[a] == Lh ? (T(O[a][1], O[a][2], 3.6, .5, .5), T(O[a][3], O[a][5], 4.8, .5, .5), T(O[a][4], O[a][6], 4.8, .5, .5), T(O[a][7], O[a][9], 4.8, .5, .5), T(O[a][8], O[a][10], 4.8, .5, .5)) : (T(O[a][0], O[a][1], 3.6, .5, .5), T(O[a][1], O[a][2], 3.6, .5, .5), T(O[a][1], O[a][3], 4.8, .5, .5), T(O[a][1], O[a][4], 4.8,
+            Wh[a] == areUpperJointsDisabled ? (T(O[a][1], O[a][2], 3.6, .5, .5), T(O[a][3], O[a][5], 4.8, .5, .5), T(O[a][4], O[a][6], 4.8, .5, .5), T(O[a][7], O[a][9], 4.8, .5, .5), T(O[a][8], O[a][10], 4.8, .5, .5)) : (T(O[a][0], O[a][1], 3.6, .5, .5), T(O[a][1], O[a][2], 3.6, .5, .5), T(O[a][1], O[a][3], 4.8, .5, .5), T(O[a][1], O[a][4], 4.8,
                 .5, .5), T(O[a][3], O[a][5], 4.8, .5, .5), T(O[a][4], O[a][6], 4.8, .5, .5), T(O[a][2], O[a][7], 4.8, .5, .5), T(O[a][2], O[a][8], 4.8, .5, .5), T(O[a][7], O[a][9], 4.8, .5, .5), T(O[a][8], O[a][10], 4.8, .5, .5), T(O[a][7], O[a][8], 6, .1, .1));
             0 < (Yh[a] & 1) && (Xh[a] = 0);
             for (b = Yh[a] = 0; 11 > b; b++) ni(a, b);
@@ -2093,7 +2140,7 @@ function updatePlayerParty() {
             Ph[a][Rh[a]].set(O[a][6]);
             Qh[a][Rh[a]].set(O[a][4]);
             0 < Sh[a] && (Sh[a]--, b = itemList[partyEquipmentTable[a][fi[a]]][Nc], 2 != b && (Sh[a] = 0));
-            0 == Zh[a] && (f.set(O[a][1]), f.x += 0 == gi[a][2] ? -50 : 50, Vec2Scale(f, .1),
+            0 == Zh[a] && (f.set(O[a][1]), f.x += 0 == partyBodyDrawOptions[a][2] ? -50 : 50, Vec2Scale(f, .1),
                 Vec2Scale(Uh[a], .9), Uh[a].add(f));
             0 < Vh[a] && Vh[a]--;
             if (Yh[a] & 2) {
@@ -2126,7 +2173,7 @@ function drawPlayerParty() {
         fh = isSolidRender = 1;
         for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(O[a][c].x), floor(O[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         isSolidRender = fh = 0;
-        eh(a, O[a], gi[a][0], gi[a][1], d, f, Wh[a]);
+        drawHero(a, O[a], partyBodyDrawOptions[a][0], partyBodyDrawOptions[a][1], d, f, Wh[a]);
         if (0 < Sh[a]) {
             b = partyEquipmentTable[a][fi[a]];
             c = itemList[b][id];
@@ -2207,37 +2254,202 @@ function drawPlayerParty() {
     }
     0 < Hh ? Hh-- : 0 < di ? di-- : 0 < Zg && Zg--
 }
-mainWindow.fff = eh;
+mainWindow.fff = drawHero;
 
-function eh(a, b, c, d, f, g, h) {
-    var k = new Vec2;
-    drawLine(b[1].x, b[1].y, b[2].x, b[2].y, g);
-    h != Lh && (drawLine(b[1].x, b[1].y, b[3].x, b[3].y, g), drawLine(b[1].x, b[1].y, b[4].x, b[4].y, g));
-    drawLine(b[3].x, b[3].y, b[5].x, b[5].y, g);
-    drawLine(b[4].x, b[4].y, b[6].x, b[6].y, g);
-    h != Lh && (drawLine(b[2].x, b[2].y, b[7].x, b[7].y, g), drawLine(b[2].x, b[2].y, b[8].x, b[8].y, g));
-    drawLine(b[7].x, b[7].y, b[9].x, b[9].y, g);
-    drawLine(b[8].x, b[8].y, b[10].x, b[10].y, g);
-    drawRectOutline(~~b[0].x - 2, ~~b[0].y - 2, 5, 5, f);
-    f = itemList[partyEquipmentTable[a][2]][Mc];
-    0 != f && (0 == gi[a][2] ? Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 0, 16 * (f >> 4), 16, 16, itemList[partyEquipmentTable[a][2]][Pc],
-        itemList[partyEquipmentTable[a][2]][$d], false) : Qg(itemsSpriteSheet, ~~b[0].x - 8, ~~b[0].y - 8, 16, 16, 16 * (f & 15) + 16, 16 * (f >> 4), -16, 16, itemList[partyEquipmentTable[a][2]][Pc], itemList[partyEquipmentTable[a][2]][$d], false));
-    for (f = 0; 2 > f; f++) {
-        var p = partyEquipmentTable[a][f ? d : c];
-        g = itemList[p][Nc];
-        var p = itemList[p][Pc],
-            t = b[5 + f],
-            l = b[3 + f];
-        1 == g ? drawRectCentered(t.x, t.y, 3, 3, p) : 2 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? drawLine(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 7 * k.x, l.y + 7 * k.y, p) : drawLine(l.x + 2 * k.x, l.y + 2 * k.y, l.x + 10 * k.x, l.y + 10 * k.y, p), Vec2Rotate(k), drawLine(t.x - 2 * k.x, t.y - 2 * k.y, t.x + 2 * k.x, t.y + 2 * k.y, p)) : 3 == g ? 2 == h ? f ? drawLine(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p) : drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p) : (Vec2Sub(k, Uh[a], t), Vec2Norm(k), 0 < Vh[a] && ei[a] ==
-            f ? drawLine(t.x - 5 * k.x, t.y - 5 * k.y, Uh[a].x, Uh[a].y, p) : drawLine(t.x - 5 * k.x, t.y - 5 * k.y, t.x + 20 * k.x, t.y + 20 * k.y, p)) : 4 == g ? (Vec2Sub(k, t, l), Vec2Norm(k), 2 == h ? drawLine(l.x, l.y, l.x + 4 * k.x, l.y + 4 * k.y, p) : drawLine(l.x, l.y, l.x + 8 * k.x, l.y + 8 * k.y, p), drawLine(t.x, t.y, t.x - 2 * k.x + 4 * k.y, t.y - 2 * k.y - 4 * k.x, 8421504), drawLine(t.x, t.y, t.x - 2 * k.x - 4 * k.y, t.y - 2 * k.y + 4 * k.x, 8421504)) : 5 == g && (isSolidRender = 2, fh = 1, drawSpriteSheetPartCentered(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), isSolidRender = fh = 0)
+/**     ANATOMY OF A STICKMAN
+            
+             J0 - (2,2)
+             v   5px
+             |--------| 
+             |        |
+             |   J0   |  5px
+             |        |
+             |--------|  
+
+          J4-----J1-----J3
+          |      |       |
+          |      |       |
+          J6     J2      J5
+                /  \
+               /    \
+              /      \
+             J8       J7
+             |        |
+             |        |
+             |        |
+             J10      J9
+              
+*/
+function drawHero(heroIdx, joints, c, d, heroColor, bodyColor, noUpperJoints) {
+ if (true) {
+    // torso
+    drawLine(joints[1].x, joints[1].y, joints[2].x, joints[2].y, bodyColor);
+
+    // upper arms
+    if (noUpperJoints != areUpperJointsDisabled) { 
+        drawLine(joints[1].x, joints[1].y, joints[3].x, joints[3].y, bodyColor);
+        drawLine(joints[1].x, joints[1].y, joints[4].x, joints[4].y, bodyColor);
     }
+
+    // lower arms
+    drawLine(joints[3].x, joints[3].y, joints[5].x, joints[5].y, bodyColor);
+    drawLine(joints[4].x, joints[4].y, joints[6].x, joints[6].y, bodyColor);
+
+    // upper legs
+    if (noUpperJoints != areUpperJointsDisabled) { 
+        drawLine(joints[2].x, joints[2].y, joints[7].x, joints[7].y, bodyColor); 
+        drawLine(joints[2].x, joints[2].y, joints[8].x, joints[8].y, bodyColor);
+    }
+    // lower legs
+    drawLine(joints[7].x, joints[7].y, joints[9].x, joints[9].y, bodyColor);
+    drawLine(joints[8].x, joints[8].y, joints[10].x, joints[10].y, bodyColor);
+
+    // head
+    // drawLine(joints[0].x, joints[0].y, joints[1].x, joints[1].y, bodyColor);
+    drawRectOutline(~~joints[0].x - 2, ~~joints[0].y - 2, 5, 5, heroColor); 
+}
+
+    // draw items/accessories
+    heroColor = itemList[partyEquipmentTable[heroIdx][2]][Mc]; // head wear color
+
+    0 != heroColor && (
+        0 == partyBodyDrawOptions[heroIdx][2] // flip horizontally
+        ? Qg(
+            itemsSpriteSheet, 
+            ~~joints[0].x - 8, ~~joints[0].y - 8, 
+            16, 16, 
+            16 * (heroColor & 15) + 0, 16 * (heroColor >> 4), 
+            16, 16, 
+            itemList[partyEquipmentTable[heroIdx][2]][Pc], itemList[partyEquipmentTable[heroIdx][2]][$d], 
+            false
+        ) 
+        : Qg(
+            itemsSpriteSheet, 
+            ~~joints[0].x - 8, ~~joints[0].y - 8, 
+            16, 16, 
+            16 * (heroColor & 15) + 16, 16 * (heroColor >> 4), 
+            -16, 16, 
+            itemList[partyEquipmentTable[heroIdx][2]][Pc], itemList[partyEquipmentTable[heroIdx][2]][$d], 
+            false
+        )
+    );
+    var baseDrawPos = new Vec2;
+
+    for (heroColor = 0; heroColor < 2; heroColor++) {
+        var p = partyEquipmentTable[heroIdx][heroColor ? d : c];
+        bodyColor = itemList[p][Nc];
+        var p = itemList[p][Pc],
+            t = joints[5 + heroColor],
+            l = joints[3 + heroColor];
+
+        switch (bodyColor) {
+            case 1:
+                drawRectCentered(t.x, t.y, 3, 3, p);
+                break;
+            case 2:
+                Vec2Sub(baseDrawPos, t, l);
+                Vec2Norm(baseDrawPos);
+                if (noUpperJoints == 2) {
+                    drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 7 * baseDrawPos.x, l.y + 7 * baseDrawPos.y, p);
+                } else {
+                    drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 10 * baseDrawPos.x, l.y + 10 * baseDrawPos.y, p);
+                }
+                Vec2Rotate(baseDrawPos), drawLine(t.x - 2 * baseDrawPos.x, t.y - 2 * baseDrawPos.y, t.x + 2 * baseDrawPos.x, t.y + 2 * baseDrawPos.y, p);
+                break;
+            case 3:
+                if (noUpperJoints == 2) {
+                    if (heroColor) {
+                        drawLine(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p) 
+                    } else {
+                        drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p) 
+                    }
+                } else {
+                    Vec2Sub(baseDrawPos, Uh[heroIdx], t);
+                    Vec2Norm(baseDrawPos);
+                    if (0 < Vh[heroIdx] && ei[heroIdx] == heroColor) {
+                        drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, Uh[heroIdx].x, Uh[heroIdx].y, p);
+                    } else {
+                        drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, t.x + 20 * baseDrawPos.x, t.y + 20 * baseDrawPos.y, p)
+                    }
+                }
+                break;
+            case 4:
+                Vec2Sub(baseDrawPos, t, l);
+                Vec2Norm(baseDrawPos);
+                if (2 == noUpperJoints) {
+                    drawLine(l.x, l.y, l.x + 4 * baseDrawPos.x, l.y + 4 * baseDrawPos.y, p) 
+                } else {
+                    drawLine(l.x, l.y, l.x + 8 * baseDrawPos.x, l.y + 8 * baseDrawPos.y, p);
+                }
+                drawLine(t.x, t.y, t.x - 2 * baseDrawPos.x + 4 * baseDrawPos.y, t.y - 2 * baseDrawPos.y - 4 * baseDrawPos.x, 8421504);
+                drawLine(t.x, t.y, t.x - 2 * baseDrawPos.x - 4 * baseDrawPos.y, t.y - 2 * baseDrawPos.y + 4 * baseDrawPos.x, 8421504);
+                break;
+            case 5:
+                isSolidRender = 2;
+                fh = 1;
+                drawSpriteSheetPartCentered(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p);
+                isSolidRender = fh = 0;
+                break;
+            
+        }
+    }
+    
+    // for (heroColor = 0; 2 > heroColor; heroColor++) {
+    //     var p = partyEquipmentTable[heroIdx][heroColor ? d : c];
+    //     bodyColor = itemList[p][Nc];
+    //     var p = itemList[p][Pc],
+    //         t = joints[5 + heroColor],
+    //         l = joints[3 + heroColor];
+        
+    //     // forcing someone to read this should be considered a war crime
+    //     1 == bodyColor 
+    //     ? drawRectCentered(t.x, t.y, 3, 3, p) 
+    //     : 2 == bodyColor 
+    //         ? (
+    //             Vec2Sub(baseDrawPos, t, l), 
+    //             Vec2Norm(baseDrawPos), 
+    //             2 == noUpperJoints 
+    //             ? drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 7 * baseDrawPos.x, l.y + 7 * baseDrawPos.y, p) 
+    //             : drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 10 * baseDrawPos.x, l.y + 10 * baseDrawPos.y, p), 
+    //             Vec2Rotate(baseDrawPos), drawLine(t.x - 2 * baseDrawPos.x, t.y - 2 * baseDrawPos.y, t.x + 2 * baseDrawPos.x, t.y + 2 * baseDrawPos.y, p)
+    //         ) 
+    //         : 3 == bodyColor 
+    //             ? 2 == noUpperJoints 
+    //                 ? heroColor 
+    //                     ? drawLine(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p) 
+    //                     : drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p) 
+    //                 : (
+    //                     Vec2Sub(baseDrawPos, Uh[heroIdx], t), 
+    //                     Vec2Norm(baseDrawPos), 
+    //                     0 < Vh[heroIdx] && ei[heroIdx] == heroColor 
+    //                     ? drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, Uh[heroIdx].x, Uh[heroIdx].y, p) 
+    //                     : drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, t.x + 20 * baseDrawPos.x, t.y + 20 * baseDrawPos.y, p)
+    //                 ) 
+    //             : 4 == bodyColor 
+    //                 ? (
+    //                     Vec2Sub(baseDrawPos, t, l), 
+    //                     Vec2Norm(baseDrawPos), 
+    //                     2 == noUpperJoints 
+    //                         ? drawLine(l.x, l.y, l.x + 4 * baseDrawPos.x, l.y + 4 * baseDrawPos.y, p) 
+    //                         : drawLine(l.x, l.y, l.x + 8 * baseDrawPos.x, l.y + 8 * baseDrawPos.y, p), 
+    //                     drawLine(t.x, t.y, t.x - 2 * baseDrawPos.x + 4 * baseDrawPos.y, t.y - 2 * baseDrawPos.y - 4 * baseDrawPos.x, 8421504), 
+    //                     drawLine(t.x, t.y, t.x - 2 * baseDrawPos.x - 4 * baseDrawPos.y, t.y - 2 * baseDrawPos.y + 4 * baseDrawPos.x, 8421504)
+    //                 ) 
+    //                 : 5 == bodyColor && (
+    //                     isSolidRender = 2, 
+    //                     fh = 1, 
+    //                     drawSpriteSheetPartCentered(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), 
+    //                     isSolidRender = fh = 0
+    //                 )
+    // }
+
 }
 var stageCount = 32,
     stageListArray = Array(stageCount);
 iterIdxTemp_1 = 0;
 var stageNameCol = iterIdxTemp_1++,
     Pi = iterIdxTemp_1++,
-    Yg = iterIdxTemp_1++,
+    stageUIBgColorCol = iterIdxTemp_1++,
     Eh = iterIdxTemp_1++,
     Qi = iterIdxTemp_1++,
     Ri = iterIdxTemp_1++,
@@ -2360,7 +2572,7 @@ function wg() {
     var a;
     if (12 == drawState)
         for (a = 0; a < partyMemberCount; a++)
-            if (Wh[a] != Lh) {
+            if (Wh[a] != areUpperJointsDisabled) {
                 var b = O[a][1].x,
                     c = O[a][1].y;
                 if (4 > b && 0 < stageListArray[currentStage][Si]) {
@@ -2398,8 +2610,8 @@ function wg() {
     if (!d && 0 == Mi) {
         for (a = 0; 20 > a; a++) Mi += Xi[a];
         Mi = floor((Mi + partyMemberCount - 1) / partyMemberCount);
-        0 < Mi && (b = 100 + Gc, Gc += Mi, Mi = floor(Mi * b / 100), di = 60, partyGold = clamp(partyGold + Mi * partyMemberCount, 0, 9999999), A(0) && IncrementBadgeCount(0), A(10) && 3600 > gj && IncrementBadgeCount(10), A(15) && !jh && IncrementBadgeCount(15), A(20) && 87 <= Hc && IncrementBadgeCount(20), A(25) && 100 <=
-            Gc && IncrementBadgeCount(25), A(30) && 111 <= Hc && IncrementBadgeCount(30), A(35) && !jh && IncrementBadgeCount(35), A(40) && 3600 > gj && IncrementBadgeCount(40), A(45) && 7200 > gj && IncrementBadgeCount(45), A(50) && !jh && IncrementBadgeCount(50), A(55) && 227 <= Hc && IncrementBadgeCount(55), A(60) && IncrementBadgeCount(60), A(65) && !jh && IncrementBadgeCount(65), A(70) && 9E3 > gj && IncrementBadgeCount(70), 19 == currentStage && 0 == of [1] && (of [1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
+        0 < Mi && (b = 100 + comboMultBonus, comboMultBonus += Mi, Mi = floor(Mi * b / 100), di = 60, partyGold = clamp(partyGold + Mi * partyMemberCount, 0, 9999999), A(0) && IncrementBadgeCount(0), A(10) && 3600 > gj && IncrementBadgeCount(10), A(15) && !jh && IncrementBadgeCount(15), A(20) && 87 <= Hc && IncrementBadgeCount(20), A(25) && 100 <=
+            comboMultBonus && IncrementBadgeCount(25), A(30) && 111 <= Hc && IncrementBadgeCount(30), A(35) && !jh && IncrementBadgeCount(35), A(40) && 3600 > gj && IncrementBadgeCount(40), A(45) && 7200 > gj && IncrementBadgeCount(45), A(50) && !jh && IncrementBadgeCount(50), A(55) && 227 <= Hc && IncrementBadgeCount(55), A(60) && IncrementBadgeCount(60), A(65) && !jh && IncrementBadgeCount(65), A(70) && 9E3 > gj && IncrementBadgeCount(70), 19 == currentStage && 0 == of [1] && (of [1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
     }
 }
 mainWindow.fff = drawGameStage;
@@ -3093,7 +3305,7 @@ function cl(a) {
     var c = floor(enemyCatalog[enemyTypeArray[a]][enemyAttr64] * (100 + Xb) / 100);
     $i + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
     partyEXPAccum = clamp(partyEXPAccum + c, 0, 9999999);
-    if (Ta[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
+    if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
         partyLevel++;
         for (b = 0; 4 > b; b++) partySP[b] += 2;
         Hh = 60
@@ -4567,22 +4779,30 @@ function drawSpriteSheetPartCentered(spriteSheet, x, y, drawWidth, drawHeight, s
     drawSpriteSheetPart(spriteSheet, x - (drawWidth >> 1), y - (drawHeight >> 1), drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor)
 }
 
-function Qg(a, b, c, d, f, g, h, k, p, t, l, n) {
-    var w = a.g,
+function Qg(spriteSheet, _px, _py, d, f, g, h, k, p, t, l, n) {
+    var w = spriteSheet.g,
         B, M, J, y, x;
     k = ~~((k << 8) / d);
     p = ~~((p << 8) / f);
     g <<= 8;
     h <<= 8;
-    0 > b && (g += ~~(k * -b));
-    0 > c && (h += ~~(p * -c));
-    d = 640 < b + d ? 640 : ~~(b + d);
-    f = 432 < c + f ? 432 : ~~(c + f);
-    b = 0 > b ? 0 : ~~b;
-    c = 0 > c ? 0 : ~~c;
-    M = 640 * c + b;
-    for (J = 640 - (d - b); c < f; c++, M += J, h += p)
-        for (y = ((h >> 8) * a.h << 8) + g, B = b; B < d; B++, M++, y += k) x = w[y >> 8], -1 != x && (16777215 == x ? frameBufferArray[M] = t : 6710886 == x ? frameBufferArray[M] = l : n && (frameBufferArray[M] = x))
+    0 > _px && (g += ~~(k * -_px));
+    0 > _py && (h += ~~(p * -_py));
+    d = 640 < _px + d ? 640 : ~~(_px + d);
+    f = 432 < _py + f ? 432 : ~~(_py + f);
+    _px = 0 > _px ? 0 : ~~_px;
+    _py = 0 > _py ? 0 : ~~_py;
+    M = 640 * _py + _px;
+    for (J = 640 - (d - _px); _py < f; _py++, M += J, h += p)
+        for (y = ((h >> 8) * spriteSheet.h << 8) + g, B = _px; B < d; B++, M++, y += k) 
+            x = w[y >> 8], 
+            -1 != x && (
+                16777215 == x 
+                ? frameBufferArray[M] = t 
+                : 6710886 == x 
+                    ? frameBufferArray[M] = l 
+                    : n && (frameBufferArray[M] = x)
+                )
 }
 
 function fl(a, b, c, d, f, g, h, k, p, t) {

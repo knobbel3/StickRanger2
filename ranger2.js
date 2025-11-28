@@ -126,7 +126,7 @@ function bc() {
         for (b = 0; 8 > b; b++) partyEquipmentTable[a][b] = 0;
     for (a = 0; 256 > a; a++) $b[a] = 0, ac[a] = 0;
     for (a = 0; a < levelCount; a++) ec[a] = 0;
-    for (a = 0; a < itemCount; a++) Bc[a] = 0;
+    for (a = 0; a < enemyTypeCount; a++) Bc[a] = 0;
     for (a = 0; a < badgeCount; a++) badgeCounterArray[a] = 0;
     for (a = 0; a < Ec; a++) Fc[a] = 0;
     for (a = 0; 4 > a; a++) ib[a] = 0;
@@ -152,8 +152,8 @@ var Jc = [
     []
 ];
 iterIdxTemp_1 = 0;
-var Kc = iterIdxTemp_1++,
-    Lc = iterIdxTemp_1++,
+var itemNameCol = iterIdxTemp_1++,
+    itemDropIconCol = iterIdxTemp_1++,
     Mc = iterIdxTemp_1++,
     Nc = iterIdxTemp_1++,
     Oc = iterIdxTemp_1++,
@@ -321,10 +321,10 @@ function Ye(a, b, c) {
     0 == c ? d = 0 : c == itemList[b][yd + 0] ? d = itemList[b][yd + 1] : c == itemList[b][yd + 2] ? d = itemList[b][yd + 3] : c == itemList[b][yd + 4] && (d = itemList[b][yd + 5]);
     if (0 != d) {
         var f = $b[b] - 1;
-        Ze(a, le) && 3 == itemList[b][Lc] && (f += $e(a, le));
-        Ze(a, me) && 4 == itemList[b][Lc] && (f += $e(a, me));
-        Ze(a, ne) && 3 == itemList[b][Lc] && (f += $e(a, ne));
-        Ze(a, ne) && 4 == itemList[b][Lc] && (f += af(a, ne));
+        Ze(a, le) && 3 == itemList[b][itemDropIconCol] && (f += $e(a, le));
+        Ze(a, me) && 4 == itemList[b][itemDropIconCol] && (f += $e(a, me));
+        Ze(a, ne) && 3 == itemList[b][itemDropIconCol] && (f += $e(a, ne));
+        Ze(a, ne) && 4 == itemList[b][itemDropIconCol] && (f += af(a, ne));
         return itemList[b][c] + floor(itemList[b][c] * f * d / 100)
     }
     return itemList[b][c]
@@ -675,9 +675,9 @@ function mf() {
     D[a++] = levelCount >> 6 & 63;
     D[a++] = levelCount >> 0 & 63;
     for (b = 0; b < levelCount; b++) D[a++] = ec[b];
-    D[a++] = itemCount >> 6 & 63;
-    D[a++] = itemCount >> 0 & 63;
-    for (b = 0; b < itemCount; b++) D[a++] = Bc[b];
+    D[a++] = enemyTypeCount >> 6 & 63;
+    D[a++] = enemyTypeCount >> 0 & 63;
+    for (b = 0; b < enemyTypeCount; b++) D[a++] = Bc[b];
     f = 5;
     D[a++] = f >> 6 & 63;
     D[a++] = f >> 0 & 63;
@@ -831,7 +831,7 @@ function updatePartyChecksum() {
     for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
     c = hashAdjust(c, eb);
     for (a = 0; a < levelCount; a++) c = hashAdjust(c, ec[a]);
-    for (a = 0; a < itemCount; a++) c = hashAdjust(c, Bc[a]);
+    for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, Bc[a]);
     for (a = 0; a < badgeCount; a++) c = hashAdjust(c, badgeCounterArray[a]);
     for (a = 0; a < Ec; a++) c = hashAdjust(c, Fc[a]);
     partyChecksum = c ^ 16777215
@@ -952,10 +952,10 @@ function gameInit(a, b) {
         for (c = 0; c < levelListArray.length; c++)
             if (levelHashTable[c] = 0, levelListArray[c])
                 for (d = 2; d < levelListArray[c].length; d++) levelHashTable[c] = hashAdjust(levelHashTable[c], levelListArray[c][d]);
-        itemCatalogHashTable = Array(itemCatalogArray.length);
-        for (c = 0; c < itemCatalogArray.length; c++)
-            if (itemCatalogHashTable[c] = 0, itemCatalogArray[c])
-                for (d = 0; d < itemCatalogArray[c].length; d++) itemCatalogHashTable[c] = hashAdjust(itemCatalogHashTable[c], itemCatalogArray[c][d]);
+        itemCatalogHashTable = Array(enemyCatalog.length);
+        for (c = 0; c < enemyCatalog.length; c++)
+            if (itemCatalogHashTable[c] = 0, enemyCatalog[c])
+                for (d = 0; d < enemyCatalog[c].length; d++) itemCatalogHashTable[c] = hashAdjust(itemCatalogHashTable[c], enemyCatalog[c][d]);
         for (c = zf = 0; c < Jc.length; c++)
             for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
         updatePartyChecksum();
@@ -1521,10 +1521,10 @@ function drawStartingMenu() {
             12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + tb[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? isMouseReleased && (Ma = a) : 0 < partySP[Ka] && tb[Ma][Ka] < c[Ma] && (drawTooltip(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (tb[Ma][Ka]++, partySP[Ka]--)));
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (va = false);
         g += 64;
-        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = $b[c], Ze(Ka, le) && 3 == itemList[c][Lc] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == itemList[c][Lc] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == itemList[c][Lc] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == itemList[c][Lc] && (h += af(Ka, ne)), drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
+        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = $b[c], Ze(Ka, le) && 3 == itemList[c][itemDropIconCol] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == itemList[c][itemDropIconCol] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == itemList[c][itemDropIconCol] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == itemList[c][itemDropIconCol] && (h += af(Ka, ne)), drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
             "-" + Eb[4 * a + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(Ye(Ka, c, ld) * Ye(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = Ye(Ka, c, Ed), Ze(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += $e(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == Ye(Ka, c, Uc) ? h += " all" : 1 < Ye(Ka, c, Uc) && (h += " " + Ye(Ka, c, Uc) + "hit"), drawTooltip(gameFontMed, f + 96 * a, g + 12, h, 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT " +
                 ab[Ka], 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), drawTooltip(gameFontMed, f + 96 * a, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f + 96 * a, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && (h = Ye(Ka, c, ud), Ze(Ka, ye) && (h += $e(Ka, ye)), drawTooltip(gameFontMed, f + 96 * a, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
-            itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], 16777215, 0)));
+            itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " Lv" + $b[c], 16777215, 0)));
         g += 96;
         k = ["ARMS", "CHARGE"];
         for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], b = f + 28 * a, d = g, drawRect(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, drawText(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
@@ -1536,10 +1536,10 @@ function drawStartingMenu() {
         c = Jc[Na][28 * Oa + Pa];
         0 != $b[c] && 1 == q && 2 >= Na && (drawText(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
             a = Ve(c, wd), 0 == a ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), $b[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
-        0 != $b[c] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawTooltip(gameFontMed,
+        0 != $b[c] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawTooltip(gameFontMed,
             f, g + 12, h, 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawTooltip(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawTooltip(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawTooltip(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    physical", 10066329,
-            0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][Kc], -1, 0) : drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][Kc] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, ae),
-            0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && drawTooltip(gameFontMed, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][Kc], -1, 0), 0 != itemList[c][ge] && drawTooltip(gameFontMed, f, g + 12, itemList[c][fe] + itemList[c][ge] + itemList[c][he], 16777215, 0), 0 != itemList[c][je] && drawTooltip(gameFontMed, f, g + 24, itemList[c][ie] + itemList[c][je] + itemList[c][ke], 16777215, 0)));
+            0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, ae),
+            0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && drawTooltip(gameFontMed, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][ge] && drawTooltip(gameFontMed, f, g + 12, itemList[c][fe] + itemList[c][ge] + itemList[c][he], 16777215, 0), 0 != itemList[c][je] && drawTooltip(gameFontMed, f, g + 24, itemList[c][ie] + itemList[c][je] + itemList[c][ke], 16777215, 0)));
         Zb = -1;
         k = Na;
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (wa = false);
@@ -1569,12 +1569,12 @@ function drawStartingMenu() {
         c = oh[Qa][Ra];
         if (0 == ec[stageIndexOrder[Qa]]) drawText(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else {
-            if (0 == Bc[c]) h = itemCatalogArray[c][itemAttr67], drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold &&
+            if (0 == Bc[c]) h = enemyCatalog[c][enemyAttr66], drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold &&
                 isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 1);
-            else if (drawTooltip(gameFontMed, f, g + 0, "LV " + itemCatalogArray[c][itemAttr1], 16777215, 0), drawTooltip(gameFontMed, f, g + 12, "LP " + itemCatalogArray[c][itemAttr10], 16777215, 0), drawTooltip(gameFontMed, f, g + 24, "GOLD " + itemCatalogArray[c][itemAttr66], 16777215, 0), drawTooltip(gameFontMed, f, g + 36, "EXP " + itemCatalogArray[c][itemAttr65], 16777215, 0), b = 0, 0 != itemCatalogArray[c][itemAttr40] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != itemCatalogArray[c][itemAttr41] && (drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != itemCatalogArray[c][itemAttr42] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != itemCatalogArray[c][itemAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != itemCatalogArray[c][itemAttr44] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && drawTooltip(gameFontMed, f, g + 48, "RES ", 16777215, 0), drawTooltip(gameFontMed, f + 80, g + 0,
-                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = itemCatalogArray[c][itemAttr67], drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 2);
+            else if (drawTooltip(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyAttr0], 16777215, 0), drawTooltip(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][enemyAttr9], 16777215, 0), drawTooltip(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][enemyAttr65], 16777215, 0), drawTooltip(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][enemyAttr64], 16777215, 0), b = 0, 0 != enemyCatalog[c][enemyAttr39] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != enemyCatalog[c][enemyAttr40] && (drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != enemyCatalog[c][enemyAttr41] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != enemyCatalog[c][enemyAttr42] && (drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != enemyCatalog[c][enemyAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && drawTooltip(gameFontMed, f, g + 48, "RES ", 16777215, 0), drawTooltip(gameFontMed, f + 80, g + 0,
+                    "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = enemyCatalog[c][enemyAttr66], drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 2);
             else
-                for (d = b = 0; 4 > b; b++) a = itemCatalogArray[c][itemAttr68 + 2 * b], 2 >= a || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, drawTooltip(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][Kc], -1, 0), 0 < $b[a] && (drawRect(f +
+                for (d = b = 0; 4 > b; b++) a = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= a || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, drawTooltip(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][itemNameCol], -1, 0), 0 < $b[a] && (drawRect(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
             for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), drawRect(b, d, 24, 24, 0), a == Ra && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (Ra = a)), Ch(c, b + 12, d + 20, 2)
         }
@@ -2311,7 +2311,7 @@ function loadLevelData(a) {
         p = levelListArray[q][a + 5];
         t = levelListArray[q][a + 6];
         for (b = 0; b < d; b++) h = randIntRange(k, p + 1), g = randIntRange(f, t + 1), 25 >= P[g][h] || (Zi(h, g, c, (a - Vi) / 7), V[(a - Vi) / 7]++, Xi[(a - Vi) / 7]++);
-        b = itemCatalogArray[c][itemAttr1];
+        b = enemyCatalog[c][enemyAttr0];
         $i < b && ($i = b)
     }
     aj = W = 0;
@@ -2610,168 +2610,168 @@ function xg() {
         Xi[10]++), !A(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !A(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == q ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == P[d][c] && (19 == Xi[7] % 20 ? Zi(c, d, 89, 7) : Zi(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (Zi(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of [1] && (dj(47, 15, 50, 15, 24), dj(1, 31, 1, 35, 32))) : 20 == q && (1 == db[4] ? dj(70, 34, 70, 34, 63) : 55 == P[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (dj(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
 }
 iterIdxTemp_1 = 0;
-var itemAttr1 = iterIdxTemp_1++,
-    itemAttr2 = iterIdxTemp_1++,
-    itemAttr3 = iterIdxTemp_1++,
-    itemAttr4 = iterIdxTemp_1++,
-    itemAttr5 = iterIdxTemp_1++,
-    itemAttr6 = iterIdxTemp_1++,
-    itemAttr7 = iterIdxTemp_1++,
-    itemAttr8 = iterIdxTemp_1++,
-    itemAttr9 = iterIdxTemp_1++,
-    itemAttr10 = iterIdxTemp_1++,
-    itemAttr11 = iterIdxTemp_1++,
-    itemAttr12 = iterIdxTemp_1++,
-    itemAttr13 = iterIdxTemp_1++,
-    itemAttr14 = iterIdxTemp_1++,
-    itemAttr15 = iterIdxTemp_1++,
-    itemAttr16 = iterIdxTemp_1++,
-    itemAttr17 = iterIdxTemp_1++,
-    itemAttr18 = iterIdxTemp_1++,
-    itemAttr19 = iterIdxTemp_1++,
-    itemAttr20 = iterIdxTemp_1++,
-    itemAttr21 = iterIdxTemp_1++,
-    itemAttr22 = iterIdxTemp_1++,
-    itemAttr23 = iterIdxTemp_1++,
-    itemAttr24 = iterIdxTemp_1++,
-    itemAttr25 = iterIdxTemp_1++,
-    itemAttr26 = iterIdxTemp_1++,
-    itemAttr27 = iterIdxTemp_1++,
-    itemAttr28 = iterIdxTemp_1++,
-    itemAttr29 = iterIdxTemp_1++,
-    itemAttr30 = iterIdxTemp_1++,
-    itemAttr31 = iterIdxTemp_1++,
-    itemAttr32 = iterIdxTemp_1++,
-    itemAttr33 = iterIdxTemp_1++,
-    itemAttr34 = iterIdxTemp_1++,
-    itemAttr35 = iterIdxTemp_1++,
-    itemAttr36 = iterIdxTemp_1++,
-    itemAttr37 = iterIdxTemp_1++,
-    itemAttr38 = iterIdxTemp_1++,
-    itemAttr39 = iterIdxTemp_1++,
-    itemAttr40 = iterIdxTemp_1++,
-    itemAttr41 = iterIdxTemp_1++,
-    itemAttr42 = iterIdxTemp_1++,
-    itemAttr43 = iterIdxTemp_1++,
-    itemAttr44 = iterIdxTemp_1++,
-    itemAttr45 = iterIdxTemp_1++,
-    itemAttr46 = iterIdxTemp_1++,
-    itemAttr47 = iterIdxTemp_1++,
-    itemAttr48 = iterIdxTemp_1++,
-    itemAttr49 = iterIdxTemp_1++,
-    itemAttr50 = iterIdxTemp_1++,
-    itemAttr51 = iterIdxTemp_1++,
-    itemAttr52 = iterIdxTemp_1++,
-    itemAttr53 = iterIdxTemp_1++,
-    itemAttr54 = iterIdxTemp_1++,
-    itemAttr55 = iterIdxTemp_1++,
-    itemAttr56 = iterIdxTemp_1++,
-    itemAttr57 = iterIdxTemp_1++,
-    itemAttr58 = iterIdxTemp_1++,
-    itemAttr59 = iterIdxTemp_1++,
-    itemAttr60 = iterIdxTemp_1++,
-    itemAttr61 = iterIdxTemp_1++,
-    itemAttr62 = iterIdxTemp_1++,
-    itemAttr63 = iterIdxTemp_1++,
-    itemAttr64 = iterIdxTemp_1++,
-    itemAttr65 = iterIdxTemp_1++,
-    itemAttr66 = iterIdxTemp_1++,
-    itemAttr67 = iterIdxTemp_1++,
-    itemAttr68 = iterIdxTemp_1++,
-    itemCount = 128,
-    itemCatalogArray = Array(itemCount),
-    Bc = Array(itemCount);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < itemCount; iterIdxTemp_1++) Bc[iterIdxTemp_1] = 0;
-itemCatalogArray[0] = [1, 0, 0, 0, 0, 1, 3394611, 3355443, 0, 30, 1, 0, 2, 0, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 7, 10, 9, 10, 0, 0, 71, 1E3];
-itemCatalogArray[1] = [2, 0, 0, 0, 0, 1, 3394815, 3355545, 0, 60, 1, 0, 2, 0, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 5, 20, 10, 30, 0, 0, 71, 1E3];
-itemCatalogArray[2] = [3, 0, 0, 0, 0, 1, 13369344, 3342336, 0, 90, 0, 2, 0, 2, 4288217088, 1, 16, 16, 8, 8, 0, 0, 20, 10, 0, 100, 0, 0, 0, 0, 3, 5, 1, 10, 50, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 6, 30, 28, 5, 0, 0, 71, 1E3];
-itemCatalogArray[3] = [5, 0, 0, 0, 0, 3, 3394611, 3355443, 0, 900, 0, 3, 0, 3, 4286611584, 1, 8, 8, 8, 8, 0, 0, 100, 10, 0, 100, 0, 0, 0, 0, 2, 3, 5, 10, 10, 15, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 3, 20, 8, 1, 30, 3, 0, 0, 71, 100];
-itemCatalogArray[5] = [4, 2, 0, 0, 7, 1, 13421772, 0, 6702114, 60, 1, 0, 2, 7, 4294914867, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 11, 20, 0, 0, 0, 0, 71, 1E3];
-itemCatalogArray[4] = [5, 1, 0, 0, 4, 2, 3394611, 3355443, 3381555, 150, 0, 3, 1, 4, 4294967295, 1, 16, 16, 8, 8, 0, 0, 20, 40, 0, 100, 0, 0, 0, 0, 3, 4, 1, 5, 50, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 5, 20, 29, 15, 0, 0, 0, 0, 73, 1E3];
-itemCatalogArray[6] = [6, 5, 4, 6, 15, 1, 0, 13395456, 3368448, 360, 0, 4, 0, 3, 4294940979, 1, 16, 16, 8, 8, 0, 0, 150, 10, 5, 100, 0, 0, 0, 0, 6, 8, 1, 100, 50, 20, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 3, 10, 14, 5, 33, 10, 0, 0, 73, 50];
-itemCatalogArray[7] = [4, 0, 0, 0, 0, 1, 13421568, 3355443, 0, 120, 1, 0, 2, 0, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 4, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 12, 20, 13, 20, 0, 0, 73, 1E3];
-itemCatalogArray[8] = [7, 0, 0, 0, 0, 3, 13421568, 3355443, 0, 900, 1, 0, 2, 0, 4294967295, 2, 48, 48, 120, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 1, 6, 8, 1, 10, 50, 20, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 5, 20, 16, 2, 0, 0, 0, 0, 73, 100];
-itemCatalogArray[9] = [5, 1, 0, 0, 5, 1, 4482577, 10035712, 3359761, 90, 1, 0, 2, 5, 4294954171, 1, 16, 16, 32, 32, 0, 0, 30, 10, 0, 100, 0, 0, 0, 0, 2, 4, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 15, 10, 0, 0, 0, 0, 73, 1E3];
-itemCatalogArray[14] = [8, 0, 0, 0, 8, 1, 13369344, 3342336, 0, 20, 1, 0, 2, 8, 4294915071, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 21, 10, 22, 20, 0, 0, 73, 1E3];
-itemCatalogArray[15] = [9, 0, 0, 0, 8, 2, 11141120, 3342336, 0, 450, 1, 0, 2, 8, 4294915071, 2, 32, 32, 120, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 20, 300, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 5, 20, 23, 15, 0, 0, 0, 0, 73, 200];
-itemCatalogArray[10] = [6, 5, 2, 3, 3, 1, 6710937, 102, 3355443, 200, 0, 104, 0, 2, 4293848831, 1, 16, 16, 4, 4, 40, 15, 150, 10, 3, 100, 0, 4, 0, 0, 3, 3, 3, 120, 150, 20, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 17, 20, 19, 20, 0, 0, 75, 1E3];
-itemCatalogArray[11] = [7, 5, 2, 3, 3, 1, 15623833, 102, 3355443, 200, 0, 104, 0, 2, 4294923605, 1, 16, 16, 4, 4, 50, 15, 150, 10, 3, 100, 0, 4, 0, 0, 5, 5, 5, 120, 150, 20, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 3, 10, 18, 10, 20, 10, 0, 0, 75, 1E3];
-itemCatalogArray[12] = [5, 0, 0, 0, 8, 1, 3394611, 3355443, 0, 20, 1, 0, 2, 8, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 32, 20, 0, 0, 0, 0, 75, 1E3];
-itemCatalogArray[13] = [6, 0, 0, 0, 8, 1, 3394815, 3355545, 0, 20, 1, 0, 2, 8, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 24, 20, 31, 20, 0, 0, 75, 1E3];
-itemCatalogArray[16] = [10, 2, 0, 0, 7, 2, 13421772, 0, 6702114, 600, 0, 3, 0, 1, 4291611852, 1, 16, 16, 4, 4, 0, 0, 300, 10, 0, 100, 0, 0, 0, 0, 1, 1, 16, 5, 50, 20, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 5, 20, 37, 5, 0, 0, 0, 0, 75, 100];
-itemCatalogArray[17] = [8, 0, 0, 0, 0, 1, 0, 3368448, 0, 120, 1, 0, 2, 0, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 5, 6, 1, 10, 50, 20, 20, 0, 0, 0, 100, 100, 100, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 25, 20, 0, 0, 0, 0, 75, 500];
-itemCatalogArray[18] = [10, 0, 0, 0, 0, 3, 35839, 21913, 0, 1800, 0, 4, 0, 0, 4278225919, 2, 16, 16, 8, 8, 0, 40, 400, 10, .5, 100, 0, 0, 0, 0, 4, 6, 5, 300, 50, 10, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 10, 20, 27, 7, 0, 0, 0, 0, 77, 70];
-itemCatalogArray[19] = [9, 6, 2, 5, 8, 1, 10027059, 3342336, 26112, 180, 0, 4, 0, 1, 4294901862, 1, 16, 16, 4, 4, 0, 0, 400, 10, .5, 100, 0, 0, 0, 0, 4, 4, 1, 160, 200, 20, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 26, 20, 0, 0, 0, 0, 77, 1E3];
-itemCatalogArray[20] = [10, 0, 0, 0, 8, 1, 15645440, 10053120, 0, 20, 1, 0, 2, 8, 4282659584, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 5, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 3, 10, 34, 20, 0, 0, 0, 0, 77, 1E3];
-itemCatalogArray[21] = [11, 10, 0, 0, 3, 1, 6724095, 14697, 14697, 240, 1, 0, 2, 3, 4294954035, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 4, 1, 10, 50, 20, 20, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 36, 30, 0, 0, 0, 0, 77, 1E3];
-itemCatalogArray[22] = [12, 10, 0, 0, 3, 3, 10079487, 14697, 14697, 2E3, 0, 3, 0, 1, 4279308561, 1, 16, 16, 4, 4, 0, 100, 1E3, 10, 0, 100, 0, 0, 0, 0, 2, 2, 20, 2, 150, 20, 200, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 10, 20, 35, 5, 0, 0, 0, 0, 77, 100];
-itemCatalogArray[23] = [12, 1, 0, 0, 7, 1, 39219, 10040064, 13107, 120, 1, 0, 2, 7, 4291572480, 1, 16, 16, 32, 32, 0, 0, 30, 20, 0, 100, 0, 0, 0, 0, 2, 4, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 0, 0, 0, 0, 0, 0, 79, 1E3];
-itemCatalogArray[24] = [13, 0, 0, 0, 8, 2, 15645440, 10053120, 0, 550, 1, 0, 2, 8, 4282659584, 1, 32, 32, 120, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 7, 1, 10, 20, 300, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 150, 20, 38, 5, 0, 0, 0, 0, 79, 100];
-itemCatalogArray[25] = [14, 6, 2, 2, 5, 1, 10066380, 102, 3355494, 250, 0, 1, 0, 1, 4293848831, 1, 16, 16, 4, 4, 0, 0, 200, 10, .5, 100, 0, 0, 0, 0, 2, 2, 1, 10, 200, 20, 120, 2, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 40, 20, 0, 0, 0, 0, 79, 1E3];
-itemCatalogArray[26] = [14, 5, 2, 5, 5, 1, 16763904, 3342336, 3355392, 250, 0, 4, 1, 36, 4294967057, 1, 16, 16, 4, 4, 0, 0, 200, 10, 5, 100, 0, 4, 0, 0, 1, 9, 1, 120, 150, 20, 120, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 39, 20, 0, 0, 0, 0, 79, 1E3];
-itemCatalogArray[27] = [15, 6, 9, 9, 7, 3, 13421772, 3355443, 8912964, 3E3, 0, 4, 0, 0, 4294919185, 2, 16, 16, 0, 0, 0, 500, 500, 10, .5, 100, 0, 0, 0, 0, 2, 3, 1, 120, 50, 20, 130, 1, 1, 0, 100, 0, 0, 0, 0, 2, 0, 30, 4294919185, 2, 16, 24, 16, 24, 180, 10, 5, 92, 0, 1, 0, 5, 1, 0, 1E3, 20, 20, 41, 5, 0, 0, 0, 0, 79, 100];
-itemCatalogArray[28] = [15, 4, 0, 0, 7, 1, 13421772, 8912964, 3355443, 150, 1, 0, 2, 7, 4279308561, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 42, 10, 43, 10, 0, 0, 79, 1E3];
-itemCatalogArray[29] = [15, 2, 0, 0, 9, 1, 13421772, 0, 10053171, 50, 1, 0, 2, 9, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 2, 10, 46, 99, 0, 0, 2, 1, 81, 1E3];
-itemCatalogArray[30] = [16, 3, 6, 0, 3, 1, 10066380, 0, 13107, 750, 0, 4, 1, 7, 4291611903, 1, 16, 16, 8, 8, 0, 30, 500, 10, 2, 100, 0, 0, 0, 0, 5, 5, 3, 120, 200, 10, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 6, 10, 45, 15, 0, 0, 0, 0, 81, 1E3];
-itemCatalogArray[31] = [17, 3, 6, 0, 3, 1, 13395456, 0, 10040064, 750, 0, 303, 0, 13, 4294927889, 2, 16, 16, 8, 8, 15, 0, 120, 5, -1, 99, 0, 0, 0, 0, 2, 3, 9, 12, 100, 20, 60, 1, 2, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 9, 10, 44, 5, 0, 0, 0, 0, 81, 60];
-itemCatalogArray[32] = [16, 2, 0, 0, 9, 1, 13421772, 13382604, 4460868, 110, 1, 0, 2, 9, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 2, 10, 48, 99, 0, 0, 2, 1, 81, 1E3];
-itemCatalogArray[33] = [18, 5, 4, 4, 13, 1, 16750848, 10027161, 2245632, 1E3, 0, 4, 1, 7, 4290484633, 1, 32, 32, 12, 12, 0, 0, 1E3, 10, .3, 100, 0, 0, 0, 0, 20, 25, 1, 300, 50, 5, 150, 0, 0, 0, 100, 100, 100, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 9, 10, 47, 5, 0, 0, 0, 0, 81, 1E3];
-itemCatalogArray[34] = [19, 0, 0, 0, 0, 3, 2236962, 4473924, 0, 5500, 0, 104, 0, 24, 4294914918, 1, 16, 16, 4, 4, 80, 25, 800, 10, 1, 100, 0, 3, 0, 0, 5, 5, 8, 200, 150, 10, 200, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 50, 20, 49, 15, 54, 15, 0, 0, 83, 100];
-itemCatalogArray[35] = [17, 2, 0, 0, 9, 1, 4204560, 0, 3342336, 150, 1, 0, 2, 9, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 2, 10, 53, 99, 0, 0, 2, 1, 83, 1E3];
-itemCatalogArray[36] = [20, 5, 19, 19, 13, 3, 16750848, 10027008, 2245632, 2E3, 0, 4, 1, 7, 4288256443, 2, 24, 24, 8, 8, 0, 0, 2E3, 10, .1, 100, 0, 4, 0, 0, 20, 25, 5, 800, 200, 5, 160, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2E3, 100, 100, 50, 9, 51, 9, 52, 9, 83, 100];
-itemCatalogArray[37] = [19, 4, 0, 0, 9, 1, 13421772, 8912964, 3355443, 330, 1, 0, 2, 9, 4279308561, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 10, 55, 99, 0, 0, 0, 0, 85, 1E3];
-itemCatalogArray[38] = [21, 5, 3, 3, 13, 1, 16763904, 13369344, 6684672, 2500, 0, 6403, 0, 54, 4294910481, 2, 16, 16, 8, 8, 0, 0, 300, 10, 0, 100, 0, 3, 0, 0, 1, 1, 8, 10, 50, 5, 110, 1, 3, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 20, 20, 57, 5, 0, 0, 0, 0, 85, 100];
-itemCatalogArray[39] = [20, 0, 0, 0, 0, 1, 0, 8409120, 0, 380, 0, 4, 1, 5, 4294953984, 2, 12, 12, 6, 6, 0, 30, 1E3, 10, .5, 100, 0, 4, 0, 0, 5, 6, 1, 300, 100, 10, 80, 0, 0, 0, 50, 50, 50, 50, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 10, 56, 99, 0, 0, 0, 0, 85, 500];
-itemCatalogArray[40] = [21, 5, 4, 4, 13, 1, 52224, 0, 6684825, 2500, 0, 4, 1, 6, 4278216192, 1, 16, 16, 8, 8, 0, 0, 1E3, 10, 1, 100, 0, 0, 0, 0, 1, 1, 1, 300, 50, 10, 240, 4, 720, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 20, 20, 58, 8, 59, 6, 0, 0, 85, 100];
-itemCatalogArray[41] = [20, 0, 0, 0, 8, 1, 2245632, 16764006, 0, 120, 1, 0, 2, 8, 4288217088, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 10, 60, 99, 0, 0, 0, 0, 85, 1E3];
-itemCatalogArray[42] = [20, 4, 0, 0, 5, 1, 13421772, 8912964, 1052688, 330, 1, 0, 2, 5, 4279308561, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 5, 10, 61, 50, 0, 0, 0, 0, 87, 1E3];
-itemCatalogArray[43] = [22, 1, 0, 0, 6, 2, 12259584, 1114112, 1114112, 1500, 0, 303, 0, 13, 4294927889, 2, 16, 16, 8, 8, 15, 0, 120, 5, -1, 99, 0, 0, 0, 0, 2, 3, 9, 12, 100, 20, 60, 1, 1, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 2, 20, 63, 10, 0, 0, 0, 0, 87, 300];
-itemCatalogArray[44] = [21, 2, 0, 0, 9, 1, 11184810, 26265, 1118498, 220, 1, 0, 2, 9, 4279308799, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 2, 50, 0, 50, 100, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 3, 10, 62, 50, 0, 0, 0, 0, 87, 1E3];
-itemCatalogArray[45] = [23, 0, 0, 0, 0, 3, 1118481, 3390259, 0, 4500, 0, 803, 1, 11, 4278211840, 1, 16, 16, 8, 8, 5, 0, 100, 10, 0, 100, 0, 0, 0, 0, 2, 2, 2, 10, 5, 1E3, 200, 4, 720, 0, 90, 0, 90, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 6, 20, 64, 5, 66, 10, 0, 0, 87, 60];
-itemCatalogArray[46] = [23, 5, 6, 6, 12, 1, 0, 14540032, 1572864, 3300, 0, 1504, 1, 6, 4292730112, 1, 16, 16, 8, 8, 0, 40, 300, 10, 1, 100, 0, 4, 0, 0, 1, 9, 15, 200, 150, 20, 200, 3, 0, 0, 80, 80, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 70, 20, 65, 5, 0, 0, 0, 0, 87, 200];
-itemCatalogArray[47] = [24, 10, 0, 0, 9, .6, 6724095, 14697, 14697, 700, 1, 0, 2, 9, 4294954035, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 4, 1, 10, 50, 20, 20, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 1, 40, 0, 0, 0, 0, 0, 0, 113, 1E3];
-itemCatalogArray[48] = [24, 2, 0, 0, 20, .6, 4204560, 15658734, 4204560, 600, 1, 0, 2, 20, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 20, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 40, 91, 99, 0, 0, 0, 0, 113, 1E3];
-itemCatalogArray[49] = [25, 5, 2, 5, 9, 1, 6710784, 102, 3368448, 900, 0, 104, 0, 2, 4293853149, 1, 16, 16, 4, 4, 40, 15, 150, 10, 3, 100, 0, 4, 0, 0, 4, 4, 3, 120, 150, 20, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 40, 90, 99, 0, 0, 0, 0, 113, 1E3];
-itemCatalogArray[50] = [26, 0, 0, 0, 16, 2, 16750848, 10027161, 0, 8E3, 0, 2, 1, 15, 4278190080, 1, 16, 16, 8, 8, 0, 15, 400, 10, 0, 100, 0, 0, 0, 0, 20, 25, 1, 10, 50, 10, 400, 0, 0, 0, 100, 100, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 50, 80, 93, 9, 96, 9, 0, 0, 113, 100];
-itemCatalogArray[51] = [27, 10, 0, 0, 14, 1, 26316, 10066176, 10066176, 9E3, 0, 1603, 0, 53, 4294958387, 2, 16, 16, 4, 4, 0, 90, 270, 10, 0, 100, 0, 3, 0, 0, 1, 7, 32, 7, 50, 5, 100, 3, 0, 0, 100, 0, 100, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 70, 80, 89, 7, 95, 7, 0, 0, 113, 50];
-itemCatalogArray[52] = [27, 0, 0, 0, 16, 4, 16750848, 3342489, 0, 32E3, 0, 4, 1, 15, 4278190080, 1, 32, 32, 16, 16, 0, 60, 300, 10, 1, 100, 0, 4, 0, 0, 80, 100, 1, 200, 500, 1E3, 200, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 500, 80, 92, 7, 94, 9, 97, 9, 113, 100];
-itemCatalogArray[53] = [26, 8, 6, 10, 17, 1, 16764006, 21913, 13408512, 1200, 1, 0, 2, 17, 4284874752, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 6, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 1, 40, 101, 99, 0, 0, 0, 0, 115, 1E3];
-itemCatalogArray[54] = [28, 8, 6, 10, 17, 2, 16764006, 0, 4456448, 2E4, 0, 103, 1, 28, 4294923537, 2, 48, 48, 32, 32, 0, 0, 900, 10, 0, 99, 0, 3, 0, 0, 2, 3, 3, 10, 250, 20, 100, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 150, 80, 102, 20, 0, 0, 0, 0, 115, 100];
-itemCatalogArray[55] = [26, 0, 0, 0, 0, 1, 3394611, 4456584, 0, 800, 1, 0, 2, 0, 4291559679, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 50, 20, 20, 4, 300, 0, 100, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 20, 40, 67, 99, 0, 0, 0, 0, 115, 1E3];
-itemCatalogArray[56] = [27, 5, 4, 4, 15, 1, 16764057, 10053171, 2236962, 11E3, 0, 2, 1, 7, 4279308561, 1, 16, 16, 4, 4, 0, 0, 1E3, 10, 0, 100, 0, 0, 0, 0, 10, 15, 1, 10, 50, 15, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 100, 60, 100, 7, 0, 0, 0, 0, 115, 100];
-itemCatalogArray[57] = [27, 5, 3, 3, 15, 1, 16751052, 10040166, 4456448, 11E3, 0, 203, 0, 3, 4294923537, 2, 16, 16, 8, 8, 30, 0, 600, 10, 0, 99, 0, 0, 0, 0, 2, 3, 20, 10, 250, 20, 150, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 100, 60, 99, 9, 0, 0, 0, 0, 115, 100];
-itemCatalogArray[58] = [27, 6, 6, 6, 15, 1, 10079487, 3368601, 10066380, 11E3, 0, 4, 1, 7, 4288269567, 2, 16, 16, 4, 4, 30, 30, 200, 10, 2, 100, 0, 4, 0, 0, 5, 10, 20, 120, 250, 20, 200, 2, 50, 0, 100, 100, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 100, 60, 98, 8, 0, 0, 0, 0, 115, 100];
-itemCatalogArray[59] = [27, 10, 0, 0, 17, .6, 16763904, 6710784, 13056, 700, 1, 0, 2, 17, 4278203136, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 7, 1, 10, 50, 20, 20, 0, 0, 0, 90, 0, 90, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 7, 40, 103, 99, 0, 0, 2, 7, 117, 1E3];
-itemCatalogArray[60] = [28, 1, 0, 0, 9, 1, 39219, 6684825, 6684825, 600, 1, 0, 2, 9, 4291559475, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 4, 1, 10, 50, 20, 20, 4, 300, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 8, 40, 68, 99, 0, 0, 2, 8, 117, 1E3];
-itemCatalogArray[61] = [29, 3, 2, 0, 17, 1, 10066329, 0, 10027008, 2500, 0, 3, 1, 36, 4294927974, 1, 16, 16, 8, 8, 0, 0, 100, 10, 0, 100, 0, 0, 0, 0, 5, 6, 1, 10, 50, 20, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 9, 60, 106, 30, 0, 0, 2, 9, 117, 1E3];
-itemCatalogArray[62] = [29, 6, 4, 11, 15, 1, 13408512, 1127168, 3368448, 8E3, 0, 4, 0, 2, 4288243200, 1, 16, 16, 4, 4, 30, 30, 200, 10, 2, 100, 0, 3, 0, 0, 5, 5, 20, 120, 500, 1E3, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 10, 60, 105, 15, 0, 0, 2, 10, 117, 1E3];
-itemCatalogArray[63] = [30, 0, 0, 0, 16, 4, 5592405, 1118481, 0, 33E3, 0, 0, 0, 0, 4278190080, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 0, 0, 1, 10, 50, 0, 20, 0, 0, 1E3, 100, 100, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 1E3, 80, 104, 7, 107, 7, 0, 0, 117, 100];
-itemCatalogArray[64] = [30, 10, 0, 0, 17, .6, 15601920, 1118464, 15645440, 2100, 1, 0, 2, 17, 4278203136, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 7, 1, 10, 50, 20, 20, 0, 0, 0, 90, 0, 90, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 7, 80, 0, 0, 0, 0, 0, 0, 117, 50];
-itemCatalogArray[65] = [29, 10, 0, 0, 17, .6, 6724095, 14697, 14697, 800, 1, 0, 2, 17, 4294954035, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 4, 1, 10, 50, 20, 20, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 40, 112, 99, 0, 0, 0, 0, 119, 1E3];
-itemCatalogArray[66] = [29, 10, 0, 0, 17, .6, 10066329, 14697, 14697, 800, 1, 0, 2, 17, 4294967295, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 4, 1, 10, 50, 20, 20, 0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 40, 109, 99, 0, 0, 0, 0, 119, 1E3];
-itemCatalogArray[67] = [30, 10, 0, 0, 17, .6, 15597738, 1118464, 15645440, 800, 1, 0, 2, 17, 4280418321, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 8, 1, 10, 50, 20, 20, 0, 0, 100, 0, 90, 90, 90, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 25, 40, 108, 99, 0, 0, 0, 0, 119, 500];
-itemCatalogArray[68] = [29, 1, 0, 0, 5, .6, 4491519, 14697, 14697, 2400, 1, 0, 2, 5, 4294954035, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 4, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 5, 40, 110, 99, 0, 0, 0, 0, 119, 1E3];
-itemCatalogArray[69] = [31, 5, 6, 6, 14, 1, 10053273, 2232610, 3342387, 28E3, 0, 2, 1, 15, 4281532467, 1, 16, 16, 8, 8, 0, 0, 560, 10, 1, 100, 0, 3, 0, 0, 15, 15, 1, 10, 50, 15, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 250, 60, 111, 4, 0, 0, 0, 0, 119, 100];
-itemCatalogArray[70] = [32, 3, 20, 0, 17, 3, 10066329, 0, 10027008, 99999, 0, 3, 0, 24, 4288256409, 1, 16, 16, 4, 4, 0, 20, 500, 10, 0, 100, 0, 0, 0, 0, 3, 3, 3, 10, 10, 1E3, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 1E3, 100, 69, 3, 0, 0, 0, 0, 119, 25];
-itemCatalogArray[71] = [30, 0, 0, 0, 21, 1, 3381555, 8704, 0, 900, 1, 0, 2, 21, 4294901862, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 5, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 6, 50, 124, 99, 0, 0, 0, 0, 136, 1E3];
-itemCatalogArray[72] = [32, 5, 3, 7, 18, 2, 16763904, 10053171, 2113536, 2E4, 0, 104, 0, 1, 4291598694, 1, 16, 16, 4, 4, 60, 0, 1E3, 10, .5, 100, 0, 4, 0, 0, 3, 3, 20, 200, 120, 20, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 300, 50, 125, 10, 0, 0, 0, 0, 136, 100];
-itemCatalogArray[73] = [30, 2, 0, 0, 18, .6, 10066329, 14540253, 5259312, 1100, 1, 0, 2, 18, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 30, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 50, 121, 99, 0, 0, 0, 0, 136, 1E3];
-itemCatalogArray[74] = [32, 0, 0, 0, 4, 4, 6710784, 1118481, 0, 3E4, 0, 3, 0, 28, 4294967057, 2, 32, 32, 24, 24, 0, 90, 100, 10, 0, 99, 0, 3, 0, 0, 1, 33, 1, 10, 50, 20, 100, 3, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 500, 100, 123, 50, 0, 0, 0, 0, 136, 1E3];
-itemCatalogArray[75] = [33, 0, 0, 0, 4, 4, 6684672, 1118481, 0, 6E4, 0, 103, 0, 9, 4294927889, 2, 16, 16, 16, 16, 40, 0, 100, 5, -1, 99, 0, 0, 0, 0, 2, 3, 30, 10, 50, 20, 100, 1, 2, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 30, 100, 70, 4, 0, 0, 0, 0, 136, 50];
-itemCatalogArray[76] = [33, 1, 0, 0, 3, 2, 21913, 39372, 13158, 2E4, 0, 3, 0, 53, 4278229452, 2, 16, 16, 8, 8, 0, 170, 180, 10, 0, 98, 0, 3, 0, 0, 4, 6, 24, 10, 300, 1E3, 200, 2, 80, 0, 100, 100, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 50, 100, 122, 9, 0, 0, 0, 0, 136, 1E3];
-itemCatalogArray[77] = [33, 5, 3, 3, 19, 2, 13421568, 13369344, 2236962, 3E4, 0, 2, 1, 35, 4294967057, 2, 16, 16, 12, 6, 0, 80, 180, 10, 0, 100, 0, 0, 0, 0, 1, 33, 1, 8, 50, 20, 80, 3, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 900, 100, 126, 15, 0, 0, 0, 0, 137, 1E3];
-itemCatalogArray[78] = [34, 1, 0, 0, 8, 3, 13408614, 6697728, 10053171, 8E4, 1, 0, 2, 8, 4291559424, 1, 48, 48, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 25, 100, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 10, 100, 127, 15, 0, 0, 0, 0, 137, 100];
-itemCatalogArray[79] = [32, 4, 0, 0, 19, 1, 6697728, 13408614, 10053171, 3E3, 1, 0, 2, 19, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 100, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 50, 0, 0, 0, 0, 0, 0, 137, 1E3];
-itemCatalogArray[80] = [34, 3, 10, 0, 19, 1, 13421568, 13369344, 2236962, 3E3, 0, 3, 1, 35, 4294967057, 2, 16, 16, 8, 8, 0, 100, 600, 10, 0, 100, 0, 3, 0, 0, 1, 33, 1, 20, 100, 20, 400, 3, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 900, 100, 128, 5, 0, 0, 0, 0, 137, 25];
-itemCatalogArray[81] = [31, 10, 0, 0, 18, .6, 6724095, 14697, 14697, 2E3, 1, 0, 2, 18, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 5, 1, 10, 100, 20, 20, 0, 0, 0, 100, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 9, 50, 0, 0, 0, 0, 2, 9, 137, 1E3];
-itemCatalogArray[82] = [35, 10, 0, 0, 2, 1, 13421568, 13369344, 6724095, 4E3, 0, 3, 1, 35, 4294914833, 2, 16, 16, 8, 8, 0, 100, 900, 10, 0, 100, 0, 3, 0, 0, 1, 66, 1, 20, 100, 20, 300, 3, 0, 0, 100, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 900, 100, 130, 5, 0, 0, 2, 900, 137, 100];
-itemCatalogArray[83] = [34, 5, 4, 4, 19, 2, 52224, 13369344, 2236962, 3E4, 0, 2, 1, 35, 4279369489, 2, 16, 16, 12, 6, 0, 0, 180, 10, 0, 100, 0, 0, 0, 0, 5, 5, 1, 8, 50, 20, 80, 4, 300, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 10, 100, 129, 45, 0, 0, 0, 0, 137, 1E3];
-itemCatalogArray[84] = [33, 4, 0, 0, 19, 1, 6697728, 13421568, 10053171, 1500, 1, 0, 2, 19, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 100, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 50, 0, 0, 0, 0, 0, 0, 138, 1E3];
-itemCatalogArray[85] = [35, 5, 4, 4, 13, 1, 5574929, 10031377, 10057591, 15E3, 0, 204, 0, 9, 4294927889, 2, 16, 16, 16, 16, 20, 0, 200, 10, -1, 100, 0, 0, 0, 0, 2, 3, 8, 100, 300, 20, 64, 1, 1, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 9, 100, 131, 5, 0, 0, 0, 0, 138, 100];
-itemCatalogArray[86] = [35, 0, 0, 0, 16, 4, 10079436, 6710988, 0, 35E3, 1, 0, 2, 16, 4278190284, 1, 64, 64, 40, 28, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 5, 5, 1, 10, 100, 20, 32, 2, 90, 0, 100, 100, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 8, 100, 133, 4, 0, 0, 0, 0, 138, 100];
-itemCatalogArray[87] = [34, 4, 0, 0, 19, 1, 10040064, 13421568, 15658496, 2500, 1, 0, 2, 19, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 4, 1, 10, 100, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 777, 50, 135, 50, 0, 0, 2, 333, 138, 1E3];
-itemCatalogArray[88] = [36, 6, 12, 12, 13, 1, 13408512, 10027161, 2228258, 5E3, 0, 104, 0, 24, 4288217241, 1, 16, 16, 4, 4, 50, 50, 500, 10, .5, 100, 0, 4, 0, 0, 4, 4, 5, 300, 600, 20, 160, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 6, 100, 134, 50, 0, 0, 0, 0, 138, 1E3];
-itemCatalogArray[89] = [36, 4, 0, 0, 19, 2, 6697728, 13421568, 10053171, 25E3, 1, 0, 2, 19, 4294901760, 1, 32, 32, 32, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 6, 6, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 800, 5, 100, 132, 50, 0, 0, 0, 0, 138, 100];
+var enemyAttr0 = iterIdxTemp_1++,
+    enemyAttr1 = iterIdxTemp_1++,
+    enemyAttr2 = iterIdxTemp_1++,
+    enemyAttr3 = iterIdxTemp_1++,
+    enemyAttr4 = iterIdxTemp_1++,
+    enemyAttr5 = iterIdxTemp_1++,
+    enemyAttr6 = iterIdxTemp_1++,
+    enemyAttr7 = iterIdxTemp_1++,
+    enemyAttr8 = iterIdxTemp_1++,
+    enemyAttr9 = iterIdxTemp_1++,
+    enemyAttr10 = iterIdxTemp_1++,
+    enemyAttr11 = iterIdxTemp_1++,
+    enemyAttr12 = iterIdxTemp_1++,
+    enemyAttr13 = iterIdxTemp_1++,
+    enemyAttr14 = iterIdxTemp_1++,
+    enemyAttr15 = iterIdxTemp_1++,
+    enemyAttr16 = iterIdxTemp_1++,
+    enemyAttr17 = iterIdxTemp_1++,
+    enemyAttr18 = iterIdxTemp_1++,
+    enemyAttr19 = iterIdxTemp_1++,
+    enemyAttr20 = iterIdxTemp_1++,
+    enemyAttr21 = iterIdxTemp_1++,
+    enemyAttr22 = iterIdxTemp_1++,
+    enemyAttr23 = iterIdxTemp_1++,
+    enemyAttr24 = iterIdxTemp_1++,
+    enemyAttr25 = iterIdxTemp_1++,
+    enemyAttr26 = iterIdxTemp_1++,
+    enemyAttr27 = iterIdxTemp_1++,
+    enemyAttr28 = iterIdxTemp_1++,
+    enemyAttr29 = iterIdxTemp_1++,
+    enemyAttr30 = iterIdxTemp_1++,
+    enemyAttr31 = iterIdxTemp_1++,
+    enemyAttr32 = iterIdxTemp_1++,
+    enemyAttr33 = iterIdxTemp_1++,
+    enemyAttr34 = iterIdxTemp_1++,
+    enemyAttr35 = iterIdxTemp_1++,
+    enemyAttr36 = iterIdxTemp_1++,
+    enemyAttr37 = iterIdxTemp_1++,
+    enemyAttr38 = iterIdxTemp_1++,
+    enemyAttr39 = iterIdxTemp_1++,
+    enemyAttr40 = iterIdxTemp_1++,
+    enemyAttr41 = iterIdxTemp_1++,
+    enemyAttr42 = iterIdxTemp_1++,
+    enemyAttr43 = iterIdxTemp_1++,
+    enemyAttr44 = iterIdxTemp_1++,
+    enemyAttr45 = iterIdxTemp_1++,
+    enemyAttr46 = iterIdxTemp_1++,
+    enemyAttr47 = iterIdxTemp_1++,
+    enemyAttr48 = iterIdxTemp_1++,
+    enemyAttr49 = iterIdxTemp_1++,
+    enemyAttr50 = iterIdxTemp_1++,
+    enemyAttr51 = iterIdxTemp_1++,
+    enemyAttr52 = iterIdxTemp_1++,
+    enemyAttr53 = iterIdxTemp_1++,
+    enemyAttr54 = iterIdxTemp_1++,
+    enemyAttr55 = iterIdxTemp_1++,
+    enemyAttr56 = iterIdxTemp_1++,
+    enemyAttr57 = iterIdxTemp_1++,
+    enemyAttr58 = iterIdxTemp_1++,
+    enemyAttr59 = iterIdxTemp_1++,
+    enemyAttr60 = iterIdxTemp_1++,
+    enemyAttr61 = iterIdxTemp_1++,
+    enemyAttr62 = iterIdxTemp_1++,
+    enemyAttr63 = iterIdxTemp_1++,
+    enemyAttr64 = iterIdxTemp_1++,
+    enemyAttr65 = iterIdxTemp_1++,
+    enemyAttr66 = iterIdxTemp_1++,
+    enemyAttr67 = iterIdxTemp_1++,
+    enemyTypeCount = 128,
+    enemyCatalog = Array(enemyTypeCount),
+    Bc = Array(enemyTypeCount);
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < enemyTypeCount; iterIdxTemp_1++) Bc[iterIdxTemp_1] = 0;
+enemyCatalog[0] = [1, 0, 0, 0, 0, 1, 3394611, 3355443, 0, 30, 1, 0, 2, 0, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 7, 10, 9, 10, 0, 0, 71, 1E3];
+enemyCatalog[1] = [2, 0, 0, 0, 0, 1, 3394815, 3355545, 0, 60, 1, 0, 2, 0, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 5, 20, 10, 30, 0, 0, 71, 1E3];
+enemyCatalog[2] = [3, 0, 0, 0, 0, 1, 13369344, 3342336, 0, 90, 0, 2, 0, 2, 4288217088, 1, 16, 16, 8, 8, 0, 0, 20, 10, 0, 100, 0, 0, 0, 0, 3, 5, 1, 10, 50, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 6, 30, 28, 5, 0, 0, 71, 1E3];
+enemyCatalog[3] = [5, 0, 0, 0, 0, 3, 3394611, 3355443, 0, 900, 0, 3, 0, 3, 4286611584, 1, 8, 8, 8, 8, 0, 0, 100, 10, 0, 100, 0, 0, 0, 0, 2, 3, 5, 10, 10, 15, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 3, 20, 8, 1, 30, 3, 0, 0, 71, 100];
+enemyCatalog[5] = [4, 2, 0, 0, 7, 1, 13421772, 0, 6702114, 60, 1, 0, 2, 7, 4294914867, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 11, 20, 0, 0, 0, 0, 71, 1E3];
+enemyCatalog[4] = [5, 1, 0, 0, 4, 2, 3394611, 3355443, 3381555, 150, 0, 3, 1, 4, 4294967295, 1, 16, 16, 8, 8, 0, 0, 20, 40, 0, 100, 0, 0, 0, 0, 3, 4, 1, 5, 50, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 5, 20, 29, 15, 0, 0, 0, 0, 73, 1E3];
+enemyCatalog[6] = [6, 5, 4, 6, 15, 1, 0, 13395456, 3368448, 360, 0, 4, 0, 3, 4294940979, 1, 16, 16, 8, 8, 0, 0, 150, 10, 5, 100, 0, 0, 0, 0, 6, 8, 1, 100, 50, 20, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 3, 10, 14, 5, 33, 10, 0, 0, 73, 50];
+enemyCatalog[7] = [4, 0, 0, 0, 0, 1, 13421568, 3355443, 0, 120, 1, 0, 2, 0, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 4, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 12, 20, 13, 20, 0, 0, 73, 1E3];
+enemyCatalog[8] = [7, 0, 0, 0, 0, 3, 13421568, 3355443, 0, 900, 1, 0, 2, 0, 4294967295, 2, 48, 48, 120, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 1, 6, 8, 1, 10, 50, 20, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 5, 20, 16, 2, 0, 0, 0, 0, 73, 100];
+enemyCatalog[9] = [5, 1, 0, 0, 5, 1, 4482577, 10035712, 3359761, 90, 1, 0, 2, 5, 4294954171, 1, 16, 16, 32, 32, 0, 0, 30, 10, 0, 100, 0, 0, 0, 0, 2, 4, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 15, 10, 0, 0, 0, 0, 73, 1E3];
+enemyCatalog[14] = [8, 0, 0, 0, 8, 1, 13369344, 3342336, 0, 20, 1, 0, 2, 8, 4294915071, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 21, 10, 22, 20, 0, 0, 73, 1E3];
+enemyCatalog[15] = [9, 0, 0, 0, 8, 2, 11141120, 3342336, 0, 450, 1, 0, 2, 8, 4294915071, 2, 32, 32, 120, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 20, 300, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 5, 20, 23, 15, 0, 0, 0, 0, 73, 200];
+enemyCatalog[10] = [6, 5, 2, 3, 3, 1, 6710937, 102, 3355443, 200, 0, 104, 0, 2, 4293848831, 1, 16, 16, 4, 4, 40, 15, 150, 10, 3, 100, 0, 4, 0, 0, 3, 3, 3, 120, 150, 20, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 17, 20, 19, 20, 0, 0, 75, 1E3];
+enemyCatalog[11] = [7, 5, 2, 3, 3, 1, 15623833, 102, 3355443, 200, 0, 104, 0, 2, 4294923605, 1, 16, 16, 4, 4, 50, 15, 150, 10, 3, 100, 0, 4, 0, 0, 5, 5, 5, 120, 150, 20, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 3, 10, 18, 10, 20, 10, 0, 0, 75, 1E3];
+enemyCatalog[12] = [5, 0, 0, 0, 8, 1, 3394611, 3355443, 0, 20, 1, 0, 2, 8, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 32, 20, 0, 0, 0, 0, 75, 1E3];
+enemyCatalog[13] = [6, 0, 0, 0, 8, 1, 3394815, 3355545, 0, 20, 1, 0, 2, 8, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 24, 20, 31, 20, 0, 0, 75, 1E3];
+enemyCatalog[16] = [10, 2, 0, 0, 7, 2, 13421772, 0, 6702114, 600, 0, 3, 0, 1, 4291611852, 1, 16, 16, 4, 4, 0, 0, 300, 10, 0, 100, 0, 0, 0, 0, 1, 1, 16, 5, 50, 20, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 5, 20, 37, 5, 0, 0, 0, 0, 75, 100];
+enemyCatalog[17] = [8, 0, 0, 0, 0, 1, 0, 3368448, 0, 120, 1, 0, 2, 0, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 5, 6, 1, 10, 50, 20, 20, 0, 0, 0, 100, 100, 100, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 25, 20, 0, 0, 0, 0, 75, 500];
+enemyCatalog[18] = [10, 0, 0, 0, 0, 3, 35839, 21913, 0, 1800, 0, 4, 0, 0, 4278225919, 2, 16, 16, 8, 8, 0, 40, 400, 10, .5, 100, 0, 0, 0, 0, 4, 6, 5, 300, 50, 10, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 10, 20, 27, 7, 0, 0, 0, 0, 77, 70];
+enemyCatalog[19] = [9, 6, 2, 5, 8, 1, 10027059, 3342336, 26112, 180, 0, 4, 0, 1, 4294901862, 1, 16, 16, 4, 4, 0, 0, 400, 10, .5, 100, 0, 0, 0, 0, 4, 4, 1, 160, 200, 20, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 26, 20, 0, 0, 0, 0, 77, 1E3];
+enemyCatalog[20] = [10, 0, 0, 0, 8, 1, 15645440, 10053120, 0, 20, 1, 0, 2, 8, 4282659584, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 5, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 3, 10, 34, 20, 0, 0, 0, 0, 77, 1E3];
+enemyCatalog[21] = [11, 10, 0, 0, 3, 1, 6724095, 14697, 14697, 240, 1, 0, 2, 3, 4294954035, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 4, 1, 10, 50, 20, 20, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 36, 30, 0, 0, 0, 0, 77, 1E3];
+enemyCatalog[22] = [12, 10, 0, 0, 3, 3, 10079487, 14697, 14697, 2E3, 0, 3, 0, 1, 4279308561, 1, 16, 16, 4, 4, 0, 100, 1E3, 10, 0, 100, 0, 0, 0, 0, 2, 2, 20, 2, 150, 20, 200, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 10, 20, 35, 5, 0, 0, 0, 0, 77, 100];
+enemyCatalog[23] = [12, 1, 0, 0, 7, 1, 39219, 10040064, 13107, 120, 1, 0, 2, 7, 4291572480, 1, 16, 16, 32, 32, 0, 0, 30, 20, 0, 100, 0, 0, 0, 0, 2, 4, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 0, 0, 0, 0, 0, 0, 79, 1E3];
+enemyCatalog[24] = [13, 0, 0, 0, 8, 2, 15645440, 10053120, 0, 550, 1, 0, 2, 8, 4282659584, 1, 32, 32, 120, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 7, 1, 10, 20, 300, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 150, 20, 38, 5, 0, 0, 0, 0, 79, 100];
+enemyCatalog[25] = [14, 6, 2, 2, 5, 1, 10066380, 102, 3355494, 250, 0, 1, 0, 1, 4293848831, 1, 16, 16, 4, 4, 0, 0, 200, 10, .5, 100, 0, 0, 0, 0, 2, 2, 1, 10, 200, 20, 120, 2, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 40, 20, 0, 0, 0, 0, 79, 1E3];
+enemyCatalog[26] = [14, 5, 2, 5, 5, 1, 16763904, 3342336, 3355392, 250, 0, 4, 1, 36, 4294967057, 1, 16, 16, 4, 4, 0, 0, 200, 10, 5, 100, 0, 4, 0, 0, 1, 9, 1, 120, 150, 20, 120, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 39, 20, 0, 0, 0, 0, 79, 1E3];
+enemyCatalog[27] = [15, 6, 9, 9, 7, 3, 13421772, 3355443, 8912964, 3E3, 0, 4, 0, 0, 4294919185, 2, 16, 16, 0, 0, 0, 500, 500, 10, .5, 100, 0, 0, 0, 0, 2, 3, 1, 120, 50, 20, 130, 1, 1, 0, 100, 0, 0, 0, 0, 2, 0, 30, 4294919185, 2, 16, 24, 16, 24, 180, 10, 5, 92, 0, 1, 0, 5, 1, 0, 1E3, 20, 20, 41, 5, 0, 0, 0, 0, 79, 100];
+enemyCatalog[28] = [15, 4, 0, 0, 7, 1, 13421772, 8912964, 3355443, 150, 1, 0, 2, 7, 4279308561, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 10, 42, 10, 43, 10, 0, 0, 79, 1E3];
+enemyCatalog[29] = [15, 2, 0, 0, 9, 1, 13421772, 0, 10053171, 50, 1, 0, 2, 9, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 2, 10, 46, 99, 0, 0, 2, 1, 81, 1E3];
+enemyCatalog[30] = [16, 3, 6, 0, 3, 1, 10066380, 0, 13107, 750, 0, 4, 1, 7, 4291611903, 1, 16, 16, 8, 8, 0, 30, 500, 10, 2, 100, 0, 0, 0, 0, 5, 5, 3, 120, 200, 10, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 6, 10, 45, 15, 0, 0, 0, 0, 81, 1E3];
+enemyCatalog[31] = [17, 3, 6, 0, 3, 1, 13395456, 0, 10040064, 750, 0, 303, 0, 13, 4294927889, 2, 16, 16, 8, 8, 15, 0, 120, 5, -1, 99, 0, 0, 0, 0, 2, 3, 9, 12, 100, 20, 60, 1, 2, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 9, 10, 44, 5, 0, 0, 0, 0, 81, 60];
+enemyCatalog[32] = [16, 2, 0, 0, 9, 1, 13421772, 13382604, 4460868, 110, 1, 0, 2, 9, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 2, 10, 48, 99, 0, 0, 2, 1, 81, 1E3];
+enemyCatalog[33] = [18, 5, 4, 4, 13, 1, 16750848, 10027161, 2245632, 1E3, 0, 4, 1, 7, 4290484633, 1, 32, 32, 12, 12, 0, 0, 1E3, 10, .3, 100, 0, 0, 0, 0, 20, 25, 1, 300, 50, 5, 150, 0, 0, 0, 100, 100, 100, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 9, 10, 47, 5, 0, 0, 0, 0, 81, 1E3];
+enemyCatalog[34] = [19, 0, 0, 0, 0, 3, 2236962, 4473924, 0, 5500, 0, 104, 0, 24, 4294914918, 1, 16, 16, 4, 4, 80, 25, 800, 10, 1, 100, 0, 3, 0, 0, 5, 5, 8, 200, 150, 10, 200, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 50, 20, 49, 15, 54, 15, 0, 0, 83, 100];
+enemyCatalog[35] = [17, 2, 0, 0, 9, 1, 4204560, 0, 3342336, 150, 1, 0, 2, 9, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 2, 10, 53, 99, 0, 0, 2, 1, 83, 1E3];
+enemyCatalog[36] = [20, 5, 19, 19, 13, 3, 16750848, 10027008, 2245632, 2E3, 0, 4, 1, 7, 4288256443, 2, 24, 24, 8, 8, 0, 0, 2E3, 10, .1, 100, 0, 4, 0, 0, 20, 25, 5, 800, 200, 5, 160, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2E3, 100, 100, 50, 9, 51, 9, 52, 9, 83, 100];
+enemyCatalog[37] = [19, 4, 0, 0, 9, 1, 13421772, 8912964, 3355443, 330, 1, 0, 2, 9, 4279308561, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 10, 55, 99, 0, 0, 0, 0, 85, 1E3];
+enemyCatalog[38] = [21, 5, 3, 3, 13, 1, 16763904, 13369344, 6684672, 2500, 0, 6403, 0, 54, 4294910481, 2, 16, 16, 8, 8, 0, 0, 300, 10, 0, 100, 0, 3, 0, 0, 1, 1, 8, 10, 50, 5, 110, 1, 3, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 20, 20, 57, 5, 0, 0, 0, 0, 85, 100];
+enemyCatalog[39] = [20, 0, 0, 0, 0, 1, 0, 8409120, 0, 380, 0, 4, 1, 5, 4294953984, 2, 12, 12, 6, 6, 0, 30, 1E3, 10, .5, 100, 0, 4, 0, 0, 5, 6, 1, 300, 100, 10, 80, 0, 0, 0, 50, 50, 50, 50, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 10, 56, 99, 0, 0, 0, 0, 85, 500];
+enemyCatalog[40] = [21, 5, 4, 4, 13, 1, 52224, 0, 6684825, 2500, 0, 4, 1, 6, 4278216192, 1, 16, 16, 8, 8, 0, 0, 1E3, 10, 1, 100, 0, 0, 0, 0, 1, 1, 1, 300, 50, 10, 240, 4, 720, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 20, 20, 58, 8, 59, 6, 0, 0, 85, 100];
+enemyCatalog[41] = [20, 0, 0, 0, 8, 1, 2245632, 16764006, 0, 120, 1, 0, 2, 8, 4288217088, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 20, 300, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 10, 60, 99, 0, 0, 0, 0, 85, 1E3];
+enemyCatalog[42] = [20, 4, 0, 0, 5, 1, 13421772, 8912964, 1052688, 330, 1, 0, 2, 5, 4279308561, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 50, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 5, 10, 61, 50, 0, 0, 0, 0, 87, 1E3];
+enemyCatalog[43] = [22, 1, 0, 0, 6, 2, 12259584, 1114112, 1114112, 1500, 0, 303, 0, 13, 4294927889, 2, 16, 16, 8, 8, 15, 0, 120, 5, -1, 99, 0, 0, 0, 0, 2, 3, 9, 12, 100, 20, 60, 1, 1, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 2, 20, 63, 10, 0, 0, 0, 0, 87, 300];
+enemyCatalog[44] = [21, 2, 0, 0, 9, 1, 11184810, 26265, 1118498, 220, 1, 0, 2, 9, 4279308799, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 2, 1, 10, 50, 20, 20, 2, 50, 0, 50, 100, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 3, 10, 62, 50, 0, 0, 0, 0, 87, 1E3];
+enemyCatalog[45] = [23, 0, 0, 0, 0, 3, 1118481, 3390259, 0, 4500, 0, 803, 1, 11, 4278211840, 1, 16, 16, 8, 8, 5, 0, 100, 10, 0, 100, 0, 0, 0, 0, 2, 2, 2, 10, 5, 1E3, 200, 4, 720, 0, 90, 0, 90, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 6, 20, 64, 5, 66, 10, 0, 0, 87, 60];
+enemyCatalog[46] = [23, 5, 6, 6, 12, 1, 0, 14540032, 1572864, 3300, 0, 1504, 1, 6, 4292730112, 1, 16, 16, 8, 8, 0, 40, 300, 10, 1, 100, 0, 4, 0, 0, 1, 9, 15, 200, 150, 20, 200, 3, 0, 0, 80, 80, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 70, 20, 65, 5, 0, 0, 0, 0, 87, 200];
+enemyCatalog[47] = [24, 10, 0, 0, 9, .6, 6724095, 14697, 14697, 700, 1, 0, 2, 9, 4294954035, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 4, 1, 10, 50, 20, 20, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 1, 40, 0, 0, 0, 0, 0, 0, 113, 1E3];
+enemyCatalog[48] = [24, 2, 0, 0, 20, .6, 4204560, 15658734, 4204560, 600, 1, 0, 2, 20, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 20, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 40, 91, 99, 0, 0, 0, 0, 113, 1E3];
+enemyCatalog[49] = [25, 5, 2, 5, 9, 1, 6710784, 102, 3368448, 900, 0, 104, 0, 2, 4293853149, 1, 16, 16, 4, 4, 40, 15, 150, 10, 3, 100, 0, 4, 0, 0, 4, 4, 3, 120, 150, 20, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 2, 40, 90, 99, 0, 0, 0, 0, 113, 1E3];
+enemyCatalog[50] = [26, 0, 0, 0, 16, 2, 16750848, 10027161, 0, 8E3, 0, 2, 1, 15, 4278190080, 1, 16, 16, 8, 8, 0, 15, 400, 10, 0, 100, 0, 0, 0, 0, 20, 25, 1, 10, 50, 10, 400, 0, 0, 0, 100, 100, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 50, 80, 93, 9, 96, 9, 0, 0, 113, 100];
+enemyCatalog[51] = [27, 10, 0, 0, 14, 1, 26316, 10066176, 10066176, 9E3, 0, 1603, 0, 53, 4294958387, 2, 16, 16, 4, 4, 0, 90, 270, 10, 0, 100, 0, 3, 0, 0, 1, 7, 32, 7, 50, 5, 100, 3, 0, 0, 100, 0, 100, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 70, 80, 89, 7, 95, 7, 0, 0, 113, 50];
+enemyCatalog[52] = [27, 0, 0, 0, 16, 4, 16750848, 3342489, 0, 32E3, 0, 4, 1, 15, 4278190080, 1, 32, 32, 16, 16, 0, 60, 300, 10, 1, 100, 0, 4, 0, 0, 80, 100, 1, 200, 500, 1E3, 200, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 500, 80, 92, 7, 94, 9, 97, 9, 113, 100];
+enemyCatalog[53] = [26, 8, 6, 10, 17, 1, 16764006, 21913, 13408512, 1200, 1, 0, 2, 17, 4284874752, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 6, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 1, 40, 101, 99, 0, 0, 0, 0, 115, 1E3];
+enemyCatalog[54] = [28, 8, 6, 10, 17, 2, 16764006, 0, 4456448, 2E4, 0, 103, 1, 28, 4294923537, 2, 48, 48, 32, 32, 0, 0, 900, 10, 0, 99, 0, 3, 0, 0, 2, 3, 3, 10, 250, 20, 100, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 150, 80, 102, 20, 0, 0, 0, 0, 115, 100];
+enemyCatalog[55] = [26, 0, 0, 0, 0, 1, 3394611, 4456584, 0, 800, 1, 0, 2, 0, 4291559679, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 50, 20, 20, 4, 300, 0, 100, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 20, 40, 67, 99, 0, 0, 0, 0, 115, 1E3];
+enemyCatalog[56] = [27, 5, 4, 4, 15, 1, 16764057, 10053171, 2236962, 11E3, 0, 2, 1, 7, 4279308561, 1, 16, 16, 4, 4, 0, 0, 1E3, 10, 0, 100, 0, 0, 0, 0, 10, 15, 1, 10, 50, 15, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 100, 60, 100, 7, 0, 0, 0, 0, 115, 100];
+enemyCatalog[57] = [27, 5, 3, 3, 15, 1, 16751052, 10040166, 4456448, 11E3, 0, 203, 0, 3, 4294923537, 2, 16, 16, 8, 8, 30, 0, 600, 10, 0, 99, 0, 0, 0, 0, 2, 3, 20, 10, 250, 20, 150, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 100, 60, 99, 9, 0, 0, 0, 0, 115, 100];
+enemyCatalog[58] = [27, 6, 6, 6, 15, 1, 10079487, 3368601, 10066380, 11E3, 0, 4, 1, 7, 4288269567, 2, 16, 16, 4, 4, 30, 30, 200, 10, 2, 100, 0, 4, 0, 0, 5, 10, 20, 120, 250, 20, 200, 2, 50, 0, 100, 100, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 100, 60, 98, 8, 0, 0, 0, 0, 115, 100];
+enemyCatalog[59] = [27, 10, 0, 0, 17, .6, 16763904, 6710784, 13056, 700, 1, 0, 2, 17, 4278203136, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 7, 1, 10, 50, 20, 20, 0, 0, 0, 90, 0, 90, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 7, 40, 103, 99, 0, 0, 2, 7, 117, 1E3];
+enemyCatalog[60] = [28, 1, 0, 0, 9, 1, 39219, 6684825, 6684825, 600, 1, 0, 2, 9, 4291559475, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 4, 1, 10, 50, 20, 20, 4, 300, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 8, 40, 68, 99, 0, 0, 2, 8, 117, 1E3];
+enemyCatalog[61] = [29, 3, 2, 0, 17, 1, 10066329, 0, 10027008, 2500, 0, 3, 1, 36, 4294927974, 1, 16, 16, 8, 8, 0, 0, 100, 10, 0, 100, 0, 0, 0, 0, 5, 6, 1, 10, 50, 20, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 9, 60, 106, 30, 0, 0, 2, 9, 117, 1E3];
+enemyCatalog[62] = [29, 6, 4, 11, 15, 1, 13408512, 1127168, 3368448, 8E3, 0, 4, 0, 2, 4288243200, 1, 16, 16, 4, 4, 30, 30, 200, 10, 2, 100, 0, 3, 0, 0, 5, 5, 20, 120, 500, 1E3, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 10, 60, 105, 15, 0, 0, 2, 10, 117, 1E3];
+enemyCatalog[63] = [30, 0, 0, 0, 16, 4, 5592405, 1118481, 0, 33E3, 0, 0, 0, 0, 4278190080, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 0, 0, 1, 10, 50, 0, 20, 0, 0, 1E3, 100, 100, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 1E3, 80, 104, 7, 107, 7, 0, 0, 117, 100];
+enemyCatalog[64] = [30, 10, 0, 0, 17, .6, 15601920, 1118464, 15645440, 2100, 1, 0, 2, 17, 4278203136, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 7, 1, 10, 50, 20, 20, 0, 0, 0, 90, 0, 90, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 7, 80, 0, 0, 0, 0, 0, 0, 117, 50];
+enemyCatalog[65] = [29, 10, 0, 0, 17, .6, 6724095, 14697, 14697, 800, 1, 0, 2, 17, 4294954035, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 4, 1, 10, 50, 20, 20, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 40, 112, 99, 0, 0, 0, 0, 119, 1E3];
+enemyCatalog[66] = [29, 10, 0, 0, 17, .6, 10066329, 14697, 14697, 800, 1, 0, 2, 17, 4294967295, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 4, 1, 10, 50, 20, 20, 0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 40, 109, 99, 0, 0, 0, 0, 119, 1E3];
+enemyCatalog[67] = [30, 10, 0, 0, 17, .6, 15597738, 1118464, 15645440, 800, 1, 0, 2, 17, 4280418321, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 8, 1, 10, 50, 20, 20, 0, 0, 100, 0, 90, 90, 90, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 25, 40, 108, 99, 0, 0, 0, 0, 119, 500];
+enemyCatalog[68] = [29, 1, 0, 0, 5, .6, 4491519, 14697, 14697, 2400, 1, 0, 2, 5, 4294954035, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 4, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 5, 40, 110, 99, 0, 0, 0, 0, 119, 1E3];
+enemyCatalog[69] = [31, 5, 6, 6, 14, 1, 10053273, 2232610, 3342387, 28E3, 0, 2, 1, 15, 4281532467, 1, 16, 16, 8, 8, 0, 0, 560, 10, 1, 100, 0, 3, 0, 0, 15, 15, 1, 10, 50, 15, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 250, 60, 111, 4, 0, 0, 0, 0, 119, 100];
+enemyCatalog[70] = [32, 3, 20, 0, 17, 3, 10066329, 0, 10027008, 99999, 0, 3, 0, 24, 4288256409, 1, 16, 16, 4, 4, 0, 20, 500, 10, 0, 100, 0, 0, 0, 0, 3, 3, 3, 10, 10, 1E3, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 1E3, 100, 69, 3, 0, 0, 0, 0, 119, 25];
+enemyCatalog[71] = [30, 0, 0, 0, 21, 1, 3381555, 8704, 0, 900, 1, 0, 2, 21, 4294901862, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 5, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 250, 6, 50, 124, 99, 0, 0, 0, 0, 136, 1E3];
+enemyCatalog[72] = [32, 5, 3, 7, 18, 2, 16763904, 10053171, 2113536, 2E4, 0, 104, 0, 1, 4291598694, 1, 16, 16, 4, 4, 60, 0, 1E3, 10, .5, 100, 0, 4, 0, 0, 3, 3, 20, 200, 120, 20, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 300, 50, 125, 10, 0, 0, 0, 0, 136, 100];
+enemyCatalog[73] = [30, 2, 0, 0, 18, .6, 10066329, 14540253, 5259312, 1100, 1, 0, 2, 18, 4294906129, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 1, 1, 10, 30, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 3, 50, 121, 99, 0, 0, 0, 0, 136, 1E3];
+enemyCatalog[74] = [32, 0, 0, 0, 4, 4, 6710784, 1118481, 0, 3E4, 0, 3, 0, 28, 4294967057, 2, 32, 32, 24, 24, 0, 90, 100, 10, 0, 99, 0, 3, 0, 0, 1, 33, 1, 10, 50, 20, 100, 3, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 500, 500, 100, 123, 50, 0, 0, 0, 0, 136, 1E3];
+enemyCatalog[75] = [33, 0, 0, 0, 4, 4, 6684672, 1118481, 0, 6E4, 0, 103, 0, 9, 4294927889, 2, 16, 16, 16, 16, 40, 0, 100, 5, -1, 99, 0, 0, 0, 0, 2, 3, 30, 10, 50, 20, 100, 1, 2, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 30, 100, 70, 4, 0, 0, 0, 0, 136, 50];
+enemyCatalog[76] = [33, 1, 0, 0, 3, 2, 21913, 39372, 13158, 2E4, 0, 3, 0, 53, 4278229452, 2, 16, 16, 8, 8, 0, 170, 180, 10, 0, 98, 0, 3, 0, 0, 4, 6, 24, 10, 300, 1E3, 200, 2, 80, 0, 100, 100, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 50, 100, 122, 9, 0, 0, 0, 0, 136, 1E3];
+enemyCatalog[77] = [33, 5, 3, 3, 19, 2, 13421568, 13369344, 2236962, 3E4, 0, 2, 1, 35, 4294967057, 2, 16, 16, 12, 6, 0, 80, 180, 10, 0, 100, 0, 0, 0, 0, 1, 33, 1, 8, 50, 20, 80, 3, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 900, 100, 126, 15, 0, 0, 0, 0, 137, 1E3];
+enemyCatalog[78] = [34, 1, 0, 0, 8, 3, 13408614, 6697728, 10053171, 8E4, 1, 0, 2, 8, 4291559424, 1, 48, 48, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 25, 100, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 10, 100, 127, 15, 0, 0, 0, 0, 137, 100];
+enemyCatalog[79] = [32, 4, 0, 0, 19, 1, 6697728, 13408614, 10053171, 3E3, 1, 0, 2, 19, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 100, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 50, 0, 0, 0, 0, 0, 0, 137, 1E3];
+enemyCatalog[80] = [34, 3, 10, 0, 19, 1, 13421568, 13369344, 2236962, 3E3, 0, 3, 1, 35, 4294967057, 2, 16, 16, 8, 8, 0, 100, 600, 10, 0, 100, 0, 3, 0, 0, 1, 33, 1, 20, 100, 20, 400, 3, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 900, 100, 128, 5, 0, 0, 0, 0, 137, 25];
+enemyCatalog[81] = [31, 10, 0, 0, 18, .6, 6724095, 14697, 14697, 2E3, 1, 0, 2, 18, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 5, 1, 10, 100, 20, 20, 0, 0, 0, 100, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 9, 50, 0, 0, 0, 0, 2, 9, 137, 1E3];
+enemyCatalog[82] = [35, 10, 0, 0, 2, 1, 13421568, 13369344, 6724095, 4E3, 0, 3, 1, 35, 4294914833, 2, 16, 16, 8, 8, 0, 100, 900, 10, 0, 100, 0, 3, 0, 0, 1, 66, 1, 20, 100, 20, 300, 3, 0, 0, 100, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 900, 100, 130, 5, 0, 0, 2, 900, 137, 100];
+enemyCatalog[83] = [34, 5, 4, 4, 19, 2, 52224, 13369344, 2236962, 3E4, 0, 2, 1, 35, 4279369489, 2, 16, 16, 12, 6, 0, 0, 180, 10, 0, 100, 0, 0, 0, 0, 5, 5, 1, 8, 50, 20, 80, 4, 300, 0, 0, 0, 0, 100, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 10, 100, 129, 45, 0, 0, 0, 0, 137, 1E3];
+enemyCatalog[84] = [33, 4, 0, 0, 19, 1, 6697728, 13421568, 10053171, 1500, 1, 0, 2, 19, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 3, 3, 1, 10, 100, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 5, 50, 0, 0, 0, 0, 0, 0, 138, 1E3];
+enemyCatalog[85] = [35, 5, 4, 4, 13, 1, 5574929, 10031377, 10057591, 15E3, 0, 204, 0, 9, 4294927889, 2, 16, 16, 16, 16, 20, 0, 200, 10, -1, 100, 0, 0, 0, 0, 2, 3, 8, 100, 300, 20, 64, 1, 1, 0, 100, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1E3, 9, 100, 131, 5, 0, 0, 0, 0, 138, 100];
+enemyCatalog[86] = [35, 0, 0, 0, 16, 4, 10079436, 6710988, 0, 35E3, 1, 0, 2, 16, 4278190284, 1, 64, 64, 40, 28, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 5, 5, 1, 10, 100, 20, 32, 2, 90, 0, 100, 100, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 8, 100, 133, 4, 0, 0, 0, 0, 138, 100];
+enemyCatalog[87] = [34, 4, 0, 0, 19, 1, 10040064, 13421568, 15658496, 2500, 1, 0, 2, 19, 4294901760, 1, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 4, 4, 1, 10, 100, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 777, 50, 135, 50, 0, 0, 2, 333, 138, 1E3];
+enemyCatalog[88] = [36, 6, 12, 12, 13, 1, 13408512, 10027161, 2228258, 5E3, 0, 104, 0, 24, 4288217241, 1, 16, 16, 4, 4, 50, 50, 500, 10, .5, 100, 0, 4, 0, 0, 4, 4, 5, 300, 600, 20, 160, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 6, 100, 134, 50, 0, 0, 0, 0, 138, 1E3];
+enemyCatalog[89] = [36, 4, 0, 0, 19, 2, 6697728, 13421568, 10053171, 25E3, 1, 0, 2, 19, 4294901760, 1, 32, 32, 32, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 6, 6, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 800, 5, 100, 132, 50, 0, 0, 0, 0, 138, 100];
 var pk = 0,
     qk = 1,
     rk = 2,
@@ -2828,14 +2828,14 @@ function Zi(a, b, c, d) {
         b *= 8;
         for (var f = 0; 21 > f; f++) Vec2Set(Q[ej][f], a + randFloat(1), b + randFloat(1)), Z[ej][f].set(Q[ej][f]);
         X[ej] = c;
-        Bk[ej] = itemCatalogArray[c][itemAttr2];
+        Bk[ej] = enemyCatalog[c][enemyAttr1];
         Y[ej] = 0;
         Ck[ej] = 0;
         Dk[ej] = 0;
         fj[ej] = d;
-        jj[ej] = itemCatalogArray[c][itemAttr10];
+        jj[ej] = enemyCatalog[c][enemyAttr9];
         Ek[ej] = 0;
-        Fk[ej] = itemCatalogArray[c][itemAttr35];
+        Fk[ej] = enemyCatalog[c][enemyAttr34];
         Gk[ej] = 0;
         Hk[ej] = 0;
         Ik[ej] = 0;
@@ -2883,9 +2883,9 @@ function Ei(a, b, c, d) {
     d = b + d;
     for (var h, k, p, t = new Vec2, l = new Vec2, n = 1E3, w = -1, B = 0; B < ej; B++)
         if (0 != jj[B]) {
-            h = Lk[itemCatalogArray[X[B]][itemAttr2]] * itemCatalogArray[X[B]][itemAttr6];
-            k = Mk[itemCatalogArray[X[B]][itemAttr2]] * itemCatalogArray[X[B]][itemAttr6];
-            if (Bk[B] == uk || Bk[B] == vk) k = 3 * Y[B] + 5 * itemCatalogArray[X[B]][itemAttr6];
+            h = Lk[enemyCatalog[X[B]][enemyAttr1]] * enemyCatalog[X[B]][enemyAttr5];
+            k = Mk[enemyCatalog[X[B]][enemyAttr1]] * enemyCatalog[X[B]][enemyAttr5];
+            if (Bk[B] == uk || Bk[B] == vk) k = 3 * Y[B] + 5 * enemyCatalog[X[B]][enemyAttr5];
             p = Q[B][yi];
             if (!(p.x - h > c || p.x + h < f || p.y - k > d || p.y + k < g)) {
                 l.x = p.x - a;
@@ -2916,9 +2916,9 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
     for (l = 0; l < ej; l++)
         if (0 != jj[l]) {
             x = Q[l][yi];
-            y = Lk[Bk[l]] * itemCatalogArray[X[l]][itemAttr6];
-            t = Mk[Bk[l]] * itemCatalogArray[X[l]][itemAttr6];
-            if (Bk[l] == uk || Bk[l] == vk) t = 3 * Y[l] + 5 * itemCatalogArray[X[l]][itemAttr6];
+            y = Lk[Bk[l]] * enemyCatalog[X[l]][enemyAttr5];
+            t = Mk[Bk[l]] * enemyCatalog[X[l]][enemyAttr5];
+            if (Bk[l] == uk || Bk[l] == vk) t = 3 * Y[l] + 5 * enemyCatalog[X[l]][enemyAttr5];
             if (!(x.x - y > M || x.x + y < w || x.y - t > J || x.y + t < B)) {
                 if (0 == b) {
                     ba.x = x.x - k.x;
@@ -2952,8 +2952,8 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
                     }
                     if (Fa < U + 2) continue
                 }
-                0 == a && (n = g + floor(randFloat(h - g + 1)), 4 == d ? (Jk[l] = max(Jk[l], max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr44] / 100))), Ik[l] = max(Ik[l], f - floor(f * itemCatalogArray[X[l]][itemAttr44] / 100))) : (0 == d ? n = max(1, n - itemCatalogArray[X[l]][itemAttr40]) : 1 == d ? n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr41] / 100)) : 2 == d ? n = max(1, n - floor(n *
-                    itemCatalogArray[X[l]][itemAttr42] / 100)) : 3 == d && (n = max(1, n - floor(n * itemCatalogArray[X[l]][itemAttr43] / 100))), jj[l] = max(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - floor(120 * itemCatalogArray[X[l]][itemAttr42] / 100), Hk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr42] / 100)) : 5 == d && (Kk[l] = f - floor(f * itemCatalogArray[X[l]][itemAttr45] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
+                0 == a && (n = g + floor(randFloat(h - g + 1)), 4 == d ? (Jk[l] = max(Jk[l], max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr43] / 100))), Ik[l] = max(Ik[l], f - floor(f * enemyCatalog[X[l]][enemyAttr43] / 100))) : (0 == d ? n = max(1, n - enemyCatalog[X[l]][enemyAttr39]) : 1 == d ? n = max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr40] / 100)) : 2 == d ? n = max(1, n - floor(n *
+                    enemyCatalog[X[l]][enemyAttr41] / 100)) : 3 == d && (n = max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr42] / 100))), jj[l] = max(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - floor(120 * enemyCatalog[X[l]][enemyAttr41] / 100), Hk[l] = f - floor(f * enemyCatalog[X[l]][enemyAttr41] / 100)) : 5 == d && (Kk[l] = f - floor(f * enemyCatalog[X[l]][enemyAttr44] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
                 n = l;
                 c--;
                 if (0 >= c) break
@@ -2965,58 +2965,58 @@ mainWindow.fff = bl;
 function bl(a, b, c, d) {
     var itemPos = new Vec2,
         itemIdx = X[a] + b,
-        selectedItem = itemCatalogArray[itemIdx];
+        selectedItem = enemyCatalog[itemIdx];
     b = -a - 1;
-    var k = selectedItem[itemAttr11];
+    var k = selectedItem[enemyAttr10];
     0 == k ? k = -1 : 1 == k ? k = 0 : 2 == k && (k = 1);
-    var p = selectedItem[itemAttr12] % 100,
-        t = floor(selectedItem[itemAttr12] / 100),
-        l = selectedItem[itemAttr13],
-        n = selectedItem[itemAttr14],
-        w = selectedItem[itemAttr15],
-        B = selectedItem[itemAttr16],
-        M = selectedItem[itemAttr17],
-        J = selectedItem[itemAttr18],
-        y = selectedItem[itemAttr19],
-        x = selectedItem[itemAttr20],
-        K = selectedItem[itemAttr21],
-        ba = selectedItem[itemAttr22],
-        U = selectedItem[itemAttr23],
-        na = selectedItem[itemAttr24],
-        Fa = selectedItem[itemAttr25],
-        Ga = selectedItem[itemAttr26],
-        Ca = selectedItem[itemAttr27],
-        ua = selectedItem[itemAttr28],
-        fb = selectedItem[itemAttr29],
-        ob = selectedItem[itemAttr30],
-        Bb = selectedItem[itemAttr31],
-        gc = selectedItem[itemAttr32],
-        Qb = selectedItem[itemAttr33],
-        Rb = selectedItem[itemAttr34],
-        gb = selectedItem[itemAttr35],
-        jb = selectedItem[itemAttr36],
-        La = selectedItem[itemAttr37],
-        hc = selectedItem[itemAttr38],
-        Ib = selectedItem[itemAttr39],
-        ic = selectedItem[itemAttr46],
-        jc = selectedItem[itemAttr47],
-        kc = selectedItem[itemAttr48],
-        lc = selectedItem[itemAttr49],
-        mc = selectedItem[itemAttr50],
-        nc = selectedItem[itemAttr51],
-        oc = selectedItem[itemAttr52],
-        pc = selectedItem[itemAttr53],
-        qc = selectedItem[itemAttr54],
-        rc = selectedItem[itemAttr55],
-        sc = selectedItem[itemAttr56],
-        tc = selectedItem[itemAttr57],
-        uc = selectedItem[itemAttr58],
-        vc = selectedItem[itemAttr59],
-        wc = selectedItem[itemAttr60],
+    var p = selectedItem[enemyAttr11] % 100,
+        t = floor(selectedItem[enemyAttr11] / 100),
+        l = selectedItem[enemyAttr12],
+        n = selectedItem[enemyAttr13],
+        w = selectedItem[enemyAttr14],
+        B = selectedItem[enemyAttr15],
+        M = selectedItem[enemyAttr16],
+        J = selectedItem[enemyAttr17],
+        y = selectedItem[enemyAttr18],
+        x = selectedItem[enemyAttr19],
+        K = selectedItem[enemyAttr20],
+        ba = selectedItem[enemyAttr21],
+        U = selectedItem[enemyAttr22],
+        na = selectedItem[enemyAttr23],
+        Fa = selectedItem[enemyAttr24],
+        Ga = selectedItem[enemyAttr25],
+        Ca = selectedItem[enemyAttr26],
+        ua = selectedItem[enemyAttr27],
+        fb = selectedItem[enemyAttr28],
+        ob = selectedItem[enemyAttr29],
+        Bb = selectedItem[enemyAttr30],
+        gc = selectedItem[enemyAttr31],
+        Qb = selectedItem[enemyAttr32],
+        Rb = selectedItem[enemyAttr33],
+        gb = selectedItem[enemyAttr34],
+        jb = selectedItem[enemyAttr35],
+        La = selectedItem[enemyAttr36],
+        hc = selectedItem[enemyAttr37],
+        Ib = selectedItem[enemyAttr38],
+        ic = selectedItem[enemyAttr45],
+        jc = selectedItem[enemyAttr46],
+        kc = selectedItem[enemyAttr47],
+        lc = selectedItem[enemyAttr48],
+        mc = selectedItem[enemyAttr49],
+        nc = selectedItem[enemyAttr50],
+        oc = selectedItem[enemyAttr51],
+        pc = selectedItem[enemyAttr52],
+        qc = selectedItem[enemyAttr53],
+        rc = selectedItem[enemyAttr54],
+        sc = selectedItem[enemyAttr55],
+        tc = selectedItem[enemyAttr56],
+        uc = selectedItem[enemyAttr57],
+        vc = selectedItem[enemyAttr58],
+        wc = selectedItem[enemyAttr59],
         xc =
-        selectedItem[itemAttr61],
-        yc = selectedItem[itemAttr62],
-        selectedItem = selectedItem[itemAttr63],
+        selectedItem[enemyAttr60],
+        yc = selectedItem[enemyAttr61],
+        selectedItem = selectedItem[enemyAttr62],
         zc = ti(c, d, La, La, 0);
     if (-1 != zc)
         if (0 < Fk[a]) Fk[a]--;
@@ -3043,8 +3043,8 @@ mainWindow.fff = cl;
 
 function cl(a) {
     var b;
-    b = abs(itemCatalogArray[X[a]][itemAttr1] - partyLevel);
-    var c = floor(itemCatalogArray[X[a]][itemAttr65] * (100 + Xb) / 100);
+    b = abs(enemyCatalog[X[a]][enemyAttr0] - partyLevel);
+    var c = floor(enemyCatalog[X[a]][enemyAttr64] * (100 + Xb) / 100);
     $i + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
     partyEXPAccum = clamp(partyEXPAccum + c, 0, 9999999);
     if (Ta[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
@@ -3052,11 +3052,11 @@ function cl(a) {
         for (b = 0; 4 > b; b++) partySP[b] += 2;
         Hh = 60
     }
-    for (b = itemAttr68; b < itemAttr68 + 8; b += 2)
-        if (c = itemCatalogArray[X[a]][b], 0 != c) {
+    for (b = enemyAttr67; b < enemyAttr67 + 8; b += 2)
+        if (c = enemyCatalog[X[a]][b], 0 != c) {
             var d = floor(100 * (100 + Wb) / 100);
-            2 == c ? (c = floor(itemCatalogArray[X[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * itemCatalogArray[X[a]][b + 1] * 100 < d && 1 > $b[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
-        } c = floor(itemCatalogArray[X[a]][itemAttr66] * (100 + Vb) / 100);
+            2 == c ? (c = floor(enemyCatalog[X[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * enemyCatalog[X[a]][b + 1] * 100 < d && 1 > $b[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
+        } c = floor(enemyCatalog[X[a]][enemyAttr65] * (100 + Vb) / 100);
     1 > 3 * rand() && Gh(Q[a][0].x, Q[a][0].y, 2, c, 0);
     30 != drawState && Hc++;
     A(2) && 3 == X[a] &&
@@ -3094,7 +3094,7 @@ function yg() {
 mainWindow.fff = Ok;
 
 function Ok(a) {
-    var b, c = itemCatalogArray[X[a]][itemAttr6];
+    var b, c = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         Q[a][0].x += 4;
         Q[a][0].y += 6;
@@ -3103,7 +3103,7 @@ function Ok(a) {
     } else if (1 == Y[a] || 2 == Y[a]) {
         S(Q[a][0], Z[a][0], .03, .99);
         0 < (Dk[a] & 2) && (5 > randFloat(100) && (Q[a][0].x += randFloat(1 == Y[a] ? -.2 : .2), Q[a][0].y -= randFloat(.5)), 1 > randFloat(100) && (Y[a] = randSelect(1, 2)));
-        var d = Nk[itemCatalogArray[X[a]][itemAttr5]];
+        var d = Nk[enemyCatalog[X[a]][enemyAttr4]];
         bl(a, 0, Q[a][0].x, Q[a][0].y - d * c + 1);
         Dk[a] = 0;
         if (0 >= jj[a])
@@ -3123,7 +3123,7 @@ function Ok(a) {
 mainWindow.fff = Pk;
 
 function Pk(a) {
-    var b, c = itemCatalogArray[X[a]][itemAttr6];
+    var b, c = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         Q[a][0].x += 2;
         Q[a][1].x += 3;
@@ -3139,7 +3139,7 @@ function Pk(a) {
         T(Q[a][0], Q[a][1], 0, 0, .01);
         T(Q[a][1], Q[a][2], 0, 0, .01);
         d =
-            Nk[itemCatalogArray[X[a]][itemAttr5]];
+            Nk[enemyCatalog[X[a]][enemyAttr4]];
         bl(a, 0, Q[a][0].x, Q[a][0].y - d * c + 1);
         Dk[a] = 0;
         if (0 >= jj[a])
@@ -3163,7 +3163,7 @@ mainWindow.fff = Qk;
 
 function Qk(a) {
     var b, c = new Vec2;
-    b = itemCatalogArray[X[a]][itemAttr6];
+    b = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         Q[a][0].x += 4;
         Q[a][0].y += 4;
@@ -3191,7 +3191,7 @@ function Qk(a) {
         S(Q[a][6], Z[a][6], 0, .99);
         Vec2Set(c, 0, 0);
         var d = ti(Q[a][0].x,
-            Q[a][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, O[d][2], Q[a][0]), d = Vec2Norm(c), d -= itemCatalogArray[X[a]][itemAttr37] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
+            Q[a][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, O[d][2], Q[a][0]), d = Vec2Norm(c), d -= enemyCatalog[X[a]][enemyAttr36] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
         Q[a][0].add(c);
         10 > randFloat(100) && (Q[a][0].x += randFloatRange(-1, 1), Q[a][0].y += randFloatRange(-1, 1));
         Q[a][2].x += randFloatRange(0, -.1);
@@ -3235,7 +3235,7 @@ mainWindow.fff = Rk;
 
 function Rk(a) {
     var b, c, d, f = new Vec2;
-    if (0 == Y[a]) Y[a] = itemCatalogArray[X[a]][itemAttr3];
+    if (0 == Y[a]) Y[a] = enemyCatalog[X[a]][enemyAttr2];
     else if (20 >= Y[a]) {
         S(Q[a][0], Z[a][0], 0, .99);
         for (b = 1; b < Y[a]; b++) S(Q[a][b], Z[a][b], 0, .9);
@@ -3279,7 +3279,7 @@ mainWindow.fff = Sk;
 
 function Sk(a) {
     var b;
-    b = itemCatalogArray[X[a]][itemAttr6];
+    b = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) Y[a] = 1;
     else if (1 == Y[a] || 2 == Y[a]) {
         Bk[a] == tk ? (S(Q[a][0], Z[a][0], -.2, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.1, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4], Z[a][4], 0, .99), S(Q[a][5], Z[a][5], 0, .99), S(Q[a][6], Z[a][6], 0, .99), S(Q[a][7], Z[a][7], 0, .99), S(Q[a][8], Z[a][8], 0, .99), S(Q[a][9], Z[a][9], .3, .99), S(Q[a][10], Z[a][10], .3, .99)) : Bk[a] == Ak && (S(Q[a][0], Z[a][0], -.02, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.01, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4],
@@ -3307,7 +3307,7 @@ function Sk(a) {
         T(Q[a][8], Q[a][10], 4 * d, c, c);
         T(Q[a][7], Q[a][8], 5 * d, c, c);
         bl(a, 0, Q[a][0].x, Q[a][0].y);
-        0 != itemCatalogArray[X[a]][itemAttr64] && bl(a, 1, Q[a][0].x, Q[a][0].y);
+        0 != enemyCatalog[X[a]][enemyAttr63] && bl(a, 1, Q[a][0].x, Q[a][0].y);
         for (b =
             Dk[a] = 0; 11 > b; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][1]);
@@ -3335,7 +3335,7 @@ mainWindow.fff = Tk;
 function Tk(a) {
     var b;
     if (0 == Y[a])
-        for (Y[a] = floor(randFloatRange(itemCatalogArray[X[a]][itemAttr3] + 1, itemCatalogArray[X[a]][itemAttr4] + 2)), b = 0; b < Y[a]; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
+        for (Y[a] = floor(randFloatRange(enemyCatalog[X[a]][enemyAttr2] + 1, enemyCatalog[X[a]][enemyAttr3] + 2)), b = 0; b < Y[a]; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
     else if (20 >= Y[a]) {
         if (Bk[a] == uk) {
             for (b = 0; b < Y[a] - 1; b++) S(Q[a][b], Z[a][b], -.04, .99);
@@ -3407,8 +3407,8 @@ mainWindow.fff = Vk;
 
 function Vk(a) {
     var b, c, d, f = new Vec2,
-        g = itemCatalogArray[X[a]][itemAttr3],
-        h = itemCatalogArray[X[a]][itemAttr4] * itemCatalogArray[X[a]][itemAttr6];
+        g = enemyCatalog[X[a]][enemyAttr2],
+        h = enemyCatalog[X[a]][enemyAttr3] * enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         for (b = 0; b < g; b++) c = 360 * b / g * PI / 180, Q[a][1 + b].x += Math.cos(c) * h, Q[a][1 + b].y += Math.sin(c) * h;
         for (b = 0; b <= g; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
@@ -3469,7 +3469,7 @@ mainWindow.fff = Wk;
 
 function Wk(a) {
     var b;
-    b = itemCatalogArray[X[a]][itemAttr6];
+    b = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         Q[a][0].x += 4;
         Q[a][0].y += 0;
@@ -3525,7 +3525,7 @@ function Wk(a) {
         T(Q[a][2], Q[a][4], 8 * b, .1 * c, .1 * c);
         T(Q[a][5], Q[a][7], 7 * b, .1 * c, .1 * c);
         bl(a, 0, Q[a][0].x, Q[a][0].y);
-        0 != itemCatalogArray[X[a]][itemAttr64] && bl(a, 1, Q[a][0].x, Q[a][0].y);
+        0 != enemyCatalog[X[a]][enemyAttr63] && bl(a, 1, Q[a][0].x, Q[a][0].y);
         for (b = Dk[a] = 0; 9 > b; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][0]);
         if (0 >= jj[a]) {
@@ -3552,7 +3552,7 @@ mainWindow.fff = Xk;
 
 function Xk(a) {
     var b, c = new Vec2,
-        d = itemCatalogArray[X[a]][itemAttr6];
+        d = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         1 > randFloat(2) ? (Q[a][0].x += 0, Q[a][1].x += 2, Q[a][2].x += 4, Q[a][3].x += 6, Q[a][4].x += 6) : (Q[a][0].x += 6, Q[a][1].x += 4, Q[a][2].x += 2, Q[a][3].x += 0, Q[a][4].x += 0);
         for (b = 0; 5 > b; b++) Z[a][b].set(Q[a][b]);
@@ -3561,7 +3561,7 @@ function Xk(a) {
         S(Q[a][0], Z[a][0], 0, .99);
         for (b = 1; 5 > b; b++) S(Q[a][b], Z[a][b], 0, .9);
         Vec2Set(c, 0, 0);
-        b = ti(Q[a][0].x, Q[a][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, O[b][2], Q[a][0]), b = Vec2Norm(c), b -= itemCatalogArray[X[a]][itemAttr37] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
+        b = ti(Q[a][0].x, Q[a][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, O[b][2], Q[a][0]), b = Vec2Norm(c), b -= enemyCatalog[X[a]][enemyAttr36] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
         b = ri(Q[a][0].x, Q[a][0].y);
         31 != b && (c.y += .03);
         b = ri(Q[a][0].x - 8, Q[a][0].y);
@@ -3606,11 +3606,11 @@ mainWindow.fff = Cg;
 function Cg() {
     var a, b;
     for (a = 0; a < ej; a++) {
-        var c = itemCatalogArray[X[a]][itemAttr5],
-            d = itemCatalogArray[X[a]][itemAttr7],
-            f = itemCatalogArray[X[a]][itemAttr8],
-            g = itemCatalogArray[X[a]][itemAttr9];
-        b = itemCatalogArray[X[a]][itemAttr6];
+        var c = enemyCatalog[X[a]][enemyAttr4],
+            d = enemyCatalog[X[a]][enemyAttr6],
+            f = enemyCatalog[X[a]][enemyAttr7],
+            g = enemyCatalog[X[a]][enemyAttr8];
+        b = enemyCatalog[X[a]][enemyAttr5];
         var h = Nk[c];
         0 < Kk[a] ? (d = 5934817, f = 1989840) : 0 < Gk[a] ? (d = 3368652, g = f = 13158) : 0 < Ik[a] && (d = 3407616, g = f = 3381504);
         var k = (150 - Ck[a]) / 150 * b;
@@ -3637,7 +3637,7 @@ function Cg() {
             3 > Y[a] && drawLine(Q[a][b].x, Q[a][b].y, Q[a][1].x, Q[a][1].y, f);
             drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
         } else if (Bk[a] == xk) {
-            h = itemCatalogArray[X[a]][itemAttr3];
+            h = enemyCatalog[X[a]][enemyAttr2];
             for (b = 1; b < h; b++) drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][b + 1].x - 1, Q[a][b + 1].y - 1, g);
             drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][1].x - 1, Q[a][1].y - 1, g);
             fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
@@ -3645,17 +3645,17 @@ function Cg() {
             Q[a][1].x, Q[a][1].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), drawLine(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : Bk[a] == zk && (drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x,
             Q[a][4].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), drawRectOutlineCentered(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
     }
-    for (a = 0; a < ej; a++) 0 >= Ek[a] || (Ek[a]--, 0 >= jj[a] || (b = itemCatalogArray[X[a]][itemAttr6], drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, floor(14 * b * jj[a] / itemCatalogArray[X[a]][itemAttr10]), 1, 52224)))
+    for (a = 0; a < ej; a++) 0 >= Ek[a] || (Ek[a]--, 0 >= jj[a] || (b = enemyCatalog[X[a]][enemyAttr5], drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, floor(14 * b * jj[a] / enemyCatalog[X[a]][enemyAttr9]), 1, 52224)))
 }
 mainWindow.fff = Ch;
 
 function Ch(a, b, c, d) {
-    var f = itemCatalogArray[a][itemAttr2],
-        g = itemCatalogArray[a][itemAttr5],
-        h = itemCatalogArray[a][itemAttr7],
-        k = itemCatalogArray[a][itemAttr8],
-        p = itemCatalogArray[a][itemAttr9];
-    d = clamp(itemCatalogArray[a][itemAttr6], 1, d);
+    var f = enemyCatalog[a][enemyAttr1],
+        g = enemyCatalog[a][enemyAttr4],
+        h = enemyCatalog[a][enemyAttr6],
+        k = enemyCatalog[a][enemyAttr7],
+        p = enemyCatalog[a][enemyAttr8];
+    d = clamp(enemyCatalog[a][enemyAttr5], 1, d);
     var t = Nk[g],
         l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         n = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3689,8 +3689,8 @@ function Ch(a, b, c, d) {
         drawLine(l[b], n[b], l[1], n[1], k);
         drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
     } else if (f == xk) {
-        f = itemCatalogArray[a][itemAttr3];
-        a = itemCatalogArray[a][itemAttr4];
+        f = enemyCatalog[a][enemyAttr2];
+        a = enemyCatalog[a][enemyAttr3];
         l[0] = b + 0 * d;
         n[0] = c - 10 * d;
         for (b = 0; b < f; b++) c = 360 * b / f * PI / 180, l[b + 1] = l[0] + Math.cos(c) * a * d, n[b + 1] = n[0] + Math.sin(c) * a * d;
@@ -3994,9 +3994,9 @@ function Eg() {
             } else if (2 == ml[a]) {
                 fh = 0;
                 l = -hl[a] - 1;
-                n = itemCatalogArray[X[l]][itemAttr2];
-                w = itemCatalogArray[X[l]][itemAttr5];
-                l = max(itemCatalogArray[X[l]][itemAttr6], 1);
+                n = enemyCatalog[X[l]][enemyAttr1];
+                w = enemyCatalog[X[l]][enemyAttr4];
+                l = max(enemyCatalog[X[l]][enemyAttr5], 1);
                 B = 0;
                 if (n == pk || n == qk) B = -Nk[w] * l + 1;
                 drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, ql[a], rl[a], b, c, 16, 16, d)
@@ -4117,7 +4117,7 @@ function Dg() {
         drawSpriteSheetPart(droppedItemSpriteSheet, 
             zm[a].x - 6, zm[a].y - 12, 
             12, 12, 
-            12 * itemList[Bm[a]][Lc], 0, 
+            12 * itemList[Bm[a]][itemDropIconCol], 0, 
             12, 12, 
             itemList[Bm[a]][Pc]
         );
@@ -4291,13 +4291,9 @@ var jn = [
     ],
     kn = [
         [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
-        [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0
-        ],
+        [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
         [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-        [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-            2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0
-        ]
+        [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
     ],
     gameFont = new GameFont,
     gameFontSmall = new GameFont,

@@ -2393,56 +2393,6 @@ function drawHero(heroIdx, joints, c, d, heroColor, bodyColor, noUpperJoints) {
             
         }
     }
-    
-    // for (heroColor = 0; 2 > heroColor; heroColor++) {
-    //     var p = partyEquipmentTable[heroIdx][heroColor ? d : c];
-    //     bodyColor = itemList[p][Nc];
-    //     var p = itemList[p][Pc],
-    //         t = joints[5 + heroColor],
-    //         l = joints[3 + heroColor];
-        
-    //     // forcing someone to read this should be considered a war crime
-    //     1 == bodyColor 
-    //     ? drawRectCentered(t.x, t.y, 3, 3, p) 
-    //     : 2 == bodyColor 
-    //         ? (
-    //             Vec2Sub(baseDrawPos, t, l), 
-    //             Vec2Norm(baseDrawPos), 
-    //             2 == noUpperJoints 
-    //             ? drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 7 * baseDrawPos.x, l.y + 7 * baseDrawPos.y, p) 
-    //             : drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 10 * baseDrawPos.x, l.y + 10 * baseDrawPos.y, p), 
-    //             Vec2Rotate(baseDrawPos), drawLine(t.x - 2 * baseDrawPos.x, t.y - 2 * baseDrawPos.y, t.x + 2 * baseDrawPos.x, t.y + 2 * baseDrawPos.y, p)
-    //         ) 
-    //         : 3 == bodyColor 
-    //             ? 2 == noUpperJoints 
-    //                 ? heroColor 
-    //                     ? drawLine(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p) 
-    //                     : drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p) 
-    //                 : (
-    //                     Vec2Sub(baseDrawPos, Uh[heroIdx], t), 
-    //                     Vec2Norm(baseDrawPos), 
-    //                     0 < Vh[heroIdx] && ei[heroIdx] == heroColor 
-    //                     ? drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, Uh[heroIdx].x, Uh[heroIdx].y, p) 
-    //                     : drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, t.x + 20 * baseDrawPos.x, t.y + 20 * baseDrawPos.y, p)
-    //                 ) 
-    //             : 4 == bodyColor 
-    //                 ? (
-    //                     Vec2Sub(baseDrawPos, t, l), 
-    //                     Vec2Norm(baseDrawPos), 
-    //                     2 == noUpperJoints 
-    //                         ? drawLine(l.x, l.y, l.x + 4 * baseDrawPos.x, l.y + 4 * baseDrawPos.y, p) 
-    //                         : drawLine(l.x, l.y, l.x + 8 * baseDrawPos.x, l.y + 8 * baseDrawPos.y, p), 
-    //                     drawLine(t.x, t.y, t.x - 2 * baseDrawPos.x + 4 * baseDrawPos.y, t.y - 2 * baseDrawPos.y - 4 * baseDrawPos.x, 8421504), 
-    //                     drawLine(t.x, t.y, t.x - 2 * baseDrawPos.x - 4 * baseDrawPos.y, t.y - 2 * baseDrawPos.y + 4 * baseDrawPos.x, 8421504)
-    //                 ) 
-    //                 : 5 == bodyColor && (
-    //                     isSolidRender = 2, 
-    //                     fh = 1, 
-    //                     drawSpriteSheetPartCentered(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p), 
-    //                     isSolidRender = fh = 0
-    //                 )
-    // }
-
 }
 var stageCount = 32,
     stageListArray = Array(stageCount);

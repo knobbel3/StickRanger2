@@ -1333,36 +1333,55 @@ mainWindow.fff = updatePartyStats;
 
 function updatePartyStats() {
     var hidx, b, c, d, f, g;
-    for (hidx = 0; 4 > hidx; hidx++) 
-        partyMaxLP_vals[hidx] = 10 * partyHealthLvls[hidx], 
-        partyShortAtk_vals[hidx] = 5 * partyShortAtkLvls[hidx], 
-        partyMidAtk_vals[hidx] = 5 * partyMidAtkLvls[hidx], 
-        partyLongAtk_vals[hidx] = 5 * partyLongAtkLvls[hidx], 
-        partyPhys_vals[hidx] = 5 * partyPhysLvls[hidx], 
-        partyElem_vals[hidx] = 5 * partyElemLvls[hidx], 
-        partyDodge_vals[hidx] = 2 * partyDodgeLvls[hidx], 
-        b = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol), // armor health modifier %
-        c = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], be), 
-        d = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ce), 
-        f = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], de), 
-        Jb[hidx] = c, heroHasAccessoryEffect(hidx, Ke) && (Jb[hidx] += countAccessoryLvlBonuses(hidx, Ke)), 
-        Kb[hidx] = c, heroHasAccessoryEffect(hidx, Ke) && (Kb[hidx] += countAccessoryLvlBonuses(hidx, Ke)), 
-        Lb[hidx] = d, heroHasAccessoryEffect(hidx, Le) && (Lb[hidx] += countAccessoryLvlBonuses(hidx, Le)), 
-        Mb[hidx] = partyDodge_vals[hidx] + f, 
-        heroHasAccessoryEffect(hidx, ve) && (Mb[hidx] += countAccessoryLvlBonuses(hidx, ve)), 
-        Nb[hidx] = partyPhys_vals[hidx], 
-        Ob[hidx] = partyElem_vals[hidx], 
-        Pb[hidx] = partyElem_vals[hidx], 
-        Sb[hidx] = partyElem_vals[hidx], 
-        Tb[hidx] = partyElem_vals[hidx], 
-        partyMaxLP[hidx] = floor((50 + b) * (100 + partyMaxLP_vals[hidx]) / 100), 
-        heroHasAccessoryEffect(hidx, Oe) && (partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, Oe)) / 100)), 
-        partyLP[hidx] = clamp(partyLP[hidx], 0, partyMaxLP[hidx]), 
-        bb[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], vd), 
-        heroHasAccessoryEffect(hidx, Ne) && 0 < bb[hidx] && (bb[hidx] = max(bb[hidx] + countAccessoryLvlBonuses(hidx, Ne), 1)), 
-        ab[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], vd), 
-        heroHasAccessoryEffect(hidx, te) && 0 < ab[hidx] && (ab[hidx] = max(ab[hidx] - countAccessoryLvlBonuses(hidx, te), 1)), 
+    for (hidx = 0; 4 > hidx; hidx++) {
+        partyMaxLP_vals[hidx] = 10 * partyHealthLvls[hidx];
+        partyShortAtk_vals[hidx] = 5 * partyShortAtkLvls[hidx];
+        partyMidAtk_vals[hidx] = 5 * partyMidAtkLvls[hidx];
+        partyLongAtk_vals[hidx] = 5 * partyLongAtkLvls[hidx];
+        partyPhys_vals[hidx] = 5 * partyPhysLvls[hidx]; 
+        partyElem_vals[hidx] = 5 * partyElemLvls[hidx];
+        partyDodge_vals[hidx] = 2 * partyDodgeLvls[hidx];
+        b = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol); // armor health modifier %
+        c = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], be);
+        d = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ce);
+        f = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], de);
+
+        Jb[hidx] = c;
+        if (heroHasAccessoryEffect(hidx, Ke)) 
+            Jb[hidx] += countAccessoryLvlBonuses(hidx, Ke); 
+        Kb[hidx] = c;
+        if (heroHasAccessoryEffect(hidx, Ke)) 
+            Kb[hidx] += countAccessoryLvlBonuses(hidx, Ke); 
+        Lb[hidx] = d;
+        if (heroHasAccessoryEffect(hidx, Le)) 
+            Lb[hidx] += countAccessoryLvlBonuses(hidx, Le);
+        Mb[hidx] = partyDodge_vals[hidx] + f;
+        if (heroHasAccessoryEffect(hidx, ve)) 
+            Mb[hidx] += countAccessoryLvlBonuses(hidx, ve);
+
+        Nb[hidx] = partyPhys_vals[hidx]; 
+        Ob[hidx] = partyElem_vals[hidx]; 
+        Pb[hidx] = partyElem_vals[hidx]; 
+        Sb[hidx] = partyElem_vals[hidx]; 
+        Tb[hidx] = partyElem_vals[hidx];
+        partyMaxLP[hidx] = floor((50 + b) * (100 + partyMaxLP_vals[hidx]) / 100);
+
+        if (heroHasAccessoryEffect(hidx, Oe)) 
+            partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, Oe)) / 100);
+
+        partyLP[hidx] = clamp(partyLP[hidx], 0, partyMaxLP[hidx]);
+
+        bb[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], vd);
+        if (heroHasAccessoryEffect(hidx, Ne) && 0 < bb[hidx])
+            bb[hidx] = max(bb[hidx] + countAccessoryLvlBonuses(hidx, Ne), 1);
+
+        ab[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], vd);
+        if (heroHasAccessoryEffect(hidx, te) && 0 < ab[hidx]) 
+            ab[hidx] = max(ab[hidx] - countAccessoryLvlBonuses(hidx, te), 1);
+
         $a[hidx] = clamp($a[hidx], 0, ab[hidx]);
+    }
+    
     for (b = 0; 2 > b; b++)
         for (hidx = 0; 4 > hidx; hidx++) 
             d = partyEquipmentTable[hidx][b], 

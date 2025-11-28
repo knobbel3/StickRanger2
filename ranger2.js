@@ -322,27 +322,35 @@ function Xe(a, b) {
 mainWindow.fff = getModifiedStatVal;
 
 function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
-    var d = 0;
+    let d = 0;
     // it goes like this...
     //       +0     +2     +4          | itemStatModifingCol + *
     // [..., c0,b0, c1,b1, c2,b2, ...] | itemList[itemIdx]
     //          *      *      *        | d
-    0 == columnIdx 
-    ? d = 0 
-        : columnIdx == itemList[itemIdx][itemStatModifingCol + 0] 
-    ? d = itemList[itemIdx][itemStatModifingCol + 1] 
-        : columnIdx == itemList[itemIdx][itemStatModifingCol + 2] 
-    ? d = itemList[itemIdx][itemStatModifingCol + 3] 
-        : columnIdx == itemList[itemIdx][itemStatModifingCol + 4] && (
-            d = itemList[itemIdx][itemStatModifingCol + 5]
-        );
+    if (columnIdx == 0) {
+        d = 0;
+    } else if (columnIdx == itemList[itemIdx][itemStatModifingCol + 0]) {
+        d = itemList[itemIdx][itemStatModifingCol + 1];
+    } else if (columnIdx == itemList[itemIdx][itemStatModifingCol + 2]) {
+        d = itemList[itemIdx][itemStatModifingCol + 3];
+    } else if (columnIdx == itemList[itemIdx][itemStatModifingCol + 4]) {
+        d = itemList[itemIdx][itemStatModifingCol + 5];
+    }
 
     if (0 != d) {
-        var f = itemForgeLvls[itemIdx] - 1; // $b
-        heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol0) && 3 == itemList[itemIdx][itemDropIconCol] && (f += countAccessoryLvlBonuses(heroIdx, accessoryArmsBonusCol0));
-        heroHasAccessoryEffect(heroIdx, accessoryChargeBonusCol) && 4 == itemList[itemIdx][itemDropIconCol] && (f += countAccessoryLvlBonuses(heroIdx, accessoryChargeBonusCol));
-        heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol1) && 3 == itemList[itemIdx][itemDropIconCol] && (f += countAccessoryLvlBonuses(heroIdx, accessoryArmsBonusCol1));
-        heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol1) && 4 == itemList[itemIdx][itemDropIconCol] && (f += sumAccessorySecondaryValues(heroIdx, accessoryArmsBonusCol1));
+        let f = itemForgeLvls[itemIdx] - 1; // $b
+        if (heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol0) && 3 == itemList[itemIdx][itemDropIconCol])
+            f += countAccessoryLvlBonuses(heroIdx, accessoryArmsBonusCol0);
+        
+        if (heroHasAccessoryEffect(heroIdx, accessoryChargeBonusCol) && 4 == itemList[itemIdx][itemDropIconCol])
+            f += countAccessoryLvlBonuses(heroIdx, accessoryChargeBonusCol);
+
+        if (heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol1) && 3 == itemList[itemIdx][itemDropIconCol])
+            f += countAccessoryLvlBonuses(heroIdx, accessoryArmsBonusCol1);
+
+        if (heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol1) && 4 == itemList[itemIdx][itemDropIconCol])
+            f += sumAccessorySecondaryValues(heroIdx, accessoryArmsBonusCol1);
+
         return itemList[itemIdx][columnIdx] + floor(itemList[itemIdx][columnIdx] * f * d / 100)
     }
     return itemList[itemIdx][columnIdx]
@@ -991,7 +999,7 @@ function drawCanvas() {
         for (a = CANVAS_WIDTH * CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
         var d;
 
-        // This part is probably for detecting if the game state has been tampered to prevent cheating.
+        // This part is for detecting if the game state has been tampered to prevent cheating.
         // It literally destroys the frame buffer if tampering is detected. 
         // Well done, ha55ii... 
         
@@ -1080,7 +1088,7 @@ function drawCanvas() {
             gg[3] = 45, 
             drawState++;
         else if (1 == drawState) loadLevelData(0) && drawState++;
-        else if (2 == drawState || 3 == drawState) { // first menu
+        else if (2 == drawState || 3 == drawState) { // title menu
             ta = false;
             updatePlayerParty();
             drawGameStage();
@@ -1332,8 +1340,7 @@ function drawCanvas() {
 mainWindow.fff = updatePartyStats;
 
 function updatePartyStats() {
-    var hidx, b, c, d, f, g;
-    for (hidx = 0; 4 > hidx; hidx++) {
+    for (let hidx = 0; 4 > hidx; hidx++) {
         partyMaxLP_vals[hidx] = 10 * partyHealthLvls[hidx];
         partyShortAtk_vals[hidx] = 5 * partyShortAtkLvls[hidx];
         partyMidAtk_vals[hidx] = 5 * partyMidAtkLvls[hidx];
@@ -1341,10 +1348,11 @@ function updatePartyStats() {
         partyPhys_vals[hidx] = 5 * partyPhysLvls[hidx]; 
         partyElem_vals[hidx] = 5 * partyElemLvls[hidx];
         partyDodge_vals[hidx] = 2 * partyDodgeLvls[hidx];
-        b = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol); // armor health modifier %
-        c = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], be);
-        d = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ce);
-        f = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], de);
+        // from headwear
+        let b = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol); // armor health modifier %
+        let c = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], be);
+        let d = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ce);
+        let f = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], de);
 
         Jb[hidx] = c;
         if (heroHasAccessoryEffect(hidx, Ke)) 
@@ -1352,6 +1360,7 @@ function updatePartyStats() {
         Kb[hidx] = c;
         if (heroHasAccessoryEffect(hidx, Ke)) 
             Kb[hidx] += countAccessoryLvlBonuses(hidx, Ke); 
+
         Lb[hidx] = d;
         if (heroHasAccessoryEffect(hidx, Le)) 
             Lb[hidx] += countAccessoryLvlBonuses(hidx, Le);
@@ -1381,55 +1390,63 @@ function updatePartyStats() {
 
         $a[hidx] = clamp($a[hidx], 0, ab[hidx]);
     }
-    
-    for (b = 0; 2 > b; b++)
-        for (hidx = 0; 4 > hidx; hidx++) 
-            d = partyEquipmentTable[hidx][b], 
-            0 != d && (
-                f = getModifiedStatVal(hidx, d, Oc), 
-                g = getModifiedStatVal(hidx, d, td), 
-                c = 4 * b + hidx, 
-                Db[c] = getModifiedStatVal(hidx, d, Vc), 
-                Eb[c] = getModifiedStatVal(hidx, d, Wc), 
-                Db[c] = floor(Db[c] * (100 + partyPhysAtkStats[f][hidx]) / 100), 
-                Eb[c] = floor(Eb[c] * (100 + partyPhysAtkStats[f][hidx]) / 100), 
-                Db[c] = floor(Db[c] * (100 + Ub[g][hidx]) / 100), 
-                Eb[c] = floor(Eb[c] * (100 + Ub[g][hidx]) / 100), 
-                heroHasAccessoryEffect(hidx, oe) && (
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100)
-                ), 
-                heroHasAccessoryEffect(hidx, Ge) && 1 == g && (
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100)
-                ), 
-                heroHasAccessoryEffect(hidx, He) && 2 == g && (
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100)
-                ), 
-                heroHasAccessoryEffect(hidx, ze) && 3 == g && (Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, ze)) / 100)), 
-                heroHasAccessoryEffect(hidx, Be) && 4 == g && (
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100)
-                ), 
-                Fb[c] = getModifiedStatVal(hidx, d, Xc), 
-                heroHasAccessoryEffect(hidx, ue) && 1 < Fb[c] && (Fb[c] += countAccessoryLvlBonuses(hidx, ue)), 
+
+    for (let b = 0; 2 > b; b++)
+        for (let hidx = 0; 4 > hidx; hidx++) {
+            let d = partyEquipmentTable[hidx][b];
+            if (0 != d) {
+                let f = getModifiedStatVal(hidx, d, Oc);
+                let g = getModifiedStatVal(hidx, d, td); 
+                let c = 4 * b + hidx;
+                Db[c] = getModifiedStatVal(hidx, d, Vc);
+                Eb[c] = getModifiedStatVal(hidx, d, Wc); 
+                Db[c] = floor(Db[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
+                Eb[c] = floor(Eb[c] * (100 + partyPhysAtkStats[f][hidx]) / 100); 
+                Db[c] = floor(Db[c] * (100 + Ub[g][hidx]) / 100);
+                Eb[c] = floor(Eb[c] * (100 + Ub[g][hidx]) / 100); 
+
+                if (heroHasAccessoryEffect(hidx, oe)) {
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
+                }
+                if (heroHasAccessoryEffect(hidx, Ge) && 1 == g) {
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
+                } 
+                if (heroHasAccessoryEffect(hidx, He) && 2 == g) {
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
+                } 
+
+                if (heroHasAccessoryEffect(hidx, ze) && 3 == g) 
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, ze)) / 100);
+
+                if (heroHasAccessoryEffect(hidx, Be) && 4 == g) {
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
+                }
+
+                Fb[c] = getModifiedStatVal(hidx, d, Xc);
+                if (heroHasAccessoryEffect(hidx, ue) && 1 < Fb[c]) 
+                    Fb[c] += countAccessoryLvlBonuses(hidx, ue);
+
                 b || (
                     Gb[hidx] = getModifiedStatVal(hidx, d, Zc), 
                     heroHasAccessoryEffect(hidx, pe) && (Gb[hidx] -= countAccessoryLvlBonuses(hidx, pe)), 
                     Hb[hidx] = getModifiedStatVal(hidx, d, $c), 
                     !heroHasAccessoryEffect(hidx, qe) || 4 != itemList[d][itemAppearanceCol] && 5 != itemList[d][itemAppearanceCol] || (Hb[hidx] += countAccessoryLvlBonuses(hidx, qe))
                 )
-            );
+            }
+        }
     Xb = Wb = Vb = 0;
     Vg = 180;
-    for (hidx = 0; 4 > hidx; hidx++) 
+    for (let hidx = 0; 4 > hidx; hidx++) 
         heroHasAccessoryEffect(hidx, Ce) && (Vb += countAccessoryLvlBonuses(hidx, Ce)), 
         heroHasAccessoryEffect(hidx, Ee) && (Wb += countAccessoryLvlBonuses(hidx, Ee)), 
         heroHasAccessoryEffect(hidx, Fe) && (Xb += countAccessoryLvlBonuses(hidx, Fe)), 
         heroHasAccessoryEffect(hidx, Me) && (Vg += 60 * countAccessoryLvlBonuses(hidx, Me));
     Ic = clamp(Ic, 0, Vg);
-    for (hidx = hb = 0; 9 > hidx; hidx++) 1 == db[hidx] && hb++
+    for (let hidx = hb = 0; 9 > hidx; hidx++) 1 == db[hidx] && hb++
 }
 mainWindow.fff = Wg;
 

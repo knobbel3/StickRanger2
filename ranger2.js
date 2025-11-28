@@ -1184,7 +1184,7 @@ function drawCanvas() {
                 ), 
                 tg(), wg(), xg(), 
                 drawGameLevel(), updatePlayerParty(), 
-                yg(), zg(), Ag(), Bg(), Cg(), Dg(), 
+                updateEnemies(), zg(), Ag(), Bg(), Cg(), Dg(), 
                 drawPlayerParty(), 
                 Eg(), Fg(), 
                 isSolidRender = 1, 
@@ -1233,9 +1233,9 @@ function drawCanvas() {
                 sa = 0, 
                 drawState = 13, 
                 A(6) && (2 == Ng && 4 == Mg || 4 == Ng && 2 == Mg) && 
-                    0 == Og && 0 == Pg && IncrementBadgeCount(6), 
+                    0 == Og && 0 == totalDamageDone && IncrementBadgeCount(6), 
                     A(51) && (13 == Ng && 15 == Mg || 15 == Ng && 13 == Mg) 
-                    && 0 == Og && 0 == Pg && IncrementBadgeCount(51)
+                    && 0 == Og && 0 == totalDamageDone && IncrementBadgeCount(51)
                 )
         } else if (13 == drawState) 
             sa++, 
@@ -2302,7 +2302,7 @@ function loadLevelData(a) {
     for (a = 0; 4 > a; a++) li(a, fg[a], gg[a]);
     for (a = 0; 20 > a; a++) V[a] = 0, Xi[a] = 0;
     Mi = 0;
-    Yi();
+    clearEnemies();
     for (a = Vi; a < levelListArray[q].length; a += 7) {
         c = levelListArray[q][a + 0];
         d = levelListArray[q][a + 1];
@@ -2352,7 +2352,7 @@ function wg() {
                 else if (356 <= c && 0 < levelListArray[q][Ri])
                     for (Mg = levelListArray[q][Ri], d = 0; 4 > d; d++) fg[d] = b >> 3, gg[d] = 2
             } for (a = 0; 20 > a; a++) V[a] = 0;
-    for (a = 0; a < ej; a++) V[fj[a]]++;
+    for (a = 0; a < enemyCount; a++) V[fj[a]]++;
     for (b = Vi; b < levelListArray[q].length; b += 7) {
         a = levelListArray[q][b + 0];
         var f = levelListArray[q][b + 1],
@@ -2416,7 +2416,7 @@ function drawGameLevel() {
         }
 }
 var Og = 0,
-    Pg = 0,
+    totalDamageDone = 0,
     gj = 0,
     hj = 0,
     ij = 0,
@@ -2426,7 +2426,7 @@ var Og = 0,
 mainWindow.fff = cj;
 
 function cj() {
-    jh = Hi = ij = hj = gj = Pg = Og = 0;
+    jh = Hi = ij = hj = gj = totalDamageDone = Og = 0;
     var a, b, c, d;
     if (17 == q) {
         b = partyGold % 100;
@@ -2544,11 +2544,11 @@ function xg() {
         }
     } else if (9 == q) {
         b = -1;
-        for (a = 0; a < ej; a++) 36 == X[a] && 0 != jj[a] && (b = a);
-        if (-1 != b && 10 < Y[b] && 500 > jj[b])
-            for (jj[b] += 1500, Y[b]--, c = 2 * (19 - Y[b] + 1), a = 0; a < c; a++) Zi(randIntRange(25, 57), randIntRange(25, 39), 35, 1), V[1]++, Xi[1]++;
+        for (a = 0; a < enemyCount; a++) 36 == X[a] && 0 != enemyHealthArray[a] && (b = a);
+        if (-1 != b && 10 < Y[b] && 500 > enemyHealthArray[b])
+            for (enemyHealthArray[b] += 1500, Y[b]--, c = 2 * (19 - Y[b] + 1), a = 0; a < c; a++) Zi(randIntRange(25, 57), randIntRange(25, 39), 35, 1), V[1]++, Xi[1]++;
         A(31) && 0 == V[3] && 2 == Xi[1] && IncrementBadgeCount(31);
-        A(32) && 100 <= ej && IncrementBadgeCount(32);
+        A(32) && 100 <= enemyCount && IncrementBadgeCount(32);
         if (A(33)) {
             for (a =
                 b = 0; a < r; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 26 == P[d][c] && b++;
@@ -2589,8 +2589,8 @@ function xg() {
         60 > Xi[12] && 70 <= g && 76 >= g &&
             34 <= h && 41 >= h && (c = randIntRange(5, 70), d = randIntRange(42, 43), 25 < P[d][c] && (Zi(c, d, 68, 12), V[12]++, Xi[12]++));
         b = -1;
-        for (a = 0; a < ej; a++) 70 == X[a] && 0 != jj[a] && (b = a);
-        if (-1 != b && 10 < Y[b] && jj[b] < 1E4 * (Y[b] - 10) - 5E3)
+        for (a = 0; a < enemyCount; a++) 70 == X[a] && 0 != enemyHealthArray[a] && (b = a);
+        if (-1 != b && 10 < Y[b] && enemyHealthArray[b] < 1E4 * (Y[b] - 10) - 5E3)
             for (Y[b]--, t = min(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * Hf[512 * a / t][0], d = .5 * -Hf[512 * a / t][1], zi(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         0 == of [0] && 0 == V[10] && (of [0] = 1);
         1 == of [0] && dj(2, 20, 2, 24, 31);
@@ -2793,76 +2793,87 @@ for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
 for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) Z[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 var X = new Int32Array(999),
-    Bk = new Int32Array(999),
+    enemyUpdateFuncIdxArray = new Int32Array(999),
     Y = new Int32Array(999),
     Ck = new Int32Array(999),
     Dk = new Int32Array(999),
     fj = new Int32Array(999),
-    jj = new Int32Array(999),
+    enemyHealthArray = new Int32Array(999),
     Ek = new Int32Array(999),
     Fk = new Int32Array(999),
-    Gk = new Int32Array(999),
-    Hk = new Int32Array(999),
-    Ik = new Int32Array(999),
-    Jk = new Int32Array(999),
-    Kk = new Int32Array(999),
-    ej = 0,
+    enemySkipDurationLeftArray = new Int32Array(999),
+    enemyUpdateSkipProbArray = new Int32Array(999),
+    enemyDmgDurationLeftArray = new Int32Array(999),
+    enemyDmgPerFrameArray = new Int32Array(999),
+    enemyFreezeTimerArray = new Int32Array(999),
+    enemyCount = 0,
     yi = 20,
     $i = 0,
     Lk = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10],
     Mk = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10],
     Nk = [4, 4, 5, 4, 4, 4, 5, 5, 4, 3, 5, 5, 5, 5, 6, 7, 3, 0, 2, 2, 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    Yk = [Ok, Pk, Qk, Rk, Sk,
-        Tk, Tk, Uk, Vk, Wk, Xk, Sk
+    enemyDispatchTable = [
+        enemySlimeBehavior, 
+        enemyBoxSnakeBehavior, 
+        enemyBatBehavior, 
+        enemyDragonBehavior, 
+        enemyStickmanBehavior, 
+        enemyTreeBehavior, 
+        enemyTreeBehavior, 
+        enemyHangingTreeBehavior, 
+        enemyUpdateFunc7, 
+        enemyUpdateFunc8, 
+        enemyUpdateFunc9, 
+        enemyStickmanBehavior
     ];
-mainWindow.fff = Yi;
+mainWindow.fff = clearEnemies;
 
-function Yi() {
-    $i = ej = 0
+function clearEnemies() {
+    $i = enemyCount = 0
 }
 mainWindow.fff = Zi;
 
 function Zi(a, b, c, d) {
-    if (999 != ej) {
+    if (999 != enemyCount) {
         a *= 8;
         b *= 8;
-        for (var f = 0; 21 > f; f++) Vec2Set(Q[ej][f], a + randFloat(1), b + randFloat(1)), Z[ej][f].set(Q[ej][f]);
-        X[ej] = c;
-        Bk[ej] = enemyCatalog[c][enemyAttr1];
-        Y[ej] = 0;
-        Ck[ej] = 0;
-        Dk[ej] = 0;
-        fj[ej] = d;
-        jj[ej] = enemyCatalog[c][enemyAttr9];
-        Ek[ej] = 0;
-        Fk[ej] = enemyCatalog[c][enemyAttr34];
-        Gk[ej] = 0;
-        Hk[ej] = 0;
-        Ik[ej] = 0;
-        Jk[ej] = 0;
-        Kk[ej] = 0;
-        ej++
+        for (var f = 0; 21 > f; f++) Vec2Set(Q[enemyCount][f], a + randFloat(1), b + randFloat(1)), Z[enemyCount][f].set(Q[enemyCount][f]);
+        X[enemyCount] = c;
+        enemyUpdateFuncIdxArray[enemyCount] = enemyCatalog[c][enemyAttr1];
+        Y[enemyCount] = 0;
+        Ck[enemyCount] = 0;
+        Dk[enemyCount] = 0;
+        fj[enemyCount] = d;
+        enemyHealthArray[enemyCount] = enemyCatalog[c][enemyAttr9];
+        Ek[enemyCount] = 0;
+        Fk[enemyCount] = enemyCatalog[c][enemyAttr34];
+        enemySkipDurationLeftArray[enemyCount] = 0;
+        enemyUpdateSkipProbArray[enemyCount] = 0;
+        enemyDmgDurationLeftArray[enemyCount] = 0;
+        enemyDmgPerFrameArray[enemyCount] = 0;
+        enemyFreezeTimerArray[enemyCount] = 0;
+        enemyCount++
     }
 }
 mainWindow.fff = Zk;
 
 function Zk(a) {
-    for (var b = 0; 21 > b; b++) Q[a][b].set(Q[ej - 1][b]), Z[a][b].set(Z[ej - 1][b]);
-    X[a] = X[ej - 1];
-    Bk[a] = Bk[ej - 1];
-    Y[a] = Y[ej - 1];
-    Ck[a] = Ck[ej - 1];
-    Dk[a] = Dk[ej - 1];
-    fj[a] = fj[ej - 1];
-    jj[a] = jj[ej - 1];
-    Ek[a] = Ek[ej - 1];
-    Fk[a] = Fk[ej - 1];
-    Gk[a] = Gk[ej - 1];
-    Hk[a] = Hk[ej - 1];
-    Ik[a] = Ik[ej - 1];
-    Jk[a] = Jk[ej - 1];
-    Kk[a] = Kk[ej - 1];
-    ej--
+    for (var b = 0; 21 > b; b++) Q[a][b].set(Q[enemyCount - 1][b]), Z[a][b].set(Z[enemyCount - 1][b]);
+    X[a] = X[enemyCount - 1];
+    enemyUpdateFuncIdxArray[a] = enemyUpdateFuncIdxArray[enemyCount - 1];
+    Y[a] = Y[enemyCount - 1];
+    Ck[a] = Ck[enemyCount - 1];
+    Dk[a] = Dk[enemyCount - 1];
+    fj[a] = fj[enemyCount - 1];
+    enemyHealthArray[a] = enemyHealthArray[enemyCount - 1];
+    Ek[a] = Ek[enemyCount - 1];
+    Fk[a] = Fk[enemyCount - 1];
+    enemySkipDurationLeftArray[a] = enemySkipDurationLeftArray[enemyCount - 1];
+    enemyUpdateSkipProbArray[a] = enemyUpdateSkipProbArray[enemyCount - 1];
+    enemyDmgDurationLeftArray[a] = enemyDmgDurationLeftArray[enemyCount - 1];
+    enemyDmgPerFrameArray[a] = enemyDmgPerFrameArray[enemyCount - 1];
+    enemyFreezeTimerArray[a] = enemyFreezeTimerArray[enemyCount - 1];
+    enemyCount--
 }
 mainWindow.fff = $k;
 
@@ -2881,11 +2892,11 @@ function Ei(a, b, c, d) {
         g = b - d;
     c = a + c;
     d = b + d;
-    for (var h, k, p, t = new Vec2, l = new Vec2, n = 1E3, w = -1, B = 0; B < ej; B++)
-        if (0 != jj[B]) {
+    for (var h, k, p, t = new Vec2, l = new Vec2, n = 1E3, w = -1, B = 0; B < enemyCount; B++)
+        if (0 != enemyHealthArray[B]) {
             h = Lk[enemyCatalog[X[B]][enemyAttr1]] * enemyCatalog[X[B]][enemyAttr5];
             k = Mk[enemyCatalog[X[B]][enemyAttr1]] * enemyCatalog[X[B]][enemyAttr5];
-            if (Bk[B] == uk || Bk[B] == vk) k = 3 * Y[B] + 5 * enemyCatalog[X[B]][enemyAttr5];
+            if (enemyUpdateFuncIdxArray[B] == uk || enemyUpdateFuncIdxArray[B] == vk) k = 3 * Y[B] + 5 * enemyCatalog[X[B]][enemyAttr5];
             p = Q[B][yi];
             if (!(p.x - h > c || p.x + h < f || p.y - k > d || p.y + k < g)) {
                 l.x = p.x - a;
@@ -2913,12 +2924,12 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
     t *= .5;
     l *= .5;
     0 == b ? (w = k.x - t, B = k.y - l, M = k.x + t, J = k.y + l) : 1 == b && (Vec2Norm(p), Vec2Scale(p, l), w = min(k.x - p.x, k.x + p.x), B = min(k.y - p.y, k.y + p.y), M = max(k.x - p.x, k.x + p.x), J = max(k.y - p.y, k.y + p.y));
-    for (l = 0; l < ej; l++)
-        if (0 != jj[l]) {
+    for (l = 0; l < enemyCount; l++)
+        if (0 != enemyHealthArray[l]) {
             x = Q[l][yi];
-            y = Lk[Bk[l]] * enemyCatalog[X[l]][enemyAttr5];
-            t = Mk[Bk[l]] * enemyCatalog[X[l]][enemyAttr5];
-            if (Bk[l] == uk || Bk[l] == vk) t = 3 * Y[l] + 5 * enemyCatalog[X[l]][enemyAttr5];
+            y = Lk[enemyUpdateFuncIdxArray[l]] * enemyCatalog[X[l]][enemyAttr5];
+            t = Mk[enemyUpdateFuncIdxArray[l]] * enemyCatalog[X[l]][enemyAttr5];
+            if (enemyUpdateFuncIdxArray[l] == uk || enemyUpdateFuncIdxArray[l] == vk) t = 3 * Y[l] + 5 * enemyCatalog[X[l]][enemyAttr5];
             if (!(x.x - y > M || x.x + y < w || x.y - t > J || x.y + t < B)) {
                 if (0 == b) {
                     ba.x = x.x - k.x;
@@ -2952,8 +2963,8 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
                     }
                     if (Fa < U + 2) continue
                 }
-                0 == a && (n = g + floor(randFloat(h - g + 1)), 4 == d ? (Jk[l] = max(Jk[l], max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr43] / 100))), Ik[l] = max(Ik[l], f - floor(f * enemyCatalog[X[l]][enemyAttr43] / 100))) : (0 == d ? n = max(1, n - enemyCatalog[X[l]][enemyAttr39]) : 1 == d ? n = max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr40] / 100)) : 2 == d ? n = max(1, n - floor(n *
-                    enemyCatalog[X[l]][enemyAttr41] / 100)) : 3 == d && (n = max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr42] / 100))), jj[l] = max(jj[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), Pg += n), 2 == d ? (Gk[l] = 120 - floor(120 * enemyCatalog[X[l]][enemyAttr41] / 100), Hk[l] = f - floor(f * enemyCatalog[X[l]][enemyAttr41] / 100)) : 5 == d && (Kk[l] = f - floor(f * enemyCatalog[X[l]][enemyAttr44] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
+                0 == a && (n = g + floor(randFloat(h - g + 1)), 4 == d ? (enemyDmgPerFrameArray[l] = max(enemyDmgPerFrameArray[l], max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr43] / 100))), enemyDmgDurationLeftArray[l] = max(enemyDmgDurationLeftArray[l], f - floor(f * enemyCatalog[X[l]][enemyAttr43] / 100))) : (0 == d ? n = max(1, n - enemyCatalog[X[l]][enemyAttr39]) : 1 == d ? n = max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr40] / 100)) : 2 == d ? n = max(1, n - floor(n *
+                    enemyCatalog[X[l]][enemyAttr41] / 100)) : 3 == d && (n = max(1, n - floor(n * enemyCatalog[X[l]][enemyAttr42] / 100))), enemyHealthArray[l] = max(enemyHealthArray[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), totalDamageDone += n), 2 == d ? (enemySkipDurationLeftArray[l] = 120 - floor(120 * enemyCatalog[X[l]][enemyAttr41] / 100), enemyUpdateSkipProbArray[l] = f - floor(f * enemyCatalog[X[l]][enemyAttr41] / 100)) : 5 == d && (enemyFreezeTimerArray[l] = f - floor(f * enemyCatalog[X[l]][enemyAttr44] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), A(11) && 17 == X[l] && 0 != d && Hi++, A(41) && 45 == X[l] && 0 == d && Hi++);
                 n = l;
                 c--;
                 if (0 >= c) break
@@ -3071,29 +3082,36 @@ function cl(a) {
     63 == X[a] && (A(58) && 3600 > gj && IncrementBadgeCount(58), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     A(69) && 72 == X[a] && IncrementBadgeCount(69)
 }
-mainWindow.fff = yg;
+mainWindow.fff = updateEnemies;
 
-function yg() {
-    var a;
-    for (a = 0; a < ej; a++) {
-        if (0 < Ik[a] && 0 < jj[a]) {
-            Ik[a]--;
-            var b = floor(Jk[a] / 60),
-                c = Jk[a] - 60 * b;
+function updateEnemies() {
+    var enemyIdx;
+    for (enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
+        if (0 < enemyDmgDurationLeftArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) {
+            enemyDmgDurationLeftArray[enemyIdx]--;
+            var b = floor(enemyDmgPerFrameArray[enemyIdx] / 60),
+                c = enemyDmgPerFrameArray[enemyIdx] - 60 * b;
             randFloat(60) < c && (b += 1);
-            jj[a] = max(jj[a] - b, 0);
-            Pg += b
+            enemyHealthArray[enemyIdx] = max(enemyHealthArray[enemyIdx] - b, 0);
+            totalDamageDone += b
         }
-        if (0 < Kk[a] && 0 < jj[a]) Kk[a]--;
+        if (0 < enemyFreezeTimerArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) // effect type 5 in al
+            enemyFreezeTimerArray[enemyIdx]--;
         else {
-            if (0 < Gk[a] && 0 < jj[a] && (Gk[a]--, randFloat(100) < Hk[a])) continue;
-            a = Yk[Bk[a]](a)
+            // if (0 < Gk[enemyIdx] && 0 < enemyHealthArray[enemyIdx] && (Gk[enemyIdx]--, randFloat(100) < Hk[enemyIdx])) continue;
+            if (0 < enemySkipDurationLeftArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) { // effect type 2
+                enemySkipDurationLeftArray[enemyIdx]--;
+                if (randFloat(100) < enemyUpdateSkipProbArray[enemyIdx])
+                    continue;
+            }
+            enemyIdx = enemyDispatchTable[enemyUpdateFuncIdxArray[enemyIdx]](enemyIdx)
         }
     }
 }
-mainWindow.fff = Ok;
+mainWindow.fff = enemySlimeBehavior;
 
-function Ok(a) {
+function enemySlimeBehavior(a) {
+
     var b, c = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         Q[a][0].x += 4;
@@ -3106,12 +3124,12 @@ function Ok(a) {
         var d = Nk[enemyCatalog[X[a]][enemyAttr4]];
         bl(a, 0, Q[a][0].x, Q[a][0].y - d * c + 1);
         Dk[a] = 0;
-        if (0 >= jj[a])
+        if (0 >= enemyHealthArray[a])
             for (b = 0; 1 > b; b++) Q[a][b].x += randFloatRange(-.3, .3), Q[a][b].y -= randFloatRange(1, 2);
         for (b = 0; 1 > b; b++) $k(a, b, .5);
         Q[a][yi].x = Q[a][0].x;
         Q[a][yi].y = Q[a][0].y - d * c + 1;
-        0 >= jj[a] && (Y[a] = 3, cl(a))
+        0 >= enemyHealthArray[a] && (Y[a] = 3, cl(a))
     } else {
         for (b =
             0; 1 > b; b++) S(Q[a][b], Z[a][b], .05, .99);
@@ -3120,9 +3138,9 @@ function Ok(a) {
     }
     return a
 }
-mainWindow.fff = Pk;
+mainWindow.fff = enemyBoxSnakeBehavior;
 
-function Pk(a) {
+function enemyBoxSnakeBehavior(a) {
     var b, c = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
         Q[a][0].x += 2;
@@ -3142,7 +3160,7 @@ function Pk(a) {
             Nk[enemyCatalog[X[a]][enemyAttr4]];
         bl(a, 0, Q[a][0].x, Q[a][0].y - d * c + 1);
         Dk[a] = 0;
-        if (0 >= jj[a])
+        if (0 >= enemyHealthArray[a])
             for (b = 0; 3 > b; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
         $k(a, 0, .5);
         b = Dk[a];
@@ -3151,7 +3169,7 @@ function Pk(a) {
         Dk[a] = b;
         Q[a][yi].x = Q[a][0].x;
         Q[a][yi].y = Q[a][0].y - d * c + 1;
-        0 >= jj[a] && (Y[a] = 3, cl(a))
+        0 >= enemyHealthArray[a] && (Y[a] = 3, cl(a))
     } else {
         for (b = 0; 3 > b; b++) S(Q[a][b], Z[a][b], .05, .99);
         for (b = Dk[a] = 0; 3 > b; b++) $k(a, b, .5);
@@ -3159,9 +3177,9 @@ function Pk(a) {
     }
     return a
 }
-mainWindow.fff = Qk;
+mainWindow.fff = enemyBatBehavior;
 
-function Qk(a) {
+function enemyBatBehavior(a) {
     var b, c = new Vec2;
     b = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
@@ -3211,11 +3229,11 @@ function Qk(a) {
         bl(a, 0, Q[a][0].x, Q[a][0].y);
         Dk[a] = 0;
         if (0 >=
-            jj[a])
+            enemyHealthArray[a])
             for (b = 0; 7 > b; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
         for (b = 0; 7 > b; b++) $k(a, b, 1);
         Q[a][yi].set(Q[a][0]);
-        0 >= jj[a] && (Y[a] = 3, cl(a))
+        0 >= enemyHealthArray[a] && (Y[a] = 3, cl(a))
     } else {
         for (b = 0; 8 > b; b++) S(Q[a][b], Z[a][b], .05, .99);
         c = .5;
@@ -3231,9 +3249,9 @@ function Qk(a) {
     }
     return a
 }
-mainWindow.fff = Rk;
+mainWindow.fff = enemyDragonBehavior;
 
-function Rk(a) {
+function enemyDragonBehavior(a) {
     var b, c, d, f = new Vec2;
     if (0 == Y[a]) Y[a] = enemyCatalog[X[a]][enemyAttr2];
     else if (20 >= Y[a]) {
@@ -3260,11 +3278,11 @@ function Rk(a) {
         bl(a, 0, Q[a][0].x,
             Q[a][0].y);
         Dk[a] = 0;
-        if (0 >= jj[a])
+        if (0 >= enemyHealthArray[a])
             for (b = 0; b < Y[a]; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
         for (b = 0; b < Y[a]; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][0]);
-        0 >= jj[a] && (Y[a] += 20, Ck[a] = 0, cl(a))
+        0 >= enemyHealthArray[a] && (Y[a] += 20, Ck[a] = 0, cl(a))
     } else {
         for (b = 0; b < Y[a] - 20; b++) S(Q[a][b], Z[a][b], .05, .99);
         f = .5;
@@ -3275,26 +3293,26 @@ function Rk(a) {
     }
     return a
 }
-mainWindow.fff = Sk;
+mainWindow.fff = enemyStickmanBehavior;
 
-function Sk(a) {
+function enemyStickmanBehavior(a) {
     var b;
     b = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) Y[a] = 1;
     else if (1 == Y[a] || 2 == Y[a]) {
-        Bk[a] == tk ? (S(Q[a][0], Z[a][0], -.2, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.1, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4], Z[a][4], 0, .99), S(Q[a][5], Z[a][5], 0, .99), S(Q[a][6], Z[a][6], 0, .99), S(Q[a][7], Z[a][7], 0, .99), S(Q[a][8], Z[a][8], 0, .99), S(Q[a][9], Z[a][9], .3, .99), S(Q[a][10], Z[a][10], .3, .99)) : Bk[a] == Ak && (S(Q[a][0], Z[a][0], -.02, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.01, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4],
+        enemyUpdateFuncIdxArray[a] == tk ? (S(Q[a][0], Z[a][0], -.2, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.1, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4], Z[a][4], 0, .99), S(Q[a][5], Z[a][5], 0, .99), S(Q[a][6], Z[a][6], 0, .99), S(Q[a][7], Z[a][7], 0, .99), S(Q[a][8], Z[a][8], 0, .99), S(Q[a][9], Z[a][9], .3, .99), S(Q[a][10], Z[a][10], .3, .99)) : enemyUpdateFuncIdxArray[a] == Ak && (S(Q[a][0], Z[a][0], -.02, .99), S(Q[a][1], Z[a][1], 0, .99), S(Q[a][2], Z[a][2], -.01, .99), S(Q[a][3], Z[a][3], 0, .99), S(Q[a][4],
             Z[a][4], 0, .99), S(Q[a][5], Z[a][5], 0, .99), S(Q[a][6], Z[a][6], 0, .99), S(Q[a][7], Z[a][7], 0, .99), S(Q[a][8], Z[a][8], 0, .99), S(Q[a][9], Z[a][9], .1, .99), S(Q[a][10], Z[a][10], .1, .99));
         if (50 > randFloat(100) && 0 < (Dk[a] & 2)) {
             var c = ti(Q[a][0].x, Q[a][0].y, 200, 50, 0); - 1 != c ? Y[a] = O[c][2].x < Q[a][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[a] = randSelect(1, 2));
             var d = c = 1,
                 f = 0;
-            Bk[a] == Ak && (c = .25, d = .3, f = .25);
+            enemyUpdateFuncIdxArray[a] == Ak && (c = .25, d = .3, f = .25);
             1 == Y[a] ? (Q[a][9].x < Q[a][10].x ? (Q[a][10].x += randFloat(-c), Q[a][10].y += -d) : (Q[a][9].x += randFloat(-c), Q[a][9].y += -d), Q[a][5].x += randFloat(-f), Q[a][6].x += randFloat(-f)) : (Q[a][9].x < Q[a][10].x ? (Q[a][9].x +=
                 randFloat(c), Q[a][9].y += -d) : (Q[a][10].x += randFloat(c), Q[a][10].y += -d), Q[a][5].x += randFloat(f), Q[a][6].x += randFloat(f))
         }
         c = .5;
         d = 1.2 * b;
-        Bk[a] == Ak && (c = .02, d = 1 * b);
+        enemyUpdateFuncIdxArray[a] == Ak && (c = .02, d = 1 * b);
         T(Q[a][0], Q[a][1], 3 * d, c, c);
         T(Q[a][1], Q[a][2], 3 * d, c, c);
         T(Q[a][1], Q[a][3], 4 * d, c, c);
@@ -3311,7 +3329,7 @@ function Sk(a) {
         for (b =
             Dk[a] = 0; 11 > b; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][1]);
-        if (0 >= jj[a]) {
+        if (0 >= enemyHealthArray[a]) {
             Y[a] = 3;
             for (b = Ck[a] = 0; 11 > b; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
             cl(a)
@@ -3330,14 +3348,14 @@ function Sk(a) {
     }
     return a
 }
-mainWindow.fff = Tk;
+mainWindow.fff = enemyTreeBehavior;
 
-function Tk(a) {
+function enemyTreeBehavior(a) {
     var b;
     if (0 == Y[a])
         for (Y[a] = floor(randFloatRange(enemyCatalog[X[a]][enemyAttr2] + 1, enemyCatalog[X[a]][enemyAttr3] + 2)), b = 0; b < Y[a]; b++) Q[a][b].x += 4, Q[a][b].y += 4, Z[a][b].set(Q[a][b]);
     else if (20 >= Y[a]) {
-        if (Bk[a] == uk) {
+        if (enemyUpdateFuncIdxArray[a] == uk) {
             for (b = 0; b < Y[a] - 1; b++) S(Q[a][b], Z[a][b], -.04, .99);
             S(Q[a][b], Z[a][b], 1, .99)
         } else {
@@ -3350,12 +3368,12 @@ function Tk(a) {
         T(Q[a][b], Q[a][b + 1], 6, .2, 0);
         bl(a, 0, Q[a][0].x, Q[a][0].y);
         Dk[a] = 0;
-        if (0 >= jj[a])
+        if (0 >= enemyHealthArray[a])
             for (b = 0; b < Y[a]; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
         for (b = 0; b < Y[a]; b++) $k(a, b, .5);
         Q[a][yi].x = .5 * (Q[a][0].x + Q[a][Y[a] - 1].x);
         Q[a][yi].y = .5 * (Q[a][0].y + Q[a][Y[a] - 1].y);
-        0 >= jj[a] && (Y[a] += 20, cl(a))
+        0 >= enemyHealthArray[a] && (Y[a] += 20, cl(a))
     } else {
         for (b = 0; b < Y[a] - 20; b++) S(Q[a][b], Z[a][b], .05, .99);
         for (b = Dk[a] = 0; b < Y[a] - 20; b++) $k(a, b, .5);
@@ -3363,9 +3381,9 @@ function Tk(a) {
     }
     return a
 }
-mainWindow.fff = Uk;
+mainWindow.fff = enemyHangingTreeBehavior;
 
-function Uk(a) {
+function enemyHangingTreeBehavior(a) {
     var b;
     if (0 == Y[a]) {
         Q[a][0].x += 2;
@@ -3387,7 +3405,7 @@ function Uk(a) {
         bl(a, 0, Q[a][0].x,
             Q[a][0].y);
         Dk[a] = 0;
-        if (0 >= jj[a])
+        if (0 >= enemyHealthArray[a])
             for (b = 0; 3 > b; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
         $k(a, 0, .5);
         b = Dk[a];
@@ -3395,7 +3413,7 @@ function Uk(a) {
         $k(a, 2, .5);
         Dk[a] = b;
         Q[a][yi].set(Q[a][0]);
-        0 >= jj[a] && (Y[a] = 3, cl(a))
+        0 >= enemyHealthArray[a] && (Y[a] = 3, cl(a))
     } else {
         for (b = 0; 3 > b; b++) S(Q[a][b], Z[a][b], .05, .99);
         for (b = Dk[a] = 0; 3 > b; b++) $k(a, b, .5);
@@ -3403,9 +3421,9 @@ function Uk(a) {
     }
     return a
 }
-mainWindow.fff = Vk;
+mainWindow.fff = enemyUpdateFunc7;
 
-function Vk(a) {
+function enemyUpdateFunc7(a) {
     var b, c, d, f = new Vec2,
         g = enemyCatalog[X[a]][enemyAttr2],
         h = enemyCatalog[X[a]][enemyAttr3] * enemyCatalog[X[a]][enemyAttr5];
@@ -3450,7 +3468,7 @@ function Vk(a) {
         bl(a, 0, Q[a][0].x, Q[a][0].y);
         for (b = Dk[a] = 0; b <= g; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][0]);
-        if (0 >= jj[a]) {
+        if (0 >= enemyHealthArray[a]) {
             Y[a] =
                 3;
             for (b = Ck[a] = 0; b <= g; b++) Q[a][b].x += randFloatRange(-.5, .5), Q[a][b].y -= randFloatRange(2, 3);
@@ -3465,9 +3483,9 @@ function Vk(a) {
     }
     return a
 }
-mainWindow.fff = Wk;
+mainWindow.fff = enemyUpdateFunc8;
 
-function Wk(a) {
+function enemyUpdateFunc8(a) {
     var b;
     b = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
@@ -3528,7 +3546,7 @@ function Wk(a) {
         0 != enemyCatalog[X[a]][enemyAttr63] && bl(a, 1, Q[a][0].x, Q[a][0].y);
         for (b = Dk[a] = 0; 9 > b; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][0]);
-        if (0 >= jj[a]) {
+        if (0 >= enemyHealthArray[a]) {
             Y[a] = 3;
             Ck[a] = 0;
             for (b = 1; 9 > b; b++) Q[a][b].x += randFloatRange(-1, 1), Q[a][b].y -= randFloatRange(1, 2);
@@ -3548,9 +3566,9 @@ function Wk(a) {
     }
     return a
 }
-mainWindow.fff = Xk;
+mainWindow.fff = enemyUpdateFunc9;
 
-function Xk(a) {
+function enemyUpdateFunc9(a) {
     var b, c = new Vec2,
         d = enemyCatalog[X[a]][enemyAttr5];
     if (0 == Y[a]) {
@@ -3584,7 +3602,7 @@ function Xk(a) {
         bl(a, 0, Q[a][0].x, Q[a][0].y);
         for (b = Dk[a] = 0; 5 > b; b++) $k(a, b, .5);
         Q[a][yi].set(Q[a][0]);
-        if (0 >= jj[a]) {
+        if (0 >= enemyHealthArray[a]) {
             Y[a] = 3;
             for (b = Ck[a] = 0; 5 > b; b++) Q[a][b].x += randFloatRange(-2, 2), Q[a][b].y -= randFloatRange(2, 4);
             cl(a)
@@ -3605,47 +3623,57 @@ mainWindow.fff = Cg;
 
 function Cg() {
     var a, b;
-    for (a = 0; a < ej; a++) {
+    for (a = 0; a < enemyCount; a++) {
         var c = enemyCatalog[X[a]][enemyAttr4],
             d = enemyCatalog[X[a]][enemyAttr6],
             f = enemyCatalog[X[a]][enemyAttr7],
             g = enemyCatalog[X[a]][enemyAttr8];
         b = enemyCatalog[X[a]][enemyAttr5];
         var h = Nk[c];
-        0 < Kk[a] ? (d = 5934817, f = 1989840) : 0 < Gk[a] ? (d = 3368652, g = f = 13158) : 0 < Ik[a] && (d = 3407616, g = f = 3381504);
+        0 < enemyFreezeTimerArray[a] ? (d = 5934817, f = 1989840) : 0 < enemySkipDurationLeftArray[a] ? (d = 3368652, g = f = 13158) : 0 < enemyDmgDurationLeftArray[a] && (d = 3407616, g = f = 3381504);
         var k = (150 - Ck[a]) / 150 * b;
-        if (Bk[a] == pk) 3 > Y[a] ? fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - Ck[a]) / 50));
-        else if (Bk[a] == qk) drawRectCentered(Q[a][2].x, Q[a][2].y - 2 * k, 4 * k, 4 * k, g), drawRectCentered(Q[a][1].x, Q[a][1].y -
+        if (enemyUpdateFuncIdxArray[a] == pk) 3 > Y[a] ? fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - Ck[a]) / 50));
+        else if (enemyUpdateFuncIdxArray[a] == qk) drawRectCentered(Q[a][2].x, Q[a][2].y - 2 * k, 4 * k, 4 * k, g), drawRectCentered(Q[a][1].x, Q[a][1].y -
             2.5 * k, 5 * k, 5 * k, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (Bk[a] == rk) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][1].x, Q[a][1].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, g), drawLine(Q[a][6].x, Q[a][6].y, Q[a][4].x, Q[a][4].y, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (Bk[a] == sk) {
+        else if (enemyUpdateFuncIdxArray[a] == rk) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][1].x, Q[a][1].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, g), drawLine(Q[a][6].x, Q[a][6].y, Q[a][4].x, Q[a][4].y, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+        else if (enemyUpdateFuncIdxArray[a] == sk) {
             b = 0;
             h = Y[a] - 1;
             20 < Y[a] && (b = 1, h = Y[a] - 20 - 1);
             for (; b < h; b++) drawLine(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, g);
             drawRectCentered(floor(Q[a][h].x) + 1, floor(Q[a][h].y) + 1, floor(2 * k), floor(2 * k), d);
             fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
-        } else if (Bk[a] == tk || Bk[a] == Ak) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), 3 > Y[a] && (drawLine(Q[a][1].x, Q[a][1].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][1].x, Q[a][1].y, Q[a][4].x, Q[a][4].y, g)), drawLine(Q[a][3].x, Q[a][3].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][6].x, Q[a][6].y, g), 3 > Y[a] && (drawLine(Q[a][2].x, Q[a][2].y,
+        } else if (enemyUpdateFuncIdxArray[a] == tk || enemyUpdateFuncIdxArray[a] == Ak) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), 3 > Y[a] && (drawLine(Q[a][1].x, Q[a][1].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][1].x, Q[a][1].y, Q[a][4].x, Q[a][4].y, g)), drawLine(Q[a][3].x, Q[a][3].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][6].x, Q[a][6].y, g), 3 > Y[a] && (drawLine(Q[a][2].x, Q[a][2].y,
             Q[a][7].x, Q[a][7].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][8].x, Q[a][8].y, g)), drawLine(Q[a][7].x, Q[a][7].y, Q[a][9].x, Q[a][9].y, g), drawLine(Q[a][8].x, Q[a][8].y, Q[a][10].x, Q[a][10].y, g), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (Bk[a] == uk || Bk[a] == vk) {
-            h = Bk[a] == uk ? -2 : 2;
+        else if (enemyUpdateFuncIdxArray[a] == uk || enemyUpdateFuncIdxArray[a] == vk) {
+            h = enemyUpdateFuncIdxArray[a] == uk ? -2 : 2;
             for (b = 20 >= Y[a] ? Y[a] - 1 : Y[a] - 21; 0 < b; b--) drawRectOutlineCentered(floor(Q[a][b].x), floor(Q[a][b].y + h), 5, 5, g);
-            Bk[a] == uk ? fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
-        } else if (Bk[a] ==
+            enemyUpdateFuncIdxArray[a] == uk ? fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
+        } else if (enemyUpdateFuncIdxArray[a] ==
             wk) {
             for (b = 1; 6 > b; b++) drawLine(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, f);
             3 > Y[a] && drawLine(Q[a][b].x, Q[a][b].y, Q[a][1].x, Q[a][1].y, f);
             drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
-        } else if (Bk[a] == xk) {
+        } else if (enemyUpdateFuncIdxArray[a] == xk) {
             h = enemyCatalog[X[a]][enemyAttr2];
             for (b = 1; b < h; b++) drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][b + 1].x - 1, Q[a][b + 1].y - 1, g);
             drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][1].x - 1, Q[a][1].y - 1, g);
             fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
-        } else Bk[a] == yk ? (drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y,
-            Q[a][1].x, Q[a][1].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), drawLine(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : Bk[a] == zk && (drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x,
+        } else enemyUpdateFuncIdxArray[a] == yk ? (drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][1].x, Q[a][1].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), drawLine(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : enemyUpdateFuncIdxArray[a] == zk && (drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x,
             Q[a][4].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), drawRectOutlineCentered(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
     }
-    for (a = 0; a < ej; a++) 0 >= Ek[a] || (Ek[a]--, 0 >= jj[a] || (b = enemyCatalog[X[a]][enemyAttr5], drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, floor(14 * b * jj[a] / enemyCatalog[X[a]][enemyAttr9]), 1, 52224)))
+    for (a = 0; a < enemyCount; a++) 
+        0 >= Ek[a] || (
+            Ek[a]--, 
+            0 >= enemyHealthArray[a] || (
+                b = enemyCatalog[X[a]][enemyAttr5], 
+                drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008), 
+                drawRect(
+                    floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 
+                    floor(14 * b * enemyHealthArray[a] / enemyCatalog[X[a]][enemyAttr9]), 1, 52224
+                )
+            )
+        )
 }
 mainWindow.fff = Ch;
 

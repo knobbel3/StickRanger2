@@ -109,8 +109,8 @@ var partyMemberCount = 1,
         []
     ],
     Zb = -1,
-    $b = Array(256);
-for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) $b[iterIdxTemp_1] = 0;
+    itemForgeLvls = Array(256);
+for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemForgeLvls[iterIdxTemp_1] = 0;
 var ac = Array(256);
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) ac[iterIdxTemp_1] = 0;
 mainWindow.fff = bc;
@@ -125,7 +125,7 @@ function bc() {
         for (a = 0; 4 > a; a++) partyStats[b][a] = 0;
     for (a = 0; 4 > a; a++)
         for (b = 0; 8 > b; b++) partyEquipmentTable[a][b] = 0;
-    for (a = 0; 256 > a; a++) $b[a] = 0, ac[a] = 0;
+    for (a = 0; 256 > a; a++) itemForgeLvls[a] = 0, ac[a] = 0;
     for (a = 0; a < stageCount; a++) ec[a] = 0;
     for (a = 0; a < enemyTypeCount; a++) Bc[a] = 0;
     for (a = 0; a < badgeCount; a++) badgeCounterArray[a] = 0;
@@ -232,17 +232,21 @@ var $d = iterIdxTemp_1++,
     de = iterIdxTemp_1++;
 iterIdxTemp_1 = 6;
 iterIdxTemp_1++;
-var ee = iterIdxTemp_1++,
-    fe = iterIdxTemp_1++,
-    ge = iterIdxTemp_1++,
-    he = iterIdxTemp_1++,
-    ie = iterIdxTemp_1++,
-    je = iterIdxTemp_1++,
-    ke = iterIdxTemp_1++;
+
+var accessoryIdxCol = iterIdxTemp_1++,
+
+    accessoryPrimaryPrefixCol = iterIdxTemp_1++,
+    accessoryPrimaryValueCol = iterIdxTemp_1++,
+    accessoryPrimarySuffixCol = iterIdxTemp_1++,
+
+    accessorySecondaryLabelPrefixCol = iterIdxTemp_1++,
+    accessorySecondaryValueCol = iterIdxTemp_1++,
+    accessorySecondaryLabelSuffixCol = iterIdxTemp_1++;
+
 iterIdxTemp_1 = 1;
-var le = iterIdxTemp_1++,
-    me = iterIdxTemp_1++,
-    ne = iterIdxTemp_1++,
+var accessoryArmsBonusCol0 = iterIdxTemp_1++,
+    accessoryChargeBonusCol = iterIdxTemp_1++,
+    accessoryArmsBonusCol1 = iterIdxTemp_1++,
     oe = iterIdxTemp_1++,
     pe = iterIdxTemp_1++,
     qe = iterIdxTemp_1++,
@@ -297,7 +301,7 @@ function Ve(a, b) {
                 ? c = itemList[a][itemStatModifingCol + 3] 
                 : b == itemList[a][itemStatModifingCol + 4] && (c = itemList[a][itemStatModifingCol + 5]);
     if (0 != c) {
-        var d = $b[a] - 1;
+        var d = itemForgeLvls[a] - 1;
         a == Zb && d++;
         return itemList[a][b] + floor(itemList[a][b] * d * c / 100)
     }
@@ -309,19 +313,19 @@ function Xe(a, b) {
     var c = 0;
     0 == b ? c = 0 : b == itemList[a][itemStatModifingCol + 0] ? c = itemList[a][itemStatModifingCol + 1] : b == itemList[a][itemStatModifingCol + 2] ? c = itemList[a][itemStatModifingCol + 3] : b == itemList[a][itemStatModifingCol + 4] && (c = itemList[a][itemStatModifingCol + 5]);
     if (0 != c) {
-        var d = $b[a] - 1;
+        var d = itemForgeLvls[a] - 1;
         a == Zb && d++;
         return d * c
     }
     return -1
 }
-mainWindow.fff = getStatModifierVal;
+mainWindow.fff = getModifiedStatVal;
 
-function getStatModifierVal(heroIdx, itemIdx, columnIdx) {
+function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
     var d = 0;
     // it goes like this...
     //       +0     +2     +4          | itemStatModifingCol + *
-    // [..., c0,m0, c1,m1, c2,m2, ...] | itemList[itemIdx]
+    // [..., c0,b0, c1,b1, c2,b2, ...] | itemList[itemIdx]
     //          *      *      *        | d
     0 == columnIdx 
     ? d = 0 
@@ -334,37 +338,37 @@ function getStatModifierVal(heroIdx, itemIdx, columnIdx) {
         );
 
     if (0 != d) {
-        var f = $b[itemIdx] - 1;
-        Ze(heroIdx, le) && 3 == itemList[itemIdx][itemDropIconCol] && (f += $e(heroIdx, le));
-        Ze(heroIdx, me) && 4 == itemList[itemIdx][itemDropIconCol] && (f += $e(heroIdx, me));
-        Ze(heroIdx, ne) && 3 == itemList[itemIdx][itemDropIconCol] && (f += $e(heroIdx, ne));
-        Ze(heroIdx, ne) && 4 == itemList[itemIdx][itemDropIconCol] && (f += af(heroIdx, ne));
+        var f = itemForgeLvls[itemIdx] - 1; // $b
+        heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol0) && 3 == itemList[itemIdx][itemDropIconCol] && (f += countAccessoryLvlBonuses(heroIdx, accessoryArmsBonusCol0));
+        heroHasAccessoryEffect(heroIdx, accessoryChargeBonusCol) && 4 == itemList[itemIdx][itemDropIconCol] && (f += countAccessoryLvlBonuses(heroIdx, accessoryChargeBonusCol));
+        heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol1) && 3 == itemList[itemIdx][itemDropIconCol] && (f += countAccessoryLvlBonuses(heroIdx, accessoryArmsBonusCol1));
+        heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol1) && 4 == itemList[itemIdx][itemDropIconCol] && (f += sumAccessorySecondaryValues(heroIdx, accessoryArmsBonusCol1));
         return itemList[itemIdx][columnIdx] + floor(itemList[itemIdx][columnIdx] * f * d / 100)
     }
     return itemList[itemIdx][columnIdx]
 }
-mainWindow.fff = Ze;
+mainWindow.fff = heroHasAccessoryEffect;
 
-function Ze(partyIdx, itemIdx) {
-    return itemList[partyEquipmentTable[partyIdx][3]][ee] == itemIdx || 
-        itemList[partyEquipmentTable[partyIdx][4]][ee] == itemIdx 
+function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
+    return itemList[partyEquipmentTable[partyIdx][3]][accessoryIdxCol] == accessoryIdx || 
+        itemList[partyEquipmentTable[partyIdx][4]][accessoryIdxCol] == accessoryIdx 
     ? true 
     : false
 }
-mainWindow.fff = $e;
+mainWindow.fff = countAccessoryLvlBonuses;
 
-function $e(a, b) {
+function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
     var c = 0;
-    itemList[partyEquipmentTable[a][3]][ee] == b && (c += itemList[partyEquipmentTable[a][3]][ge]);
-    itemList[partyEquipmentTable[a][4]][ee] == b && (c += itemList[partyEquipmentTable[a][4]][ge]);
+    itemList[partyEquipmentTable[partyIdx][3]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][accessoryPrimaryValueCol]);
+    itemList[partyEquipmentTable[partyIdx][4]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessoryPrimaryValueCol]);
     return c
 }
-mainWindow.fff = af;
+mainWindow.fff = sumAccessorySecondaryValues;
 
-function af(a, b) {
+function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     var c = 0;
-    itemList[partyEquipmentTable[a][3]][ee] == b && (c += itemList[partyEquipmentTable[a][3]][je]);
-    itemList[partyEquipmentTable[a][4]][ee] == b && (c += itemList[partyEquipmentTable[a][4]][je]);
+    itemList[partyEquipmentTable[partyIdx][3]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][accessorySecondaryValueCol]);
+    itemList[partyEquipmentTable[partyIdx][4]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessorySecondaryValueCol]);
     return c
 }
 var itemList = Array(256);
@@ -478,7 +482,8 @@ itemList[67] = ["Straw hat", 6, 70, 10, 0, 10053171, 4465152, 1, 1, 1, 0, 0, 0, 
 itemList[68] = ["Silk hat", 6, 71, 10, 0, 13395456, 6697728, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 10, heroHealthModifierCol, 5, 0, 0, 0, 0, 0, 0];
 itemList[69] = ["Witch", 6, 72, 10, 0, 16737996, 10027110, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, ce, 20, 0, 0, 0, 0, 0, 0];
 itemList[70] = ["Santa", 6, 73, 10, 0, 13421823, 3355596, 10, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, ce, 20, 0, 0, 0, 0, 0, 0];
-itemList[71] = ["Craft Ring", 8, 128, 20, 0, 6710886, 11184810, le, "ARMS Lv +", 1, "", "", 0, ""];
+// accessories
+itemList[71] = ["Craft Ring", 8, 128, 20, 0, 6710886, 11184810, accessoryArmsBonusCol0, "ARMS Lv +", 1, "", "", 0, ""];
 itemList[73] = ["Iron Ring", 8, 128, 20, 0, 6710886, 4473924, oe, "AT +", 20, "%", "", 0, ""];
 itemList[75] = ["Wood Ring", 8, 128, 20, 0, 10053120, 6697728, qe, "RANGE +", 60, "", "COUNT +", 60, ""];
 itemList[77] = ["Diamond Ring", 8, 128, 20, 0, 16777215, 6710886, we, "Physical Critical hit ", 25, "%", "Critical damage +", 100, "%"];
@@ -491,10 +496,10 @@ itemList[113] = ["Aquamarine Ring", 8, 128, 20, 0, 6711039, 4473992, He, "Ice da
 itemList[115] = ["Stone Ring", 8, 128, 20, 0, 13421789, 11184827, Ke, "DF +", 1, "", "", 0, ""];
 itemList[117] = ["Pearl Ring", 8, 128, 20, 0, 13546410, 6710886, Le, "MAGIC DF +", 10, "%", "", 0, ""];
 itemList[119] = ["Warrior Ring", 8, 128, 20, 0, 16737792, 8930338, Me, "Combo duration +", 1, " sec", "", 0, ""];
-itemList[136] = ["Master Ring", 8, 128, 20, 0, 16763955, 10053171, ne, "ARMS Lv +", 1, "", "CHARGE Lv +", 1, ""];
+itemList[136] = ["Master Ring", 8, 128, 20, 0, 16763955, 10053171, accessoryArmsBonusCol1, "ARMS Lv +", 1, "", "CHARGE Lv +", 1, ""];
 itemList[137] = ["Titanium Ring", 8, 128, 20, 0, 6640976, 13421772, pe, "AGI -", 2, "", "", 0, ""];
 itemList[138] = ["Morion Ring", 8, 128, 20, 0, 7829367, 3355443, Ne, "Charge +", 1, "", "", 0, ""];
-itemList[72] = ["Craft Amulet", 8, 144, 30, 0, 6710886, 13421772, me, "CHARGE Lv +", 1, "", "", 0, ""];
+itemList[72] = ["Craft Amulet", 8, 144, 30, 0, 6710886, 13421772, accessoryChargeBonusCol, "CHARGE Lv +", 1, "", "", 0, ""];
 itemList[74] = ["Shell Amulet", 8, 144, 30, 0, 14803938, 13546410, ve, "Dodge +", 10, "%", "", 0, ""];
 itemList[76] = ["Elf Amulet", 8, 144, 30, 0, 65433, 3381606, ue, "Multiple shots +", 2, "", "", 0, ""];
 itemList[78] = ["Crystal Amulet", 8, 144, 30, 0, 15658734, 4473924, te, "EMIT -", 2, "", "", 0, ""];
@@ -623,7 +628,7 @@ function IncrementBadgeCount(badgeIndex) {
         var b = 0;
         badgeIndex = badgeList[badgeIndex][2];
         for (var c = 0; c < badgeList.length; c++) badgeList[c] && badgeIndex == badgeList[c][2] && badgeCounterArray[c] == badgeList[c][4] && b++;
-        5 == b && ($b[ef[badgeIndex]] = 1, ac[ef[badgeIndex]] = 1)
+        5 == b && (itemForgeLvls[ef[badgeIndex]] = 1, ac[ef[badgeIndex]] = 1)
     }
 }
 var Ec = 10,
@@ -681,7 +686,7 @@ function mf() {
     for (b = 0; 4 > b; b++)
         for (c = 0; 8 > c; c++) D[a++] = partyEquipmentTable[b][c] >> 6 & 63, D[a++] = partyEquipmentTable[b][c] >> 0 & 63;
     D[a++] = 4;
-    for (b = D[a++] = 0; 256 > b; b++) D[a++] = $b[b];
+    for (b = D[a++] = 0; 256 > b; b++) D[a++] = itemForgeLvls[b];
     D[a++] = 0;
     D[a++] = 10;
     for (b = 0; 9 > b; b++) D[a++] = db[b];
@@ -772,7 +777,7 @@ function rf(a) {
     for (b = 0; 4 > b; b++)
         for (c = 0; 8 > c; c++) partyEquipmentTable[b][c] = (D[a++] << 6) + D[a++];
     g = (D[a++] << 6) + D[a++];
-    for (b = 0; b < g; b++) $b[b] = D[a++];
+    for (b = 0; b < g; b++) itemForgeLvls[b] = D[a++];
     g = (D[a++] << 6) + D[a++];
     if (!g) return 0;
     for (b = 0; 9 > b; b++) db[b] =
@@ -841,7 +846,7 @@ function updatePartyChecksum() {
         for (b = 0; 8 > b; b++) 
             c = hashAdjust(c, partyEquipmentTable[a][b]);
 
-    for (a = 0; 256 > a; a++) c = hashAdjust(c, $b[a]);
+    for (a = 0; 256 > a; a++) c = hashAdjust(c, itemForgeLvls[a]);
     for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
     c = hashAdjust(c, eb);
     for (a = 0; a < stageCount; a++) c = hashAdjust(c, ec[a]);
@@ -1154,7 +1159,7 @@ function drawCanvas() {
             ? (
                 bc(), 
                 partyEquipmentTable[0][0] = 4, 
-                currentStage = $b[4] = 1, 
+                currentStage = itemForgeLvls[4] = 1, 
                 fg[0] = 20, 
                 fg[1] = 28, 
                 fg[2] = 36, 
@@ -1336,74 +1341,74 @@ function updatePartyStats() {
         partyPhys_vals[hidx] = 5 * partyPhysLvls[hidx], 
         partyElem_vals[hidx] = 5 * partyElemLvls[hidx], 
         partyDodge_vals[hidx] = 2 * partyDodgeLvls[hidx], 
-        b = getStatModifierVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol), // armor health modifier %
-        c = getStatModifierVal(hidx, partyEquipmentTable[hidx][2], be), 
-        d = getStatModifierVal(hidx, partyEquipmentTable[hidx][2], ce), 
-        f = getStatModifierVal(hidx, partyEquipmentTable[hidx][2], de), 
-        Jb[hidx] = c, Ze(hidx, Ke) && (Jb[hidx] += $e(hidx, Ke)), 
-        Kb[hidx] = c, Ze(hidx, Ke) && (Kb[hidx] += $e(hidx, Ke)), 
-        Lb[hidx] = d, Ze(hidx, Le) && (Lb[hidx] += $e(hidx, Le)), 
+        b = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol), // armor health modifier %
+        c = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], be), 
+        d = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ce), 
+        f = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], de), 
+        Jb[hidx] = c, heroHasAccessoryEffect(hidx, Ke) && (Jb[hidx] += countAccessoryLvlBonuses(hidx, Ke)), 
+        Kb[hidx] = c, heroHasAccessoryEffect(hidx, Ke) && (Kb[hidx] += countAccessoryLvlBonuses(hidx, Ke)), 
+        Lb[hidx] = d, heroHasAccessoryEffect(hidx, Le) && (Lb[hidx] += countAccessoryLvlBonuses(hidx, Le)), 
         Mb[hidx] = partyDodge_vals[hidx] + f, 
-        Ze(hidx, ve) && (Mb[hidx] += $e(hidx, ve)), 
+        heroHasAccessoryEffect(hidx, ve) && (Mb[hidx] += countAccessoryLvlBonuses(hidx, ve)), 
         Nb[hidx] = partyPhys_vals[hidx], 
         Ob[hidx] = partyElem_vals[hidx], 
         Pb[hidx] = partyElem_vals[hidx], 
         Sb[hidx] = partyElem_vals[hidx], 
         Tb[hidx] = partyElem_vals[hidx], 
         partyMaxLP[hidx] = floor((50 + b) * (100 + partyMaxLP_vals[hidx]) / 100), 
-        Ze(hidx, Oe) && (partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + $e(hidx, Oe)) / 100)), 
+        heroHasAccessoryEffect(hidx, Oe) && (partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, Oe)) / 100)), 
         partyLP[hidx] = clamp(partyLP[hidx], 0, partyMaxLP[hidx]), 
-        bb[hidx] = getStatModifierVal(hidx, partyEquipmentTable[hidx][0], vd), 
-        Ze(hidx, Ne) && 0 < bb[hidx] && (bb[hidx] = max(bb[hidx] + $e(hidx, Ne), 1)), 
-        ab[hidx] = getStatModifierVal(hidx, partyEquipmentTable[hidx][1], vd), 
-        Ze(hidx, te) && 0 < ab[hidx] && (ab[hidx] = max(ab[hidx] - $e(hidx, te), 1)), 
+        bb[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], vd), 
+        heroHasAccessoryEffect(hidx, Ne) && 0 < bb[hidx] && (bb[hidx] = max(bb[hidx] + countAccessoryLvlBonuses(hidx, Ne), 1)), 
+        ab[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], vd), 
+        heroHasAccessoryEffect(hidx, te) && 0 < ab[hidx] && (ab[hidx] = max(ab[hidx] - countAccessoryLvlBonuses(hidx, te), 1)), 
         $a[hidx] = clamp($a[hidx], 0, ab[hidx]);
     for (b = 0; 2 > b; b++)
         for (hidx = 0; 4 > hidx; hidx++) 
             d = partyEquipmentTable[hidx][b], 
             0 != d && (
-                f = getStatModifierVal(hidx, d, Oc), 
-                g = getStatModifierVal(hidx, d, td), 
+                f = getModifiedStatVal(hidx, d, Oc), 
+                g = getModifiedStatVal(hidx, d, td), 
                 c = 4 * b + hidx, 
-                Db[c] = getStatModifierVal(hidx, d, Vc), 
-                Eb[c] = getStatModifierVal(hidx, d, Wc), 
+                Db[c] = getModifiedStatVal(hidx, d, Vc), 
+                Eb[c] = getModifiedStatVal(hidx, d, Wc), 
                 Db[c] = floor(Db[c] * (100 + partyPhysAtkStats[f][hidx]) / 100), 
                 Eb[c] = floor(Eb[c] * (100 + partyPhysAtkStats[f][hidx]) / 100), 
                 Db[c] = floor(Db[c] * (100 + Ub[g][hidx]) / 100), 
                 Eb[c] = floor(Eb[c] * (100 + Ub[g][hidx]) / 100), 
-                Ze(hidx, oe) && (
-                    Db[c] = floor(Db[c] * (100 + $e(hidx, oe)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + $e(hidx, oe)) / 100)
+                heroHasAccessoryEffect(hidx, oe) && (
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100)
                 ), 
-                Ze(hidx, Ge) && 1 == g && (
-                    Db[c] = floor(Db[c] * (100 + $e(hidx, Ge)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + $e(hidx, Ge)) / 100)
+                heroHasAccessoryEffect(hidx, Ge) && 1 == g && (
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100)
                 ), 
-                Ze(hidx, He) && 2 == g && (
-                    Db[c] = floor(Db[c] * (100 + $e(hidx, He)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + $e(hidx, He)) / 100)
+                heroHasAccessoryEffect(hidx, He) && 2 == g && (
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100)
                 ), 
-                Ze(hidx, ze) && 3 == g && (Eb[c] = floor(Eb[c] * (100 + $e(hidx, ze)) / 100)), 
-                Ze(hidx, Be) && 4 == g && (
-                    Db[c] = floor(Db[c] * (100 + $e(hidx, Be)) / 100), 
-                    Eb[c] = floor(Eb[c] * (100 + $e(hidx, Be)) / 100)
+                heroHasAccessoryEffect(hidx, ze) && 3 == g && (Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, ze)) / 100)), 
+                heroHasAccessoryEffect(hidx, Be) && 4 == g && (
+                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100), 
+                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100)
                 ), 
-                Fb[c] = getStatModifierVal(hidx, d, Xc), 
-                Ze(hidx, ue) && 1 < Fb[c] && (Fb[c] += $e(hidx, ue)), 
+                Fb[c] = getModifiedStatVal(hidx, d, Xc), 
+                heroHasAccessoryEffect(hidx, ue) && 1 < Fb[c] && (Fb[c] += countAccessoryLvlBonuses(hidx, ue)), 
                 b || (
-                    Gb[hidx] = getStatModifierVal(hidx, d, Zc), 
-                    Ze(hidx, pe) && (Gb[hidx] -= $e(hidx, pe)), 
-                    Hb[hidx] = getStatModifierVal(hidx, d, $c), 
-                    !Ze(hidx, qe) || 4 != itemList[d][Nc] && 5 != itemList[d][Nc] || (Hb[hidx] += $e(hidx, qe))
+                    Gb[hidx] = getModifiedStatVal(hidx, d, Zc), 
+                    heroHasAccessoryEffect(hidx, pe) && (Gb[hidx] -= countAccessoryLvlBonuses(hidx, pe)), 
+                    Hb[hidx] = getModifiedStatVal(hidx, d, $c), 
+                    !heroHasAccessoryEffect(hidx, qe) || 4 != itemList[d][Nc] && 5 != itemList[d][Nc] || (Hb[hidx] += countAccessoryLvlBonuses(hidx, qe))
                 )
             );
     Xb = Wb = Vb = 0;
     Vg = 180;
     for (hidx = 0; 4 > hidx; hidx++) 
-        Ze(hidx, Ce) && (Vb += $e(hidx, Ce)), 
-        Ze(hidx, Ee) && (Wb += $e(hidx, Ee)), 
-        Ze(hidx, Fe) && (Xb += $e(hidx, Fe)), 
-        Ze(hidx, Me) && (Vg += 60 * $e(hidx, Me));
+        heroHasAccessoryEffect(hidx, Ce) && (Vb += countAccessoryLvlBonuses(hidx, Ce)), 
+        heroHasAccessoryEffect(hidx, Ee) && (Wb += countAccessoryLvlBonuses(hidx, Ee)), 
+        heroHasAccessoryEffect(hidx, Fe) && (Xb += countAccessoryLvlBonuses(hidx, Fe)), 
+        heroHasAccessoryEffect(hidx, Me) && (Vg += 60 * countAccessoryLvlBonuses(hidx, Me));
     Ic = clamp(Ic, 0, Vg);
     for (hidx = hb = 0; 9 > hidx; hidx++) 1 == db[hidx] && hb++
 }
@@ -1538,10 +1543,9 @@ function drawGameUI() {
             12 + a % 7 * 28, g + 46 + 28 * ~~(a / 7), k[a], "" + partyStats[a][Ka], Ma == a ? 16737894 : 16777215) && (Ma != a ? isMouseReleased && (Ma = a) : 0 < partySP[Ka] && partyStats[Ma][Ka] < c[Ma] && (drawTooltip(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (partyStats[Ma][Ka]++, partySP[Ka]--)));
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isMemberUIVisible = false);
         g += 64;
-        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = $b[c], Ze(Ka, le) && 3 == itemList[c][itemDropIconCol] && (h += $e(Ka, le)), Ze(Ka, me) && 4 == itemList[c][itemDropIconCol] && (h += $e(Ka, me)), Ze(Ka, ne) && 3 == itemList[c][itemDropIconCol] && (h += $e(Ka, ne)), Ze(Ka, ne) && 4 == itemList[c][itemDropIconCol] && (h += af(Ka, ne)), drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
-            "-" + Eb[4 * a + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(getStatModifierVal(Ka, c, ld) * getStatModifierVal(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = getStatModifierVal(Ka, c, Ed), Ze(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += $e(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == getStatModifierVal(Ka, c, Uc) ? h += " all" : 1 < getStatModifierVal(Ka, c, Uc) && (h += " " + getStatModifierVal(Ka, c, Uc) + "hit"), drawTooltip(gameFontMed, f + 96 * a, g + 12, h, 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT " +
-                ab[Ka], 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), drawTooltip(gameFontMed, f + 96 * a, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f + 96 * a, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && (h = getStatModifierVal(Ka, c, ud), Ze(Ka, ye) && (h += $e(Ka, ye)), drawTooltip(gameFontMed, f + 96 * a, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
-            itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " Lv" + $b[c], 16777215, 0)));
+        for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], 0 != itemList[c][Nc] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, h = itemForgeLvls[c], heroHasAccessoryEffect(Ka, accessoryArmsBonusCol0) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol0)), heroHasAccessoryEffect(Ka, accessoryChargeBonusCol) && 4 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryChargeBonusCol)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol1)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 4 == itemList[c][itemDropIconCol] && (h += sumAccessorySecondaryValues(Ka, accessoryArmsBonusCol1)), drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " " + h, -1, 0), h = "AT " + Db[4 * a + Ka] +
+            "-" + Eb[4 * a + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * a + Ka] + ">" + ~~(getModifiedStatVal(Ka, c, ld) * getModifiedStatVal(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = getModifiedStatVal(Ka, c, Ed), heroHasAccessoryEffect(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += countAccessoryLvlBonuses(Ka, Ae)), h += " *" + Fb[4 * a + Ka] + ">" + b) : 1 < Fb[4 * a + Ka] && (h += " *" + Fb[4 * a + Ka]), 99 == getModifiedStatVal(Ka, c, Uc) ? h += " all" : 1 < getModifiedStatVal(Ka, c, Uc) && (h += " " + getModifiedStatVal(Ka, c, Uc) + "hit"), drawTooltip(gameFontMed, f + 96 * a, g + 12, h, 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 24, "AGI " + Gb[Ka], 16777215, 0), a || drawTooltip(gameFontMed, f + 96 * a, g + 36, "RANGE " + Hb[Ka], 16777215, 0), a ? -1 == ab[Ka] ? drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "EMIT " + ab[Ka], 16777215, 0) : drawTooltip(gameFontMed, f + 96 * a, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), drawTooltip(gameFontMed, f + 96 * a, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f + 96 * a, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f + 96 * a, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && (h = getModifiedStatVal(Ka, c, ud), heroHasAccessoryEffect(Ka, ye) && (h += countAccessoryLvlBonuses(Ka, ye)), drawTooltip(gameFontMed, f + 96 * a, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
+            itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f + 96 * a, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 96 * a, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], 16777215, 0)));
         g += 96;
         k = ["ARMS", "CHARGE"];
         for (a = 0; 2 > a; a++) c = partyEquipmentTable[Ka][a], b = f + 28 * a, d = g, drawRect(b, d, 24, 24, 0), fh = 2, h = itemList[c][Mc], drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0, drawText(gameFontSmall, b + 12, d + 0, k[a], 16777215, 0), Wg(b, d, 24, 24, c, a)
@@ -1551,17 +1555,17 @@ function drawGameUI() {
         g = 14;
         drawRect(f - 6, g - 6, 204, 260, stageListArray[currentStage][Yg]);
         c = Jc[Na][28 * Oa + Pa];
-        0 != $b[c] && 1 == currentStage && 2 >= Na && (drawText(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
-            a = Ve(c, wd), 0 == a ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : $b[c] < a ? (Zb = -1, h = Ve(c, xd) * $b[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), $b[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
-        0 != $b[c] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + $b[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawTooltip(gameFontMed,
+        0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na && (drawText(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
+            a = Ve(c, wd), 0 == a ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : itemForgeLvls[c] < a ? (Zb = -1, h = Ve(c, xd) * itemForgeLvls[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), itemForgeLvls[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
+        0 != itemForgeLvls[c] && (10 > itemList[c][Nc] ? (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawTooltip(gameFontMed,
             f, g + 12, h, 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawTooltip(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawTooltip(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawTooltip(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawTooltip(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawTooltip(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawTooltip(gameFontMed, f, g + 60, "    long", 16764057, 0), drawTooltip(gameFontMed, f, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    physical", 10066329,
-            0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + $b[c], -1, 0), d = 1, a = Ve(c, heroHealthModifierCol),
-            0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && drawTooltip(gameFontMed, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][ge] && drawTooltip(gameFontMed, f, g + 12, itemList[c][fe] + itemList[c][ge] + itemList[c][he], 16777215, 0), 0 != itemList[c][je] && drawTooltip(gameFontMed, f, g + 24, itemList[c][ie] + itemList[c][je] + itemList[c][ke], 16777215, 0)));
+            0), 1 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawTooltip(gameFontMed, f, g + 72, "    poison", 52224, 0), a = Xe(c, hd), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "RANGE +" + a + "%", 16777215, 0), a = Xe(c, ld), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0), a = Xe(c, Td), -1 != a && drawTooltip(gameFontMed, f + 84, g + 72, "COUNT +" + a + "%", 16777215, 0)) : 20 > itemList[c][Nc] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), d = 1, a = Ve(c, heroHealthModifierCol),
+            0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "LP +" + a, 16777215, 0), d++), a = Ve(c, be), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "DF +" + a, 16777215, 0), d++), a = Ve(c, ce), 0 < a && (drawTooltip(gameFontMed, f, g + 12 * d, "MAGIC DF " + a + "%", 16777215, 0), d++), a = Ve(c, de), 0 < a && drawTooltip(gameFontMed, f, g + 12 * d, "DODGE +" + a, 16777215, 0)) : (gameFontMed.a = 4, drawTooltip(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][accessoryPrimaryValueCol] && drawTooltip(gameFontMed, f, g + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 0 != itemList[c][accessorySecondaryValueCol] && drawTooltip(gameFontMed, f, g + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)));
         Zb = -1;
         k = Na;
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isInventoryVisible = false);
         for (a = 0; 28 > a; a++) c = Jc[Na][28 * Oa + a], b = f + a % 7 * 28, d = g + 84 + 28 * ~~(a / 7), drawRect(b, d, 24, 24, 0),
-            0 < $b[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? isMouseReleased && (Pa = a) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != $b[c] && (-1 == h ? (drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[Ka][k] = c)) : h == Ka ? (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][Mc], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc], itemList[c][$d], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][Pc], itemList[c][$d]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][Pc]), fh = 0), a == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != a ? isMouseReleased && (Pa = a) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[Ka][k] = c)) : h == Ka ? (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[Ka][k] = 0)) : (drawTooltip(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawTooltip(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[Ka][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawTooltip(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawTooltip(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawTooltip(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (a = 0; 5 > a; a++) {
@@ -1591,7 +1595,7 @@ function drawGameUI() {
             else if (drawTooltip(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyAttr0], 16777215, 0), drawTooltip(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][enemyHealthCol], 16777215, 0), drawTooltip(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][enemyAttr65], 16777215, 0), drawTooltip(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][enemyAttr64], 16777215, 0), b = 0, 0 != enemyCatalog[c][enemyAttr39] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != enemyCatalog[c][enemyAttr40] && (drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != enemyCatalog[c][enemyAttr41] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != enemyCatalog[c][enemyAttr42] && (drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != enemyCatalog[c][enemyAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && drawTooltip(gameFontMed, f, g + 48, "RES ", 16777215, 0), drawTooltip(gameFontMed, f + 80, g + 0,
                     "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = enemyCatalog[c][enemyAttr66], drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 2);
             else
-                for (d = b = 0; 4 > b; b++) a = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= a || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, drawTooltip(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][itemNameCol], -1, 0), 0 < $b[a] && (drawRect(f +
+                for (d = b = 0; 4 > b; b++) a = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= a || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[a][Mc], 10 == itemList[a][Nc] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc], itemList[a][$d], true) : 20 == itemList[a][Nc] || 30 == itemList[a][Nc] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[a][Pc], itemList[a][$d]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[a][Pc]), fh = 0, gameFontMed.a = 4, drawTooltip(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[a][itemNameCol], -1, 0), 0 < itemForgeLvls[a] && (drawRect(f +
                     80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, a, 0)), d++);
             for (a = 0; a < oh[Qa].length; a++) c = oh[Qa][a], b = f + a % 7 * 28, d = g + 96 + 28 * ~~(a / 7), drawRect(b, d, 24, 24, 0), a == Ra && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (Ra = a)), Ch(c, b + 12, d + 20, 2)
         }
@@ -1839,14 +1843,14 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
                 $h[x] = 2;
                 0 == c ? y = max(y - Jb[x], 1) : 6 == c ? y = max(y - Kb[x], 1) : 1 <= c && (y = max(floor(y * (100 - Lb[x]) / 100), 1));
                 randFloat(100) < Mb[x] && (y = 0, J = 16744576, $h[x] = 0);
-                1 == c && Ze(x,
-                    Qe) && (y = max(y - $e(x, Qe), 1));
-                if (2 == c) ch[x] = 120, hi[x] = d, Ze(x, Re) && (hi[x] = max(floor(hi[x] * (100 - $e(x, Re)) / 100), 0));
-                else if (3 == c) Ze(x, Se) && randFloat(100) < $e(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
+                1 == c && heroHasAccessoryEffect(x,
+                    Qe) && (y = max(y - countAccessoryLvlBonuses(x, Qe), 1));
+                if (2 == c) ch[x] = 120, hi[x] = d, heroHasAccessoryEffect(x, Re) && (hi[x] = max(floor(hi[x] * (100 - countAccessoryLvlBonuses(x, Re)) / 100), 0));
+                else if (3 == c) heroHasAccessoryEffect(x, Se) && randFloat(100) < countAccessoryLvlBonuses(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
                 else if (4 == c) {
                     dh[x] = d;
                     ii[x] = y;
-                    Ze(x, Te) && (dh[x] = max(dh[x] - 60 * $e(x, Te), 0));
+                    heroHasAccessoryEffect(x, Te) && (dh[x] = max(dh[x] - 60 * countAccessoryLvlBonuses(x, Te), 0));
                     y = x;
                     continue
                 } else 5 == c && (bh[x] = floor(d / 10));
@@ -1905,12 +1909,12 @@ function xi(a, b, c, d, f, g) {
         x = selectedItem[ed],
         K = selectedItem[fd],
         ba = selectedItem[gd],
-        U = getStatModifierVal(a, selectedItemIdx, hd),
-        na = getStatModifierVal(a, selectedItemIdx, id),
-        Fa = getStatModifierVal(a, selectedItemIdx, jd),
+        U = getModifiedStatVal(a, selectedItemIdx, hd),
+        na = getModifiedStatVal(a, selectedItemIdx, id),
+        Fa = getModifiedStatVal(a, selectedItemIdx, jd),
         Ga = selectedItem[kd],
-        Ca = getStatModifierVal(a, selectedItemIdx, ld);
-    !Ze(a, qe) || 4 != selectedItem[Nc] && 5 != selectedItem[Nc] || (Ca += af(a, qe));
+        Ca = getModifiedStatVal(a, selectedItemIdx, ld);
+    !heroHasAccessoryEffect(a, qe) || 4 != selectedItem[Nc] && 5 != selectedItem[Nc] || (Ca += sumAccessorySecondaryValues(a, qe));
     var ua = selectedItem[md],
         fb = selectedItem[nd];
     2 == fb && (fb = b >> 8);
@@ -1919,18 +1923,18 @@ function xi(a, b, c, d, f, g) {
         Bb = selectedItem[qd],
         gc = selectedItem[rd],
         Qb = selectedItem[sd],
-        Rb = getStatModifierVal(a, selectedItemIdx, Uc),
+        Rb = getModifiedStatVal(a, selectedItemIdx, Uc),
         gb = Db[4 * c + a],
         jb = Eb[4 * c + a];
-    Ze(a, we) && 0 == selectedItem[td] && randFloat(100) < $e(a, we) && (gb = floor(gb *
-        (100 + af(a, we)) / 100), jb = floor(jb * (100 + af(a, we)) / 100));
+    heroHasAccessoryEffect(a, we) && 0 == selectedItem[td] && randFloat(100) < countAccessoryLvlBonuses(a, we) && (gb = floor(gb *
+        (100 + sumAccessorySecondaryValues(a, we)) / 100), jb = floor(jb * (100 + sumAccessorySecondaryValues(a, we)) / 100));
     c = Fb[4 * c + a];
     var La = selectedItem[Yc],
         hc = selectedItem[td],
-        Ib = getStatModifierVal(a, selectedItemIdx, ud);
-    Ze(a, xe) && 1 == selectedItem[td] && (Ib += $e(a, xe));
-    Ze(a, ye) && 2 == selectedItem[td] && (Ib += $e(a, ye));
-    Ze(a, Ie) && 4 == selectedItem[td] && (Ib += 60 * $e(a, Ie));
+        Ib = getModifiedStatVal(a, selectedItemIdx, ud);
+    heroHasAccessoryEffect(a, xe) && 1 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(a, xe));
+    heroHasAccessoryEffect(a, ye) && 2 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(a, ye));
+    heroHasAccessoryEffect(a, Ie) && 4 == selectedItem[td] && (Ib += 60 * countAccessoryLvlBonuses(a, Ie));
     var ic = selectedItem[zd],
         jc = selectedItem[Ad],
         kc = selectedItem[Bd],
@@ -1945,7 +1949,7 @@ function xi(a, b, c, d, f, g) {
         tc = selectedItem[Od],
         uc = selectedItem[Pd],
         vc = selectedItem[Sd],
-        wc = getStatModifierVal(a, selectedItemIdx, Td),
+        wc = getModifiedStatVal(a, selectedItemIdx, Td),
         xc = selectedItem[Ud],
         yc = selectedItem[Vd],
         zc = selectedItem[Wd],
@@ -1953,8 +1957,8 @@ function xi(a, b, c, d, f, g) {
         Qf = selectedItem[Yd],
         Rf = selectedItem[Zd],
         Sf = selectedItem[Cd],
-        selectedItemIdx = getStatModifierVal(a, selectedItemIdx, Ed);
-    Ze(a, Ae) && 3 == selectedItem[td] && 20 == selectedItem[Ad] && (selectedItemIdx += $e(a, Ae));
+        selectedItemIdx = getModifiedStatVal(a, selectedItemIdx, Ed);
+    heroHasAccessoryEffect(a, Ae) && 3 == selectedItem[td] && 20 == selectedItem[Ad] && (selectedItemIdx += countAccessoryLvlBonuses(a, Ae));
     var selectedItem = selectedItem[Fd], Ac, Rg;
     Ac = Q[g][yi].x;
     Rg = Q[g][yi].y;
@@ -1972,7 +1976,7 @@ function xi(a, b, c, d, f, g) {
         Vec2Set(h, Ac - d, Rg - f);
         var We =
             0 < n ? n - 1 : 16;
-        Ze(a, Je) && (We = floor(We / $e(a, Je)));
+        heroHasAccessoryEffect(a, Je) && (We = floor(We / countAccessoryLvlBonuses(a, Je)));
         Ac = floor(512 * Vec2Angle(h) / PI2);
         Ac -= floor((c - 1) * We / 2);
         for (l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We
@@ -2041,7 +2045,7 @@ function updatePlayerParty() {
             else if (20 >
                 Xh[a]) S(O[a][0], Mh[a][0], -.2, .99), S(O[a][1], Mh[a][1], 0, .99), S(O[a][2], Mh[a][2], -.1, .99), S(O[a][3], Mh[a][3], 0, .99), S(O[a][4], Mh[a][4], 0, .99), S(O[a][5], Mh[a][5], 0, .99), S(O[a][6], Mh[a][6], 0, .99), S(O[a][7], Mh[a][7], 0, .99), S(O[a][8], Mh[a][8], 0, .99), S(O[a][9], Mh[a][9], .3, .99), S(O[a][10], Mh[a][10], .3, .99);
             else
-                for (b = 0; 11 > b; b++) Ze(a, Pe) ? S(O[a][b], Mh[a][b], .05 / $e(a, Pe), .99) : S(O[a][b], Mh[a][b], .05, .99);
+                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, Pe) ? S(O[a][b], Mh[a][b], .05 / countAccessoryLvlBonuses(a, Pe), .99) : S(O[a][b], Mh[a][b], .05, .99);
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
             if (0 == d && Wh[a] != Lh)
                 for (Wh[a] = Lh, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
@@ -2059,7 +2063,7 @@ function updatePlayerParty() {
                     Zh[a] = Gb[a] + randIntRange(-1, 1);
                     gi[a][2] = d < Q[c][yi].x ? 1 : 0;
                     k = 0; - 1 == ab[a] ? ($a[a] =
-                        0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = clamp($a[a] + bb[a], 0, ab[a]), fi[a] = 0, Ze(a, re) && 100 * rand() < $e(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][Nc], Ze(a, se) && 100 * rand() < $e(a, se) && ($a[a] = ab[a]));
+                        0, fi[a] = 0) : $a[a] < ab[a] || 0 == ab[a] ? ($a[a] = clamp($a[a] + bb[a], 0, ab[a]), fi[a] = 0, heroHasAccessoryEffect(a, re) && 100 * rand() < countAccessoryLvlBonuses(a, re) && ($a[a] = ab[a])) : ($a[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][Nc], heroHasAccessoryEffect(a, se) && 100 * rand() < countAccessoryLvlBonuses(a, se) && ($a[a] = ab[a]));
                     if (0 != b)
                         if (3 == b) Vec2Sub(g, Q[c][yi], O[a][5]), Vec2Sub(h, Q[c][yi], O[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), O[a][5].add(g), O[a][4].sub(g), f.set(O[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), O[a][6].add(h), O[a][3].sub(h), f.set(O[a][6]), k = 1540, ei[a] = 1), Uh[a].set(Q[c][yi]), Vh[a] = 5;
                         else if (4 == b) {
@@ -3097,7 +3101,7 @@ function cl(a) {
     for (b = enemyAttr67; b < enemyAttr67 + 8; b += 2)
         if (c = enemyCatalog[enemyTypeArray[a]][b], 0 != c) {
             var d = floor(100 * (100 + Wb) / 100);
-            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[a]][b + 1] * 100 < d && 1 > $b[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
+            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[a]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
         } c = floor(enemyCatalog[enemyTypeArray[a]][enemyAttr65] * (100 + Vb) / 100);
     1 > 3 * rand() && Gh(Q[a][0].x, Q[a][0].y, 2, c, 0);
     30 != drawState && Hc++;
@@ -4164,7 +4168,7 @@ function zg() {
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (frameBufferArray = null);
     for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
-        $b[Bm[a]] < Cm[a] && ($b[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), Gm(a--)))
+        itemForgeLvls[Bm[a]] < Cm[a] && (itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), Gm(a--)))
 }
 mainWindow.fff = Dg;
 

@@ -71,7 +71,7 @@ var partyMemberCount = 1,
     partyElemLvls = [0, 0, 0, 0],
     partyDodgeLvls = [0, 0, 0, 0],
     partyStats = [partyHealthLvls, partyShortAtkLvls, partyMidAtkLvls, partyLongAtkLvls, partyPhysLvls, partyElemLvls, partyDodgeLvls],
-    partyMaxLP_vals = [0, 0, 0, 0],
+    partyMaxLPBonus_vals = [0, 0, 0, 0],
     partyShortAtk_vals = [0, 0, 0, 0],
     partyMidAtk_vals = [0, 0, 0, 0],
     partyLongAtk_vals = [0, 0, 0, 0],
@@ -648,169 +648,199 @@ var shrineRewardOptions = [
         ["ONIGIRI", 45],
         ["Level Up", 60]
     ],
-    gf = "",
-    hf = 0,
-    jf = 0,
-    kf = 0,
-    D = new Int32Array(5E3),
+    gameSaveString = "",
+    gameSaveStatusShownDuration = 0,
+    gameStatusCode = 0,
+    statusShownDuration = 0,
+    gameSaveBuffer = new Int32Array(5E3),
     lf = new Int32Array(5E3);
-mainWindow.fff = mf;
+mainWindow.fff = saveGame;
 
-function mf() {
-    var a, b, c, d, f;
-    a = 0;
-    D[a++] = 1;
-    D[a++] = 0;
-    D[a++] = 0;
-    D[a++] = randInt(64);
-    D[a++] = randInt(64);
-    for (b = 0; 8 > b; b++) D[a++] = da[b];
-    D[a++] = 0;
-    D[a++] = currentStage >> 6 & 63;
-    D[a++] = currentStage >> 0 & 63;
-    for (b = 0; 4 > b; b++) D[a++] = 0, D[a++] = 0, D[a++] = 0;
-    D[a++] = partyMemberCount;
-    D[a++] = partyLevel >> 6 & 63;
-    D[a++] = partyLevel >> 0 & 63;
-    D[a++] = partyEXPAccum >> 18 & 63;
-    D[a++] = partyEXPAccum >> 12 & 63;
-    D[a++] = partyEXPAccum >> 6 & 63;
-    D[a++] = partyEXPAccum >> 0 & 63;
-    D[a++] = partyGold >> 18 & 63;
-    D[a++] = partyGold >> 12 & 63;
-    D[a++] = partyGold >> 6 & 63;
-    D[a++] = partyGold >> 0 & 63;
+function saveGame() {
+    let b, c;
+
+    let a = 0;
+    gameSaveBuffer[a++] = 1;
+    gameSaveBuffer[a++] = 0;
+    gameSaveBuffer[a++] = 0;
+    gameSaveBuffer[a++] = randInt(64);
+    gameSaveBuffer[a++] = randInt(64);
+    for (b = 0; 8 > b; b++) 
+        gameSaveBuffer[a++] = da[b];
+
+    gameSaveBuffer[a++] = 0;
+    gameSaveBuffer[a++] = currentStage >> 6 & 63;
+    gameSaveBuffer[a++] = currentStage >> 0 & 63;
+
+    for (b = 0; 4 > b; b++) {
+        gameSaveBuffer[a++] = 0; 
+        gameSaveBuffer[a++] = 0;
+        gameSaveBuffer[a++] = 0;
+    }
+    gameSaveBuffer[a++] = partyMemberCount;
+    gameSaveBuffer[a++] = partyLevel >> 6 & 63;
+    gameSaveBuffer[a++] = partyLevel >> 0 & 63;
+    gameSaveBuffer[a++] = partyEXPAccum >> 18 & 63;
+    gameSaveBuffer[a++] = partyEXPAccum >> 12 & 63;
+    gameSaveBuffer[a++] = partyEXPAccum >> 6 & 63;
+    gameSaveBuffer[a++] = partyEXPAccum >> 0 & 63;
+    gameSaveBuffer[a++] = partyGold >> 18 & 63;
+    gameSaveBuffer[a++] = partyGold >> 12 & 63;
+    gameSaveBuffer[a++] = partyGold >> 6 & 63;
+    gameSaveBuffer[a++] = partyGold >> 0 & 63;
+    for (let hidx = 0; 4 > hidx; hidx++) {
+        gameSaveBuffer[a++] = partySP[hidx] >> 6 & 63;
+        gameSaveBuffer[a++] = partySP[hidx] >> 0 & 63;
+    }
+    for (let hidx = 0; 4 > hidx; hidx++) {
+        gameSaveBuffer[a++] = partyLP[hidx] >> 12 & 63;
+        gameSaveBuffer[a++] = partyLP[hidx] >> 6 & 63;
+        gameSaveBuffer[a++] = partyLP[hidx] >> 0 & 63;
+    }
+    for (let sidx = 0; 4 > sidx; sidx++)
+        for (let hidx = 0; hidx < partyStats.length; hidx++) {
+            gameSaveBuffer[a++] = partyStats[hidx][sidx] >> 6 & 63;
+            gameSaveBuffer[a++] = partyStats[hidx][sidx] >> 0 & 63;
+        }
+    for (let hidx = 0; 4 > hidx; hidx++)
+        for (let aidx = 0; 8 > aidx; aidx++) {
+            gameSaveBuffer[a++] = partyEquipmentTable[hidx][aidx] >> 6 & 63;
+            gameSaveBuffer[a++] = partyEquipmentTable[hidx][aidx] >> 0 & 63;
+        }
+
+    gameSaveBuffer[a++] = 4;
+    gameSaveBuffer[a++] = 0;
+    for (let i = 0; 256 > i; i++) 
+        gameSaveBuffer[a++] = itemForgeLvls[i];
+
+    gameSaveBuffer[a++] = 0;
+    gameSaveBuffer[a++] = 10;
+
+    for (let b = 0; 9 > b; b++) 
+        gameSaveBuffer[a++] = db[b];
+
+    gameSaveBuffer[a++] = eb;
+    gameSaveBuffer[a++] = stageCount >> 6 & 63;
+    gameSaveBuffer[a++] = stageCount >> 0 & 63;
+    for (b = 0; b < stageCount; b++) 
+        gameSaveBuffer[a++] = ec[b];
+
+    gameSaveBuffer[a++] = enemyTypeCount >> 6 & 63;
+    gameSaveBuffer[a++] = enemyTypeCount >> 0 & 63;
+    for (b = 0; b < enemyTypeCount; b++) 
+        gameSaveBuffer[a++] = Bc[b];
+    
+    let f = 5;
+    gameSaveBuffer[a++] = f >> 6 & 63;
+    gameSaveBuffer[a++] = f >> 0 & 63;
     for (b = 0; 4 > b; b++) 
-        D[a++] = partySP[b] >> 6 & 63, 
-        D[a++] = partySP[b] >> 0 & 63;
-    for (b = 0; 4 > b; b++) 
-        D[a++] = partyLP[b] >> 12 & 63, 
-        D[a++] = partyLP[b] >> 6 & 63, 
-        D[a++] = partyLP[b] >> 0 & 63;
-    for (b = 0; 4 > b; b++)
-        for (c = 0; c < partyStats.length; c++) 
-            D[a++] = partyStats[c][b] >> 6 & 63, 
-            D[a++] = partyStats[c][b] >> 0 & 63;
-    for (b = 0; 4 > b; b++)
-        for (c = 0; 8 > c; c++) D[a++] = partyEquipmentTable[b][c] >> 6 & 63, D[a++] = partyEquipmentTable[b][c] >> 0 & 63;
-    D[a++] = 4;
-    for (b = D[a++] = 0; 256 > b; b++) D[a++] = itemForgeLvls[b];
-    D[a++] = 0;
-    D[a++] = 10;
-    for (b = 0; 9 > b; b++) D[a++] = db[b];
-    D[a++] = eb;
-    D[a++] = stageCount >> 6 & 63;
-    D[a++] = stageCount >> 0 & 63;
-    for (b = 0; b < stageCount; b++) D[a++] = ec[b];
-    D[a++] = enemyTypeCount >> 6 & 63;
-    D[a++] = enemyTypeCount >> 0 & 63;
-    for (b = 0; b < enemyTypeCount; b++) D[a++] = Bc[b];
-    f = 5;
-    D[a++] = f >> 6 & 63;
-    D[a++] = f >> 0 & 63;
-    for (b = 0; 4 > b; b++) D[a++] = ib[b];
-    D[a++] = kb;
-    D[a++] = badgeCount >> 6 & 63;
-    D[a++] = badgeCount >> 0 & 63;
-    for (b = 0; b < badgeCount; b++) D[a++] =
-        badgeCounterArray[b];
-    D[a++] = Ec >> 6 & 63;
-    D[a++] = Ec >> 0 & 63;
-    for (b = 0; b < Ec; b++) D[a++] = Fc[b];
+        gameSaveBuffer[a++] = ib[b];
+
+    gameSaveBuffer[a++] = kb;
+    gameSaveBuffer[a++] = badgeCount >> 6 & 63;
+    gameSaveBuffer[a++] = badgeCount >> 0 & 63;
+    for (b = 0; b < badgeCount; b++) gameSaveBuffer[a++] = badgeCounterArray[b];
+    gameSaveBuffer[a++] = Ec >> 6 & 63;
+    gameSaveBuffer[a++] = Ec >> 0 & 63;
+    for (b = 0; b < Ec; b++) gameSaveBuffer[a++] = Fc[b];
     f = 4;
-    D[a++] = f >> 6 & 63;
-    D[a++] = f >> 0 & 63;
-    for (b = 0; b < f; b++) D[a++] = of [b];
-    d = 0;
-    for (b = 3; b < a; b++) d += D[b];
-    D[1] = d >> 6 & 63;
-    D[2] = d >> 0 & 63;
-    for (b = d = 0; b < a;)
-        if (c = D[b++], lf[d++] = c, 1 >= c) {
-            for (f = 0; b < a && 63 != f && c == D[b]; b++) f++;
-            lf[d++] = f
-        } a = randInt(64);
-    f = randInt(64);
-    gf = "";
-    c = a + d & 63;
-    for (b = 0; b < d; b++) gf += pf[lf[b] + c & 63], c = (c * c >> 4) + lf[b] + b + f & 65535;
-    gf += pf[a];
-    gf += pf[f];
-    gf += pf[c >> 6 & 63];
-    b = gf += pf[c >> 0 & 63];
-    currentStorage && ("" != b ? currentStorage.setItem("ranger2", b) : currentStorage.removeItem("ranger2"));
-    hf = 50
-}
-mainWindow.fff = rf;
+    gameSaveBuffer[a++] = f >> 6 & 63;
+    gameSaveBuffer[a++] = f >> 0 & 63;
+    for (b = 0; b < f; b++) gameSaveBuffer[a++] = of [b];
+    let gameSaveHash = 0;
+    for (b = 3; b < a; b++) gameSaveHash += gameSaveBuffer[b];
 
-function rf(a) {
+    gameSaveBuffer[1] = gameSaveHash >> 6 & 63;
+    gameSaveBuffer[2] = gameSaveHash >> 0 & 63;
+    for (b = gameSaveHash = 0; b < a;)
+        if (c = gameSaveBuffer[b++], lf[gameSaveHash++] = c, 1 >= c) {
+            for (f = 0; b < a && 63 != f && c == gameSaveBuffer[b]; b++) f++;
+            lf[gameSaveHash++] = f
+        } 
+    a = randInt(64);
+    f = randInt(64);
+    gameSaveString = "";
+    c = a + gameSaveHash & 63;
+    for (b = 0; b < gameSaveHash; b++) {
+        gameSaveString += encodingCharTable[lf[b] + c & 63];
+        c = (c * c >> 4) + lf[b] + b + f & 65535;
+    }
+    gameSaveString += encodingCharTable[a];
+    gameSaveString += encodingCharTable[f];
+    gameSaveString += encodingCharTable[c >> 6 & 63];
+    let saveItem = gameSaveString += encodingCharTable[c >> 0 & 63];
+    currentStorage && ("" != saveItem ? currentStorage.setItem("ranger2", saveItem) : currentStorage.removeItem("ranger2"));
+    gameSaveStatusShownDuration = 50
+}
+mainWindow.fff = loadGame;
+
+function loadGame(saveString) {
     var b, c, d, f, g;
-    d = a.length - 4;
+    d = saveString.length - 4;
     if (0 >= d) return 1;
-    if (null == a.match(/^[0-9A-Za-z.*]+$/)) return 2;
+    if (null == saveString.match(/^[0-9A-Za-z.*]+$/)) return 2;
     if (10 > d || 5E3 < d) return 3;
-    b = sf[a[d + 0]];
-    f = sf[a[d + 1]];
+    b = sf[saveString[d + 0]];
+    f = sf[saveString[d + 1]];
     c = b + d & 63;
-    for (b = 0; b < d; b++) lf[b] = sf[a[b]] - c & 63, c = (c * c >> 4) + lf[b] + b + f & 65535;
-    if (sf[a[d + 2]] != (c >> 6 & 63) || sf[a[d + 3]] != (c >> 0 & 63)) return 4;
-    for (a = c = 0; a < d;)
-        if (f = lf[a++], D[c++] = f, 1 >= f)
-            for (g = lf[a++], b = 0; b < g; b++) D[c++] = f;
+    for (b = 0; b < d; b++) lf[b] = sf[saveString[b]] - c & 63, c = (c * c >> 4) + lf[b] + b + f & 65535;
+    if (sf[saveString[d + 2]] != (c >> 6 & 63) || sf[saveString[d + 3]] != (c >> 0 & 63)) return 4;
+    for (saveString = c = 0; saveString < d;)
+        if (f = lf[saveString++], gameSaveBuffer[c++] = f, 1 >= f)
+            for (g = lf[saveString++], b = 0; b < g; b++) gameSaveBuffer[c++] = f;
     d = 0;
-    for (b = 3; b < c; b++) d += D[b];
-    if (D[1] != (d >> 6 & 63) || D[2] != (d >> 0 & 63)) return 4;
+    for (b = 3; b < c; b++) d += gameSaveBuffer[b];
+    if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4;
     for (b = 0; 8 > b; b++)
-        if (D[b + 5] != da[b]) return 5;
+        if (gameSaveBuffer[b + 5] != da[b]) return 5;
     bc();
-    a = 0;
-    a++;
-    a++;
-    a++;
-    a++;
-    a++;
-    a += 8;
-    a++;
-    a++;
-    a++;
-    for (b = 0; 4 > b; b++) a++, a++, a++;
-    partyMemberCount = D[a++];
-    partyLevel = (D[a++] << 6) + D[a++];
-    partyEXPAccum = (D[a++] << 18) + (D[a++] << 12) + (D[a++] << 6) + D[a++];
-    partyGold = (D[a++] << 18) + (D[a++] << 12) + (D[a++] << 6) + D[a++];
-    for (b = 0; 4 > b; b++) partySP[b] = (D[a++] << 6) + D[a++];
-    for (b = 0; 4 > b; b++) partyLP[b] = (D[a++] << 12) + (D[a++] << 6) + D[a++];
+    saveString = 0;
+    saveString++;
+    saveString++;
+    saveString++;
+    saveString++;
+    saveString++;
+    saveString += 8;
+    saveString++;
+    saveString++;
+    saveString++;
+    for (b = 0; 4 > b; b++) saveString++, saveString++, saveString++;
+    partyMemberCount = gameSaveBuffer[saveString++];
+    partyLevel = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    partyEXPAccum = (gameSaveBuffer[saveString++] << 18) + (gameSaveBuffer[saveString++] << 12) + (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    partyGold = (gameSaveBuffer[saveString++] << 18) + (gameSaveBuffer[saveString++] << 12) + (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; 4 > b; b++) partySP[b] = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; 4 > b; b++) partyLP[b] = (gameSaveBuffer[saveString++] << 12) + (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; c < partyStats.length; c++) partyStats[c][b] = (D[a++] << 6) + D[a++];
+        for (c = 0; c < partyStats.length; c++) partyStats[c][b] = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; 8 > c; c++) partyEquipmentTable[b][c] = (D[a++] << 6) + D[a++];
-    g = (D[a++] << 6) + D[a++];
-    for (b = 0; b < g; b++) itemForgeLvls[b] = D[a++];
-    g = (D[a++] << 6) + D[a++];
+        for (c = 0; 8 > c; c++) partyEquipmentTable[b][c] = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; b < g; b++) itemForgeLvls[b] = gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     if (!g) return 0;
-    for (b = 0; 9 > b; b++) db[b] =
-        D[a++];
-    eb = D[a++];
-    g = (D[a++] << 6) + D[a++];
+    for (b = 0; 9 > b; b++) db[b] = gameSaveBuffer[saveString++];
+    eb = gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) ec[b] = D[a++];
-    g = (D[a++] << 6) + D[a++];
-    for (b = 0; b < g; b++) Bc[b] = D[a++];
-    g = (D[a++] << 6) + D[a++];
+    for (b = 0; b < g; b++) ec[b] = gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; b < g; b++) Bc[b] = gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     if (!g) return 0;
     if (5 <= g) {
-        for (b = 0; 4 > b; b++) ib[b] = D[a++];
-        kb = D[a++]
+        for (b = 0; 4 > b; b++) ib[b] = gameSaveBuffer[saveString++];
+        kb = gameSaveBuffer[saveString++]
     }
-    g = (D[a++] << 6) + D[a++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) badgeCounterArray[b] = D[a++];
-    g = (D[a++] << 6) + D[a++];
+    for (b = 0; b < g; b++) badgeCounterArray[b] = gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) Fc[b] = D[a++];
-    g = (D[a++] << 6) + D[a++];
+    for (b = 0; b < g; b++) Fc[b] = gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) of [b] = D[a++];
+    for (b = 0; b < g; b++) of [b] = gameSaveBuffer[saveString++];
     return 0
 }
 var partyChecksum = 0,
@@ -968,9 +998,9 @@ function gameInit(a, b) {
     }
     if (2 == gameInitStage) {
         currentStorage ? (c = currentStorage.getItem("ranger2"),
-            gf = null == c ? "" : c) : gf = "";
-        jf = rf(gf);
-        kf = 100;
+            gameSaveString = null == c ? "" : c) : gameSaveString = "";
+        gameStatusCode = loadGame(gameSaveString);
+        statusShownDuration = 100;
         itemHashTable = Array(256);
         for (c = 0; 256 > c; c++)
             if (itemHashTable[c] = 0, itemList[c])
@@ -985,7 +1015,7 @@ function gameInit(a, b) {
                 for (d = 0; d < enemyCatalog[c].length; d++) itemCatalogHashTable[c] = hashAdjust(itemCatalogHashTable[c], enemyCatalog[c][d]);
         for (c = zf = 0; c < Jc.length; c++)
             for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
-        updatePartyChecksum();
+        // updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
         setupAnimRequest()
     }
@@ -996,13 +1026,12 @@ function drawCanvas() {
     if (0 < iterIdxTemp_3) iterIdxTemp_3++;
     else {
         var a, b, c;
-        for (a = CANVAS_WIDTH * CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
+        for (let a = CANVAS_WIDTH * CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
         var d;
 
         // This part is for detecting if the game state has been tampered to prevent cheating.
         // It literally destroys the frame buffer if tampering is detected. 
-        // Well done, ha55ii... 
-        
+        // Well done, ha55ii....
         // if (0 > r || 4 < r) frameBufferArray = null;
         // if (0 > Ua || 99 < Ua) frameBufferArray = null;
         // if (0 > Va || 9999999 < Va) frameBufferArray = null;
@@ -1018,7 +1047,6 @@ function drawCanvas() {
         //     if (0 > sb[a] || 25 < sb[a]) frameBufferArray = null
         // }
         // if (0 > hb || 9 < hb) frameBufferArray = null;
-        
         // d = uf;
         // d = hashAdjust(d, 0);
         // d = hashAdjust(d, q);
@@ -1040,7 +1068,6 @@ function drawCanvas() {
         //     d = hashAdjust(d, qb[a]), 
         //     d = hashAdjust(d, rb[a]), 
         //     d = hashAdjust(d, sb[a]);
-        
         // for (a = 0; 4 > a; a++)
         //     for (b = 0; 8 > b; b++) d = hashAdjust(d, Yb[a][b]);
         // for (a = 0; 256 > a; a++) d = hashAdjust(d, $b[a]);
@@ -1051,7 +1078,6 @@ function drawCanvas() {
         // for (a = 0; a < Cc; a++) d = hashAdjust(d, Dc[a]);
         // for (a = 0; a < Ec; a++) d = hashAdjust(d, Fc[a]);
         // d != (tf ^ 16777215) && (frameBufferArray = null);
-        
         // for (a = vf; 256 > a; a += 64) {
         //     d = 0;
         //     if (itemList[a])
@@ -1070,22 +1096,21 @@ function drawCanvas() {
         //         for (b = 0; b < itemCatalogArray[a].length; b++) d = hashAdjust(d, itemCatalogArray[a][b]);
         //     d != itemCatalogHashTable[a] && (frameBufferArray = null)
         // }
-
-        for (a = d = 0; a < Jc.length; a++)
-            for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
-        d != zf && (frameBufferArray = null);
+        // for (a = d = 0; a < Jc.length; a++)
+        //     for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
+        // d != zf && (frameBufferArray = null);
 
         vf = vf + 1 & 63;
         if (!drawState) 
             currentStage = 0, 
-            fg[0] = 20, 
-            fg[1] = 28, 
-            fg[2] = 36, 
-            fg[3] = 44, 
-            gg[0] = 45, 
-            gg[1] = 45, 
-            gg[2] = 45, 
-            gg[3] = 45, 
+            partySpawnXs[0] = 20, 
+            partySpawnXs[1] = 28, 
+            partySpawnXs[2] = 36, 
+            partySpawnXs[3] = 44, 
+            partySpawnYs[0] = 45, 
+            partySpawnYs[1] = 45, 
+            partySpawnYs[2] = 45, 
+            partySpawnYs[3] = 45, 
             drawState++;
         else if (1 == drawState) loadLevelData(0) && drawState++;
         else if (2 == drawState || 3 == drawState) { // title menu
@@ -1121,10 +1146,10 @@ function drawCanvas() {
                 drawTextCentered(gameFont, 320, 220, "NEW GAME", 16777215, 10053171),
                 buttonCheckCentered(320, 220, 128, 24) && 
                     (isMouseClicked && 
-                        (drawState = (0 == jf) ? 3 : 4), 
+                        (drawState = (0 == gameStatusCode) ? 3 : 4), 
                         drawLine(256, 228, 384, 228, 11141120)
                     ), 
-                0 == jf && (
+                0 == gameStatusCode && (
                     drawTextCentered(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171), 
                     buttonCheckCentered(320, 260, 128, 24) && (
                         isMouseClicked && (drawState = 5), 
@@ -1144,20 +1169,21 @@ function drawCanvas() {
                     drawLine(256, 268, 384, 268, 11141120)
                 )
             );
+
             drawIconButton(608, 312, 8, "IMPORT", 16777215) && (
                 8 != ca.length 
                 ? drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158) 
                 : isMouseClicked && (
                     a = promptInput("Import Game Data", "")) && (
-                        jf = rf(a), 
-                        kf = 100
+                        gameStatusCode = loadGame(a), 
+                        statusShownDuration = 100
                     )
             );
 
             drawIconButton(608, 352, 9, "EXPORT", 16777215) && (
                 8 != ca.length 
                 ? drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158) 
-                : isMouseClicked && promptInput("Export Game Data", gf)
+                : isMouseClicked && promptInput("Export Game Data", gameSaveString)
             );
             drawRect(0, 408, 640, 16, 0);
             drawTextCentered(gameFont, 320, 417, copyrightText2, -1, 6697728)
@@ -1168,27 +1194,27 @@ function drawCanvas() {
                 bc(), 
                 partyEquipmentTable[0][0] = 4, 
                 currentStage = itemForgeLvls[4] = 1, 
-                fg[0] = 20, 
-                fg[1] = 28, 
-                fg[2] = 36, 
-                fg[3] = 44, 
-                gg[0] = 40, 
-                gg[1] = 40, 
-                gg[2] = 40, 
-                gg[3] = 40, 
+                partySpawnXs[0] = 20, 
+                partySpawnXs[1] = 28, 
+                partySpawnXs[2] = 36, 
+                partySpawnXs[3] = 44, 
+                partySpawnYs[0] = 40, 
+                partySpawnYs[1] = 40, 
+                partySpawnYs[2] = 40, 
+                partySpawnYs[3] = 40, 
                 updatePartyStats()
             ) 
             : 5 == drawState && (
                     cc(), 
                     currentStage = 1, 
-                    fg[0] = 20, 
-                    fg[1] = 28, 
-                    fg[2] = 36, 
-                    fg[3] = 44, 
-                    gg[0] = 40, 
-                    gg[1] = 40, 
-                    gg[2] = 40, 
-                    gg[3] = 40
+                    partySpawnXs[0] = 20, 
+                    partySpawnXs[1] = 28, 
+                    partySpawnXs[2] = 36, 
+                    partySpawnXs[3] = 44, 
+                    partySpawnYs[0] = 40, 
+                    partySpawnYs[1] = 40, 
+                    partySpawnYs[2] = 40, 
+                    partySpawnYs[3] = 40
                 ), 
                 ug = 0, 
                 drawState = 10;
@@ -1256,7 +1282,7 @@ function drawCanvas() {
                     partyLP[a] = 1, 
                     $a[a] = 0;
                 
-                mf();
+                saveGame();
                 for (a = 0; a < partyMemberCount; a++) 
                     partyLP[a] = 0
             } else currentStage != Mg && (
@@ -1275,7 +1301,7 @@ function drawCanvas() {
                 drawState = 10, 
                 Ng = currentStage, 
                 currentStage = Mg, 
-                mf()
+                saveGame()
             );
         else if (
             30 == drawState && (
@@ -1288,17 +1314,17 @@ function drawCanvas() {
             ug = 0;
             drawState = 10;
             currentStage = 1;
-            fg[0] = 20;
-            fg[1] = 28;
-            fg[2] = 36;
-            fg[3] = 44;
-            gg[0] = 40;
-            gg[1] = 40;
-            gg[2] = 40;
-            gg[3] = 40;
-            mf()
+            partySpawnXs[0] = 20;
+            partySpawnXs[1] = 28;
+            partySpawnXs[2] = 36;
+            partySpawnXs[3] = 44;
+            partySpawnYs[0] = 40;
+            partySpawnYs[1] = 40;
+            partySpawnYs[2] = 40;
+            partySpawnYs[3] = 40;
+            saveGame()
         }
-        updatePartyChecksum();
+        // updatePartyChecksum();
         0 < bf && (
             bf--, 
             a = badgeList[cf][3], 
@@ -1322,26 +1348,32 @@ function drawCanvas() {
             a = min(120 - bf - 14, 4), 
             0 < a && drawText(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0)
         );
-        0 < kf 
-        ? (
-            kf--, 
-            10 > kf 
-            ? c = floor(255 * kf / 10) 
-            : c = 255, Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[jf], 0, 0, 0, 0, 140, 0, 0, c, 8, 12)
-        ) 
-        : 0 < hf && (
-            hf--, 
-            10 > hf 
-            ? c = floor(255 * hf / 10) 
-            : c = 255, Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12)
-        )
+
+        if (statusShownDuration > 0) {
+            statusShownDuration--;
+            if (10 > statusShownDuration)
+                c = floor(255 * statusShownDuration / 10);
+            else {
+                c = 255;
+                Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
+            }
+        } else if (gameSaveStatusShownDuration > 0) {
+            gameSaveStatusShownDuration--;
+            if (10 > gameSaveStatusShownDuration) 
+                c = floor(255 * gameSaveStatusShownDuration / 10);
+            else {
+                c = 255;
+                Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);
+            }
+        }
+
     }
 }
 mainWindow.fff = updatePartyStats;
 
 function updatePartyStats() {
     for (let hidx = 0; 4 > hidx; hidx++) {
-        partyMaxLP_vals[hidx] = 10 * partyHealthLvls[hidx];
+        partyMaxLPBonus_vals[hidx] = 10 * partyHealthLvls[hidx];
         partyShortAtk_vals[hidx] = 5 * partyShortAtkLvls[hidx];
         partyMidAtk_vals[hidx] = 5 * partyMidAtkLvls[hidx];
         partyLongAtk_vals[hidx] = 5 * partyLongAtkLvls[hidx];
@@ -1373,7 +1405,7 @@ function updatePartyStats() {
         Pb[hidx] = partyElem_vals[hidx]; 
         Sb[hidx] = partyElem_vals[hidx]; 
         Tb[hidx] = partyElem_vals[hidx];
-        partyMaxLP[hidx] = floor((50 + b) * (100 + partyMaxLP_vals[hidx]) / 100);
+        partyMaxLP[hidx] = floor((50 + b) * (100 + partyMaxLPBonus_vals[hidx]) / 100);
 
         if (heroHasAccessoryEffect(hidx, Oe)) 
             partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, Oe)) / 100);
@@ -1727,7 +1759,7 @@ function drawGameUI() {
         1 == currentStage ? drawTextCentered(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : drawTextCentered(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = stageListArray[currentStage][stageAttr3];
-        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == currentStage ? drawState = 0 : (ug = 0, drawState = 10, currentStage = 1, fg[0] = 20, fg[1] = 28, fg[2] = 36, fg[3] = 44, gg[0] = 40, gg[1] = 40, gg[2] = 40, gg[3] = 40), mf(), isOptionsVisible = false)
+        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == currentStage ? drawState = 0 : (ug = 0, drawState = 10, currentStage = 1, partySpawnXs[0] = 20, partySpawnXs[1] = 28, partySpawnXs[2] = 36, partySpawnXs[3] = 44, partySpawnYs[0] = 40, partySpawnYs[1] = 40, partySpawnYs[2] = 40, partySpawnYs[3] = 40), saveGame(), isOptionsVisible = false)
     }
     if (isShrineUIVisible) {
         f = 224;
@@ -2509,8 +2541,8 @@ for (iterIdxTemp_1 = 0; iterIdxTemp_1 < si; iterIdxTemp_1++) P[iterIdxTemp_1] = 
 var loadedLevelIndex = -1,
     Mg = 0,
     Ng = 0,
-    fg = [0, 0, 0, 0],
-    gg = [0, 0, 0, 0],
+    partySpawnXs = [0, 0, 0, 0],
+    partySpawnYs = [0, 0, 0, 0],
     V = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     Xi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     Mi = 0;
@@ -2534,7 +2566,7 @@ function loadLevelData(a) {
             16737792 == c[d] && 16737792 == c[f] && (P[b][a] = 61);
     for (a = 0; 4 > a; a++) cb[a] = 0;
     ki();
-    for (a = 0; 4 > a; a++) li(a, fg[a], gg[a]);
+    for (a = 0; 4 > a; a++) li(a, partySpawnXs[a], partySpawnYs[a]);
     for (a = 0; 20 > a; a++) V[a] = 0, Xi[a] = 0;
     Mi = 0;
     clearEnemies();
@@ -2579,13 +2611,13 @@ function wg() {
                     c = O[a][1].y;
                 if (4 > b && 0 < stageListArray[currentStage][stageAttr6]) {
                     Mg = stageListArray[currentStage][stageAttr6];
-                    for (var d = 0; 4 > d; d++) fg[d] = 77, gg[d] = c >> 3
+                    for (var d = 0; 4 > d; d++) partySpawnXs[d] = 77, partySpawnYs[d] = c >> 3
                 } else if (636 <= b && 0 < stageListArray[currentStage][stageAttr7])
-                    for (Mg = stageListArray[currentStage][stageAttr7], d = 0; 4 > d; d++) fg[d] = 2, gg[d] = c >> 3;
+                    for (Mg = stageListArray[currentStage][stageAttr7], d = 0; 4 > d; d++) partySpawnXs[d] = 2, partySpawnYs[d] = c >> 3;
                 if (4 > c && 0 < stageListArray[currentStage][stageAttr4])
-                    for (Mg = stageListArray[currentStage][stageAttr4], d = 0; 4 > d; d++) fg[d] = b >> 3, gg[d] = 42;
+                    for (Mg = stageListArray[currentStage][stageAttr4], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 42;
                 else if (356 <= c && 0 < stageListArray[currentStage][stageAttr5])
-                    for (Mg = stageListArray[currentStage][stageAttr5], d = 0; 4 > d; d++) fg[d] = b >> 3, gg[d] = 2
+                    for (Mg = stageListArray[currentStage][stageAttr5], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 2
             } for (a = 0; 20 > a; a++) V[a] = 0;
     for (a = 0; a < enemyCount; a++) V[fj[a]]++;
     for (b = stageAttr9; b < stageListArray[currentStage].length; b += 7) {
@@ -2718,7 +2750,7 @@ function xg() {
             }
         }
     }
-    if (1 == currentStage) 12 == drawState && 1 == ec[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, fg[0] = 33, gg[0] = 24, fg[1] = 35, gg[1] = 24, fg[2] = 44, gg[2] = 24, fg[3] = 46, gg[3] = 24), 12 == drawState && 1 == ec[12] && 1 > h && (Mg = 12, fg[0] = 67, gg[0] = 42, fg[1] = 69, gg[1] = 42, fg[2] = 71, gg[2] = 42, fg[3] = 73, gg[3] = 42);
+    if (1 == currentStage) 12 == drawState && 1 == ec[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == drawState && 1 == ec[12] && 1 > h && (Mg = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
     else if (2 != currentStage)
         if (3 == currentStage) {
             1 == partyMemberCount && 0 == V[0] && (li(partyMemberCount, 25, 14), partyMemberCount++);
@@ -2749,7 +2781,7 @@ function xg() {
             for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
             4 == b && IncrementBadgeCount(19)
         }
-    } else if (6 == currentStage) 12 == drawState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (Mg = 1, fg[0] = 18, gg[0] = 24, fg[1] = 20, gg[1] = 24, fg[2] = 29, gg[2] = 24, fg[3] = 31, gg[3] = 24);
+    } else if (6 == currentStage) 12 == drawState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (Mg = 1, partySpawnXs[0] = 18, partySpawnYs[0] = 24, partySpawnXs[1] = 20, partySpawnYs[1] = 24, partySpawnXs[2] = 29, partySpawnYs[2] = 24, partySpawnXs[3] = 31, partySpawnYs[3] = 24);
     else if (7 == currentStage) {
         if (0 == Xi[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
             if (c = 0, 39 == P[34][75] && c++, 39 == P[35][72] && c++, 39 == P[35][74] && c++, 39 == P[36][75] && c++, 39 == P[38][76] && c++, 1 == c || 2 == c) spawnEnemy(66, 42, 24, 1), V[1]++, Xi[1]++;
@@ -4381,8 +4413,30 @@ function zg() {
     var a, b, c;
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (frameBufferArray = null);
-    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
-        itemForgeLvls[Bm[a]] < Cm[a] && (itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), Gm(a--)))
+    for (a = 0; a < ym; a++) 
+        Am[a].y += .04, 
+        Vec2Scale(Am[a], .98), 
+        c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), 
+        b = ri(zm[a].x, c), 
+        0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), 
+        c > 8 * si + 12 ? (
+            A(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)
+        ) : (
+            c = clamp(zm[a].x + Am[a].x, 16, 623), 
+            b = ri(c, zm[a].y), 
+            0 <= b && 23 >= b || (zm[a].x = c), 
+            100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (
+                2 == Bm[a] ? (
+                    partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)
+                ) : 3 == Bm[a] ? (
+                    db[Cm[a]] = 1, eb++
+                ) : itemForgeLvls[Bm[a]] < Cm[a] && (
+                        itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1
+                    ), 
+                    A(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), 
+                    Gm(a--)
+                )
+        )
 }
 mainWindow.fff = Dg;
 
@@ -4430,11 +4484,11 @@ var copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 3
     fpsName = "fps", //fromCharCode(102, 112, 115),
     canvasTag = "canvas", //fromCharCode(99, 97, 110, 118, 97, 115),
     name2d = "2d", //fromCharCode(50, 100),
-    pf = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK",
+    encodingCharTable = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK",
         //fromCharCode(48, 49, 87, 116, 67, 112, 108, 120, 97, 121, 102, 84, 118, 113, 99, 104, 72, 109, 65, 57, 42, 74, 90, 79, 114, 105, 54, 86, 78, 55, 76, 52, 119, 56, 100, 85, 71, 101, 46, 83, 51, 70, 73, 68, 122, 115, 110, 80, 98, 69, 107, 81, 88,
         //89, 77, 82, 103, 117, 50, 53, 66, 106, 111, 75),
     sf = [];
-for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) sf[pf[iterIdxTemp_1]] = iterIdxTemp_1;
+for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) sf[encodingCharTable[iterIdxTemp_1]] = iterIdxTemp_1;
 var hostnameCheckIdx = 0,
     targetHostname = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
     frameBufferArray = new Int32Array(276480),

@@ -34,7 +34,7 @@ var currentLevelSprite = new Sprite,
     Ha = false,
     Ia = false,
     Ja = false,
-    Ka = 0,
+    selectingHero = 0,
     Ma = 0,
     Na = 0,
     Oa = 0,
@@ -84,12 +84,12 @@ var partyMemberCount = 1,
     Fb = [0, 0, 0, 0, 0, 0, 0, 0],
     Gb = [0, 0, 0, 0],
     Hb = [0, 0, 0, 0],
-    Jb = [0, 0, 0, 0],
-    Kb = [0,
+    heroMeleeDefensesFlatArray = [0, 0, 0, 0],
+    heroProjDefenseFlatArray = [0,
         0, 0, 0
     ],
-    Lb = [0, 0, 0, 0],
-    Mb = [0, 0, 0, 0],
+    heroMagicDefenseFlatArray = [0, 0, 0, 0],
+    heroDodgeChanceArray = [0, 0, 0, 0],
     Nb = [0, 0, 0, 0],
     Ob = [0, 0, 0, 0],
     Pb = [0, 0, 0, 0],
@@ -138,15 +138,13 @@ mainWindow.fff = cc;
 function cc() {
     sa = 0;
     Ba = Da = Ea = Ha = Ia = Ja = ta = isMemberUIVisible = isInventoryVisible = isBestiaryVisible = isBadgesUIVisible = isOptionsVisible = isShrineUIVisible = false;
-    comboMultBonus = Hc = Ic = Ka = Ma = Na = Oa = Pa = 0
+    comboMultBonus = Hc = Ic = selectingHero = Ma = Na = Oa = Pa = 0
 }
 var Jc = [
     [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [7, 8, 12, 13, 14, 16, 18, 20, 22, 23, 25, 27, 34, 35, 39, 40, 44, 46, 47, 48, 55, 56, 57, 58, 59, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 131, 132, 133, 134, 135, 0, 0, 0, 0, 0, 0, 0],
     [28, 29, 30, 31, 32, 33, 36, 37, 45, 60, 0, 0, 0, 0, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 0, 0, 0, 0, 0],
-    [71, 73, 75, 77, 79, 81, 83, 85, 87, 113, 115, 117, 119, 136, 137, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0
-    ],
+    [71, 73, 75, 77, 79, 81, 83, 85, 87, 113, 115, 117, 119, 136, 137, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [72, 74, 76, 78, 80, 82, 84, 86, 88, 114, 116, 118, 120, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -225,11 +223,12 @@ var zd = iterIdxTemp_1++,
     Yd = iterIdxTemp_1++,
     Zd = iterIdxTemp_1++;
 iterIdxTemp_1 = 6;
+
 var itemSpriteLocYCol = iterIdxTemp_1++,
     heroHealthModifierCol = iterIdxTemp_1++,
-    be = iterIdxTemp_1++,
-    ce = iterIdxTemp_1++,
-    de = iterIdxTemp_1++;
+    heroDefenseModifierCol = iterIdxTemp_1++,
+    heroMagicDefModifierCol = iterIdxTemp_1++,
+    heroDodgeModifierCol = iterIdxTemp_1++;
 iterIdxTemp_1 = 6;
 iterIdxTemp_1++;
 
@@ -258,7 +257,7 @@ iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
-var ve = iterIdxTemp_1++,
+var accessoryDodgeChanceCol = iterIdxTemp_1++,
     we = iterIdxTemp_1++,
     xe = iterIdxTemp_1++,
     ye = iterIdxTemp_1++,
@@ -272,11 +271,11 @@ var ve = iterIdxTemp_1++,
     He = iterIdxTemp_1++,
     Ie = iterIdxTemp_1++,
     Je = iterIdxTemp_1++,
-    Ke = iterIdxTemp_1++,
-    Le = iterIdxTemp_1++,
+    accessoryMeleeDefenceCol = iterIdxTemp_1++,
+    accessoryMagicDefenseCol = iterIdxTemp_1++,
     Me = iterIdxTemp_1++,
     Ne = iterIdxTemp_1++,
-    Oe = iterIdxTemp_1++,
+    accessoryHealthBonusCol = iterIdxTemp_1++,
     Pe = iterIdxTemp_1++,
     Qe = iterIdxTemp_1++,
     Re = iterIdxTemp_1++,
@@ -471,25 +470,25 @@ itemList[107] = ["Lightning burst", 4, 31, 5, 2, 16776977, 0, 6, 30, 0, 0, 1, 15
 itemList[112] = ["Ice wide", 4, 31, 5, 2, 10066431, 0, 3, 0, 0, 0, 5, 10, 5, 20, 30, 90, 0, 0, 4287138047, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 2, 30, 20, 6, 500, Ed, 20, 0, 0, 0, 0, 1, 3, 0, 0, 5, 5, 1, 36, 4287138047, 2, 16, 24, 1, 0, 24, 0, 30, 60, 10, 0, 0, 99, 0, 3];
 itemList[135] = ["Solar flare", 4, 29, 5, 2, 16720435, 0, 6, 60, 0, 0, 3, 5, 8, -5, 30, 90, 0, 3, 4294910515, 2, 16, 16, 0, 8, 8, 120, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 60, 3, 6E3, Vc, 50, Wc, 50, Ed, 25, 2, 3, 0, 1, 8, 1, 1, 12, 2298421811, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 94, 0, 0];
 itemList[28] = ["Headband", 6, 64, 10, 0, 13369344, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 10, heroHealthModifierCol, 50, 0, 0, 0, 0, 0, 0];
-itemList[29] = ["Bandana", 6, 65, 10, 0, 6724044, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 100, de, 50, 0, 0, 0, 0, 0, 0];
+itemList[29] = ["Bandana", 6, 65, 10, 0, 6724044, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 100, heroDodgeModifierCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[30] = ["Knit", 6, 66, 10, 0, 16737792, 10040064, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 20, heroHealthModifierCol, 20, 0, 0, 0, 0, 0, 0];
 itemList[31] = ["BB cap", 6, 67, 10, 0, 10079487, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[32] = ["Work cap", 6, 68, 10, 0, 3381555, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[33] = ["Beret", 6, 69, 10, 0, 10053324, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 50, heroHealthModifierCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[36] = ["Straw hat", 6, 70, 10, 0, 16764006, 13369344, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 10, heroHealthModifierCol, 20, 0, 0, 0, 0, 0, 0];
 itemList[37] = ["Silk hat", 6, 71, 10, 0, 13421772, 6710886, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 10, heroHealthModifierCol, 10, 0, 0, 0, 0, 0, 0];
-itemList[45] = ["Witch", 6, 72, 10, 0, 10027212, 6684825, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, ce, 20, 0, 0, 0, 0, 0, 0];
+itemList[45] = ["Witch", 6, 72, 10, 0, 10027212, 6684825, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, heroMagicDefModifierCol, 20, 0, 0, 0, 0, 0, 0];
 itemList[60] = ["Santa", 6, 73, 10, 0, 16764108, 14483456, 5, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, heroHealthModifierCol, 20, 0, 0, 0, 0, 0, 0];
 itemList[61] = ["Headband", 6, 64, 10, 0, 39168, 0, 5, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 10, heroHealthModifierCol, 20, 0, 0, 0, 0, 0, 0];
-itemList[62] = ["Bandana", 6, 65, 10, 0, 6710988, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 100, de, 25, 0, 0, 0, 0, 0, 0];
+itemList[62] = ["Bandana", 6, 65, 10, 0, 6710988, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 100, heroDodgeModifierCol, 25, 0, 0, 0, 0, 0, 0];
 itemList[63] = ["Knit", 6, 66, 10, 0, 16750899, 6723840, 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 20, heroHealthModifierCol, 20, 0, 0, 0, 0, 0, 0];
 itemList[64] = ["BB cap", 6, 67, 10, 0, 10066329, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[65] = ["Work cap", 6, 68, 10, 0, 10053171, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-itemList[66] = ["Beret", 6, 69, 10, 0, 3368448, 0, 0, 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 200, be, 100, 0, 0, 0, 0, 0, 0];
-itemList[67] = ["Straw hat", 6, 70, 10, 0, 10053171, 4465152, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 30, heroHealthModifierCol, 100, ce, 100, 0, 0, 0, 0];
+itemList[66] = ["Beret", 6, 69, 10, 0, 3368448, 0, 0, 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 200, heroDefenseModifierCol, 100, 0, 0, 0, 0, 0, 0];
+itemList[67] = ["Straw hat", 6, 70, 10, 0, 10053171, 4465152, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 30, heroHealthModifierCol, 100, heroMagicDefModifierCol, 100, 0, 0, 0, 0];
 itemList[68] = ["Silk hat", 6, 71, 10, 0, 13395456, 6697728, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 10, heroHealthModifierCol, 5, 0, 0, 0, 0, 0, 0];
-itemList[69] = ["Witch", 6, 72, 10, 0, 16737996, 10027110, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, ce, 20, 0, 0, 0, 0, 0, 0];
-itemList[70] = ["Santa", 6, 73, 10, 0, 13421823, 3355596, 10, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, ce, 20, 0, 0, 0, 0, 0, 0];
+itemList[69] = ["Witch", 6, 72, 10, 0, 16737996, 10027110, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, heroMagicDefModifierCol, 20, 0, 0, 0, 0, 0, 0];
+itemList[70] = ["Santa", 6, 73, 10, 0, 13421823, 3355596, 10, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, heroMagicDefModifierCol, 20, 0, 0, 0, 0, 0, 0];
 // accessories
 itemList[71] = ["Craft Ring", 8, 128, 20, 0, 6710886, 11184810, accessoryArmsBonusCol0, "ARMS Lv +", 1, "", "", 0, ""];
 itemList[73] = ["Iron Ring", 8, 128, 20, 0, 6710886, 4473924, oe, "AT +", 20, "%", "", 0, ""];
@@ -498,17 +497,17 @@ itemList[77] = ["Diamond Ring", 8, 128, 20, 0, 16777215, 6710886, we, "Physical 
 itemList[79] = ["Gold Ring", 8, 128, 20, 0, 16777164, 14658851, Ce, "Gold +", 50, "%", "", 0, ""];
 itemList[81] = ["Ruby Ring", 8, 128, 20, 0, 16724787, 5588036, xe, "Fire hit rate per second +", 1, "", "", 0, ""];
 itemList[83] = ["Topaz Ring", 8, 128, 20, 0, 16763904, 5592388, ze, "Lightning damage +", 30, "%", "", 0, ""];
-itemList[85] = ["Shell Ring", 8, 128, 20, 0, 14803938, 13546410, ve, "Dodge +", 10, "%", "", 0, ""];
+itemList[85] = ["Shell Ring", 8, 128, 20, 0, 14803938, 13546410, accessoryDodgeChanceCol, "Dodge +", 10, "%", "", 0, ""];
 itemList[87] = ["Emerald Ring", 8, 128, 20, 0, 65382, 4478276, Be, "Poison damage +", 40, "%", "", 0, ""];
 itemList[113] = ["Aquamarine Ring", 8, 128, 20, 0, 6711039, 4473992, He, "Ice damage +", 40, "%", "", 0, ""];
-itemList[115] = ["Stone Ring", 8, 128, 20, 0, 13421789, 11184827, Ke, "DF +", 1, "", "", 0, ""];
-itemList[117] = ["Pearl Ring", 8, 128, 20, 0, 13546410, 6710886, Le, "MAGIC DF +", 10, "%", "", 0, ""];
+itemList[115] = ["Stone Ring", 8, 128, 20, 0, 13421789, 11184827, accessoryMeleeDefenceCol, "DF +", 1, "", "", 0, ""];
+itemList[117] = ["Pearl Ring", 8, 128, 20, 0, 13546410, 6710886, accessoryMagicDefenseCol, "MAGIC DF +", 10, "%", "", 0, ""];
 itemList[119] = ["Warrior Ring", 8, 128, 20, 0, 16737792, 8930338, Me, "Combo duration +", 1, " sec", "", 0, ""];
 itemList[136] = ["Master Ring", 8, 128, 20, 0, 16763955, 10053171, accessoryArmsBonusCol1, "ARMS Lv +", 1, "", "CHARGE Lv +", 1, ""];
 itemList[137] = ["Titanium Ring", 8, 128, 20, 0, 6640976, 13421772, pe, "AGI -", 2, "", "", 0, ""];
 itemList[138] = ["Morion Ring", 8, 128, 20, 0, 7829367, 3355443, Ne, "Charge +", 1, "", "", 0, ""];
 itemList[72] = ["Craft Amulet", 8, 144, 30, 0, 6710886, 13421772, accessoryChargeBonusCol, "CHARGE Lv +", 1, "", "", 0, ""];
-itemList[74] = ["Shell Amulet", 8, 144, 30, 0, 14803938, 13546410, ve, "Dodge +", 10, "%", "", 0, ""];
+itemList[74] = ["Shell Amulet", 8, 144, 30, 0, 14803938, 13546410, accessoryDodgeChanceCol, "Dodge +", 10, "%", "", 0, ""];
 itemList[76] = ["Elf Amulet", 8, 144, 30, 0, 65433, 3381606, ue, "Multiple shots +", 2, "", "", 0, ""];
 itemList[78] = ["Crystal Amulet", 8, 144, 30, 0, 15658734, 4473924, te, "EMIT -", 2, "", "", 0, ""];
 itemList[80] = ["Bandit Amulet", 8, 144, 30, 0, 15765064, 10102789, Ee, "Drop +", 50, "%", "", 0, ""];
@@ -520,7 +519,7 @@ itemList[114] = ["Garnet Amulet", 8, 144, 30, 0, 16724787, 5588036, Ge, "Fire da
 itemList[116] = ["Peridot Amulet", 8, 144, 30, 0, 10092288, 4478276, Ie, "Poison effect time +", 3, " sec", "", 0, ""];
 itemList[118] = ["Ammolite Amulet", 8, 144, 30, 0, 6736896, 13382400, Je, "Injection angle 1/", 2, "", "", 0, ""];
 itemList[120] = ["Warrior Amulet", 8, 144, 30, 0, 16737792, 8930338, Me, "Combo duration +", 1, " sec", "", 0, ""];
-itemList[139] = ["Giant Amulet", 8, 144, 30, 0, 16711782, 16764057, Oe, "LP +", 50, "%", "", 0, ""];
+itemList[139] = ["Giant Amulet", 8, 144, 30, 0, 16711782, 16764057, accessoryHealthBonusCol, "LP +", 50, "%", "", 0, ""];
 var badgeCount = 128,
     badgeList = Array(badgeCount),
     badgeCounterArray = Array(badgeCount);
@@ -649,29 +648,25 @@ var shrineRewardOptions = [
         ["Level Up", 60]
     ],
     gameSaveString = "",
-    gameSaveStatusShownDuration = 0,
-    gameStatusCode = 0,
-    statusShownDuration = 0,
+    gameSaveStatusDuration = 0,
+    gameLoadStatusCode = 0,
+    statusDuration = 0,
     gameSaveBuffer = new Int32Array(5E3),
     lf = new Int32Array(5E3);
 mainWindow.fff = saveGame;
 
 function saveGame() {
     let b, c;
-
     let a = 0;
     gameSaveBuffer[a++] = 1;
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = randInt(64);
     gameSaveBuffer[a++] = randInt(64);
-    for (b = 0; 8 > b; b++) 
-        gameSaveBuffer[a++] = da[b];
-
+    for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = da[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = currentStage >> 6 & 63;
     gameSaveBuffer[a++] = currentStage >> 0 & 63;
-
     for (b = 0; 4 > b; b++) {
         gameSaveBuffer[a++] = 0; 
         gameSaveBuffer[a++] = 0;
@@ -688,54 +683,44 @@ function saveGame() {
     gameSaveBuffer[a++] = partyGold >> 12 & 63;
     gameSaveBuffer[a++] = partyGold >> 6 & 63;
     gameSaveBuffer[a++] = partyGold >> 0 & 63;
-    for (let hidx = 0; 4 > hidx; hidx++) {
-        gameSaveBuffer[a++] = partySP[hidx] >> 6 & 63;
-        gameSaveBuffer[a++] = partySP[hidx] >> 0 & 63;
+    for (b = 0; 4 > b; b++) {
+        gameSaveBuffer[a++] = partySP[b] >> 6 & 63;
+        gameSaveBuffer[a++] = partySP[b] >> 0 & 63;
     }
-    for (let hidx = 0; 4 > hidx; hidx++) {
-        gameSaveBuffer[a++] = partyLP[hidx] >> 12 & 63;
-        gameSaveBuffer[a++] = partyLP[hidx] >> 6 & 63;
-        gameSaveBuffer[a++] = partyLP[hidx] >> 0 & 63;
+    for (b = 0; 4 > b; b++) {
+        gameSaveBuffer[a++] = partyLP[b] >> 12 & 63;
+        gameSaveBuffer[a++] = partyLP[b] >> 6 & 63;
+        gameSaveBuffer[a++] = partyLP[b] >> 0 & 63;
     }
-    for (let sidx = 0; 4 > sidx; sidx++)
-        for (let hidx = 0; hidx < partyStats.length; hidx++) {
-            gameSaveBuffer[a++] = partyStats[hidx][sidx] >> 6 & 63;
-            gameSaveBuffer[a++] = partyStats[hidx][sidx] >> 0 & 63;
+    for (b = 0; 4 > b; b++)
+        for (c = 0; c < partyStats.length; c++) {
+            gameSaveBuffer[a++] = partyStats[c][b] >> 6 & 63;
+            gameSaveBuffer[a++] = partyStats[c][b] >> 0 & 63;
         }
-    for (let hidx = 0; 4 > hidx; hidx++)
-        for (let aidx = 0; 8 > aidx; aidx++) {
-            gameSaveBuffer[a++] = partyEquipmentTable[hidx][aidx] >> 6 & 63;
-            gameSaveBuffer[a++] = partyEquipmentTable[hidx][aidx] >> 0 & 63;
+    for (b = 0; 4 > b; b++)
+        for (c = 0; 8 > c; c++) {
+            gameSaveBuffer[a++] = partyEquipmentTable[b][c] >> 6 & 63;
+            gameSaveBuffer[a++] = partyEquipmentTable[b][c] >> 0 & 63;
         }
 
     gameSaveBuffer[a++] = 4;
-    gameSaveBuffer[a++] = 0;
-    for (let i = 0; 256 > i; i++) 
-        gameSaveBuffer[a++] = itemForgeLvls[i];
-
+    for (b = gameSaveBuffer[a++] = 0; 256 > b; b++) gameSaveBuffer[a++] = itemForgeLvls[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = 10;
-
-    for (let b = 0; 9 > b; b++) 
-        gameSaveBuffer[a++] = db[b];
-
+    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = db[b];
     gameSaveBuffer[a++] = eb;
     gameSaveBuffer[a++] = stageCount >> 6 & 63;
     gameSaveBuffer[a++] = stageCount >> 0 & 63;
-    for (b = 0; b < stageCount; b++) 
-        gameSaveBuffer[a++] = ec[b];
-
+    for (b = 0; b < stageCount; b++) gameSaveBuffer[a++] = ec[b];
     gameSaveBuffer[a++] = enemyTypeCount >> 6 & 63;
     gameSaveBuffer[a++] = enemyTypeCount >> 0 & 63;
-    for (b = 0; b < enemyTypeCount; b++) 
-        gameSaveBuffer[a++] = Bc[b];
+    for (b = 0; b < enemyTypeCount; b++) gameSaveBuffer[a++] = Bc[b];
     
     let f = 5;
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
     for (b = 0; 4 > b; b++) 
         gameSaveBuffer[a++] = ib[b];
-
     gameSaveBuffer[a++] = kb;
     gameSaveBuffer[a++] = badgeCount >> 6 & 63;
     gameSaveBuffer[a++] = badgeCount >> 0 & 63;
@@ -746,7 +731,8 @@ function saveGame() {
     f = 4;
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
-    for (b = 0; b < f; b++) gameSaveBuffer[a++] = of [b];
+    for (b = 0; b < f; b++) gameSaveBuffer[a++] = of[b];
+
     let gameSaveHash = 0;
     for (b = 3; b < a; b++) gameSaveHash += gameSaveBuffer[b];
 
@@ -770,77 +756,76 @@ function saveGame() {
     gameSaveString += encodingCharTable[c >> 6 & 63];
     let saveItem = gameSaveString += encodingCharTable[c >> 0 & 63];
     currentStorage && ("" != saveItem ? currentStorage.setItem("ranger2", saveItem) : currentStorage.removeItem("ranger2"));
-    gameSaveStatusShownDuration = 50
+    gameSaveStatusDuration = 50
 }
 mainWindow.fff = loadGame;
 
 function loadGame(saveString) {
-    var b, c, d, f, g;
-    d = saveString.length - 4;
-    if (0 >= d) return 1;
-    if (null == saveString.match(/^[0-9A-Za-z.*]+$/)) return 2;
-    if (10 > d || 5E3 < d) return 3;
-    b = sf[saveString[d + 0]];
-    f = sf[saveString[d + 1]];
-    c = b + d & 63;
-    for (b = 0; b < d; b++) lf[b] = sf[saveString[b]] - c & 63, c = (c * c >> 4) + lf[b] + b + f & 65535;
-    if (sf[saveString[d + 2]] != (c >> 6 & 63) || sf[saveString[d + 3]] != (c >> 0 & 63)) return 4;
-    for (saveString = c = 0; saveString < d;)
-        if (f = lf[saveString++], gameSaveBuffer[c++] = f, 1 >= f)
-            for (g = lf[saveString++], b = 0; b < g; b++) gameSaveBuffer[c++] = f;
+
+    let d = saveString.length - 4;
+    if (0 >= d) return 1; // invalid length
+    if (null == saveString.match(/^[0-9A-Za-z.*]+$/)) return 2; // str err
+    if (10 > d || 5E3 < d) return 3; // len err
+    let b = inverseCodingCharTable[saveString[d + 0]];
+    let f = inverseCodingCharTable[saveString[d + 1]];
+    let c = b + d & 63;
+    for (b = 0; b < d; b++) lf[b] = inverseCodingCharTable[saveString[b]] - c & 63, c = (c * c >> 4) + lf[b] + b + f & 65535;
+    if (inverseCodingCharTable[saveString[d + 2]] != (c >> 6 & 63) || inverseCodingCharTable[saveString[d + 3]] != (c >> 0 & 63)) return 4; // load err
+
+    let i = 0;
+    for (c = 0; i < d;)
+        if (f = lf[i++], gameSaveBuffer[c++] = f, 1 >= f)
+            for (let g = lf[i++], b = 0; b < g; b++) gameSaveBuffer[c++] = f;
     d = 0;
     for (b = 3; b < c; b++) d += gameSaveBuffer[b];
-    if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4;
+    if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4; // load err
     for (b = 0; 8 > b; b++)
-        if (gameSaveBuffer[b + 5] != da[b]) return 5;
+        if (gameSaveBuffer[b + 5] != da[b]) return 5; // user err
     bc();
-    saveString = 0;
-    saveString++;
-    saveString++;
-    saveString++;
-    saveString++;
-    saveString++;
-    saveString += 8;
-    saveString++;
-    saveString++;
-    saveString++;
-    for (b = 0; 4 > b; b++) saveString++, saveString++, saveString++;
-    partyMemberCount = gameSaveBuffer[saveString++];
-    partyLevel = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
-    partyEXPAccum = (gameSaveBuffer[saveString++] << 18) + (gameSaveBuffer[saveString++] << 12) + (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
-    partyGold = (gameSaveBuffer[saveString++] << 18) + (gameSaveBuffer[saveString++] << 12) + (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
-    for (b = 0; 4 > b; b++) partySP[b] = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
-    for (b = 0; 4 > b; b++) partyLP[b] = (gameSaveBuffer[saveString++] << 12) + (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+
+    let p = 0;
+    p++;p++;p++;p++;p++;
+    p += 8;p++;p++;p++;
+    for (b = 0; 4 > b; b++) p++, p++, p++;
+
+    partyMemberCount = gameSaveBuffer[p++];
+    partyLevel = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    partyEXPAccum = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    partyGold = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; 4 > b; b++) partySP[b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; 4 > b; b++) partyLP[b] = (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; c < partyStats.length; c++) partyStats[c][b] = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+        for (c = 0; c < partyStats.length; c++) partyStats[c][b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; 8 > c; c++) partyEquipmentTable[b][c] = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
-    for (b = 0; b < g; b++) itemForgeLvls[b] = gameSaveBuffer[saveString++];
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+        for (c = 0; 8 > c; c++) partyEquipmentTable[b][c] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    
+    let g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) itemForgeLvls[b] = gameSaveBuffer[p++];
+
+    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; 9 > b; b++) db[b] = gameSaveBuffer[saveString++];
-    eb = gameSaveBuffer[saveString++];
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; 9 > b; b++) db[b] = gameSaveBuffer[p++];
+    eb = gameSaveBuffer[p++];
+    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) ec[b] = gameSaveBuffer[saveString++];
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
-    for (b = 0; b < g; b++) Bc[b] = gameSaveBuffer[saveString++];
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; b < g; b++) ec[b] = gameSaveBuffer[p++];
+    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) Bc[b] = gameSaveBuffer[p++];
+    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     if (5 <= g) {
-        for (b = 0; 4 > b; b++) ib[b] = gameSaveBuffer[saveString++];
-        kb = gameSaveBuffer[saveString++]
+        for (b = 0; 4 > b; b++) ib[b] = gameSaveBuffer[p++];
+        kb = gameSaveBuffer[p++]
     }
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) badgeCounterArray[b] = gameSaveBuffer[saveString++];
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; b < g; b++) badgeCounterArray[b] = gameSaveBuffer[p++];
+    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) Fc[b] = gameSaveBuffer[saveString++];
-    g = (gameSaveBuffer[saveString++] << 6) + gameSaveBuffer[saveString++];
+    for (b = 0; b < g; b++) Fc[b] = gameSaveBuffer[p++];
+    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) of [b] = gameSaveBuffer[saveString++];
+    for (b = 0; b < g; b++) of [b] = gameSaveBuffer[p++];
     return 0
 }
 var partyChecksum = 0,
@@ -898,30 +883,30 @@ var gameInitStage = 0;
 
 function gameInit(a, b) {
     var c;
-    console.log("Game init ", gameInitStage);
+    console.log(`gameInit(${a}, ${b}) ${gameInitStage}`);
     if (!gameInitStage) {
         null != a ? ca = a : ca = "";
         ea = "0" == b ? true : false;
         if (8 == ca.length)
-            for (c = 0; 8 > c; c++) da[c] = sf[ca[c]];
+            for (c = 0; 8 > c; c++) da[c] = inverseCodingCharTable[ca[c]];
         LogMsg(copyrightText2); // Copyright text
         canvasElement.width = 640;
         canvasElement.height = 432;
-        for (c = 0; 513 > c; c++) Hf[c] = new Float32Array(2);
+        for (c = 0; 513 > c; c++) rotationLUT[c] = new Float32Array(2);
         for (c = 0; 512 > c; c++) {
-            var d = 360 * c / 512 * PI / 180;
-            Hf[c][0] = Math.cos(d);
-            Hf[c][1] = Math.sin(d)
+            var d = TAU * c / 512; // 360 * c / 512 * PI / 180;
+            rotationLUT[c][0] = Math.cos(d);
+            rotationLUT[c][1] = Math.sin(d)
         }
-        Hf[c][0] = Hf[0][0];
-        Hf[c][1] = Hf[0][1];
+        // at c = 512
+        rotationLUT[c][0] = rotationLUT[0][0];
+        rotationLUT[c][1] = rotationLUT[0][1];
         for (c = 0; 256 > c; c++) Jf[c] = false, Kf[c] = false, Lf[c] = false, Mf[c] = 0, Nf[c] = 0;
         for (c = 0; 10 > c; c++) Mf[48 + c] = 48 + c;
         for (c = 0; 9 > c; c++) Nf[49 + c] = 33 + c;
         for (c = 0; 4 > c; c++) Mf[37 + c] = 37 + c;
         for (c = 0; 4 > c; c++) Nf[37 + c] = 37 + c;
-        Mf[13] =
-            Nf[13] = 13;
+        Mf[13] = Nf[13] = 13;
         Mf[16] = Nf[16] = 16;
         Mf[17] = Nf[17] = 17;
         Mf[18] = Nf[18] = 18;
@@ -962,13 +947,16 @@ function gameInit(a, b) {
         Nf[160] = 126;
         var f;
         for (c = 0; 1024 > c; c++) randLUT[c] = c / 1024;
-        for (c = 0; 1024 > c; c++) d = floor(1024 * rand()), 
+        for (c = 0; 1024 > c; c++) 
+            d = floor(1024 * rand()), 
             f = randLUT[c], 
             randLUT[c] = randLUT[d], 
             randLUT[d] = f;
         randSeed = floor(1024 * rand()) & 1023;
         randSeedStep = floor(512 * rand()) | 1;
+        // clear frame buffer
         for (c = 0; 276480 > c; c++) frameBufferArray[c] = 0;
+
         gameFont.f("font.png", 8, 12);
         gameFontSmall.f("font_s.png", 5, 7);
         gameFontMed.f("font_m.png", 6, 8);
@@ -980,9 +968,10 @@ function gameInit(a, b) {
         itemsSpriteSheet.f("item.png");
         effectSpriteSheet.f("ef.png");
         medalSpriteSheet.f("medal.png");
+
         hostnameCheck() ? gameInitStage-- : gameInitStage++
     }
-    if (1 == gameInitStage) {
+    if (1 == gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
         drawSprite(gameFont.i);
         drawSprite(gameFontSmall.i);
         drawSprite(gameFontMed.i);
@@ -994,13 +983,14 @@ function gameInit(a, b) {
         drawSprite(itemsSpriteSheet);
         drawSprite(effectSpriteSheet);
         drawSprite(medalSpriteSheet);
-        Zf ? _setTimeout(gameInit, ag()) : gameInitStage++
+        uncheckedSpriteCount > 0 ? _setTimeout(gameInit, ag()) : gameInitStage++
     }
     if (2 == gameInitStage) {
         currentStorage ? (c = currentStorage.getItem("ranger2"),
             gameSaveString = null == c ? "" : c) : gameSaveString = "";
-        gameStatusCode = loadGame(gameSaveString);
-        statusShownDuration = 100;
+        gameLoadStatusCode = loadGame(gameSaveString);
+        statusDuration = 100;
+        
         itemHashTable = Array(256);
         for (c = 0; 256 > c; c++)
             if (itemHashTable[c] = 0, itemList[c])
@@ -1015,6 +1005,7 @@ function gameInit(a, b) {
                 for (d = 0; d < enemyCatalog[c].length; d++) itemCatalogHashTable[c] = hashAdjust(itemCatalogHashTable[c], enemyCatalog[c][d]);
         for (c = zf = 0; c < Jc.length; c++)
             for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
+
         // updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
         setupAnimRequest()
@@ -1146,10 +1137,10 @@ function drawCanvas() {
                 drawTextCentered(gameFont, 320, 220, "NEW GAME", 16777215, 10053171),
                 buttonCheckCentered(320, 220, 128, 24) && 
                     (isMouseClicked && 
-                        (drawState = (0 == gameStatusCode) ? 3 : 4), 
+                        (drawState = (0 == gameLoadStatusCode) ? 3 : 4), 
                         drawLine(256, 228, 384, 228, 11141120)
                     ), 
-                0 == gameStatusCode && (
+                0 == gameLoadStatusCode && (
                     drawTextCentered(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171), 
                     buttonCheckCentered(320, 260, 128, 24) && (
                         isMouseClicked && (drawState = 5), 
@@ -1175,8 +1166,8 @@ function drawCanvas() {
                 ? drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158) 
                 : isMouseClicked && (
                     a = promptInput("Import Game Data", "")) && (
-                        gameStatusCode = loadGame(a), 
-                        statusShownDuration = 100
+                        gameLoadStatusCode = loadGame(a), 
+                        statusDuration = 100
                     )
             );
 
@@ -1349,18 +1340,18 @@ function drawCanvas() {
             0 < a && drawText(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0)
         );
 
-        if (statusShownDuration > 0) {
-            statusShownDuration--;
-            if (10 > statusShownDuration)
-                c = floor(255 * statusShownDuration / 10);
+        if (statusDuration > 0) {
+            statusDuration--;
+            if (10 > statusDuration)
+                c = floor(255 * statusDuration / 10);
             else {
                 c = 255;
-                Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
+                Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
             }
-        } else if (gameSaveStatusShownDuration > 0) {
-            gameSaveStatusShownDuration--;
-            if (10 > gameSaveStatusShownDuration) 
-                c = floor(255 * gameSaveStatusShownDuration / 10);
+        } else if (gameSaveStatusDuration > 0) {
+            gameSaveStatusDuration--;
+            if (10 > gameSaveStatusDuration) 
+                c = floor(255 * gameSaveStatusDuration / 10);
             else {
                 c = 255;
                 Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);
@@ -1381,34 +1372,36 @@ function updatePartyStats() {
         partyElem_vals[hidx] = 5 * partyElemLvls[hidx];
         partyDodge_vals[hidx] = 2 * partyDodgeLvls[hidx];
         // from headwear
-        let b = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol); // armor health modifier %
-        let c = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], be);
-        let d = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ce);
-        let f = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], de);
+        let headgearHpPercent = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroHealthModifierCol); // armor health modifier %
+        let headgearFlatDefense = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroDefenseModifierCol);
+        let headgearMagicResistPercent = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroMagicDefModifierCol);
+        let headgearDodgeBonus = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], heroDodgeModifierCol);
 
-        Jb[hidx] = c;
-        if (heroHasAccessoryEffect(hidx, Ke)) 
-            Jb[hidx] += countAccessoryLvlBonuses(hidx, Ke); 
-        Kb[hidx] = c;
-        if (heroHasAccessoryEffect(hidx, Ke)) 
-            Kb[hidx] += countAccessoryLvlBonuses(hidx, Ke); 
+        heroMeleeDefensesFlatArray[hidx] = headgearFlatDefense;
+        if (heroHasAccessoryEffect(hidx, accessoryMeleeDefenceCol)) 
+            heroMeleeDefensesFlatArray[hidx] += countAccessoryLvlBonuses(hidx, accessoryMeleeDefenceCol); 
 
-        Lb[hidx] = d;
-        if (heroHasAccessoryEffect(hidx, Le)) 
-            Lb[hidx] += countAccessoryLvlBonuses(hidx, Le);
-        Mb[hidx] = partyDodge_vals[hidx] + f;
-        if (heroHasAccessoryEffect(hidx, ve)) 
-            Mb[hidx] += countAccessoryLvlBonuses(hidx, ve);
+        heroProjDefenseFlatArray[hidx] = headgearFlatDefense;
+        if (heroHasAccessoryEffect(hidx, accessoryMeleeDefenceCol)) 
+            heroProjDefenseFlatArray[hidx] += countAccessoryLvlBonuses(hidx, accessoryMeleeDefenceCol); 
+
+        heroMagicDefenseFlatArray[hidx] = headgearMagicResistPercent;
+        if (heroHasAccessoryEffect(hidx, accessoryMagicDefenseCol)) 
+            heroMagicDefenseFlatArray[hidx] += countAccessoryLvlBonuses(hidx, accessoryMagicDefenseCol);
+
+        heroDodgeChanceArray[hidx] = partyDodge_vals[hidx] + headgearDodgeBonus;
+        if (heroHasAccessoryEffect(hidx, accessoryDodgeChanceCol)) 
+            heroDodgeChanceArray[hidx] += countAccessoryLvlBonuses(hidx, accessoryDodgeChanceCol);
 
         Nb[hidx] = partyPhys_vals[hidx]; 
         Ob[hidx] = partyElem_vals[hidx]; 
         Pb[hidx] = partyElem_vals[hidx]; 
         Sb[hidx] = partyElem_vals[hidx]; 
         Tb[hidx] = partyElem_vals[hidx];
-        partyMaxLP[hidx] = floor((50 + b) * (100 + partyMaxLPBonus_vals[hidx]) / 100);
+        partyMaxLP[hidx] = floor((50 + headgearHpPercent) * (100 + partyMaxLPBonus_vals[hidx]) / 100);
 
-        if (heroHasAccessoryEffect(hidx, Oe)) 
-            partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, Oe)) / 100);
+        if (heroHasAccessoryEffect(hidx, accessoryHealthBonusCol)) 
+            partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, accessoryHealthBonusCol)) / 100);
 
         partyLP[hidx] = clamp(partyLP[hidx], 0, partyMaxLP[hidx]);
 
@@ -1423,15 +1416,16 @@ function updatePartyStats() {
         $a[hidx] = clamp($a[hidx], 0, ab[hidx]);
     }
 
-    for (let b = 0; 2 > b; b++)
+    // weapons 
+    for (let heroItem = 0; 2 > heroItem; heroItem++)
         for (let hidx = 0; 4 > hidx; hidx++) {
-            let d = partyEquipmentTable[hidx][b];
-            if (0 != d) {
-                let f = getModifiedStatVal(hidx, d, Oc);
-                let g = getModifiedStatVal(hidx, d, td); 
-                let c = 4 * b + hidx;
-                Db[c] = getModifiedStatVal(hidx, d, Vc);
-                Eb[c] = getModifiedStatVal(hidx, d, Wc); 
+            let itemIdx = partyEquipmentTable[hidx][heroItem];
+            if (0 != itemIdx) {
+                let f = getModifiedStatVal(hidx, itemIdx, Oc);
+                let g = getModifiedStatVal(hidx, itemIdx, td); 
+                let c = 4 * heroItem + hidx;
+                Db[c] = getModifiedStatVal(hidx, itemIdx, Vc);
+                Eb[c] = getModifiedStatVal(hidx, itemIdx, Wc); 
                 Db[c] = floor(Db[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
                 Eb[c] = floor(Eb[c] * (100 + partyPhysAtkStats[f][hidx]) / 100); 
                 Db[c] = floor(Db[c] * (100 + Ub[g][hidx]) / 100);
@@ -1458,15 +1452,15 @@ function updatePartyStats() {
                     Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
                 }
 
-                Fb[c] = getModifiedStatVal(hidx, d, Xc);
+                Fb[c] = getModifiedStatVal(hidx, itemIdx, Xc);
                 if (heroHasAccessoryEffect(hidx, ue) && 1 < Fb[c]) 
                     Fb[c] += countAccessoryLvlBonuses(hidx, ue);
 
-                b || (
-                    Gb[hidx] = getModifiedStatVal(hidx, d, Zc), 
+                heroItem || (
+                    Gb[hidx] = getModifiedStatVal(hidx, itemIdx, Zc), 
                     heroHasAccessoryEffect(hidx, pe) && (Gb[hidx] -= countAccessoryLvlBonuses(hidx, pe)), 
-                    Hb[hidx] = getModifiedStatVal(hidx, d, $c), 
-                    !heroHasAccessoryEffect(hidx, qe) || 4 != itemList[d][itemAppearanceCol] && 5 != itemList[d][itemAppearanceCol] || (Hb[hidx] += countAccessoryLvlBonuses(hidx, qe))
+                    Hb[hidx] = getModifiedStatVal(hidx, itemIdx, $c), 
+                    !heroHasAccessoryEffect(hidx, qe) || 4 != itemList[itemIdx][itemAppearanceCol] && 5 != itemList[itemIdx][itemAppearanceCol] || (Hb[hidx] += countAccessoryLvlBonuses(hidx, qe))
                 )
             }
         }
@@ -1589,7 +1583,7 @@ function drawGameUI() {
         drawText(gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
         drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
         drawRect(f + hidx * d + 28, g + 17, 48 * $a[hidx] / max(ab[hidx], 1), 5, 221);
-        buttonCheck(f + hidx * d, g, 24, 24) && (Xg(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && Ka == hidx && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (Ka = hidx));
+        buttonCheck(f + hidx * d, g, 24, 24) && (Xg(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && selectingHero == hidx && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (selectingHero = hidx));
         for (b = 0; 5 > b; b++) {
             c = partyEquipmentTable[hidx][b];
             k = f + hidx * d + b % 3 * 20;
@@ -1597,10 +1591,10 @@ function drawGameUI() {
             drawRect(k, n, 16, 16, 0);
             0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? Qg(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0);
             Wg(k, n, 16, 16, c, b);
-            buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (Ka = hidx)
+            buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (selectingHero = hidx)
         }
     }
-    drawRectOutline(f + Ka * d - 1, g - 1, 26, 26, 16711680);
+    drawRectOutline(f + selectingHero * d - 1, g - 1, 26, 26, 16711680);
     f = 472;
     g = 379;
     d = 36;
@@ -1623,8 +1617,7 @@ function drawGameUI() {
     0 < c && drawText(gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
     if (1 == currentStage) {
         gameFont.a = 1;
-        drawTextCentered(gameFont, 530,
-            168, "INN", 16777215, 8409120);
+        drawTextCentered(gameFont, 530, 168, "INN", 16777215, 8409120);
         if (buttonCheckCentered(528, 180, 48, 40)) {
             for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
             0 < c && (c = 10);
@@ -1645,43 +1638,134 @@ function drawGameUI() {
             (isShrineUIVisible = false))
     } else 12 == currentStage && (gameFont.a = 1, drawTextCentered(gameFont, 418, 104, "SHRINE", 16777215, 8409120), buttonCheckCentered(416, 108, 48, 40) && (gameFont.a = 1, drawTextCentered(gameFont, 418, 104, "SHRINE", 15908203, 8409120), isMouseClicked && !ta && (isShrineUIVisible = !isShrineUIVisible) && (isInventoryVisible = false)));
     if (isMemberUIVisible) {
+        
         g = f = 14;
         drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][stageUIBgColorCol]);
         gameFont.a = 1;
-        drawText(gameFont, f, g, "LP " + partyLP[Ka] + "/" + partyMaxLP[Ka] + " SP (" + partySP[Ka] + ")", 16777215, 0);
+        drawText(gameFont, f, g, "LP " + partyLP[selectingHero] + "/" + partyMaxLP[selectingHero] + " SP (" + partySP[selectingHero] + ")", 16777215, 0);
         k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
         gameFont.a = 1;
         drawText(gameFont, f, g + 20, k[Ma], 16777215, 0);
         k = [9, 0, 20, 21, 17, 22, 23];
         c = [999, 999, 999, 999, 999, 999, 25];
-        for (hidx = 0; 7 > hidx; hidx++) drawMenuButton(f +
-            12 + hidx % 7 * 28, g + 46 + 28 * ~~(hidx / 7), k[hidx], "" + partyStats[hidx][Ka], Ma == hidx ? 16737894 : 16777215) && (Ma != hidx ? isMouseReleased && (Ma = hidx) : 0 < partySP[Ka] && partyStats[Ma][Ka] < c[Ma] && (drawText(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), isMouseReleased && (partyStats[Ma][Ka]++, partySP[Ka]--)));
+        for (hidx = 0; 7 > hidx; hidx++) 
+            drawMenuButton(
+                f + 12 + hidx % 7 * 28, g + 46 + 28 * ~~(hidx / 7), 
+                k[hidx], 
+                "" + partyStats[hidx][selectingHero], Ma == hidx ? 16737894 : 16777215
+            ) && (
+                Ma != hidx 
+                    ? isMouseReleased && (Ma = hidx) 
+                    : 0 < partySP[selectingHero] && partyStats[Ma][selectingHero] < c[Ma] && (
+                        drawText(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), 
+                        isMouseReleased && (
+                            partyStats[Ma][selectingHero]++, 
+                            partySP[selectingHero]--
+                        )
+                    )
+                );
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isMemberUIVisible = false);
         g += 64;
-        for (hidx = 0; 2 > hidx; hidx++) c = partyEquipmentTable[Ka][hidx], 0 != itemList[c][itemAppearanceCol] && (10 > itemList[c][itemAppearanceCol] ? (gameFontMed.a = 4, h = itemForgeLvls[c], heroHasAccessoryEffect(Ka, accessoryArmsBonusCol0) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol0)), heroHasAccessoryEffect(Ka, accessoryChargeBonusCol) && 4 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryChargeBonusCol)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 3 == itemList[c][itemDropIconCol] && (h += countAccessoryLvlBonuses(Ka, accessoryArmsBonusCol1)), heroHasAccessoryEffect(Ka, accessoryArmsBonusCol1) && 4 == itemList[c][itemDropIconCol] && (h += sumAccessorySecondaryValues(Ka, accessoryArmsBonusCol1)), drawText(gameFontMed, f + 96 * hidx, g + 0, "" + itemList[c][itemNameCol] + " " + h, -1, 0), h = "AT " + Db[4 * hidx + Ka] +
-            "-" + Eb[4 * hidx + Ka], 10 <= itemList[c][Ad] && 11 >= itemList[c][Ad] ? h += " *" + Fb[4 * hidx + Ka] + ">" + ~~(getModifiedStatVal(Ka, c, ld) * getModifiedStatVal(Ka, c, Ed) / 60) : 0 != itemList[c][Ad] ? (b = getModifiedStatVal(Ka, c, Ed), heroHasAccessoryEffect(Ka, Ae) && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (b += countAccessoryLvlBonuses(Ka, Ae)), h += " *" + Fb[4 * hidx + Ka] + ">" + b) : 1 < Fb[4 * hidx + Ka] && (h += " *" + Fb[4 * hidx + Ka]), 99 == getModifiedStatVal(Ka, c, Uc) ? h += " all" : 1 < getModifiedStatVal(Ka, c, Uc) && (h += " " + getModifiedStatVal(Ka, c, Uc) + "hit"), drawText(gameFontMed, f + 96 * hidx, g + 12, h, 16777215, 0), hidx || drawText(gameFontMed, f + 96 * hidx, g + 24, "AGI " + Gb[Ka], 16777215, 0), hidx || drawText(gameFontMed, f + 96 * hidx, g + 36, "RANGE " + Hb[Ka], 16777215, 0), hidx ? -1 == ab[Ka] ? drawText(gameFontMed, f + 96 * hidx, g + 48, "EMIT passive", 16777215, 0) : drawText(gameFontMed, f + 96 * hidx, g + 48, "EMIT " + ab[Ka], 16777215, 0) : drawText(gameFontMed, f + 96 * hidx, g + 48, "CHARGE +" + bb[Ka], 16777215, 0), drawText(gameFontMed, f + 96 * hidx, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawText(gameFontMed, f + 96 * hidx, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawText(gameFontMed, f + 96 * hidx, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawText(gameFontMed, f + 96 * hidx, g + 60, "    long", 16764057, 0), drawText(gameFontMed, f + 96 * hidx, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && (h = getModifiedStatVal(Ka, c, ud), heroHasAccessoryEffect(Ka, ye) && (h += countAccessoryLvlBonuses(Ka, ye)), drawText(gameFontMed, f + 96 * hidx, g + 72, "    ice " + h + "%", 10070783, 0)), 3 ==
-            itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    poison", 52224, 0)) : (gameFontMed.a = 4, drawText(gameFontMed, f + 96 * hidx, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], 16777215, 0)));
+        for (hidx = 0; 2 > hidx; hidx++) 
+            c = partyEquipmentTable[selectingHero][hidx], 
+            0 != itemList[c][itemAppearanceCol] && (
+                10 > itemList[c][itemAppearanceCol] 
+                    ? (
+                        gameFontMed.a = 4, 
+                        h = itemForgeLvls[c], 
+                        heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol0) 
+                            && 3 == itemList[c][itemDropIconCol] && (
+                                h += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol0)
+                        ), heroHasAccessoryEffect(selectingHero, accessoryChargeBonusCol) 
+                            && 4 == itemList[c][itemDropIconCol] && (
+                                h += countAccessoryLvlBonuses(selectingHero, accessoryChargeBonusCol)
+                        ), heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1) 
+                            && 3 == itemList[c][itemDropIconCol] && (
+                                h += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol1)
+                        ), heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1) 
+                            && 4 == itemList[c][itemDropIconCol] && (
+                                h += sumAccessorySecondaryValues(selectingHero, accessoryArmsBonusCol1)
+                        ), 
+                        drawText(gameFontMed, f + 96 * hidx, g + 0, "" + itemList[c][itemNameCol] + " " + h, -1, 0), 
+                        h = "AT " + Db[4 * hidx + selectingHero] + "-" + Eb[4 * hidx + selectingHero], 
+                        
+                        (10 <= itemList[c][Ad] && 11 >= itemList[c][Ad]) 
+                            ? h += " *" + Fb[4 * hidx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, c, ld) * getModifiedStatVal(selectingHero, c, Ed) / 60) 
+                            : 0 != itemList[c][Ad] 
+                                ? (
+                                    b = getModifiedStatVal(selectingHero, c, Ed), 
+                                    heroHasAccessoryEffect(selectingHero, Ae) 
+                                        && 3 == itemList[c][td] && 20 == itemList[c][Ad] && (
+                                            b += countAccessoryLvlBonuses(selectingHero, Ae)
+                                    ), 
+                                    h += " *" + Fb[4 * hidx + selectingHero] + ">" + b) 
+                                :   
+                                    1 < Fb[4 * hidx + selectingHero] && (h += " *" + Fb[4 * hidx + selectingHero]), 
+                                    99 == getModifiedStatVal(selectingHero, c, Uc) 
+                                        ? h += " all" 
+                                        : 1 < getModifiedStatVal(selectingHero, c, Uc) && (
+                                            h += " " + getModifiedStatVal(selectingHero, c, Uc) + "hit"
+                                        ), 
+                                        drawText(gameFontMed, f + 96 * hidx, g + 12, h, 16777215, 0), 
+                                        hidx || drawText(gameFontMed, f + 96 * hidx, g + 24, "AGI " + Gb[selectingHero], 16777215, 0), 
+                                        hidx || drawText(gameFontMed, f + 96 * hidx, g + 36, "RANGE " + Hb[selectingHero], 16777215, 0), 
+                                        hidx 
+                                        ? -1 == ab[selectingHero] 
+                                            ? drawText(gameFontMed, f + 96 * hidx, g + 48, "EMIT passive", 16777215, 0) 
+                                            : drawText(gameFontMed, f + 96 * hidx, g + 48, "EMIT " + ab[selectingHero], 16777215, 0) 
+                                        : (
+                                            drawText(gameFontMed, f + 96 * hidx, g + 48, "CHARGE +" + bb[selectingHero], 16777215, 0), 
+                                            drawText(gameFontMed, f + 96 * hidx, g + 60, "SML", 16777215, 0), 
+                                            0 == itemList[c][Oc] && drawText(gameFontMed, f + 96 * hidx, g + 60, "    short", 16764057, 0), 
+                                            1 == itemList[c][Oc] && drawText(gameFontMed, f + 96 * hidx, g + 60, "    middle", 16764057, 0), 
+                                            2 == itemList[c][Oc] && drawText(gameFontMed, f + 96 * hidx, g + 60, "    long", 16764057, 0), 
+                                            drawText(gameFontMed, f + 96 * hidx, g + 72, "ATR", 16777215, 0), 
+                                            0 == itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    physical", 10066329, 0), 
+                                            1 == itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    fire", 16724736, 0), 
+                                            2 == itemList[c][td] && (h = getModifiedStatVal(selectingHero, c, ud), 
+                                            heroHasAccessoryEffect(selectingHero, ye) && (h += countAccessoryLvlBonuses(selectingHero, ye)), 
+                                            drawText(gameFontMed, f + 96 * hidx, g + 72, "    ice " + h + "%", 10070783, 0)), 
+                                            3 == itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    lightning", 15658496, 0), 
+                                            4 == itemList[c][td] && drawText(gameFontMed, f + 96 * hidx, g + 72, "    poison", 52224, 0)
+                                        )
+                        ) 
+                    : (
+                        gameFontMed.a = 4, drawText(gameFontMed, f + 96 * hidx, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], 16777215, 0)
+                    )
+            );
         g += 96;
         k = ["ARMS", "CHARGE"];
-        for (hidx = 0; 2 > hidx; hidx++) c = partyEquipmentTable[Ka][hidx], b = f + 28 * hidx, d = g, drawRect(b, d, 24, 24, 0), fh = 2, h = itemList[c][itemHeadwearType], drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0, drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), Wg(b, d, 24, 24, c, hidx)
+        for (hidx = 0; 2 > hidx; hidx++) 
+            c = partyEquipmentTable[selectingHero][hidx], 
+            b = f + 28 * hidx, 
+            d = g, 
+            drawRect(b, d, 24, 24, 0), 
+            fh = 2, 
+            h = itemList[c][itemHeadwearType], 
+            drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), 
+            fh = 0, 
+            drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), Wg(b, d, 24, 24, c, hidx)
     }
     if (isInventoryVisible) {
         f = 224;
         g = 14;
         drawRect(f - 6, g - 6, 204, 260, stageListArray[currentStage][stageUIBgColorCol]);
         c = Jc[Na][28 * Oa + Pa];
-        0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na && (drawTextCentered(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0),
-            hidx = Ve(c, wd), 0 == hidx ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : itemForgeLvls[c] < hidx ? (Zb = -1, h = Ve(c, xd) * itemForgeLvls[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), itemForgeLvls[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
-        0 != itemForgeLvls[c] && (10 > itemList[c][itemAppearanceCol] ? (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawText(gameFontMed,
-            f, g + 12, h, 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawText(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawText(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawText(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawText(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    long", 16764057, 0), drawText(gameFontMed, f, g + 72, "ATR", 16777215, 0), 0 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    physical", 10066329,
-            0), 1 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    poison", 52224, 0), hidx = Xe(c, hd), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "RANGE +" + hidx + "%", 16777215, 0), hidx = Xe(c, ld), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0), hidx = Xe(c, Td), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0)) : 20 > itemList[c][itemAppearanceCol] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), d = 1, hidx = Ve(c, heroHealthModifierCol),
-            0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "LP +" + hidx, 16777215, 0), d++), hidx = Ve(c, be), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "DF +" + hidx, 16777215, 0), d++), hidx = Ve(c, ce), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0), d++), hidx = Ve(c, de), 0 < hidx && drawText(gameFontMed, f, g + 12 * d, "DODGE +" + hidx, 16777215, 0)) : (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][accessoryPrimaryValueCol] && drawText(gameFontMed, f, g + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 0 != itemList[c][accessorySecondaryValueCol] && drawText(gameFontMed, f, g + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)));
+        0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na && (drawTextCentered(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0), hidx = Ve(c, wd), 0 == hidx ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : itemForgeLvls[c] < hidx ? (Zb = -1, h = Ve(c, xd) * itemForgeLvls[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), itemForgeLvls[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
+        
+        0 != itemForgeLvls[c] && (10 > itemList[c][itemAppearanceCol] 
+        ? (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), 
+        h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawText(gameFontMed, f, g + 12, h, 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawText(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawText(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawText(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawText(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    long", 16764057, 0), drawText(gameFontMed, f, g + 72, "ATR", 16777215, 0), 
+        0 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    poison", 52224, 0), hidx = Xe(c, hd), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "RANGE +" + hidx + "%", 16777215, 0), hidx = Xe(c, ld), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0), hidx = Xe(c, Td), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0)) 
+        : 20 > itemList[c][itemAppearanceCol] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), d = 1, hidx = Ve(c, heroHealthModifierCol),
+        0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "LP +" + hidx, 16777215, 0), d++), hidx = Ve(c, heroDefenseModifierCol), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "DF +" + hidx, 16777215, 0), d++), hidx = Ve(c, heroMagicDefModifierCol), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0), d++), hidx = Ve(c, heroDodgeModifierCol), 0 < hidx && drawText(gameFontMed, f, g + 12 * d, "DODGE +" + hidx, 16777215, 0)) : (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][accessoryPrimaryValueCol] && drawText(gameFontMed, f, g + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 0 != itemList[c][accessorySecondaryValueCol] && drawText(gameFontMed, f, g + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)));
+        
         Zb = -1;
         k = Na;
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isInventoryVisible = false);
         for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = f + hidx % 7 * 28, d = g + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
-            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[Ka][k] = c)) : h == Ka ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
-                0), isMouseReleased && (partyEquipmentTable[Ka][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[Ka][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
+            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+                0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
             drawMenuButton(f + 12 + 28 * hidx, g + 238, hidx, k[hidx], Na == hidx ? 16737894 : 16777215) && isMouseClicked && (Na = hidx);
@@ -1723,8 +1807,7 @@ function drawGameUI() {
     if (isBadgesUIVisible) {
         f = 434;
         g = 14;
-        drawRect(f -
-            6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBadgesUIVisible = false);
         if (0 == ec[stageIndexOrder[Sa]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
@@ -1956,8 +2039,8 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
                 M = 0 == partyBodyDrawOptions[x][2] ? 1 : -1;
                 J = 16711680;
                 $h[x] = 2;
-                0 == c ? y = max(y - Jb[x], 1) : 6 == c ? y = max(y - Kb[x], 1) : 1 <= c && (y = max(floor(y * (100 - Lb[x]) / 100), 1));
-                randFloat(100) < Mb[x] && (y = 0, J = 16744576, $h[x] = 0);
+                0 == c ? y = max(y - heroMeleeDefensesFlatArray[x], 1) : 6 == c ? y = max(y - heroProjDefenseFlatArray[x], 1) : 1 <= c && (y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1));
+                randFloat(100) < heroDodgeChanceArray[x] && (y = 0, J = 16744576, $h[x] = 0);
                 1 == c && heroHasAccessoryEffect(x,
                     Qe) && (y = max(y - countAccessoryLvlBonuses(x, Qe), 1));
                 if (2 == c) ch[x] = 120, hi[x] = d, heroHasAccessoryEffect(x, Re) && (hi[x] = max(floor(hi[x] * (100 - countAccessoryLvlBonuses(x, Re)) / 100), 0));
@@ -1988,13 +2071,13 @@ function vi() {
     if (-1 == bi) {
         if (isMouseClicked && !ta) {
             b = 20;
-            a.x = mouseXCurrent - Mh[Ka][0].x;
-            a.y = mouseYCurrent - (Mh[Ka][0].y - 8);
+            a.x = mouseXCurrent - Mh[selectingHero][0].x;
+            a.y = mouseYCurrent - (Mh[selectingHero][0].y - 8);
             c = Vec2Mag(a);
-            20 > c && c < b && (b = c, bi = Ka, ci = 0);
+            20 > c && c < b && (b = c, bi = selectingHero, ci = 0);
             for (var d = 0; d < partyMemberCount; d++)
                 if (Wh[d] != areUpperJointsDisabled)
-                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - Mh[d][f].x, a.y = mouseYCurrent - Mh[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, Ka = d)
+                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - Mh[d][f].x, a.y = mouseYCurrent - Mh[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, selectingHero = d)
         }
     } else wasMouseDown || (bi = -1, ci = 0)
 }
@@ -2092,17 +2175,17 @@ function xi(a, b, c, d, f, g) {
         var We =
             0 < n ? n - 1 : 16;
         heroHasAccessoryEffect(a, Je) && (We = floor(We / countAccessoryLvlBonuses(a, Je)));
-        Ac = floor(512 * Vec2Angle(h) / PI2);
+        Ac = floor(512 * Vec2Angle(h) / TAU);
         Ac -= floor((c - 1) * We / 2);
-        for (l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We
+        for (l = 0; l < c; l++) h.x = rotationLUT[Ac & 511][0], h.y = -rotationLUT[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We
     } else if (4 == l)
-        for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = randInt(512), g = randFloat(We), h.x += Hf[w][0] * g, h.y += Hf[w][1] *
+        for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = randInt(512), g = randFloat(We), h.x += rotationLUT[w][0] * g, h.y += rotationLUT[w][1] *
             g), g = d, Dd = f, Rd = h.x / La, De = (h.y - .5 * La * La * b * .01) / La, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem);
     else if (5 == l)
-        for (Ac = 256 + 256 * partyBodyDrawOptions[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = Hf[Ac & 511][0], h.y = -Hf[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
+        for (Ac = 256 + 256 * partyBodyDrawOptions[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = rotationLUT[Ac & 511][0], h.y = -rotationLUT[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
             tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We;
     else if (6 == l)
-        for (d = floor(512 / c), w = floor(randFloat(d)), l = 0; l < c; l++) g = Ac + Hf[w][0] * n, Dd = Rg + Hf[w][1] * n, Rd = Hf[w][0] * La * .1, De = Hf[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), w += d
+        for (d = floor(512 / c), w = floor(randFloat(d)), l = 0; l < c; l++) g = Ac + rotationLUT[w][0] * n, Dd = Rg + rotationLUT[w][1] * n, Rd = rotationLUT[w][0] * La * .1, De = rotationLUT[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), w += d
 }
 mainWindow.fff = Di;
 
@@ -2551,7 +2634,7 @@ mainWindow.fff = loadLevelData;
 function loadLevelData(a) {
     loadedLevelIndex != a && (loadedLevelIndex = a, currentLevelSprite = new Sprite, currentLevelSprite.f("m" + a + ".png"));
     drawSprite(currentLevelSprite);
-    if (Zf) return false;
+    if (uncheckedSpriteCount) return false;
     Mg = currentStage;
     ec[currentStage] = 1;
     si = currentLevelSprite.i;
@@ -2672,7 +2755,7 @@ function drawGameStage() {
         for (b = 1; b < Gi - 1; b++) 30 == P[c][b] ? (30 != P[c][b - 1] && Xg(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != P[c][b + 1] && Xg(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == P[c][b] && (31 != P[c][b - 1] && Xg(8 * b - 2, 8 * c, 2, 8, 21913), 31 != P[c][b + 1] && Xg(8 * b + 8, 8 * c, 2, 8, 21913));
     if (1 == currentStage) 1 == ec[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
     else if (6 == currentStage) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    else if (14 == currentStage) b = 2 * Hf[gj >> 2 & 511][0], c = 2 * Hf[gj >> 2 & 511][1], zi(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
+    else if (14 == currentStage) b = 2 * rotationLUT[gj >> 2 & 511][0], c = 2 * rotationLUT[gj >> 2 & 511][1], zi(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (17 == currentStage) 70 == gj % 360 && zi(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (18 == currentStage)
@@ -2714,8 +2797,8 @@ function xg() {
         b = clamp(O[bi][2].x, 0, 8 * Gi - 1) >> 3, 
         f = clamp(O[bi][2].y, 0, 8 * si - 1) >> 3
     );
-    g = clamp(O[Ka][2].x, 0, 8 * Gi - 1) >> 3;
-    h = clamp(O[Ka][2].y, 0, 8 * si - 1) >> 3;
+    g = clamp(O[selectingHero][2].x, 0, 8 * Gi - 1) >> 3;
+    h = clamp(O[selectingHero][2].y, 0, 8 * si - 1) >> 3;
     for (a = 0; a < partyMemberCount; a++) 
         c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, 
         d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 
@@ -2858,7 +2941,7 @@ function xg() {
         b = -1;
         for (a = 0; a < enemyCount; a++) 70 == enemyTypeArray[a] && 0 != enemyHealthArray[a] && (b = a);
         if (-1 != b && 10 < Y[b] && enemyHealthArray[b] < 1E4 * (Y[b] - 10) - 5E3)
-            for (Y[b]--, t = min(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * Hf[512 * a / t][0], d = .5 * -Hf[512 * a / t][1], zi(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            for (Y[b]--, t = min(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * rotationLUT[512 * a / t][0], d = .5 * -rotationLUT[512 * a / t][1], zi(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         0 == of [0] && 0 == V[10] && (of [0] = 1);
         1 == of [0] && dj(2, 20, 2, 24, 31);
         A(61) && 0 == V[10] &&
@@ -3320,10 +3403,10 @@ function bl(a, b, c, d) {
         else if (2 == p)
             for (gb = c, jb = d, La = gb < O[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) zi(b, k, gb, jb, La, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
         else if (3 == p || 6 == p)
-            for (3 == p ? Vec2Set(itemPos, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / PI2), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = Hf[a & 511][0], itemPos.y = -Hf[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
+            for (3 == p ? Vec2Set(itemPos, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
                 vc, wc, xc, yc, selectedItem), a += itemIdx;
         else if (4 == p)
-            for (p = 0; p < Qb; p++) Vec2Set(itemPos, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += Hf[La][0] * itemIdx, itemPos.y += Hf[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+            for (p = 0; p < Qb; p++) Vec2Set(itemPos, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
         else if (5 == p)
             for (p = 0; p < Qb; p++) gb = c + randFloatRange(-La, La), jb = d + randFloatRange(-La, 0), zi(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
                 hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
@@ -4183,25 +4266,25 @@ function Bg() {
         2 == Ll[a] && 1 == xl[a] && (b = 1);
         if (1 == b || -1 != c)
             if (ll[a] = 1, xl[a] = 0, 1 <= Ml[a] && 9 >= Ml[a])
-                for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, hm[a]), d.x = Hf[c][0] * p, d.y = Hf[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
-                    Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + Hf[c][0] * p, d.y = k.y + Hf[c][1] * p), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, hm[a]), d.x = rotationLUT[c][0] * p, d.y = rotationLUT[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
+                    Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             else if (-1 != c && 20 <= Ml[a] && 29 >= Ml[a])
-            for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / PI2), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = Hf[c][0] * hm[a], d.y = -Hf[c][1] * hm[a]), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
+            for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = rotationLUT[c][0] * hm[a], d.y = -rotationLUT[c][1] * hm[a]), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
                 Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], Ml[a], Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], gm[a], hm[a]);
         0 < xl[a] && xl[a]--;
         0 == xl[a] && (ll[a] = 1);
         if (10 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
             Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
         else if (11 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), p = randFloatRange(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-        else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y,
+        else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, zi(hl[a], -1, h.x, h.y,
             k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
         else if (13 == Ml[a]) {
             if (randFloat(60) < Nl[a])
-                for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = Hf[c][0] * p, k.y = Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
+                for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         } else if (14 == Ml[a]) {
             if (randFloat(60) < Nl[a] && (c = Ei(h.x, h.y, 200, 200), -1 != c))
-                for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + Hf[c][0] * p, k.y = d.y * hm[a] * .1 + Hf[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * hm[a] * .1 + rotationLUT[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         } else 15 == Ml[a] && randFloat(60) < gm[a] &&
             (Vec2Norm(k), Vec2Scale(k, hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
     }
@@ -4413,30 +4496,8 @@ function zg() {
     var a, b, c;
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (frameBufferArray = null);
-    for (a = 0; a < ym; a++) 
-        Am[a].y += .04, 
-        Vec2Scale(Am[a], .98), 
-        c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), 
-        b = ri(zm[a].x, c), 
-        0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), 
-        c > 8 * si + 12 ? (
-            A(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)
-        ) : (
-            c = clamp(zm[a].x + Am[a].x, 16, 623), 
-            b = ri(c, zm[a].y), 
-            0 <= b && 23 >= b || (zm[a].x = c), 
-            100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (
-                2 == Bm[a] ? (
-                    partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)
-                ) : 3 == Bm[a] ? (
-                    db[Cm[a]] = 1, eb++
-                ) : itemForgeLvls[Bm[a]] < Cm[a] && (
-                        itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1
-                    ), 
-                    A(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), 
-                    Gm(a--)
-                )
-        )
+    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
+        itemForgeLvls[Bm[a]] < Cm[a] && (itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), Gm(a--)))
 }
 mainWindow.fff = Dg;
 
@@ -4487,8 +4548,8 @@ var copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 3
     encodingCharTable = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK",
         //fromCharCode(48, 49, 87, 116, 67, 112, 108, 120, 97, 121, 102, 84, 118, 113, 99, 104, 72, 109, 65, 57, 42, 74, 90, 79, 114, 105, 54, 86, 78, 55, 76, 52, 119, 56, 100, 85, 71, 101, 46, 83, 51, 70, 73, 68, 122, 115, 110, 80, 98, 69, 107, 81, 88,
         //89, 77, 82, 103, 117, 50, 53, 66, 106, 111, 75),
-    sf = [];
-for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) sf[encodingCharTable[iterIdxTemp_1]] = iterIdxTemp_1;
+    inverseCodingCharTable = [];
+for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) inverseCodingCharTable[encodingCharTable[iterIdxTemp_1]] = iterIdxTemp_1;
 var hostnameCheckIdx = 0,
     targetHostname = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
     frameBufferArray = new Int32Array(276480),
@@ -4560,7 +4621,7 @@ function ag() {
     Xm = timestampAnim;
     return a
 }
-var Zf = 0;
+var uncheckedSpriteCount = 0;
 
 function Sprite() {
     this.a = 0;
@@ -4579,7 +4640,7 @@ function spriteCreateBuffer(sprite, width, height) {
 }
 Sprite.prototype.f = function(a) {
     this.b != a && (
-        Zf++, 
+        uncheckedSpriteCount++, 
         this.b = a, 
         this.a = new Image, 
         this.a.src = dataPath + a, 
@@ -4591,7 +4652,7 @@ Sprite.prototype.f = function(a) {
 
 function drawSprite(sprite) {
     if (!sprite.c && sprite.a.complete) {
-        Zf--;
+        uncheckedSpriteCount--;
         var imgWidth = sprite.a.width,
             imgHeight = sprite.a.height;
         if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", hn;
@@ -5160,7 +5221,7 @@ function Vec2Norm(a) {
 
 function Vec2Angle(a) {
     var b = Math.acos(a.x / Math.sqrt(a.x * a.x + a.y * a.y));
-    0 < a.y && (b = PI2 - b);
+    0 < a.y && (b = TAU - b);
     return b
 }
 var randLUT = new Float32Array(1024),
@@ -5201,9 +5262,9 @@ function randIntRange(a, b) {
     return ~~(randLUT[randSeed] * (b - a) + a)
 }
 
-var Hf = Array(513),
+var rotationLUT = Array(513),
     PI = 3.1415927,
-    PI2 = 6.2831855;
+    TAU = 6.2831855;
 
 function rand() {
     return Math.random()

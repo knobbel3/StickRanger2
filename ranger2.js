@@ -39,8 +39,8 @@ var currentLevelSprite = new Sprite,
     Na = 0,
     Oa = 0,
     Pa = 0,
-    Qa = 0,
-    Ra = 0,
+    currentBestiaryPage = 0,
+    bestiaryEnemySelection = 0,
     Sa = 0,
     LevelExpThresholds = Array(100);
 LevelExpThresholds[0] = 0;
@@ -126,7 +126,7 @@ function bc() {
     for (a = 0; 4 > a; a++)
         for (b = 0; 8 > b; b++) partyEquipmentTable[a][b] = 0;
     for (a = 0; 256 > a; a++) itemForgeLvls[a] = 0, ac[a] = 0;
-    for (a = 0; a < stageCount; a++) ec[a] = 0;
+    for (a = 0; a < stageCount; a++) isStageReachedArray[a] = 0;
     for (a = 0; a < enemyTypeCount; a++) Bc[a] = 0;
     for (a = 0; a < badgeCount; a++) badgeCounterArray[a] = 0;
     for (a = 0; a < Ec; a++) Fc[a] = 0;
@@ -623,6 +623,7 @@ var ef = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 13
 mainWindow.fff = A;
 
 function A(a) {
+    return true;
     return currentStage == badgeList[a][2] && badgeCounterArray[a] != badgeList[a][4] ? true : false
 }
 mainWindow.fff = IncrementBadgeCount;
@@ -711,7 +712,7 @@ function saveGame() {
     gameSaveBuffer[a++] = eb;
     gameSaveBuffer[a++] = stageCount >> 6 & 63;
     gameSaveBuffer[a++] = stageCount >> 0 & 63;
-    for (b = 0; b < stageCount; b++) gameSaveBuffer[a++] = ec[b];
+    for (b = 0; b < stageCount; b++) gameSaveBuffer[a++] = isStageReachedArray[b];
     gameSaveBuffer[a++] = enemyTypeCount >> 6 & 63;
     gameSaveBuffer[a++] = enemyTypeCount >> 0 & 63;
     for (b = 0; b < enemyTypeCount; b++) gameSaveBuffer[a++] = Bc[b];
@@ -808,7 +809,7 @@ function loadGame(saveString) {
     eb = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) ec[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) isStageReachedArray[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     for (b = 0; b < g; b++) Bc[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
@@ -872,7 +873,7 @@ function updatePartyChecksum() {
     for (a = 0; 256 > a; a++) c = hashAdjust(c, itemForgeLvls[a]);
     for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
     c = hashAdjust(c, eb);
-    for (a = 0; a < stageCount; a++) c = hashAdjust(c, ec[a]);
+    for (a = 0; a < stageCount; a++) c = hashAdjust(c, isStageReachedArray[a]);
     for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, Bc[a]);
     for (a = 0; a < badgeCount; a++) c = hashAdjust(c, badgeCounterArray[a]);
     for (a = 0; a < Ec; a++) c = hashAdjust(c, Fc[a]);
@@ -1790,30 +1791,56 @@ function drawGameUI() {
         g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBestiaryVisible = false);
-        Ra = clamp(Ra, 0, oh[Qa].length - 1);
-        c = oh[Qa][Ra];
-        if (0 == ec[stageIndexOrder[Qa]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
-        else {
-            if (0 == Bc[c]) h = enemyCatalog[c][enemyAttr66], drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 1);
-            else if (drawText(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyAttr0], 16777215, 0), drawText(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][enemyHealthCol], 16777215, 0), drawText(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][enemyAttr65], 16777215, 0), drawText(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][enemyAttr64], 16777215, 0), b = 0, 0 != enemyCatalog[c][enemyAttr39] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329), b += 13), 0 != enemyCatalog[c][enemyAttr40] && (drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736), b += 10), 0 != enemyCatalog[c][enemyAttr41] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783), b += 10), 0 != enemyCatalog[c][enemyAttr42] && (drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496), b += 7), 0 != enemyCatalog[c][enemyAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13), 0 < b && drawText(gameFontMed, f, g + 48, "RES ", 16777215, 0), drawText(gameFontMed, f + 80, g + 0,
-                "DROP ITEM", 16777215, 0), 1 == Bc[c]) h = enemyCatalog[c][enemyAttr66], drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 2);
-            else
-                for (d = b = 0; 4 > b; b++) hidx = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= hidx || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[hidx][itemHeadwearType], 10 == itemList[hidx][itemAppearanceCol] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol], itemList[hidx][itemSpriteLocYCol], true) : 20 == itemList[hidx][itemAppearanceCol] || 30 == itemList[hidx][itemAppearanceCol] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[hidx][itemSpriteLocXCol], itemList[hidx][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol]), fh = 0, gameFontMed.a = 4, drawText(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][itemNameCol], -1, 0), 0 < itemForgeLvls[hidx] && (drawRect(f +
-                    80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0)), d++);
-            for (hidx = 0; hidx < oh[Qa].length; hidx++) c = oh[Qa][hidx], b = f + hidx % 7 * 28, d = g + 96 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0), hidx == Ra && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (Ra = hidx)), Ch(c, b + 12, d + 20, 2)
+        bestiaryEnemySelection = clamp(bestiaryEnemySelection, 0, bestiaryPageItems[currentBestiaryPage].length - 1);
+        c = bestiaryPageItems[currentBestiaryPage][bestiaryEnemySelection];
+
+        if (0 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
+            drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        } else {
+            if (0 == Bc[c]) {
+                h = enemyCatalog[c][enemyAttr66], 
+                drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (
+                    partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 1
+                )
+            } else {
+                drawText(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyAttr0], 16777215, 0); 
+                drawText(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][enemyHealthCol], 16777215, 0); 
+                drawText(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][enemyAttr65], 16777215, 0); 
+                drawText(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][enemyAttr64], 16777215, 0); 
+                b = 0; 
+                0 != enemyCatalog[c][enemyAttr39] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329), b += 13); 
+                0 != enemyCatalog[c][enemyAttr40] && (drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736), b += 10); 
+                0 != enemyCatalog[c][enemyAttr41] && (drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783), b += 10); 
+                0 != enemyCatalog[c][enemyAttr42] && (drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496), b += 7); 
+                0 != enemyCatalog[c][enemyAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13); 
+                0 < b && drawText(gameFontMed, f, g + 48, "RES ", 16777215, 0); 
+                drawText(gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0); 
+                if (1 == Bc[c]) {
+                    h = enemyCatalog[c][enemyAttr66];
+                    if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked) {
+                        partyGold = clamp(partyGold - h, 0, 9999999);
+                        Bc[c] = 2;
+                    }
+                } else {
+                    for (d = b = 0; 4 > b; b++) {
+                        hidx = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= hidx || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[hidx][itemHeadwearType], 10 == itemList[hidx][itemAppearanceCol] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol], itemList[hidx][itemSpriteLocYCol], true) : 20 == itemList[hidx][itemAppearanceCol] || 30 == itemList[hidx][itemAppearanceCol] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[hidx][itemSpriteLocXCol], itemList[hidx][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol]), fh = 0, gameFontMed.a = 4, drawText(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][itemNameCol], -1, 0), 0 < itemForgeLvls[hidx] && (drawRect(f + 80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0)), d++);
+                    }
+                }
+            } 
+            for (hidx = 0; hidx < bestiaryPageItems[currentBestiaryPage].length; hidx++) c = bestiaryPageItems[currentBestiaryPage][hidx], b = f + hidx % 7 * 28, d = g + 96 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0), hidx == bestiaryEnemySelection && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (bestiaryEnemySelection = hidx)), Ch(c, b + 12, d + 20, 2)
         }
-        drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Qa--;
-        drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Qa++;
-        Qa = wrapStageIndex(Qa);
-        drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (Qa + 1) + "/" + stageIndexOrder.length, 3355443, -1);
-        1 == ec[stageIndexOrder[Qa]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[Qa]][stageNameCol], -1, 0)
+        drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && currentBestiaryPage--;
+        drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && currentBestiaryPage++;
+        currentBestiaryPage = wrapStageIndex(currentBestiaryPage);
+        drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        1 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][stageNameCol], -1, 0)
     }
     if (isBadgesUIVisible) {
         f = 434;
         g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBadgesUIVisible = false);
-        if (0 == ec[stageIndexOrder[Sa]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        if (0 == isStageReachedArray[stageIndexOrder[Sa]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
             for (hidx = 0; hidx < df[Sa].length; hidx++) c = df[Sa][hidx], badgeList[c] && (b = f + 6, d = g + 6 + 24 * hidx, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeList[c][3], badgeCounterArray[c] == badgeList[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < badgeCounterArray[c] && (gameFontMed.b = -1, drawTextCentered(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeList[c][1].length ? drawText(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215,
                 0) : (drawText(gameFontMed, b + 40, d + 1, badgeList[c][0], 16777215, 0), gameFontMed.a = 3, drawText(gameFontMed, b + 40, d + 11, badgeList[c][1], 16777215, 0)));
@@ -1821,7 +1848,7 @@ function drawGameUI() {
         drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Sa++;
         Sa = wrapStageIndex(Sa);
         drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (Sa + 1) + "/" + stageIndexOrder.length, 3355443, -1);
-        1 == ec[stageIndexOrder[Sa]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[Sa]][stageNameCol], -1, 0)
+        1 == isStageReachedArray[stageIndexOrder[Sa]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[Sa]][stageNameCol], -1, 0)
     }
     if (isOptionsVisible) {
         f = 434;
@@ -2599,10 +2626,11 @@ stageListArray[17] = ["Limestone cave 5", 2, 8686715, 14, 18, 0, 16, 0, 50, 71, 
 stageListArray[18] = ["Limestone cave 6", 2, 8686715, 15, 19, 17, 0, 0, 50, 77, 1, 3, 29, 42, 29, 42, 77, 1, 3, 44, 42, 44, 42, 77, 1, 3, 59, 42, 59, 42, 78, 2, 0, 7, 34, 15, 34, 78, 1, 0, 7, 18, 14, 18, 79, 20, 80, 4, 26, 17, 26, 80, 1, 0, 39, 4, 53, 8, 81, 99, 99, 23, 14, 67, 28, 82, 1, 0, 47, 20, 47, 20];
 stageListArray[19] = ["Limestone cave 7", 2, 8686715, 16, 0, 18, 20, 0, 50, 84, 20, 0, 10, 36, 18, 36, 84, 10, 0, 29, 38, 34, 38, 85, 1, 0, 63, 28, 63, 28, 85, 1, 0, 13, 25, 13, 25];
 stageListArray[20] = ["Limestone cave 8", 2, 8686715, 17, 0, 15, 0, 19, 50, 0, 0, 0, 0, 0, 0, 0];
-var ec = Array(stageCount);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < stageCount; iterIdxTemp_1++) ec[iterIdxTemp_1] = 0;
+var isStageReachedArray = Array(stageCount);
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < stageCount; iterIdxTemp_1++) isStageReachedArray[iterIdxTemp_1] = 0;
 var stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
-    oh = [
+    /** array of lists of enemy ids indexed by stage number */
+    bestiaryPageItems = [
         [0, 1, 2, 5, 3],
         [4, 7, 6, 9, 8, 14, 15],
         [12, 13, 10, 11, 17, 16],
@@ -2640,7 +2668,7 @@ function loadLevelData(a) {
     drawSprite(currentLevelSprite);
     if (uncheckedSpriteCount) return false;
     Mg = currentStage;
-    ec[currentStage] = 1;
+    isStageReachedArray[currentStage] = 1;
     si = currentLevelSprite.i;
     var b, c, d = 0,
         f, g, h, k, p, t, l;
@@ -2757,7 +2785,7 @@ function drawGameStage() {
                     for (; k < g; k++, d++) l = f.g[d], -1 != l && (frameBufferArray[k] = l)
             } for (c = 0; c < si; c++)
         for (b = 1; b < Gi - 1; b++) 30 == P[c][b] ? (30 != P[c][b - 1] && Xg(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != P[c][b + 1] && Xg(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == P[c][b] && (31 != P[c][b - 1] && Xg(8 * b - 2, 8 * c, 2, 8, 21913), 31 != P[c][b + 1] && Xg(8 * b + 8, 8 * c, 2, 8, 21913));
-    if (1 == currentStage) 1 == ec[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+    if (1 == currentStage) 1 == isStageReachedArray[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
     else if (6 == currentStage) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (14 == currentStage) b = 2 * rotationLUT[gj >> 2 & 511][0], c = 2 * rotationLUT[gj >> 2 & 511][1], zi(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -2837,7 +2865,7 @@ function xg() {
             }
         }
     }
-    if (1 == currentStage) 12 == drawState && 1 == ec[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == drawState && 1 == ec[12] && 1 > h && (Mg = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
+    if (1 == currentStage) 12 == drawState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == drawState && 1 == isStageReachedArray[12] && 1 > h && (Mg = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
     else if (2 != currentStage)
         if (3 == currentStage) {
             1 == partyMemberCount && 0 == V[0] && (li(partyMemberCount, 25, 14), partyMemberCount++);

@@ -153,7 +153,7 @@ var Jc = [
     []
 ];
 iterIdxTemp_1 = 0;
-var itemNameCol = iterIdxTemp_1++,
+const itemNameCol = iterIdxTemp_1++,
     itemDropIconCol = iterIdxTemp_1++,
     itemHeadwearType = iterIdxTemp_1++,
     itemAppearanceCol = iterIdxTemp_1++,
@@ -200,7 +200,7 @@ iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
-var zd = iterIdxTemp_1++,
+const zd = iterIdxTemp_1++,
     itemAtkCountCol = iterIdxTemp_1++,
     Bd = iterIdxTemp_1++,
     Cd = iterIdxTemp_1++,
@@ -226,7 +226,7 @@ var zd = iterIdxTemp_1++,
     Zd = iterIdxTemp_1++;
 iterIdxTemp_1 = 6;
 
-var itemSpriteLocYCol = iterIdxTemp_1++,
+const itemSpriteLocYCol = iterIdxTemp_1++,
     heroHealthModifierCol = iterIdxTemp_1++,
     heroDefenseModifierCol = iterIdxTemp_1++,
     heroMagicDefModifierCol = iterIdxTemp_1++,
@@ -234,7 +234,7 @@ var itemSpriteLocYCol = iterIdxTemp_1++,
 iterIdxTemp_1 = 6;
 iterIdxTemp_1++;
 
-var accessoryIdxCol = iterIdxTemp_1++,
+const accessoryIdxCol = iterIdxTemp_1++,
 
     accessoryPrimaryPrefixCol = iterIdxTemp_1++,
     accessoryPrimaryValueCol = iterIdxTemp_1++,
@@ -245,7 +245,7 @@ var accessoryIdxCol = iterIdxTemp_1++,
     accessorySecondaryLabelSuffixCol = iterIdxTemp_1++;
 
 iterIdxTemp_1 = 1;
-var accessoryArmsBonusCol0 = iterIdxTemp_1++,
+const accessoryArmsBonusCol0 = iterIdxTemp_1++,
     accessoryChargeBonusCol = iterIdxTemp_1++,
     accessoryArmsBonusCol1 = iterIdxTemp_1++,
     oe = iterIdxTemp_1++,
@@ -259,7 +259,7 @@ iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
-var accessoryDodgeChanceCol = iterIdxTemp_1++,
+const accessoryDodgeChanceCol = iterIdxTemp_1++,
     we = iterIdxTemp_1++,
     xe = iterIdxTemp_1++,
     ye = iterIdxTemp_1++,
@@ -2757,10 +2757,10 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
         }
     }
 }
-var stageCount = 32,
+const stageCount = 32,
     stageListArray = Array(stageCount);
 iterIdxTemp_1 = 0;
-var stageNameCol = iterIdxTemp_1++,
+const stageNameCol = iterIdxTemp_1++,
     stageTilesetIdxCol = iterIdxTemp_1++,
     stageUIBgColorCol = iterIdxTemp_1++,
     stageAttr3 = iterIdxTemp_1++,
@@ -3157,7 +3157,7 @@ function xg() {
             Xi[10]++), !A(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !A(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == P[d][c] && (19 == Xi[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of[1] && (dj(47, 15, 50, 15, 24), dj(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == db[4] ? dj(70, 34, 70, 34, 63) : 55 == P[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (dj(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
 }
 iterIdxTemp_1 = 0;
-var enemyAttr0 = iterIdxTemp_1++,
+const enemyAttr0 = iterIdxTemp_1++,
     enemyBehaviorCol = iterIdxTemp_1++,
     enemyAttr2 = iterIdxTemp_1++,
     enemyAttr3 = iterIdxTemp_1++,
@@ -4903,7 +4903,7 @@ GameFont.prototype.f = function (a, b, c) {
 };
 
 function drawText(_font, px, py, text, color, outlineColor) {
-    var h, k, p, t, l, n, w, B = 640 - _font.c,
+    let h, k, p, t, l, n, w, B = 640 - _font.c,
         M = _font.i.h - _font.c,
         J = _font.i.g,
         y = -1 < color ? 16777215 : 1,
@@ -4929,14 +4929,14 @@ function drawTextCentered(font, x, y, text, color, outlineColor) {
 }
 
 function drawMedTextNoOutline(x, y, text, color) {
-    var f = gameFontMed;
+    let f = gameFontMed;
     f.b = -1;
     f.a = 3;
     drawText(f, x, y, text, color, 0)
 }
 
 function drawSmallTextNoOutline(x, y, text, color) {
-    var f = gameFontSmall;
+    let f = gameFontSmall;
     f.b = -1;
     f.a = 0;
     drawTextCentered(f, x, y, text, color, -1)
@@ -4951,7 +4951,7 @@ function Tg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) {
     t = t * n >> 8;
     l = l * n >> 8;
     n = 255 - n;
-    var M, J, y, x, K, ba, U, na, Fa = 640 - w,
+    let M, J, y, x, K, ba, U, na, Fa = 640 - w,
         Ga = ~~((a.c << 8) / w),
         Ca = a.i.g,
         ua = 255 != k ? 16777215 : 1,
@@ -5325,6 +5325,8 @@ domDocument.onkeydown = function (a) {
     0 <= b && 256 > b && (Lf[b] = true, Kf[b] = true);
     if (0 != b && isCanvasFocused) return false
 };
+
+
 domDocument.onkeyup = function (a) {
     var b = a.keyCode;
     65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? Nf[b] : Mf[b];

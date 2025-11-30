@@ -44,7 +44,8 @@ var currentLevelSprite = new Sprite,
     Sa = 0,
     LevelExpThresholds = Array(100);
 LevelExpThresholds[0] = 0;
-for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) LevelExpThresholds[iterIdxTemp_1] = LevelExpThresholds[iterIdxTemp_1 - 1] + 1E3 * iterIdxTemp_1;
+for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) 
+    LevelExpThresholds[iterIdxTemp_1] = LevelExpThresholds[iterIdxTemp_1 - 1] + 1E3 * iterIdxTemp_1;
 LevelExpThresholds[98] = 9999999;
 LevelExpThresholds[99] = 9999999;
 var partyMemberCount = 1,
@@ -79,15 +80,16 @@ var partyMemberCount = 1,
     partyElem_vals = [0, 0, 0, 0],
     partyDodge_vals = [0, 0, 0, 0],
     partyPhysAtkStats = [partyShortAtk_vals, partyMidAtk_vals, partyLongAtk_vals],
-    Db = [0, 0, 0, 0, 0, 0, 0, 0],
-    Eb = [0, 0, 0, 0, 0, 0, 0, 0],
-    Fb = [0, 0, 0, 0, 0, 0, 0, 0],
+    //               PRIMARY      SECONDARY   
+    //              [h0,h1,h2,h3, h0,h1,h2,h3]
+    minAtkArray =   [0, 0, 0, 0,  0, 0, 0, 0],
+    maxAtkArray =   [0, 0, 0, 0,  0, 0, 0, 0],
+    atkCountArray = [0, 0, 0, 0,  0, 0, 0, 0],
+
     heroAgiValues = [0, 0, 0, 0],
     heroRangeValues = [0, 0, 0, 0],
     heroMeleeDefensesFlatArray = [0, 0, 0, 0],
-    heroProjDefenseFlatArray = [0,
-        0, 0, 0
-    ],
+    heroProjDefenseFlatArray = [0, 0, 0, 0],
     heroMagicDefenseFlatArray = [0, 0, 0, 0],
     heroDodgeChanceArray = [0, 0, 0, 0],
     Nb = [0, 0, 0, 0],
@@ -199,7 +201,7 @@ iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 var zd = iterIdxTemp_1++,
-    Ad = iterIdxTemp_1++,
+    itemAtkCountCol = iterIdxTemp_1++,
     Bd = iterIdxTemp_1++,
     Cd = iterIdxTemp_1++,
     Ed = iterIdxTemp_1++,
@@ -1425,37 +1427,37 @@ function updatePartyStats() {
                 let f = getModifiedStatVal(hidx, itemIdx, Oc);
                 let g = getModifiedStatVal(hidx, itemIdx, td);
                 let c = 4 * heroItem + hidx;
-                Db[c] = getModifiedStatVal(hidx, itemIdx, Vc);
-                Eb[c] = getModifiedStatVal(hidx, itemIdx, Wc);
-                Db[c] = floor(Db[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
-                Eb[c] = floor(Eb[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
-                Db[c] = floor(Db[c] * (100 + Ub[g][hidx]) / 100);
-                Eb[c] = floor(Eb[c] * (100 + Ub[g][hidx]) / 100);
+                minAtkArray[c] = getModifiedStatVal(hidx, itemIdx, Vc);
+                maxAtkArray[c] = getModifiedStatVal(hidx, itemIdx, Wc);
+                minAtkArray[c] = floor(minAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
+                maxAtkArray[c] = floor(maxAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
+                minAtkArray[c] = floor(minAtkArray[c] * (100 + Ub[g][hidx]) / 100);
+                maxAtkArray[c] = floor(maxAtkArray[c] * (100 + Ub[g][hidx]) / 100);
 
                 if (heroHasAccessoryEffect(hidx, oe)) {
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
                 }
                 if (heroHasAccessoryEffect(hidx, Ge) && 1 == g) {
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
                 }
                 if (heroHasAccessoryEffect(hidx, He) && 2 == g) {
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
                 }
 
                 if (heroHasAccessoryEffect(hidx, ze) && 3 == g)
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, ze)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, ze)) / 100);
 
                 if (heroHasAccessoryEffect(hidx, Be) && 4 == g) {
-                    Db[c] = floor(Db[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
-                    Eb[c] = floor(Eb[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
                 }
 
-                Fb[c] = getModifiedStatVal(hidx, itemIdx, Xc);
-                if (heroHasAccessoryEffect(hidx, ue) && 1 < Fb[c])
-                    Fb[c] += countAccessoryLvlBonuses(hidx, ue);
+                atkCountArray[c] = getModifiedStatVal(hidx, itemIdx, Xc);
+                if (heroHasAccessoryEffect(hidx, ue) && 1 < atkCountArray[c])
+                    atkCountArray[c] += countAccessoryLvlBonuses(hidx, ue);
 
                 heroItem || (
                     heroAgiValues[hidx] = getModifiedStatVal(hidx, itemIdx, Zc),
@@ -1602,10 +1604,12 @@ function drawGameUI() {
     if (drawIconButton(f + -1 * d, g, 13, "" + eb + "/" + hb, 16777215) && isMouseClicked) {
         for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
         if (0 < c && 0 < eb) {
-            for (hidx = 0; hidx < partyMemberCount; hidx++) partyLP[hidx] !=
-                partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280), partyLP[hidx] = partyMaxLP[hidx];
+            for (hidx = 0; hidx < partyMemberCount; hidx++) {
+                partyLP[hidx] != partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+                partyLP[hidx] = partyMaxLP[hidx];
+            }
             eb--;
-            jh++
+            jh++;
         }
     }
     drawIconButton(f + 0 * d, g, 1, "STATUS", isMemberUIVisible ? 16750950 : 16777215) && isMouseClicked && (isMemberUIVisible = !isMemberUIVisible);
@@ -1620,24 +1624,39 @@ function drawGameUI() {
         gameFont.a = 1;
         drawTextCentered(gameFont, 530, 168, "INN", 16777215, 8409120);
         if (buttonCheckCentered(528, 180, 48, 40)) {
-            for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
+            for (hidx = c = 0; hidx < partyMemberCount; hidx++) 
+                c += partyMaxLP[hidx] - partyLP[hidx];
             0 < c && (c = 10);
             c += 10 * (hb - eb);
             gameFont.a = 1;
             drawTextCentered(gameFont, 530, 168, "INN", 15908203, 8409120);
             drawTextCentered(gameFont, 528, 187, "G " + c, 16777215, 8409120);
             if (0 < c && c <= partyGold && isMouseClicked && !ta) {
-                for (hidx = 0; hidx < partyMemberCount; hidx++) partyLP[hidx] != partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280), partyLP[hidx] = partyMaxLP[hidx];
+                for (hidx = 0; hidx < partyMemberCount; hidx++) {
+                    partyLP[hidx] != partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+                    partyLP[hidx] = partyMaxLP[hidx];
+                }
                 eb != hb && Lg(436, 380, 0, hb - eb, 60, 65280);
                 eb = hb;
-                partyGold = clamp(partyGold - c, 0, 9999999)
+                partyGold = clamp(partyGold - c, 0, 9999999);
             }
         }
         gameFont.a = 1;
         drawTextCentered(gameFont, 54, 296, "SMITH", 16777215, 8409120);
-        buttonCheckCentered(52, 308, 56, 40) && (gameFont.a = 1, drawTextCentered(gameFont, 54, 296, "SMITH", 15908203, 8409120), isMouseClicked && !ta && (isInventoryVisible = !isInventoryVisible) &&
-            (isShrineUIVisible = false))
-    } else (12 == currentStage) && (gameFont.a = 1, drawTextCentered(gameFont, 418, 104, "SHRINE", 16777215, 8409120), buttonCheckCentered(416, 108, 48, 40) && (gameFont.a = 1, drawTextCentered(gameFont, 418, 104, "SHRINE", 15908203, 8409120), isMouseClicked && !ta && (isShrineUIVisible = !isShrineUIVisible) && (isInventoryVisible = false)));
+        if (buttonCheckCentered(52, 308, 56, 40)) {
+            gameFont.a = 1;
+            drawTextCentered(gameFont, 54, 296, "SMITH", 15908203, 8409120);
+            isMouseClicked && !ta && (isInventoryVisible = !isInventoryVisible) && (isShrineUIVisible = false);
+        }
+    } else if (12 == currentStage) {
+        gameFont.a = 1;
+        drawTextCentered(gameFont, 418, 104, "SHRINE", 16777215, 8409120);
+        if (buttonCheckCentered(416, 108, 48, 40)) {
+            gameFont.a = 1;
+            drawTextCentered(gameFont, 418, 104, "SHRINE", 15908203, 8409120);
+            isMouseClicked && !ta && (isShrineUIVisible = !isShrineUIVisible) && (isInventoryVisible = false);
+        }
+    };
     
     if (isMemberUIVisible) {
         g = f = 14;
@@ -1658,61 +1677,71 @@ function drawGameUI() {
                 "" + partyStats[_statIdx][selectingHero], 
                 selectedStatIndex == _statIdx ? 16737894 : 16777215);
             if (_clicked) {
-                if (selectedStatIndex != _statIdx) {
+                if (selectedStatIndex != _statIdx) { // mouse button is held, but the cursor is hovering over another icon
                     if (isMouseReleased) selectedStatIndex = _statIdx;
-                } else if (0 < partySP[selectingHero] && partyStats[selectedStatIndex][selectingHero] < maxStats[selectedStatIndex]) {
+                } else if (
+                    0 < partySP[selectingHero] && 
+                    partyStats[selectedStatIndex][selectingHero] < maxStats[selectedStatIndex]
+                ) {
                     drawText(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481);
+
                     if (isMouseReleased) {
-                        partyStats[selectedStatIndex][selectingHero]++,
-                        partySP[selectingHero]--
+                        partyStats[selectedStatIndex][selectingHero]++;
+                        partySP[selectingHero]--;
                     }
                 }
             }
         }
         
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isMemberUIVisible = false);
+        
         g += 64;
-        //show stats
-        for (let _slotIdx = 0; 2 > _slotIdx; _slotIdx++) {
+        // show stats
+        for (let _slotIdx = 0; 2 > _slotIdx; _slotIdx++) { // loop over primary and secondary
             let _equipmentIdx = partyEquipmentTable[selectingHero][_slotIdx];
-            if (0 != itemList[_equipmentIdx][itemAppearanceCol]) {
+            if (0 != itemList[_equipmentIdx][itemAppearanceCol]) { // is it empty
                 if (10 > itemList[_equipmentIdx][itemAppearanceCol]) {
                     gameFontMed.a = 4;
-                    h = itemForgeLvls[_equipmentIdx];
+                    let accessoryLevel = itemForgeLvls[_equipmentIdx];
                     heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol0) && 3 == itemList[_equipmentIdx][itemDropIconCol] && (
-                        h += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol0)
+                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol0)
                     );
                     heroHasAccessoryEffect(selectingHero, accessoryChargeBonusCol) && 4 == itemList[_equipmentIdx][itemDropIconCol] && (
-                        h += countAccessoryLvlBonuses(selectingHero, accessoryChargeBonusCol)
+                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryChargeBonusCol)
                     );
                     heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1) && 3 == itemList[_equipmentIdx][itemDropIconCol] && (
-                        h += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol1)
+                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol1)
                     );
                     heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1) && 4 == itemList[_equipmentIdx][itemDropIconCol] && (
-                        h += sumAccessorySecondaryValues(selectingHero, accessoryArmsBonusCol1)
+                        accessoryLevel += sumAccessorySecondaryValues(selectingHero, accessoryArmsBonusCol1)
                     );
-                    drawText(gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][itemNameCol] + " " + h, -1, 0);
-                    h = "AT " + Db[4 * _slotIdx + selectingHero] + "-" + Eb[4 * _slotIdx + selectingHero];
+                    drawText(gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][itemNameCol] + " " + accessoryLevel, -1, 0);
 
-                    if (10 <= itemList[_equipmentIdx][Ad] && 11 >= itemList[_equipmentIdx][Ad]) {
-                        h += " *" + Fb[4 * _slotIdx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, _equipmentIdx, ld) * getModifiedStatVal(selectingHero, _equipmentIdx, Ed) / 60)
-                    }
-                    else if (0 != itemList[_equipmentIdx][Ad]) {
-                        b = getModifiedStatVal(selectingHero, _equipmentIdx, Ed);
-                        if (heroHasAccessoryEffect(selectingHero, Ae) && 3 == itemList[_equipmentIdx][td] && 20 == itemList[_equipmentIdx][Ad]) {
+                    let atkRangeTxt = "AT " + minAtkArray[4 * _slotIdx + selectingHero] + "-" + maxAtkArray[4 * _slotIdx + selectingHero];
+
+                    if (itemList[_equipmentIdx][itemAtkCountCol] === 10 || 
+                        itemList[_equipmentIdx][itemAtkCountCol] === 11) {
+                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, _equipmentIdx, ld) * getModifiedStatVal(selectingHero, _equipmentIdx, Ed) / 60);
+                    } else if (0 != itemList[_equipmentIdx][itemAtkCountCol]) {
+                        let b = getModifiedStatVal(selectingHero, _equipmentIdx, Ed);
+                        if (heroHasAccessoryEffect(selectingHero, Ae) && 3 == itemList[_equipmentIdx][td] && 20 == itemList[_equipmentIdx][itemAtkCountCol]) {
                             b += countAccessoryLvlBonuses(selectingHero, Ae);
                         }
-                        h += " *" + Fb[4 * _slotIdx + selectingHero] + ">" + b;
+                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + b;
                     } else {
-                        1 < Fb[4 * _slotIdx + selectingHero] && (h += " *" + Fb[4 * _slotIdx + selectingHero]);
-                        if (99 == getModifiedStatVal(selectingHero, _equipmentIdx, Uc)) {
-                            h += " all";
-                        } else if (1 < getModifiedStatVal(selectingHero, _equipmentIdx, Uc)) {
-                            h += " " + getModifiedStatVal(selectingHero, _equipmentIdx, Uc) + "hit";
+                        if (1 < atkCountArray[4 * _slotIdx + selectingHero]) {
+                            atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero]
                         }
-                        drawText(gameFontMed, f + 96 * _slotIdx, g + 12, h, 16777215, 0);
-                        _slotIdx || drawText(gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + heroAgiValues[selectingHero], 16777215, 0);
-                        _slotIdx || drawText(gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + heroRangeValues[selectingHero], 16777215, 0);
+                        if (99 == getModifiedStatVal(selectingHero, _equipmentIdx, Uc)) {
+                            atkRangeTxt += " all";
+                        } else if (1 < getModifiedStatVal(selectingHero, _equipmentIdx, Uc)) {
+                            atkRangeTxt += " " + getModifiedStatVal(selectingHero, _equipmentIdx, Uc) + "hit";
+                        }
+                        drawText(gameFontMed, f + 96 * _slotIdx, g + 12, atkRangeTxt, 16777215, 0);
+                        if (!_slotIdx) {
+                            drawText(gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + heroAgiValues[selectingHero], 16777215, 0);
+                            drawText(gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + heroRangeValues[selectingHero], 16777215, 0);
+                        }
                         if (_slotIdx) {
                             if (-1 == heroEmitValues[selectingHero]) {
                                 drawText(gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT passive", 16777215, 0);
@@ -1729,9 +1758,9 @@ function drawGameUI() {
                                 0 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    physical", 10066329, 0);
                                 1 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
                                 if (2 == itemList[_equipmentIdx][td]) {
-                                    h = getModifiedStatVal(selectingHero, _equipmentIdx, ud);
-                                    heroHasAccessoryEffect(selectingHero, ye) && (h += countAccessoryLvlBonuses(selectingHero, ye));
-                                    drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    ice " + h + "%", 10070783, 0)
+                                    let iceVal = getModifiedStatVal(selectingHero, _equipmentIdx, ud);
+                                    heroHasAccessoryEffect(selectingHero, ye) && (iceVal += countAccessoryLvlBonuses(selectingHero, ye));
+                                    drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    ice " + iceVal + "%", 10070783, 0)
                                 }
                                 3 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    lightning", 15658496, 0);
                                 4 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    poison", 52224, 0)
@@ -1766,7 +1795,7 @@ function drawGameUI() {
 
         0 != itemForgeLvls[c] && (10 > itemList[c][itemAppearanceCol]
             ? (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0),
-                h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, Ad) && 11 >= Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, Ad) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawText(gameFontMed, f, g + 12, h, 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawText(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawText(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawText(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawText(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    long", 16764057, 0), drawText(gameFontMed, f, g + 72, "ATR", 16777215, 0),
+                h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, itemAtkCountCol) && 11 >= Ve(c, itemAtkCountCol) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, itemAtkCountCol) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawText(gameFontMed, f, g + 12, h, 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawText(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawText(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawText(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawText(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    long", 16764057, 0), drawText(gameFontMed, f, g + 72, "ATR", 16777215, 0),
                 0 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    poison", 52224, 0), hidx = Xe(c, hd), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "RANGE +" + hidx + "%", 16777215, 0), hidx = Xe(c, ld), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0), hidx = Xe(c, Td), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0))
             : 20 > itemList[c][itemAppearanceCol] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), d = 1, hidx = Ve(c, heroHealthModifierCol),
                 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "LP +" + hidx, 16777215, 0), d++), hidx = Ve(c, heroDefenseModifierCol), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "DF +" + hidx, 16777215, 0), d++), hidx = Ve(c, heroMagicDefModifierCol), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0), d++), hidx = Ve(c, heroDodgeModifierCol), 0 < hidx && drawText(gameFontMed, f, g + 12 * d, "DODGE +" + hidx, 16777215, 0)) : (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][accessoryPrimaryValueCol] && drawText(gameFontMed, f, g + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 0 != itemList[c][accessorySecondaryValueCol] && drawText(gameFontMed, f, g + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)));
@@ -2199,11 +2228,11 @@ function xi(a, b, c, d, f, g) {
         gc = selectedItem[rd],
         Qb = selectedItem[sd],
         Rb = getModifiedStatVal(a, selectedItemIdx, Uc),
-        gb = Db[4 * c + a],
-        jb = Eb[4 * c + a];
+        gb = minAtkArray[4 * c + a],
+        jb = maxAtkArray[4 * c + a];
     heroHasAccessoryEffect(a, we) && 0 == selectedItem[td] && randFloat(100) < countAccessoryLvlBonuses(a, we) && (gb = floor(gb *
         (100 + sumAccessorySecondaryValues(a, we)) / 100), jb = floor(jb * (100 + sumAccessorySecondaryValues(a, we)) / 100));
-    c = Fb[4 * c + a];
+    c = atkCountArray[4 * c + a];
     var La = selectedItem[Yc],
         hc = selectedItem[td],
         Ib = getModifiedStatVal(a, selectedItemIdx, ud);
@@ -2211,7 +2240,7 @@ function xi(a, b, c, d, f, g) {
     heroHasAccessoryEffect(a, ye) && 2 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(a, ye));
     heroHasAccessoryEffect(a, Ie) && 4 == selectedItem[td] && (Ib += 60 * countAccessoryLvlBonuses(a, Ie));
     var ic = selectedItem[zd],
-        jc = selectedItem[Ad],
+        jc = selectedItem[itemAtkCountCol],
         kc = selectedItem[Bd],
         lc = selectedItem[Gd],
         mc = selectedItem[Hd],
@@ -2233,7 +2262,7 @@ function xi(a, b, c, d, f, g) {
         Rf = selectedItem[Zd],
         Sf = selectedItem[Cd],
         selectedItemIdx = getModifiedStatVal(a, selectedItemIdx, Ed);
-    heroHasAccessoryEffect(a, Ae) && 3 == selectedItem[td] && 20 == selectedItem[Ad] && (selectedItemIdx += countAccessoryLvlBonuses(a, Ae));
+    heroHasAccessoryEffect(a, Ae) && 3 == selectedItem[td] && 20 == selectedItem[itemAtkCountCol] && (selectedItemIdx += countAccessoryLvlBonuses(a, Ae));
     var selectedItem = selectedItem[Fd], Ac, Rg;
     Ac = Q[g][yi].x;
     Rg = Q[g][yi].y;

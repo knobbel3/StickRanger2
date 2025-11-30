@@ -35,7 +35,7 @@ var currentLevelSprite = new Sprite,
     Ia = false,
     Ja = false,
     selectingHero = 0,
-    Ma = 0,
+    selectedStatIndex = 0,
     Na = 0,
     Oa = 0,
     Pa = 0,
@@ -117,7 +117,7 @@ mainWindow.fff = bc;
 
 function bc() {
     var a, b;
-    cc();
+    resetUIStates();
     partyLevel = partyMemberCount = 1;
     for (a = partyGold = partyEXPAccum = 0; 4 > a; a++) partySP[a] = 0, partyLP[a] = 50, partyMaxLP[a] = 50, $a[a] = 0;
     for (a = 0; 9 > a; a++) db[a] = 0;
@@ -133,12 +133,12 @@ function bc() {
     for (a = 0; 4 > a; a++) ib[a] = 0;
     kb = 0
 }
-mainWindow.fff = cc;
+mainWindow.fff = resetUIStates;
 
-function cc() {
+function resetUIStates() {
     sa = 0;
     Ba = Da = Ea = Ha = Ia = Ja = ta = isMemberUIVisible = isInventoryVisible = isBestiaryVisible = isBadgesUIVisible = isOptionsVisible = isShrineUIVisible = false;
-    comboMultBonus = Hc = Ic = selectingHero = Ma = Na = Oa = Pa = 0
+    comboMultBonus = Hc = Ic = selectingHero = selectedStatIndex = Na = Oa = Pa = 0
 }
 var Jc = [
     [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -1196,7 +1196,7 @@ function drawCanvas() {
                 updatePartyStats()
             ) 
             : 5 == drawState && (
-                    cc(), 
+                    resetUIStates(), 
                     currentStage = 1, 
                     partySpawnXs[0] = 20, 
                     partySpawnXs[1] = 28, 
@@ -1645,30 +1645,31 @@ function drawGameUI() {
         drawText(gameFont, f, g, "LP " + partyLP[selectingHero] + "/" + partyMaxLP[selectingHero] + " SP (" + partySP[selectingHero] + ")", 16777215, 0);
         k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
         gameFont.a = 1;
-        drawText(gameFont, f, g + 20, k[Ma], 16777215, 0);
+        drawText(gameFont, f, g + 20, k[selectedStatIndex], 16777215, 0);
         k = [9, 0, 20, 21, 17, 22, 23];
         c = [999, 999, 999, 999, 999, 999, 25];
         for (hidx = 0; 7 > hidx; hidx++) 
             drawMenuButton(
                 f + 12 + hidx % 7 * 28, g + 46 + 28 * ~~(hidx / 7), 
                 k[hidx], 
-                "" + partyStats[hidx][selectingHero], Ma == hidx ? 16737894 : 16777215
+                "" + partyStats[hidx][selectingHero], selectedStatIndex == hidx ? 16737894 : 16777215
             ) && (
-                Ma != hidx 
-                    ? isMouseReleased && (Ma = hidx) 
-                    : 0 < partySP[selectingHero] && partyStats[Ma][selectingHero] < c[Ma] && (
+                selectedStatIndex != hidx 
+                    ? isMouseReleased && (selectedStatIndex = hidx) 
+                    : 0 < partySP[selectingHero] && partyStats[selectedStatIndex][selectingHero] < c[selectedStatIndex] && (
                         drawText(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481), 
                         isMouseReleased && (
-                            partyStats[Ma][selectingHero]++, 
+                            partyStats[selectedStatIndex][selectingHero]++, 
                             partySP[selectingHero]--
                         )
                     )
                 );
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isMemberUIVisible = false);
         g += 64;
-        for (hidx = 0; 2 > hidx; hidx++) 
-            c = partyEquipmentTable[selectingHero][hidx], 
-            0 != itemList[c][itemAppearanceCol] && (
+        //show stats
+        for (hidx = 0; 2 > hidx; hidx++) {
+            c = partyEquipmentTable[selectingHero][hidx];
+            if (0 != itemList[c][itemAppearanceCol]) {
                 10 > itemList[c][itemAppearanceCol] 
                     ? (
                         gameFontMed.a = 4, 
@@ -1732,19 +1733,21 @@ function drawGameUI() {
                     : (
                         gameFontMed.a = 4, drawText(gameFontMed, f + 96 * hidx, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], 16777215, 0)
                     )
-            );
+                };
+        }
         g += 96;
         k = ["ARMS", "CHARGE"];
-        for (hidx = 0; 2 > hidx; hidx++) 
-            c = partyEquipmentTable[selectingHero][hidx], 
-            b = f + 28 * hidx, 
-            d = g, 
-            drawRect(b, d, 24, 24, 0), 
-            fh = 2, 
-            h = itemList[c][itemHeadwearType], 
-            drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), 
-            fh = 0, 
+        for (hidx = 0; 2 > hidx; hidx++) {
+            c = partyEquipmentTable[selectingHero][hidx];
+            b = f + 28 * hidx;
+            d = g;
+            drawRect(b, d, 24, 24, 0);
+            fh = 2;
+            h = itemList[c][itemHeadwearType];
+            drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]);
+            fh = 0;
             drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), Wg(b, d, 24, 24, c, hidx)
+        }
     }
     if (isInventoryVisible) {
         f = 224;

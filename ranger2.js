@@ -1823,7 +1823,48 @@ function drawGameUI() {
                     }
                 } else {
                     for (d = b = 0; 4 > b; b++) {
-                        hidx = enemyCatalog[c][enemyAttr67 + 2 * b], 2 >= hidx || (drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0), fh = 2, h = itemList[hidx][itemHeadwearType], 10 == itemList[hidx][itemAppearanceCol] ? Qg(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol], itemList[hidx][itemSpriteLocYCol], true) : 20 == itemList[hidx][itemAppearanceCol] || 30 == itemList[hidx][itemAppearanceCol] ? gh(f + 80, g + 12 + 20 * d, 16 * (h & 15), 16 * (h >> 4), itemList[hidx][itemSpriteLocXCol], itemList[hidx][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, f + 80, g + 12 + 20 * d, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol]), fh = 0, gameFontMed.a = 4, drawText(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][itemNameCol], -1, 0), 0 < itemForgeLvls[hidx] && (drawRect(f + 80 - 6, g + 12 + 20 * d + 6, 4, 4, 0), drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168), Wg(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0)), d++);
+                        hidx = enemyCatalog[c][enemyAttr67 + 2 * b];
+                        if (hidx <= 2) {
+                            continue;
+                        }
+                        drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0);
+                        fh = 2;
+                        h = itemList[hidx][itemHeadwearType];
+                        if (10 == itemList[hidx][itemAppearanceCol]){
+                            Qg(
+                                itemsSpriteSheet, 
+                                f + 80, g + 12 + 20 * d, 
+                                16, 16, 
+                                16 * (h & 15), 16 * (h >> 4), 
+                                16, 16, 
+                                itemList[hidx][itemSpriteLocXCol], 
+                                itemList[hidx][itemSpriteLocYCol], 
+                                true
+                            ) 
+                        } else {
+                            if (20 == itemList[hidx][itemAppearanceCol] || 30 == itemList[hidx][itemAppearanceCol]) {
+                               gh(
+                                f + 80, g + 12 + 20 * d, 
+                                16 * (h & 15), 16 * (h >> 4), 
+                                itemList[hidx][itemSpriteLocXCol], 
+                                itemList[hidx][itemSpriteLocYCol]
+                            );
+                            } else {
+                                drawSpriteSheetPart(
+                                    itemsSpriteSheet, 
+                                    f + 80, g + 12 + 20 * d, 
+                                    16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol]);
+                                fh = 0;
+                                gameFontMed.a = 4; 
+                                drawText(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][itemNameCol], -1, 0); 
+                                if (0 < itemForgeLvls[hidx]) {
+                                    drawRect(f + 80 - 6, g + 12 + 20 * d + 6, 4, 4, 0);
+                                    drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168);
+                                    Wg(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0);
+                                }
+                                d++;
+                            }
+                        }
                     }
                 }
             } 

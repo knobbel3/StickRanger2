@@ -1786,43 +1786,128 @@ function drawGameUI() {
             drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), Wg(b, d, 24, 24, c, hidx)
         }
     }
-    if (isInventoryVisible) {
-        f = 224;
-        g = 14;
-        drawRect(f - 6, g - 6, 204, 260, stageListArray[currentStage][stageUIBgColorCol]);
-        c = Jc[Na][28 * Oa + Pa];
-        0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na && (drawTextCentered(gameFontMed, f + 138, g + 28, "Lv UP", 16777215, 0), hidx = Ve(c, wd), 0 == hidx ? drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "---") : itemForgeLvls[c] < hidx ? (Zb = -1, h = Ve(c, xd) * itemForgeLvls[c], drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "G " + h) && h <= partyGold && (Zb = c, isMouseClicked && (Zb = -1, partyGold = clamp(partyGold - h, 0, 9999999), itemForgeLvls[c]++))) : drawButtonBoldedText(f + 138, g + 48 - 2, 80, 24, "MAX"));
 
-        0 != itemForgeLvls[c] && (10 > itemList[c][itemAppearanceCol]
-            ? (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0),
-                h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc), 10 <= Ve(c, itemAtkCountCol) && 11 >= Ve(c, itemAtkCountCol) ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) : 0 != Ve(c, itemAtkCountCol) ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) : 1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 99 == Ve(c, Uc) ? h += " all" : 1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), drawText(gameFontMed, f, g + 12, h, 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 24, "AGI " + Ve(c, Zc), 16777215, 0), 0 == Na && drawText(gameFontMed, f, g + 36, "RANGE " + Ve(c, $c), 16777215, 0), 0 == Na ? drawText(gameFontMed, f, g + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) : -1 == Ve(c, vd) ? drawText(gameFontMed, f, g + 48, "EMIT passive", 16777215, 0) : drawText(gameFontMed, f, g + 48, "EMIT " + Ve(c, vd), 16777215, 0), drawText(gameFontMed, f, g + 60, "SML", 16777215, 0), 0 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    short", 16764057, 0), 1 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    middle", 16764057, 0), 2 == itemList[c][Oc] && drawText(gameFontMed, f, g + 60, "    long", 16764057, 0), drawText(gameFontMed, f, g + 72, "ATR", 16777215, 0),
-                0 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    physical", 10066329, 0), 1 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    fire", 16724736, 0), 2 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 3 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    lightning", 15658496, 0), 4 == itemList[c][td] && drawText(gameFontMed, f, g + 72, "    poison", 52224, 0), hidx = Xe(c, hd), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "RANGE +" + hidx + "%", 16777215, 0), hidx = Xe(c, ld), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0), hidx = Xe(c, Td), -1 != hidx && drawText(gameFontMed, f + 84, g + 72, "COUNT +" + hidx + "%", 16777215, 0))
-            : 20 > itemList[c][itemAppearanceCol] ? (gameFontMed.a = 4, 0 == itemList[c][wd] ? drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0) : drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), d = 1, hidx = Ve(c, heroHealthModifierCol),
-                0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "LP +" + hidx, 16777215, 0), d++), hidx = Ve(c, heroDefenseModifierCol), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "DF +" + hidx, 16777215, 0), d++), hidx = Ve(c, heroMagicDefModifierCol), 0 < hidx && (drawText(gameFontMed, f, g + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0), d++), hidx = Ve(c, heroDodgeModifierCol), 0 < hidx && drawText(gameFontMed, f, g + 12 * d, "DODGE +" + hidx, 16777215, 0)) : (gameFontMed.a = 4, drawText(gameFontMed, f, g + 0, "" + itemList[c][itemNameCol], -1, 0), 0 != itemList[c][accessoryPrimaryValueCol] && drawText(gameFontMed, f, g + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 0 != itemList[c][accessorySecondaryValueCol] && drawText(gameFontMed, f, g + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)));
+    if (isInventoryVisible) {
+        let _ox = 224;
+        let _oy = 14;
+        drawRect(_ox - 6, _oy - 6, 204, 260, stageListArray[currentStage][stageUIBgColorCol]);
+        c = Jc[Na][28 * Oa + Pa];
+
+        if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na) { // item upgrade panel
+            drawTextCentered(gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
+            hidx = Ve(c, wd);
+            if (0 == hidx) 
+                 drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "---");
+            else if (itemForgeLvls[c] < hidx) {
+                Zb = -1;
+                h = Ve(c, xd) * itemForgeLvls[c];
+                if (drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "G " + h) && h <= partyGold) {
+                    Zb = c;
+                    if (isMouseClicked) {
+                        Zb = -1;
+                        partyGold = clamp(partyGold - h, 0, 9999999);
+                        itemForgeLvls[c]++;
+                    }
+                }
+            } else {
+                drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "MAX");
+            }
+        }
+
+        if (0 != itemForgeLvls[c] && (10 > itemList[c][itemAppearanceCol])) {
+            gameFontMed.a = 4;
+            drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0);
+            h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc);
+            if (10 <= Ve(c, itemAtkCountCol) && 11 >= Ve(c, itemAtkCountCol)) {
+                 h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60);
+            } else {
+                if (0 != Ve(c, itemAtkCountCol)) {
+                 h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed);
+                } else {
+                    1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc));
+                    if (99 == Ve(c, Uc)) {
+                    h += " all";
+                    } else {    
+                        1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit");
+                        drawText(gameFontMed, _ox, _oy + 12, h, 16777215, 0);
+                        0 == Na && drawText(gameFontMed, _ox, _oy + 24, "AGI " + Ve(c, Zc), 16777215, 0);
+                        0 == Na && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + Ve(c, $c), 16777215, 0);
+                        if (0 == Na) {
+                            drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + Ve(c, vd), 16777215, 0);
+                        } else {
+                            if (-1 == Ve(c, vd)) {
+                                drawText(gameFontMed, _ox, _oy + 48, "EMIT passive", 16777215, 0);
+                            } else {
+                                drawText(gameFontMed, _ox, _oy + 48, "EMIT " + Ve(c, vd), 16777215, 0);
+                                drawText(gameFontMed, _ox, _oy + 60, "SML", 16777215, 0);
+                                0 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0);
+                                1 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0);
+                                2 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    long", 16764057, 0);
+                                drawText(gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0);
+                                0 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0);
+                                1 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0);
+                                2 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0);
+                                3 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0);
+                                4 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    poison", 52224, 0);
+                                hidx = Xe(c, hd);
+                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0);
+                                hidx = Xe(c, ld);
+                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
+                                hidx = Xe(c, Td);
+                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } else ((20 > itemList[c][itemAppearanceCol]) 
+            ? (
+                (gameFontMed.a = 4, 0 == itemList[c][wd]) 
+                    ?   drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol], -1, 0) 
+                    :   drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0), 
+                        d = 1, 
+                        hidx = Ve(c, heroHealthModifierCol), 
+                        0 < hidx && (drawText(gameFontMed, _ox, _oy + 12 * d, "LP +" + hidx, 16777215, 0), d++), 
+                        hidx = Ve(c, heroDefenseModifierCol), 
+                        0 < hidx && (drawText(gameFontMed, _ox, _oy + 12 * d, "DF +" + hidx, 16777215, 0), d++), 
+                        hidx = Ve(c, heroMagicDefModifierCol), 
+                        0 < hidx && (drawText(gameFontMed, _ox, _oy + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0), d++), 
+                        hidx = Ve(c, heroDodgeModifierCol), 0 < hidx && drawText(gameFontMed, _ox, _oy + 12 * d, "DODGE +" + hidx, 16777215, 0)
+            ) 
+            : (
+                gameFontMed.a = 4, 
+                drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol], -1, 0), 
+                0 != itemList[c][accessoryPrimaryValueCol] && drawText(gameFontMed, _ox, _oy + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0), 
+                0 != itemList[c][accessorySecondaryValueCol] && drawText(gameFontMed, _ox, _oy + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0)
+            )
+        )
+        
 
         Zb = -1;
         k = Na;
-        drawCancelButton(f + 188, g + 4) && isMouseClicked && (isInventoryVisible = false);
-        for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = f + hidx % 7 * 28, d = g + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
+        drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (isInventoryVisible = false);
+        for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
             0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
-            drawMenuButton(f + 12 + 28 * hidx, g + 238, hidx, k[hidx], Na == hidx ? 16737894 : 16777215) && isMouseClicked && (Na = hidx);
+            drawMenuButton(_ox + 12 + 28 * hidx, _oy + 238, hidx, k[hidx], Na == hidx ? 16737894 : 16777215) && isMouseClicked && (Na = hidx);
             c =
                 0;
             for (b = Jc[hidx].length - 1; 0 <= b; b--) c += ac[Jc[hidx][b]];
-            0 < c && drawText(gameFontSmall, f + 12 + 28 * hidx - 12, g + 238 - 12, "NEW", 16776960, -1)
+            0 < c && drawText(gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1)
         }
-        drawMenuButton(f + 96 - 42, g + 209, 7, "PREV", 16777215) && isMouseClicked && Oa--;
-        drawMenuButton(f + 138, g + 209, 8, "NEXT", 16777215) && isMouseClicked && Oa++;
+        drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked && Oa--;
+        drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215) && isMouseClicked && Oa++;
         h = ~~(Jc[Na].length / 28);
         Oa = clamp(Oa, 0, h - 1);
-        drawTextCentered(gameFontSmall, f + 96, g + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
+        drawTextCentered(gameFontSmall, _ox + 96, _oy + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
     }
+
     if (isBestiaryVisible) {
-        f = 434;
-        g = 14;
+        let f = 434;
+        let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBestiaryVisible = false);
         bestiaryEnemySelection = clamp(bestiaryEnemySelection, 0, bestiaryPageItems[currentBestiaryPage].length - 1);
@@ -1911,8 +1996,8 @@ function drawGameUI() {
         1 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][stageNameCol], -1, 0)
     }
     if (isBadgesUIVisible) {
-        f = 434;
-        g = 14;
+        let f = 434;
+        let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBadgesUIVisible = false);
         if (0 == isStageReachedArray[stageIndexOrder[Sa]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
@@ -1926,8 +2011,8 @@ function drawGameUI() {
         1 == isStageReachedArray[stageIndexOrder[Sa]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[Sa]][stageNameCol], -1, 0)
     }
     if (isOptionsVisible) {
-        f = 434;
-        g = 202;
+        let f = 434;
+        let g = 202;
         d = 32;
         drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][stageUIBgColorCol]);
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isOptionsVisible = false);

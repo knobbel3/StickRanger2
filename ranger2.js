@@ -1820,38 +1820,47 @@ function drawGameUI() {
                 gameFontMed.a = 4;
                 drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0);
                 h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc);
-                (10 <= Ve(c, itemAtkCountCol) && 11 >= Ve(c, itemAtkCountCol)) 
-                    ? h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60) 
-                    : (0 != Ve(c, itemAtkCountCol)) 
-                        ? h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed) 
-                        :   1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc)), 
-                            (99 == Ve(c, Uc)) 
-                                ? h += " all" 
-                                :   1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"), 
-                                    drawText(gameFontMed, _ox, _oy + 12, h, 16777215, 0), 
-                                    0 == Na && drawText(gameFontMed, _ox, _oy + 24, "AGI " + Ve(c, Zc), 16777215, 0), 
-                                    0 == Na && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + Ve(c, $c), 16777215, 0), 
-                                    (0 == Na) 
-                                        ? drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + Ve(c, vd), 16777215, 0) 
-                                        : (-1 == Ve(c, vd)) 
-                                            ? drawText(gameFontMed, _ox, _oy + 48, "EMIT passive", 16777215, 0) 
-                                            :   drawText(gameFontMed, _ox, _oy + 48, "EMIT " + Ve(c, vd), 16777215, 0), 
-                                                drawText(gameFontMed, _ox, _oy + 60, "SML", 16777215, 0), 
-                                                0 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0), 
-                                                1 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0), 
-                                                2 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    long", 16764057, 0), 
-                                                drawText(gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0), 
-                                                0 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0), 
-                                                1 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0), 
-                                                2 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0), 
-                                                3 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0), 
-                                                4 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    poison", 52224, 0), 
-                                                hidx = Xe(c, hd), 
-                                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0), 
-                                                hidx = Xe(c, ld), 
-                                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0), 
-                                                hidx = Xe(c, Td), 
-                                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0)
+                if (10 <= Ve(c, itemAtkCountCol) && 11 >= Ve(c, itemAtkCountCol)) {
+                    h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60);
+                } else if (0 != Ve(c, itemAtkCountCol)) {
+                    h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed);
+                } else {
+                    1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc));
+                    if (99 == Ve(c, Uc)) {
+                        h += " all";
+                    } else {
+                        1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"); 
+                        drawText(gameFontMed, _ox, _oy + 12, h, 16777215, 0); 
+                        0 == Na && drawText(gameFontMed, _ox, _oy + 24, "AGI " + Ve(c, Zc), 16777215, 0); 
+                        0 == Na && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + Ve(c, $c), 16777215, 0); 
+                        if (0 == Na) {
+                            drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + Ve(c, vd), 16777215, 0);
+                        } else {
+                            if (-1 == Ve(c, vd)) {
+                                drawText(gameFontMed, _ox, _oy + 48, "EMIT passive", 16777215, 0);
+                            } else {
+                                drawText(gameFontMed, _ox, _oy + 48, "EMIT " + Ve(c, vd), 16777215, 0); 
+                                drawText(gameFontMed, _ox, _oy + 60, "SML", 16777215, 0); 
+                                0 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0); 
+                                1 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0); 
+                                2 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    long", 16764057, 0); 
+                                drawText(gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0); 
+                                0 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0); 
+                                1 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0); 
+                                2 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0); 
+                                3 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0); 
+                                4 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    poison", 52224, 0); 
+                                hidx = Xe(c, hd); 
+                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0); 
+                                hidx = Xe(c, ld); 
+                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0); 
+                                hidx = Xe(c, Td);
+                                -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
+                            }
+                        }
+                    }
+                }
+                
             } else {
                 if (20 > itemList[c][itemAppearanceCol]) {
                     if (gameFontMed.a = 4, 0 == itemList[c][wd]){

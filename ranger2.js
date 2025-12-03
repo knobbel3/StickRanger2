@@ -157,73 +157,73 @@ const itemNameCol = iterIdxTemp_1++,
     itemDropIconCol = iterIdxTemp_1++,
     itemHeadwearType = iterIdxTemp_1++,
     itemAppearanceCol = iterIdxTemp_1++,
-    Oc = iterIdxTemp_1++,
+    itemRangeTypeCol = iterIdxTemp_1++, // Oc
     itemSpriteLocXCol = iterIdxTemp_1++,
-    Qc = iterIdxTemp_1++,
-    Rc = iterIdxTemp_1++,
-    Sc = iterIdxTemp_1++,
-    Tc = iterIdxTemp_1++,
-    Uc = iterIdxTemp_1++,
-    Vc = iterIdxTemp_1++,
-    Wc = iterIdxTemp_1++,
-    Xc = iterIdxTemp_1++,
-    Yc = iterIdxTemp_1++,
-    Zc = iterIdxTemp_1++,
-    $c = iterIdxTemp_1++,
-    ad = iterIdxTemp_1++,
-    bd = iterIdxTemp_1++,
-    cd = iterIdxTemp_1++,
-    dd = iterIdxTemp_1++,
-    ed = iterIdxTemp_1++,
-    fd = iterIdxTemp_1++,
-    gd = iterIdxTemp_1++,
-    hd = iterIdxTemp_1++,
-    id = iterIdxTemp_1++,
-    jd = iterIdxTemp_1++,
-    kd = iterIdxTemp_1++,
-    ld = iterIdxTemp_1++, // 
-    md = iterIdxTemp_1++,
-    nd = iterIdxTemp_1++,
-    od = iterIdxTemp_1++,
-    pd = iterIdxTemp_1++,
-    qd = iterIdxTemp_1++,
-    rd = iterIdxTemp_1++,
-    sd = iterIdxTemp_1++,
-    td = iterIdxTemp_1++,
-    ud = iterIdxTemp_1++,
-    vd = iterIdxTemp_1++,
-    wd = iterIdxTemp_1++,
-    xd = iterIdxTemp_1++,
+    Qc = iterIdxTemp_1++, // Qc
+    Rc = iterIdxTemp_1++, // Rc
+    Sc = iterIdxTemp_1++, // Sc
+    Tc = iterIdxTemp_1++, // Tc
+    Uc = iterIdxTemp_1++, // Uc
+    Vc = iterIdxTemp_1++, // Vc
+    Wc = iterIdxTemp_1++, // Wc
+    Xc = iterIdxTemp_1++, // Xc
+    Yc = iterIdxTemp_1++, // Yc
+    Zc = iterIdxTemp_1++, // Zc
+    $c = iterIdxTemp_1++, // $c
+    ad = iterIdxTemp_1++, // ad
+    bd = iterIdxTemp_1++, // bd
+    cd = iterIdxTemp_1++, // cd
+    dd = iterIdxTemp_1++, // dd
+    ed = iterIdxTemp_1++, // ed
+    fd = iterIdxTemp_1++, // fd
+    gd = iterIdxTemp_1++, // gd
+    hd = iterIdxTemp_1++, // hd
+    id = iterIdxTemp_1++, // id
+    jd = iterIdxTemp_1++, // jd
+    kd = iterIdxTemp_1++, // kd
+    ld = iterIdxTemp_1++, // ld 
+    md = iterIdxTemp_1++, // md
+    nd = iterIdxTemp_1++, // nd
+    od = iterIdxTemp_1++, // od
+    pd = iterIdxTemp_1++, // pd
+    qd = iterIdxTemp_1++, // qd
+    rd = iterIdxTemp_1++, // rd
+    sd = iterIdxTemp_1++, // sd
+    td = iterIdxTemp_1++, // td
+    ud = iterIdxTemp_1++, // ud
+    vd = iterIdxTemp_1++, // vd
+    wd = iterIdxTemp_1++, // wd
+    xd = iterIdxTemp_1++, // xd
     itemStatModifingCol = iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
-const zd = iterIdxTemp_1++,
+const zd = iterIdxTemp_1++, // zd
     itemAtkCountCol = iterIdxTemp_1++,
-    Bd = iterIdxTemp_1++,
-    Cd = iterIdxTemp_1++,
-    Ed = iterIdxTemp_1++,
-    Fd = iterIdxTemp_1++,
-    Gd = iterIdxTemp_1++,
-    Hd = iterIdxTemp_1++,
-    Id = iterIdxTemp_1++,
-    Jd = iterIdxTemp_1++,
-    Kd = iterIdxTemp_1++,
-    Ld = iterIdxTemp_1++,
-    Md = iterIdxTemp_1++,
-    Nd = iterIdxTemp_1++,
-    Od = iterIdxTemp_1++,
-    Pd = iterIdxTemp_1++,
-    Sd = iterIdxTemp_1++,
-    Td = iterIdxTemp_1++,
-    Ud = iterIdxTemp_1++,
-    Vd = iterIdxTemp_1++,
-    Wd = iterIdxTemp_1++,
-    Xd = iterIdxTemp_1++,
-    Yd = iterIdxTemp_1++,
-    Zd = iterIdxTemp_1++;
+    Bd = iterIdxTemp_1++, // Bd
+    Cd = iterIdxTemp_1++, // Cd
+    Ed = iterIdxTemp_1++, // Ed
+    Fd = iterIdxTemp_1++, // Fd
+    Gd = iterIdxTemp_1++, // Gd
+    Hd = iterIdxTemp_1++, // Hd
+    Id = iterIdxTemp_1++, // Id
+    Jd = iterIdxTemp_1++, // Jd
+    Kd = iterIdxTemp_1++, // Kd
+    Ld = iterIdxTemp_1++, // Ld
+    Md = iterIdxTemp_1++, // Md
+    Nd = iterIdxTemp_1++, // Nd
+    Od = iterIdxTemp_1++, // Od
+    Pd = iterIdxTemp_1++, // Pd
+    Sd = iterIdxTemp_1++, // Sd
+    Td = iterIdxTemp_1++, // Td
+    Ud = iterIdxTemp_1++, // Ud
+    Vd = iterIdxTemp_1++, // Vd
+    Wd = iterIdxTemp_1++, // Wd
+    Xd = iterIdxTemp_1++, // Xd
+    Yd = iterIdxTemp_1++, // Yd
+    Zd = iterIdxTemp_1++; // Zd
 iterIdxTemp_1 = 6;
 
 const itemSpriteLocYCol = iterIdxTemp_1++,
@@ -248,40 +248,40 @@ iterIdxTemp_1 = 1;
 const accessoryArmsBonusCol0 = iterIdxTemp_1++,
     accessoryChargeBonusCol = iterIdxTemp_1++,
     accessoryArmsBonusCol1 = iterIdxTemp_1++,
-    oe = iterIdxTemp_1++,
-    pe = iterIdxTemp_1++,
-    qe = iterIdxTemp_1++,
-    re = iterIdxTemp_1++,
-    se = iterIdxTemp_1++,
-    te = iterIdxTemp_1++,
-    ue = iterIdxTemp_1++;
+    oe = iterIdxTemp_1++, // oe
+    pe = iterIdxTemp_1++, // pe
+    qe = iterIdxTemp_1++, // qe
+    re = iterIdxTemp_1++, // re
+    se = iterIdxTemp_1++, // se
+    te = iterIdxTemp_1++, // te
+    ue = iterIdxTemp_1++; // ue
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 const accessoryDodgeChanceCol = iterIdxTemp_1++,
-    we = iterIdxTemp_1++,
-    xe = iterIdxTemp_1++,
-    ye = iterIdxTemp_1++,
-    ze = iterIdxTemp_1++,
-    Ae = iterIdxTemp_1++,
-    Be = iterIdxTemp_1++,
-    Ce = iterIdxTemp_1++,
-    Ee = iterIdxTemp_1++,
-    Fe = iterIdxTemp_1++,
-    Ge = iterIdxTemp_1++,
-    He = iterIdxTemp_1++,
-    Ie = iterIdxTemp_1++,
-    Je = iterIdxTemp_1++,
+    we = iterIdxTemp_1++, // we
+    xe = iterIdxTemp_1++, // xe
+    ye = iterIdxTemp_1++, // ye
+    ze = iterIdxTemp_1++, // ze
+    Ae = iterIdxTemp_1++, // Ae
+    Be = iterIdxTemp_1++, // Be
+    Ce = iterIdxTemp_1++, // Ce
+    Ee = iterIdxTemp_1++, // Ee
+    Fe = iterIdxTemp_1++, // Fe
+    Ge = iterIdxTemp_1++, // Ge
+    He = iterIdxTemp_1++, // He
+    Ie = iterIdxTemp_1++, // Ie
+    Je = iterIdxTemp_1++, // Je
     accessoryMeleeDefenceCol = iterIdxTemp_1++,
     accessoryMagicDefenseCol = iterIdxTemp_1++,
-    Me = iterIdxTemp_1++,
-    Ne = iterIdxTemp_1++,
+    Me = iterIdxTemp_1++, // Me
+    Ne = iterIdxTemp_1++, // Ne
     accessoryHealthBonusCol = iterIdxTemp_1++,
-    Pe = iterIdxTemp_1++,
-    Qe = iterIdxTemp_1++,
-    Re = iterIdxTemp_1++,
-    Se = iterIdxTemp_1++,
+    Pe = iterIdxTemp_1++, // Pe
+    Qe = iterIdxTemp_1++, // Qe
+    Re = iterIdxTemp_1++, // Re
+    Se = iterIdxTemp_1++, // Se
     Te = iterIdxTemp_1++;
 mainWindow.fff = Ue;
 
@@ -1425,7 +1425,7 @@ function updatePartyStats() {
         for (let hidx = 0; 4 > hidx; hidx++) {
             let itemIdx = partyEquipmentTable[hidx][heroItem];
             if (0 != itemIdx) {
-                let f = getModifiedStatVal(hidx, itemIdx, Oc);
+                let f = getModifiedStatVal(hidx, itemIdx, itemRangeTypeCol);
                 let g = getModifiedStatVal(hidx, itemIdx, td);
                 let c = 4 * heroItem + hidx;
                 minAtkArray[c] = getModifiedStatVal(hidx, itemIdx, Vc);
@@ -1752,9 +1752,9 @@ function drawGameUI() {
                         } else {
                             drawText(gameFontMed, f + 96 * _slotIdx, g + 48, "CHARGE +" + heroChargeValues[selectingHero], 16777215, 0);
                                 drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "SML", 16777215, 0);
-                                0 == itemList[_equipmentIdx][Oc] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    short", 16764057, 0);
-                                1 == itemList[_equipmentIdx][Oc] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    middle", 16764057, 0);
-                                2 == itemList[_equipmentIdx][Oc] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    long", 16764057, 0);
+                                0 == itemList[_equipmentIdx][itemRangeTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    short", 16764057, 0);
+                                1 == itemList[_equipmentIdx][itemRangeTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    middle", 16764057, 0);
+                                2 == itemList[_equipmentIdx][itemRangeTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    long", 16764057, 0);
                                 drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "ATR", 16777215, 0);
                                 0 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    physical", 10066329, 0);
                                 1 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
@@ -1841,9 +1841,9 @@ function drawGameUI() {
                             } else {
                                 drawText(gameFontMed, _ox, _oy + 48, "EMIT " + Ve(c, vd), 16777215, 0); 
                                 drawText(gameFontMed, _ox, _oy + 60, "SML", 16777215, 0); 
-                                0 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0); 
-                                1 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0); 
-                                2 == itemList[c][Oc] && drawText(gameFontMed, _ox, _oy + 60, "    long", 16764057, 0); 
+                                0 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0); 
+                                1 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0); 
+                                2 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    long", 16764057, 0); 
                                 drawText(gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0); 
                                 0 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0); 
                                 1 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0); 
@@ -2288,15 +2288,23 @@ function xi(a, b, c, d, f, g) {
         selectedItemIdx = partyEquipmentTable[a][c],
         selectedItem = itemList[selectedItemIdx],
         t = selectedItem[Qc];
-    0 == t
-        ? t = -1
-        : 1 == t
-            ? t = b
-            : 2 == t
-                ? t = b & 65280 | 1
-                : 3 == t
-                    ? t = b & 65280 | b >> 8
-                    : 5 == t && (t = 257);
+    switch (t) {
+        case 0:
+            t = -1
+            break;
+        case 1:
+            t = b
+            break;
+        case 2:
+            t = b & 65280 | 1
+            break;
+        case 3:
+            t = b & 65280 | b >> 8
+            break;
+        case 5:
+            t = 257
+            break;
+    }
     var l = selectedItem[Rc],
         n = selectedItem[Sc],
         w = selectedItem[Tc],

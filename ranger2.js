@@ -2281,11 +2281,12 @@ function vi() {
         }
     } else wasMouseDown || (bi = -1, ci = 0)
 }
-mainWindow.fff = xi;
+mainWindow.fff = spawnHeroAttackPattern;
 
-function xi(a, b, c, d, f, g) {
+
+function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
     var h = new Vec2,
-        selectedItemIdx = partyEquipmentTable[a][c],
+        selectedItemIdx = partyEquipmentTable[heroIdx][itemSlot],
         selectedItem = itemList[selectedItemIdx],
         t = selectedItem[Qc];
     switch (t) {
@@ -2293,13 +2294,13 @@ function xi(a, b, c, d, f, g) {
             t = -1
             break;
         case 1:
-            t = b
+            t = limbDesc
             break;
         case 2:
-            t = b & 65280 | 1
+            t = limbDesc & 65280 | 1
             break;
         case 3:
-            t = b & 65280 | b >> 8
+            t = limbDesc & 65280 | limbDesc >> 8
             break;
         case 5:
             t = 257
@@ -2315,32 +2316,37 @@ function xi(a, b, c, d, f, g) {
         x = selectedItem[ed],
         K = selectedItem[fd],
         ba = selectedItem[gd],
-        U = getModifiedStatVal(a, selectedItemIdx, hd),
-        na = getModifiedStatVal(a, selectedItemIdx, id),
-        Fa = getModifiedStatVal(a, selectedItemIdx, jd),
+        U = getModifiedStatVal(heroIdx, selectedItemIdx, hd),
+        na = getModifiedStatVal(heroIdx, selectedItemIdx, id),
+        Fa = getModifiedStatVal(heroIdx, selectedItemIdx, jd),
         Ga = selectedItem[kd],
-        Ca = getModifiedStatVal(a, selectedItemIdx, ld);
-    !heroHasAccessoryEffect(a, qe) || 4 != selectedItem[itemAppearanceCol] && 5 != selectedItem[itemAppearanceCol] || (Ca += sumAccessorySecondaryValues(a, qe));
+        Ca = getModifiedStatVal(heroIdx, selectedItemIdx, ld);
+    if (heroHasAccessoryEffect(heroIdx, qe) && (4 == selectedItem[itemAppearanceCol] || 5 == selectedItem[itemAppearanceCol])) {
+        Ca += sumAccessorySecondaryValues(heroIdx, qe);
+    }
     var ua = selectedItem[md],
         fb = selectedItem[nd];
-    2 == fb && (fb = b >> 8);
-    b = selectedItem[od];
+    2 == fb && (fb = limbDesc >> 8);
+    limbDesc = selectedItem[od];
+
     var ob = selectedItem[pd],
         Bb = selectedItem[qd],
         gc = selectedItem[rd],
         Qb = selectedItem[sd],
-        Rb = getModifiedStatVal(a, selectedItemIdx, Uc),
-        gb = minAtkArray[4 * c + a],
-        jb = maxAtkArray[4 * c + a];
-    heroHasAccessoryEffect(a, we) && 0 == selectedItem[td] && randFloat(100) < countAccessoryLvlBonuses(a, we) && (gb = floor(gb *
-        (100 + sumAccessorySecondaryValues(a, we)) / 100), jb = floor(jb * (100 + sumAccessorySecondaryValues(a, we)) / 100));
-    c = atkCountArray[4 * c + a];
+        Rb = getModifiedStatVal(heroIdx, selectedItemIdx, Uc),
+        gb = minAtkArray[4 * itemSlot + heroIdx],
+        jb = maxAtkArray[4 * itemSlot + heroIdx];
+    if (heroHasAccessoryEffect(heroIdx, we) && 0 == selectedItem[td] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, we)) {
+        gb = floor(gb *  (100 + sumAccessorySecondaryValues(heroIdx, we)) / 100);
+        jb = floor(jb * (100 + sumAccessorySecondaryValues(heroIdx, we)) / 100);
+    }
+    itemSlot = atkCountArray[4 * itemSlot + heroIdx];
     var La = selectedItem[Yc],
         hc = selectedItem[td],
-        Ib = getModifiedStatVal(a, selectedItemIdx, ud);
-    heroHasAccessoryEffect(a, xe) && 1 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(a, xe));
-    heroHasAccessoryEffect(a, ye) && 2 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(a, ye));
-    heroHasAccessoryEffect(a, Ie) && 4 == selectedItem[td] && (Ib += 60 * countAccessoryLvlBonuses(a, Ie));
+        Ib = getModifiedStatVal(heroIdx, selectedItemIdx, ud);
+    heroHasAccessoryEffect(heroIdx, xe) && 1 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(heroIdx, xe));
+    heroHasAccessoryEffect(heroIdx, ye) && 2 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(heroIdx, ye));
+    heroHasAccessoryEffect(heroIdx, Ie) && 4 == selectedItem[td] && (Ib += 60 * countAccessoryLvlBonuses(heroIdx, Ie));
     var ic = selectedItem[zd],
         jc = selectedItem[itemAtkCountCol],
         kc = selectedItem[Bd],
@@ -2355,7 +2361,7 @@ function xi(a, b, c, d, f, g) {
         tc = selectedItem[Od],
         uc = selectedItem[Pd],
         vc = selectedItem[Sd],
-        wc = getModifiedStatVal(a, selectedItemIdx, Td),
+        wc = getModifiedStatVal(heroIdx, selectedItemIdx, Td),
         xc = selectedItem[Ud],
         yc = selectedItem[Vd],
         zc = selectedItem[Wd],
@@ -2363,37 +2369,114 @@ function xi(a, b, c, d, f, g) {
         Qf = selectedItem[Yd],
         Rf = selectedItem[Zd],
         Sf = selectedItem[Cd],
-        selectedItemIdx = getModifiedStatVal(a, selectedItemIdx, Ed);
-    heroHasAccessoryEffect(a, Ae) && 3 == selectedItem[td] && 20 == selectedItem[itemAtkCountCol] && (selectedItemIdx += countAccessoryLvlBonuses(a, Ae));
-    var selectedItem = selectedItem[Fd], Ac, Rg;
-    Ac = Q[g][yi].x;
-    Rg = Q[g][yi].y;
-    if (0 != l)
-        if (1 == l)
-            for (l = 0; l < c; l++) {
-                g = randFloatRange(-n, n);
-                var Dd = -w,
-                    Rd = 0,
-                    De = -.1 * La;
-                zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem)
-            } else if (2 == l)
-            for (h = Ac - d, h /= abs(h), l = 0; l < c; l++) g = d + h * n, Dd = f + randFloatRange(-w, w), Rd = h * La * .1, zi(a, t, g, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem);
-        else if (3 == l) {
-            Vec2Set(h, Ac - d, Rg - f);
-            var We =
-                0 < n ? n - 1 : 16;
-            heroHasAccessoryEffect(a, Je) && (We = floor(We / countAccessoryLvlBonuses(a, Je)));
-            Ac = floor(512 * Vec2Angle(h) / TAU);
-            Ac -= floor((c - 1) * We / 2);
-            for (l = 0; l < c; l++) h.x = rotationLUT[Ac & 511][0], h.y = -rotationLUT[Ac & 511][1], g = d + h.x * w, Dd = f + h.y * w, Rd = h.x * La * .1, De = h.y * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We
-        } else if (4 == l)
-            for (Vec2Set(h, Ac - d, Rg - f - 5), La = Vec2Mag(h) / (.1 * La), b = 2E4 / (La * La), l = 0; l < c; l++) Vec2Set(h, Ac - d, Rg - 5 - f), 1 < c && (We = 0 < n ? n : c + 4, w = randInt(512), g = randFloat(We), h.x += rotationLUT[w][0] * g, h.y += rotationLUT[w][1] *
-                g), g = d, Dd = f, Rd = h.x / La, De = (h.y - .5 * La * La * b * .01) / La, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem);
-        else if (5 == l)
-            for (Ac = 256 + 256 * partyBodyDrawOptions[a][2], We = floor(512 / c), l = 0; l < c; l++) h.x = rotationLUT[Ac & 511][0], h.y = -rotationLUT[Ac & 511][1], g = 0 + h.x * n, Dd = 0 + h.y * n, -1 == t && (g += d, Dd += f), w = Math.sqrt(n * La * .01), Rd = h.y * w, De = -h.x * w, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc,
-                tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), Ac += We;
-        else if (6 == l)
-            for (d = floor(512 / c), w = floor(randFloat(d)), l = 0; l < c; l++) g = Ac + rotationLUT[w][0] * n, Dd = Rg + rotationLUT[w][1] * n, Rd = rotationLUT[w][0] * La * .1, De = rotationLUT[w][1] * La * .1, zi(a, t, g, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, b, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem), w += d
+        selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, Ed);
+    heroHasAccessoryEffect(heroIdx, Ae) && 3 == selectedItem[td] && 20 == selectedItem[itemAtkCountCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, Ae));
+    var selectedItem = selectedItem[Fd];
+    let Ac = Q[targetEnemyIdx][yi].x;
+    let Rg = Q[targetEnemyIdx][yi].y;
+    if (l == 0) return;
+    if (1 == l) {
+        for (l = 0; l < itemSlot; l++) {
+            targetEnemyIdx = randFloatRange(-n, n);
+            var Dd = -w,
+                Rd = 0,
+                De = -.1 * La;
+            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
+                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
+                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, 
+                Qf, Rf, Sf, selectedItemIdx, selectedItem
+            );
+        } 
+    } else if (2 == l) {
+        h = Ac - originX;
+        h /= abs(h);
+        for (l = 0; l < itemSlot; l++) {
+            targetEnemyIdx = originX + h * n;
+            Dd = originY + randFloatRange(-w, w);
+            Rd = h * La * .1;
+            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
+                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, 
+                kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, 
+                zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+            );
+        }
+    } else if (3 == l) {
+        Vec2Set(h, Ac - originX, Rg - originY);
+        var We = 0 < n ? n - 1 : 16;
+        heroHasAccessoryEffect(heroIdx, Je) && (We = floor(We / countAccessoryLvlBonuses(heroIdx, Je)));
+        Ac = floor(512 * Vec2Angle(h) / TAU);
+        Ac -= floor((itemSlot - 1) * We / 2);
+        for (l = 0; l < itemSlot; l++) {
+            h.x = rotationLUT[Ac & 511][0];
+            h.y = -rotationLUT[Ac & 511][1];
+            targetEnemyIdx = originX + h.x * w;
+            Dd = originY + h.y * w;
+            Rd = h.x * La * .1;
+            De = h.y * La * .1;
+            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
+                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
+                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, 
+                Qf, Rf, Sf, selectedItemIdx, selectedItem
+            );
+            Ac += We;
+        }
+    } else if (4 == l) {
+        Vec2Set(h, Ac - originX, Rg - originY - 5);
+        La = Vec2Mag(h) / (.1 * La); 
+        limbDesc = 2E4 / (La * La);
+        for (l = 0; l < itemSlot; l++) {
+                Vec2Set(h, Ac - originX, Rg - 5 - originY);
+                if (1 < itemSlot)  {
+                    We = 0 < n ? n : itemSlot + 4;
+                    w = randInt(512);
+                    targetEnemyIdx = randFloat(We);
+                    h.x += rotationLUT[w][0] * targetEnemyIdx, h.y += rotationLUT[w][1] * targetEnemyIdx;
+                };
+                targetEnemyIdx = originX;
+                Dd = originY;
+                Rd = h.x / La;
+                De = (h.y - .5 * La * La * limbDesc * .01) / La;
+                zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, 
+                    Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, 
+                    jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, 
+                    sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+                );
+        }
+    } else if (5 == l) {
+        Ac = 256 + 256 * partyBodyDrawOptions[heroIdx][2]; 
+        We = floor(512 / itemSlot);
+        for (l = 0; l < itemSlot; l++) {
+            h.x = rotationLUT[Ac & 511][0];
+            h.y = -rotationLUT[Ac & 511][1];
+            targetEnemyIdx = 0 + h.x * n;
+            Dd = 0 + h.y * n;
+            -1 == t && (targetEnemyIdx += originX, Dd += originY);
+            w = Math.sqrt(n * La * .01);
+            Rd = h.y * w, De = -h.x * w; 
+            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, 
+                ba, U, na, Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, 
+                gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
+                lc, mc, nc, oc, pc, qc, rc, sc,tc, uc, vc, 
+                wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+            );
+            Ac += We;
+        }
+    } else if (6 == l) {
+        originX = floor(512 / itemSlot);
+        w = floor(randFloat(originX));
+        for (l = 0; l < itemSlot; l++) {
+            targetEnemyIdx = Ac + rotationLUT[w][0] * n;
+            Dd = Rg + rotationLUT[w][1] * n;
+            Rd = rotationLUT[w][0] * La * .1;
+            De = rotationLUT[w][1] * La * .1;
+            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, 
+                Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, 
+                jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, 
+                yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+            );
+            w += originX;
+        }
+    }
 }
 mainWindow.fff = Di;
 
@@ -2479,7 +2562,7 @@ function updatePlayerParty() {
                 c = heroRangeValues[a];
                 d = O[a][1].x;
                 var k = O[a][1].y;
-                c = Ei(d, k, c, c); - 1 == heroEmitValues[a] && (0 < cb[a] && cb[a]--, 0 == cb[a] && (k = Ei(d, k, 999, 999), -1 != k && (xi(a, 1540, 1, O[a][6].x, O[a][6].y, k), cb[a] = itemList[partyEquipmentTable[a][1]][ld])));
+                c = Ei(d, k, c, c); - 1 == heroEmitValues[a] && (0 < cb[a] && cb[a]--, 0 == cb[a] && (k = Ei(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, O[a][6].x, O[a][6].y, k), cb[a] = itemList[partyEquipmentTable[a][1]][ld])));
                 if (0 < Zh[a]) Zh[a]--;
                 else if (bi != a && 0 != b && -1 != c) {
                     Zh[a] = heroAgiValues[a] + randIntRange(-1, 1);
@@ -2501,7 +2584,7 @@ function updatePlayerParty() {
                             1540, ei[a] = 1) : O[a][5].x > O[a][6].x ? (O[a][5].x -= 4, O[a][4].x += 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x -= 4, O[a][3].x += 4, f.set(O[a][6]), k = 1540, ei[a] = 1);
                     2 == b && (Sh[a] = 30);
                     partyBodyDrawOptions[a][ei[a]] = fi[a];
-                    xi(a, k, fi[a], f.x, f.y, c)
+                    spawnHeroAttackPattern(a, k, fi[a], f.x, f.y, c)
                 }
                 bi != a && 0 != b && -1 == c && Di(a)
             }

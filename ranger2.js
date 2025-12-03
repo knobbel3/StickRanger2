@@ -159,7 +159,7 @@ const itemNameCol = iterIdxTemp_1++,
     itemAppearanceCol = iterIdxTemp_1++,
     itemRangeTypeCol = iterIdxTemp_1++, // Oc
     itemSpriteLocXCol = iterIdxTemp_1++,
-    Qc = iterIdxTemp_1++, // Qc
+    itemLimbSelectionCol = iterIdxTemp_1++, // Qc
     Rc = iterIdxTemp_1++, // Rc
     Sc = iterIdxTemp_1++, // Sc
     Tc = iterIdxTemp_1++, // Tc
@@ -2285,10 +2285,11 @@ mainWindow.fff = spawnHeroAttackPattern;
 
 
 function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
-    var h = new Vec2,
+    console.log(`spawnHeroAttackPattern(${heroIdx}, ${limbDesc}, ${itemSlot}, ${originX}, ${originY}, ${targetEnemyIdx})`);
+    let projDir = new Vec2,
         selectedItemIdx = partyEquipmentTable[heroIdx][itemSlot],
         selectedItem = itemList[selectedItemIdx],
-        t = selectedItem[Qc];
+        t = selectedItem[itemLimbSelectionCol];
     switch (t) {
         case 0:
             t = -1
@@ -2368,17 +2369,20 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         Qd = selectedItem[Xd],
         Qf = selectedItem[Yd],
         Rf = selectedItem[Zd],
-        Sf = selectedItem[Cd],
-        selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, Ed);
+        Sf = selectedItem[Cd];
+
+    selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, Ed);
     heroHasAccessoryEffect(heroIdx, Ae) && 3 == selectedItem[td] && 20 == selectedItem[itemAtkCountCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, Ae));
-    var selectedItem = selectedItem[Fd];
+    
+    selectedItem = selectedItem[Fd];
     let Ac = Q[targetEnemyIdx][yi].x;
     let Rg = Q[targetEnemyIdx][yi].y;
+
     if (l == 0) return;
     if (1 == l) {
         for (l = 0; l < itemSlot; l++) {
             targetEnemyIdx = randFloatRange(-n, n);
-            var Dd = -w,
+            let Dd = -w,
                 Rd = 0,
                 De = -.1 * La;
             zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
@@ -2388,12 +2392,12 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             );
         } 
     } else if (2 == l) {
-        h = Ac - originX;
-        h /= abs(h);
+        let dirX = Ac - originX;
+        dirX /= abs(dirX);
         for (l = 0; l < itemSlot; l++) {
-            targetEnemyIdx = originX + h * n;
-            Dd = originY + randFloatRange(-w, w);
-            Rd = h * La * .1;
+            targetEnemyIdx = originX + dirX * n;
+            let Dd = originY + randFloatRange(-w, w);
+            let Rd = dirX * La * .1;
             zi(heroIdx, t, targetEnemyIdx, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
                 ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, 
                 kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, 
@@ -2401,18 +2405,18 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             );
         }
     } else if (3 == l) {
-        Vec2Set(h, Ac - originX, Rg - originY);
+        Vec2Set(projDir, Ac - originX, Rg - originY);
         var We = 0 < n ? n - 1 : 16;
         heroHasAccessoryEffect(heroIdx, Je) && (We = floor(We / countAccessoryLvlBonuses(heroIdx, Je)));
-        Ac = floor(512 * Vec2Angle(h) / TAU);
+        Ac = floor(512 * Vec2Angle(projDir) / TAU);
         Ac -= floor((itemSlot - 1) * We / 2);
         for (l = 0; l < itemSlot; l++) {
-            h.x = rotationLUT[Ac & 511][0];
-            h.y = -rotationLUT[Ac & 511][1];
-            targetEnemyIdx = originX + h.x * w;
-            Dd = originY + h.y * w;
-            Rd = h.x * La * .1;
-            De = h.y * La * .1;
+            projDir.x = rotationLUT[Ac & 511][0];
+            projDir.y = -rotationLUT[Ac & 511][1];
+            targetEnemyIdx = originX + projDir.x * w;
+            let Dd = originY + projDir.y * w;
+            let Rd = projDir.x * La * .1;
+            let De = projDir.y * La * .1;
             zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
                 ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
                 lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, 
@@ -2421,21 +2425,21 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             Ac += We;
         }
     } else if (4 == l) {
-        Vec2Set(h, Ac - originX, Rg - originY - 5);
-        La = Vec2Mag(h) / (.1 * La); 
+        Vec2Set(projDir, Ac - originX, Rg - originY - 5);
+        La = Vec2Mag(projDir) / (.1 * La); 
         limbDesc = 2E4 / (La * La);
         for (l = 0; l < itemSlot; l++) {
-                Vec2Set(h, Ac - originX, Rg - 5 - originY);
+                Vec2Set(projDir, Ac - originX, Rg - 5 - originY);
                 if (1 < itemSlot)  {
                     We = 0 < n ? n : itemSlot + 4;
                     w = randInt(512);
                     targetEnemyIdx = randFloat(We);
-                    h.x += rotationLUT[w][0] * targetEnemyIdx, h.y += rotationLUT[w][1] * targetEnemyIdx;
+                    projDir.x += rotationLUT[w][0] * targetEnemyIdx, projDir.y += rotationLUT[w][1] * targetEnemyIdx;
                 };
                 targetEnemyIdx = originX;
-                Dd = originY;
-                Rd = h.x / La;
-                De = (h.y - .5 * La * La * limbDesc * .01) / La;
+                let Dd = originY;
+                let Rd = projDir.x / La;
+                let De = (projDir.y - .5 * La * La * limbDesc * .01) / La;
                 zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, 
                     Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, 
                     jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, 
@@ -2446,13 +2450,13 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         Ac = 256 + 256 * partyBodyDrawOptions[heroIdx][2]; 
         We = floor(512 / itemSlot);
         for (l = 0; l < itemSlot; l++) {
-            h.x = rotationLUT[Ac & 511][0];
-            h.y = -rotationLUT[Ac & 511][1];
-            targetEnemyIdx = 0 + h.x * n;
-            Dd = 0 + h.y * n;
+            projDir.x = rotationLUT[Ac & 511][0];
+            projDir.y = -rotationLUT[Ac & 511][1];
+            targetEnemyIdx = 0 + projDir.x * n;
+            let Dd = 0 + projDir.y * n;
             -1 == t && (targetEnemyIdx += originX, Dd += originY);
             w = Math.sqrt(n * La * .01);
-            Rd = h.y * w, De = -h.x * w; 
+            let Rd = projDir.y * w, De = -projDir.x * w; 
             zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, 
                 ba, U, na, Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, 
                 gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
@@ -2466,9 +2470,9 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         w = floor(randFloat(originX));
         for (l = 0; l < itemSlot; l++) {
             targetEnemyIdx = Ac + rotationLUT[w][0] * n;
-            Dd = Rg + rotationLUT[w][1] * n;
-            Rd = rotationLUT[w][0] * La * .1;
-            De = rotationLUT[w][1] * La * .1;
+            let Dd = Rg + rotationLUT[w][1] * n;
+            let Rd = rotationLUT[w][0] * La * .1;
+            let De = rotationLUT[w][1] * La * .1;
             zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, 
                 Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, 
                 jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, 

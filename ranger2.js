@@ -55,15 +55,15 @@ var partyMemberCount = 1,
     partySP = [0, 0, 0, 0],
     partyLP = [50, 50, 50, 50],
     partyMaxLP = [50, 50, 50, 50],
-    $a = [0, 0, 0, 0],
+    $a = [0, 0, 0, 0], // $a
     heroEmitValues = [0, 0, 0, 0],
     heroChargeValues = [0, 0, 0, 0],
-    cb = [0, 0, 0, 0],
+    cb = [0, 0, 0, 0], // cb
     db = [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    eb = 0,
-    hb = 0,
-    ib = [0, 0, 0, 0],
-    kb = 0,
+    eb = 0, // eb
+    hb = 0, // hb
+    ib = [0, 0, 0, 0], // ib
+    kb = 0, // kb
     partyHealthLvls = [0, 0, 0, 0],
     partyShortAtkLvls = [0, 0, 0, 0],
     partyMidAtkLvls = [0, 0, 0, 0],
@@ -92,15 +92,15 @@ var partyMemberCount = 1,
     heroProjDefenseFlatArray = [0, 0, 0, 0],
     heroMagicDefenseFlatArray = [0, 0, 0, 0],
     heroDodgeChanceArray = [0, 0, 0, 0],
-    Nb = [0, 0, 0, 0],
-    Ob = [0, 0, 0, 0],
-    Pb = [0, 0, 0, 0],
-    Sb = [0, 0, 0, 0],
-    Tb = [0, 0, 0, 0],
-    Ub = [Nb, Ob, Pb, Sb, Tb],
-    Vb = 0,
-    Wb = 0,
-    Xb = 0,
+    Nb = [0, 0, 0, 0], // Nb
+    Ob = [0, 0, 0, 0], // Ob
+    Pb = [0, 0, 0, 0], // Pb
+    Sb = [0, 0, 0, 0], // Sb
+    Tb = [0, 0, 0, 0], // Tb
+    Ub = [Nb, Ob, Pb, Sb, Tb], // Ub
+    Vb = 0, // Vb
+    Wb = 0, // Wb
+    Xb = 0, // Xb
     /** [partyN][i] */
     partyEquipmentTable = [
         // "arms", "charge", "head", "ring", "amulet"
@@ -110,14 +110,14 @@ var partyMemberCount = 1,
         [0, 0, 0, 0, 0, 0, 0, 0],
         []
     ],
-    Zb = -1,
+    Zb = -1, // Zb
     itemForgeLvls = Array(256);
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemForgeLvls[iterIdxTemp_1] = 0;
 var ac = Array(256);
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) ac[iterIdxTemp_1] = 0;
 mainWindow.fff = bc;
 
-function bc() {
+function bc() { // bc
     var a, b;
     resetUIStates();
     partyLevel = partyMemberCount = 1;
@@ -285,14 +285,14 @@ const accessoryDodgeChanceCol = iterIdxTemp_1++,
     Te = iterIdxTemp_1++;
 mainWindow.fff = Ue;
 
-function Ue(a, b) {
+function Ue(a, b) { // Ue
     for (var c = 0; 6 > c; c += 2)
         if (itemList[a][itemStatModifingCol + c] == b) return itemList[a][itemStatModifingCol + c + 1];
     return 0
 }
 mainWindow.fff = Ve;
 
-function Ve(a, b) {
+function Ve(a, b) { // Ve
     var c = 0;
     0 == b
         ? c = 0
@@ -310,7 +310,7 @@ function Ve(a, b) {
 }
 mainWindow.fff = Xe;
 
-function Xe(a, b) {
+function Xe(a, b) { // Xe
     var c = 0;
     0 == b ? c = 0 : b == itemList[a][itemStatModifingCol + 0] ? c = itemList[a][itemStatModifingCol + 1] : b == itemList[a][itemStatModifingCol + 2] ? c = itemList[a][itemStatModifingCol + 3] : b == itemList[a][itemStatModifingCol + 4] && (c = itemList[a][itemStatModifingCol + 5]);
     if (0 != c) {
@@ -624,8 +624,7 @@ badgeList[72] = ["Defeat all fish", "without landing", 18, 12, 1];
 var ef = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139];
 mainWindow.fff = A;
 
-function A(a) {
-    return true;
+function A(a) { // A
     return currentStage == badgeList[a][2] && badgeCounterArray[a] != badgeList[a][4] ? true : false
 }
 mainWindow.fff = IncrementBadgeCount;
@@ -1480,7 +1479,7 @@ function updatePartyStats() {
 }
 mainWindow.fff = Wg;
 
-function Wg(a, b, c, d, f, g) {
+function Wg(a, b, c, d, f, g) { // Wg
     var h;
     if (buttonCheck(a, b, c, d))
         if (Xg(a, b, c, d, 6684672), isMouseClicked && 0 != f) {
@@ -2138,42 +2137,49 @@ var Vh = Array(4),
     ii = new Int32Array(4),
     bh = new Int32Array(4),
     ji = new Int32Array(4);
-mainWindow.fff = ki;
+mainWindow.fff = resetDragSelection;
 
-function ki() {
+function resetDragSelection() { // ki
     bi = -1;
     ci = 0
 }
-mainWindow.fff = li;
+mainWindow.fff = resetHeroPose;
 
-function li(a, b, c) {
-    var d;
-    b *= 8;
-    c *= 8;
-    for (d = 0; 21 > d; d++) Vec2Set(O[a][d], b + randFloat(4), c + randFloat(4)), Mh[a][d].set(O[a][d]);
-    for (d = 0; 16 > d; d++) Nh[a][d].set(O[a][5]), Oh[a][d].set(O[a][3]), Ph[a][d].set(O[a][6]), Qh[a][d].set(O[a][4]);
-    Rh[a] = 0;
-    Sh[a] = 0;
-    Vec2Set(Uh[a], 320, 240);
-    Vh[a] = 0;
-    Wh[a] = 0;
-    Xh[a] = 0;
-    Yh[a] = 0;
-    Zh[a] = 0;
-    $h[a] = 0;
-    ai[a] = 0;
-    ei[a] = 0;
-    fi[a] = 0;
-    ch[a] = 0;
-    hi[a] = 0;
-    dh[a] = 0;
-    ii[a] = 0;
-    bh[a] = 0;
-    ji[a] = 0
+function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
+    spawnX *= 8;
+    spawnY *= 8;
+    for (let d = 0; 21 > d; d++) {
+        Vec2Set(O[heroIdx][d], spawnX + randFloat(4), spawnY + randFloat(4));
+        Mh[heroIdx][d].set(O[heroIdx][d]);
+    }
+    for (let d = 0; 16 > d; d++) { 
+        Nh[heroIdx][d].set(O[heroIdx][5]);
+        Oh[heroIdx][d].set(O[heroIdx][3]);
+        Ph[heroIdx][d].set(O[heroIdx][6]);
+        Qh[heroIdx][d].set(O[heroIdx][4]);
+    }
+    Rh[heroIdx] = 0;
+    Sh[heroIdx] = 0;
+    Vec2Set(Uh[heroIdx], 320, 240);
+    Vh[heroIdx] = 0;
+    Wh[heroIdx] = 0;
+    Xh[heroIdx] = 0;
+    Yh[heroIdx] = 0;
+    Zh[heroIdx] = 0;
+    $h[heroIdx] = 0;
+    ai[heroIdx] = 0;
+    ei[heroIdx] = 0;
+    fi[heroIdx] = 0;
+    ch[heroIdx] = 0;
+    hi[heroIdx] = 0;
+    dh[heroIdx] = 0;
+    ii[heroIdx] = 0;
+    bh[heroIdx] = 0;
+    ji[heroIdx] = 0
 }
 mainWindow.fff = ni;
 
-function ni(a, b) {
+function ni(a, b) { // ni
     var c = new Vec2;
     Vec2Sub(c, O[a][b], Mh[a][b]);
     O[a][b].set(Mh[a][b]);
@@ -2186,7 +2192,7 @@ function ni(a, b) {
 }
 mainWindow.fff = ti;
 
-function ti(a, b, c, d, f) {
+function ti(a, b, c, d, f) { // ti
     var g = a - c - 5,
         h = b - d - 10;
     c = a + c + 5;
@@ -2214,7 +2220,7 @@ function ti(a, b, c, d, f) {
 }
 mainWindow.fff = ui;
 
-function ui(a, b, c, d, f, g, h, k, p, t) {
+function ui(a, b, c, d, f, g, h, k, p, t) { // ui
     p *= .5;
     t *= .5;
     a = h - p - 5;
@@ -2265,7 +2271,7 @@ function ui(a, b, c, d, f, g, h, k, p, t) {
 }
 mainWindow.fff = vi;
 
-function vi() {
+function vi() { // vi
     var a = new Vec2,
         b, c;
     if (-1 == bi) {
@@ -2385,7 +2391,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             let Dd = -w,
                 Rd = 0,
                 De = -.1 * La;
-            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
                 ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
                 lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, 
                 Qf, Rf, Sf, selectedItemIdx, selectedItem
@@ -2398,7 +2404,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             targetEnemyIdx = originX + dirX * n;
             let Dd = originY + randFloatRange(-w, w);
             let Rd = dirX * La * .1;
-            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
                 ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, 
                 kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, 
                 zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
@@ -2417,7 +2423,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             let Dd = originY + projDir.y * w;
             let Rd = projDir.x * La * .1;
             let De = projDir.y * La * .1;
-            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
                 ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
                 lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, 
                 Qf, Rf, Sf, selectedItemIdx, selectedItem
@@ -2440,7 +2446,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
                 let Dd = originY;
                 let Rd = projDir.x / La;
                 let De = (projDir.y - .5 * La * La * limbDesc * .01) / La;
-                zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, 
+                spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, 
                     Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, 
                     jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, 
                     sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
@@ -2457,7 +2463,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             -1 == t && (targetEnemyIdx += originX, Dd += originY);
             w = Math.sqrt(n * La * .01);
             let Rd = projDir.y * w, De = -projDir.x * w; 
-            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, 
                 ba, U, na, Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, 
                 gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
                 lc, mc, nc, oc, pc, qc, rc, sc,tc, uc, vc, 
@@ -2473,7 +2479,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             let Dd = Rg + rotationLUT[w][1] * n;
             let Rd = rotationLUT[w][0] * La * .1;
             let De = rotationLUT[w][1] * La * .1;
-            zi(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, 
                 Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, 
                 jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, 
                 yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
@@ -2484,7 +2490,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
 }
 mainWindow.fff = Di;
 
-function Di(a) {
+function Di(a) { // Di
     var b = O[a][2].x,
         c = O[a][2].y;
     if (1 != ib[a]) {
@@ -2607,10 +2613,10 @@ function updatePlayerParty() {
             0 < Vh[a] && Vh[a]--;
             if (Yh[a] & 2) {
                 if (0 == ji[a])
-                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(O[a][b].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[a][b].y, 0, 8 * si - 1) >> 3, 30 == P[c][d] && zi(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(O[a][b].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[a][b].y, 0, 8 * si - 1) >> 3, 30 == P[c][d] && spawnProjectile(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 d = clamp(O[a][0].x, 0, 8 * Gi - 1) >> 3;
                 c = clamp(O[a][0].y, 0, 8 * si - 1) >> 3;
-                31 == P[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), zi(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                31 == P[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), spawnProjectile(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
             } else ji[a] = 0;
             5 == currentStage && Yh[a] & 1 && (Hi |= 1);
@@ -2944,8 +2950,8 @@ function loadLevelData(a) {
                     38 : 16776960 == c[d] ? P[b][a] = 39 : 3368448 == c[d] ? P[b][a] = 40 : 6723891 == c[d] ? P[b][a] = 41 : 10079334 == c[d] ? P[b][a] = 42 : 10053120 == c[d] && 10053120 != c[g] ? P[b][a] = 44 : 16724736 == c[d] && 16724736 == c[f] ? P[b][a] = 45 : 3355494 == c[d] && 3355494 == c[f] ? P[b][a] = 46 : 6710784 == c[d] ? P[b][a] = 47 : 16724940 == c[d] ? P[b][a] = 48 : 13056 == c[d] ? P[b][a] = 49 : 51 == c[d] ? P[b][a] = 50 : 10040064 == c[d] ? P[b][a] = 51 : 10066431 == c[d] && 10066431 == c[g] ? P[b][a] = 52 : 16737792 == c[d] && 16737792 != c[f] ? P[b][a] = 53 : 16763904 == c[d] ? P[b][a] = 55 : 10066431 == c[d] && 10066431 == c[f] ? P[b][a] = 60 :
                         16737792 == c[d] && 16737792 == c[f] && (P[b][a] = 61);
     for (a = 0; 4 > a; a++) cb[a] = 0;
-    ki();
-    for (a = 0; 4 > a; a++) li(a, partySpawnXs[a], partySpawnYs[a]);
+    resetDragSelection();
+    for (a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXs[a], partySpawnYs[a]);
     for (a = 0; 20 > a; a++) V[a] = 0, Xi[a] = 0;
     Mi = 0;
     clearEnemies();
@@ -2960,28 +2966,28 @@ function loadLevelData(a) {
         b = enemyCatalog[c][enemyAttr0];
         $i < b && ($i = b)
     }
-    aj = W = 0;
+    aj = projectileCount = 0;
     bj();
     cj();
     return true
 }
 mainWindow.fff = ri;
 
-function ri(a, b) {
+function ri(a, b) { // ri
     a = clamp(a, 0, 8 * Gi - 1) >> 3;
     b = clamp(b, 0, 8 * si - 1) >> 3;
     return P[b][a]
 }
 mainWindow.fff = dj;
 
-function dj(a, b, c, d, f) {
+function dj(a, b, c, d, f) { // dj
     var g;
     for (g = b; g <= d; g++)
         for (b = a; b <= c; b++) P[g][b] = f
 }
 mainWindow.fff = wg;
 
-function wg() {
+function wg() { // wg
     var a;
     if (12 == drawState)
         for (a = 0; a < partyMemberCount; a++)
@@ -3049,15 +3055,15 @@ function drawGameStage() {
                     for (; k < g; k++, d++) l = f.g[d], -1 != l && (frameBufferArray[k] = l)
             } for (c = 0; c < si; c++)
         for (b = 1; b < Gi - 1; b++) 30 == P[c][b] ? (30 != P[c][b - 1] && Xg(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != P[c][b + 1] && Xg(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == P[c][b] && (31 != P[c][b - 1] && Xg(8 * b - 2, 8 * c, 2, 8, 21913), 31 != P[c][b + 1] && Xg(8 * b + 8, 8 * c, 2, 8, 21913));
-    if (1 == currentStage) 1 == isStageReachedArray[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-    else if (6 == currentStage) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), zi(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    else if (14 == currentStage) b = 2 * rotationLUT[gj >> 2 & 511][0], c = 2 * rotationLUT[gj >> 2 & 511][1], zi(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
+    if (1 == currentStage) 1 == isStageReachedArray[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+    else if (6 == currentStage) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    else if (14 == currentStage) b = 2 * rotationLUT[gj >> 2 & 511][0], c = 2 * rotationLUT[gj >> 2 & 511][1], spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    else if (17 == currentStage) 70 == gj % 360 && zi(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    else if (17 == currentStage) 70 == gj % 360 && spawnProjectile(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (18 == currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
             for (h = 0; h < partyMemberCount && !(b = clamp(O[h][2].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[h][2].y, 0, 8 * si - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
-            h == partyMemberCount || gj % 8 || zi(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
+            h == partyMemberCount || gj % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         }
 }
@@ -3071,7 +3077,7 @@ var Og = 0,
     of = [0, 0, 0, 0];
 mainWindow.fff = cj;
 
-function cj() {
+function cj() { // cj
     jh = Hi = ij = hj = gj = totalDamageDone = Og = 0;
     var a, b, c, d;
     if (17 == currentStage) {
@@ -3083,7 +3089,7 @@ function cj() {
 }
 mainWindow.fff = xg;
 
-function xg() {
+function xg() { // xg
     var a, b, c, d, f = b = 0,
         g, h, k = 79,
         p = 0,
@@ -3132,7 +3138,7 @@ function xg() {
     if (1 == currentStage) 12 == drawState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == drawState && 1 == isStageReachedArray[12] && 1 > h && (Mg = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
     else if (2 != currentStage)
         if (3 == currentStage) {
-            1 == partyMemberCount && 0 == V[0] && (li(partyMemberCount, 25, 14), partyMemberCount++);
+            1 == partyMemberCount && 0 == V[0] && (resetHeroPose(partyMemberCount, 25, 14), partyMemberCount++);
             2 <= partyMemberCount && (dj(25, 13, 25, 14, 64), dj(31, 11, 31, 14, 64));
             1 == db[0] ? dj(11, 30, 11, 30, 63) : 32 == P[30][11] ? 0 == V[1] && dj(11, 30, 11, 30, 55) : 55 == P[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (dj(11, 30, 11, 30, 63), Gh(92,
                 244, 3, 0, 0));
@@ -3144,7 +3150,7 @@ function xg() {
             }
             0 != Xi[2] && hj++
         } else if (4 == currentStage) {
-            2 == partyMemberCount && 0 == V[1] && 0 != Xi[1] && (li(partyMemberCount, 55, 40),
+            2 == partyMemberCount && 0 == V[1] && 0 != Xi[1] && (resetHeroPose(partyMemberCount, 55, 40),
                 partyMemberCount++);
             3 <= partyMemberCount && (dj(55, 39, 55, 40, 32), dj(77, 38, 77, 41, 32));
             if (2 == partyMemberCount && 0 == Xi[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
@@ -3155,7 +3161,7 @@ function xg() {
             A(13) && 0 == V[1] && 1 == Xi[1] && 0 == Og && IncrementBadgeCount(13);
             A(14) && 9 == Ng && IncrementBadgeCount(14)
         } else if (5 == currentStage) {
-            if (3 == partyMemberCount && 0 == V[0] && 0 == V[1] && (li(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (dj(17, 4, 17, 5, 64), dj(77, 20, 77, 24, 64)), !A(16) || 0 != V[0] || 0 != V[1] || Hi & 2 || IncrementBadgeCount(16),
+            if (3 == partyMemberCount && 0 == V[0] && 0 == V[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (dj(17, 4, 17, 5, 64), dj(77, 20, 77, 24, 64)), !A(16) || 0 != V[0] || 0 != V[1] || Hi & 2 || IncrementBadgeCount(16),
                 !A(17) || 0 != V[0] || 0 != V[1] || Hi & 1 || IncrementBadgeCount(17), A(19)) {
                 for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
                 4 == b && IncrementBadgeCount(19)
@@ -3237,7 +3243,7 @@ function xg() {
             b = -1;
             for (a = 0; a < enemyCount; a++) 70 == enemyTypeArray[a] && 0 != enemyHealthArray[a] && (b = a);
             if (-1 != b && 10 < Y[b] && enemyHealthArray[b] < 1E4 * (Y[b] - 10) - 5E3)
-                for (Y[b]--, t = min(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * rotationLUT[512 * a / t][0], d = .5 * -rotationLUT[512 * a / t][1], zi(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                for (Y[b]--, t = min(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * rotationLUT[512 * a / t][0], d = .5 * -rotationLUT[512 * a / t][1], spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             0 == of[0] && 0 == V[10] && (of[0] = 1);
             1 == of[0] && dj(2, 20, 2, 24, 31);
             A(61) && 0 == V[10] &&
@@ -3536,7 +3542,7 @@ function deleteEnemy(enemyIdx) {
 }
 mainWindow.fff = $k;
 
-function $k(a, b, c) {
+function $k(a, b, c) { // $k
     var d = new Vec2;
     Vec2Sub(d, Q[a][b], Z[a][b]);
     Q[a][b].set(Z[a][b]);
@@ -3546,7 +3552,7 @@ function $k(a, b, c) {
 }
 mainWindow.fff = Ei;
 
-function Ei(a, b, c, d) {
+function Ei(a, b, c, d) { // Ei
     var f = a - c,
         g = b - d;
     c = a + c;
@@ -3576,7 +3582,7 @@ function Ei(a, b, c, d) {
 mainWindow.fff = al;
 
 // effects
-function al(a, b, c, d, f, g, h, k, p, t, l) {
+function al(a, b, c, d, f, g, h, k, p, t, l) { // al
     var n = -1,
         w, B, M, J, y, x, K = new Vec2,
         ba = new Vec2,
@@ -3633,7 +3639,7 @@ function al(a, b, c, d, f, g, h, k, p, t, l) {
 }
 mainWindow.fff = bl;
 
-function bl(a, b, c, d) {
+function bl(a, b, c, d) { // bl
     var itemPos = new Vec2,
         itemIdx = enemyTypeArray[a] + b,
         selectedItem = enemyCatalog[itemIdx];
@@ -3694,17 +3700,17 @@ function bl(a, b, c, d) {
         else if (!(randFloat(1E3) >= jb)) {
             Fk[a] = gb;
             var Qd;
-            if (!p) zi(b, k, 0, 0, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
-            else if (1 == p) zi(b, k, c, d, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+            if (!p) spawnProjectile(b, k, 0, 0, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+            else if (1 == p) spawnProjectile(b, k, c, d, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (2 == p)
-                for (gb = c, jb = d, La = gb < O[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) zi(b, k, gb, jb, La, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+                for (gb = c, jb = d, La = gb < O[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) spawnProjectile(b, k, gb, jb, La, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (3 == p || 6 == p)
-                for (3 == p ? Vec2Set(itemPos, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
+                for (3 == p ? Vec2Set(itemPos, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
                     vc, wc, xc, yc, selectedItem), a += itemIdx;
             else if (4 == p)
-                for (p = 0; p < Qb; p++) Vec2Set(itemPos, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, zi(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+                for (p = 0; p < Qb; p++) Vec2Set(itemPos, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (5 == p)
-                for (p = 0; p < Qb; p++) gb = c + randFloatRange(-La, La), jb = d + randFloatRange(-La, 0), zi(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
+                for (p = 0; p < Qb; p++) gb = c + randFloatRange(-La, La), jb = d + randFloatRange(-La, 0), spawnProjectile(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
                     hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (7 == p)
                 for (p = 0; p < Qb; p++) gb = floor(c / 8), jb = floor(d / 8), spawnEnemy(gb, jb, itemIdx + Bb, 0)
@@ -3712,7 +3718,7 @@ function bl(a, b, c, d) {
 }
 mainWindow.fff = cl;
 
-function cl(a) {
+function cl(a) { // cl
     var b;
     b = abs(enemyCatalog[enemyTypeArray[a]][enemyAttr0] - partyLevel);
     var c = floor(enemyCatalog[enemyTypeArray[a]][enemyAttr64] * (100 + Xb) / 100);
@@ -4281,7 +4287,7 @@ function enemyUpdateFunc9(enemyIdx) {
 }
 mainWindow.fff = Cg;
 
-function Cg() {
+function Cg() { // Cg
     var a, b;
     for (a = 0; a < enemyCount; a++) {
         var c = enemyCatalog[enemyTypeArray[a]][enemyAttr4],
@@ -4337,7 +4343,7 @@ function Cg() {
 }
 mainWindow.fff = Ch;
 
-function Ch(a, b, c, d) {
+function Ch(a, b, c, d) { // Ch
     var f = enemyCatalog[a][enemyBehaviorCol],
         g = enemyCatalog[a][enemyAttr4],
         h = enemyCatalog[a][enemyAttr6],
@@ -4389,136 +4395,163 @@ function Ch(a, b, c, d) {
         9 * d, l[2] = b - 7 * d, n[2] = c - 0 * d, l[3] = b + 9 * d, n[3] = c - 9 * d, l[4] = b + 7 * d, n[4] = c - 0 * d, l[5] = b - 7 * d, n[5] = c - 5 * d, l[6] = b - 5 * d, n[6] = c - 0 * d, l[7] = b + 7 * d, n[7] = c - 5 * d, l[8] = b + 5 * d, n[8] = c - 0 * d, drawLine(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), drawLine(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), drawLine(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), drawLine(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), drawLine(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7),
             16 * (g >> 3), 16, 16, h)) : f == zk ? (drawLine(b + 5 * d, c - 6 * d, b + 8 * d, c - 11 * d, p), drawLine(b + 8 * d, c - 11 * d, b + 10 * d, c - 3 * d, p), drawLine(b + 10 * d, c - 3 * d, b + 5 * d, c - 6 * d, p), drawRectOutlineCentered(b + 0 * d, c - 9 * d, 6 * d + 1, 6 * d + 1, p), fl(b - 5 * d, c - 13 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == Ak && (l[0] = b + 0 * d, n[0] = c - 16 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 2 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b - 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b - 8 * d, n[6] = c - 10 * d, l[7] = b - 1 * d, n[7] = c - 4 * d, l[8] = b + 2 * d, n[8] = c - 5 * d, l[9] = b - 0 * d, n[9] = c - 1 * d, l[10] = b + 4 * d, n[10] = c - 0 * d)
 }
-var W = 0,
+var projectileCount = 0,
     hl = new Int32Array(1E3),
     il = new Int32Array(1E3),
     jl = Array(1E3);
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) jl[iterIdxTemp_1] = new Vec2;
 var kl = Array(1E3);
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) kl[iterIdxTemp_1] = new Vec2;
-var ll = new Int32Array(1E3),
-    ml = new Int32Array(1E3),
-    nl = new Int32Array(1E3),
-    ol = new Int32Array(1E3),
-    pl = new Int32Array(1E3),
-    ql = new Int32Array(1E3),
-    rl = new Int32Array(1E3),
-    sl = new Int32Array(1E3),
-    tl = new Int32Array(1E3),
-    ul = new Int32Array(1E3),
-    vl = new Int32Array(1E3),
-    wl = new Int32Array(1E3),
-    xl = new Int32Array(1E3),
-    yl = new Int32Array(1E3),
-    zl = new Float32Array(1E3),
-    Al = new Float32Array(1E3),
-    Bl = new Int32Array(1E3),
-    Cl = new Int32Array(1E3),
-    Dl = new Int32Array(1E3),
-    El = new Int32Array(1E3),
-    Fl = new Int32Array(1E3),
-    Gl = new Int32Array(1E3),
-    Hl = new Int32Array(1E3),
-    Il = new Int32Array(1E3),
-    Jl = new Int32Array(1E3),
-    Kl = new Int32Array(1E3),
-    Ll = new Int32Array(1E3),
-    Ml = new Int32Array(1E3),
-    Nl = new Int32Array(1E3),
-    Ol = new Int32Array(1E3),
-    Pl = new Int32Array(1E3),
-    Ql = new Int32Array(1E3),
-    Rl = new Int32Array(1E3),
-    Sl = new Int32Array(1E3),
-    Tl = new Int32Array(1E3),
-    Ul = new Int32Array(1E3),
-    Vl = new Int32Array(1E3),
-    Wl = new Int32Array(1E3),
-    Xl = new Int32Array(1E3),
-    Yl = new Int32Array(1E3),
-    Zl = new Int32Array(1E3),
-    $l = new Int32Array(1E3),
-    am = new Int32Array(1E3),
-    bm = new Int32Array(1E3),
-    cm = new Int32Array(1E3),
-    dm = new Int32Array(1E3),
-    em = new Int32Array(1E3),
-    fm = new Int32Array(1E3),
-    gm = new Int32Array(1E3),
+var ll = new Int32Array(1E3), // ll
+    ml = new Int32Array(1E3), // ml
+    nl = new Int32Array(1E3), // nl
+    ol = new Int32Array(1E3), // ol
+    pl = new Int32Array(1E3), // pl
+    ql = new Int32Array(1E3), // ql
+    rl = new Int32Array(1E3), // rl
+    sl = new Int32Array(1E3), // sl
+    tl = new Int32Array(1E3), // tl
+    ul = new Int32Array(1E3), // ul
+    vl = new Int32Array(1E3), // vl
+    wl = new Int32Array(1E3), // wl
+    xl = new Int32Array(1E3), // xl
+    yl = new Int32Array(1E3), // yl
+    zl = new Float32Array(1E3), // zl
+    Al = new Float32Array(1E3), // Al
+    Bl = new Int32Array(1E3), // Bl
+    Cl = new Int32Array(1E3), // Cl
+    Dl = new Int32Array(1E3), // Dl
+    El = new Int32Array(1E3), // El
+    Fl = new Int32Array(1E3), // Fl
+    Gl = new Int32Array(1E3), // Gl
+    Hl = new Int32Array(1E3), // Hl
+    Il = new Int32Array(1E3), // Il
+    Jl = new Int32Array(1E3), // Jl
+    Kl = new Int32Array(1E3), // Kl
+    Ll = new Int32Array(1E3), // Ll
+    Ml = new Int32Array(1E3), // Ml
+    Nl = new Int32Array(1E3), // Nl
+    Ol = new Int32Array(1E3), // Ol
+    Pl = new Int32Array(1E3), // Pl
+    Ql = new Int32Array(1E3), // Ql
+    Rl = new Int32Array(1E3), // Rl
+    Sl = new Int32Array(1E3), // Sl
+    Tl = new Int32Array(1E3), // Tl
+    Ul = new Int32Array(1E3), // Ul
+    Vl = new Int32Array(1E3), // Vl
+    Wl = new Int32Array(1E3), // Wl
+    Xl = new Int32Array(1E3), // Xl
+    Yl = new Int32Array(1E3), // Yl
+    Zl = new Int32Array(1E3), // Zl
+    $l = new Int32Array(1E3), // $l
+    am = new Int32Array(1E3), // am
+    bm = new Int32Array(1E3), // bm
+    cm = new Int32Array(1E3), // cm
+    dm = new Int32Array(1E3), // dm
+    em = new Int32Array(1E3), // em
+    fm = new Int32Array(1E3), // fm
+    gm = new Int32Array(1E3), // gm
     hm = new Int32Array(1E3);
-mainWindow.fff = im;
+mainWindow.fff = clearProjectiles;
 
-function im() {
-    W = 0
+function clearProjectiles() { // im
+    projectileCount = 0
 }
-mainWindow.fff = zi;
+mainWindow.fff = spawnProjectile;
 
-function zi(a, b, c, d, f, g, h, k, p, t, l, n, w, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, fb, ob, Bb, gc, Qb, Rb, gb, jb, La, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc) {
-    1E3 != W && (hl[W] = a, il[W] = b, Vec2Set(jl[W], c, d), Vec2Set(kl[W], f, g), ll[W] = 0, ml[W] = h, nl[W] = k, ol[W] = p, pl[W] = t, ql[W] = l, rl[W] = n, sl[W] = w, tl[W] = B, ul[W] = M, vl[W] = floor(randFloat(J)), wl[W] = y, xl[W] = x, yl[W] = K, zl[W] = ba, Al[W] = U, Bl[W] = na, Cl[W] = Fa, Dl[W] = Ga, El[W] = Ca, Fl[W] = ua, Gl[W] = fb, Hl[W] = ob, Il[W] = Bb, Jl[W] = gc, Kl[W] = Qb, Ll[W] = Rb, Ml[W] = gb, Nl[W] = jb, Ol[W] = La, Pl[W] = hc, Ql[W] = Ib, Rl[W] = ic, Sl[W] =
-        jc, Tl[W] = kc, Ul[W] = lc, Vl[W] = mc, Wl[W] = nc, Xl[W] = oc, Yl[W] = pc, Zl[W] = qc, $l[W] = rc, am[W] = sc, bm[W] = tc, cm[W] = uc, dm[W] = vc, em[W] = wc, fm[W] = xc, gm[W] = yc, hm[W] = zc, W++)
+function spawnProjectile(
+    a, b, c, d, f, g, h, k, p, t, l, n, w, B, 
+    M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, 
+    fb, ob, Bb, gc, Qb, Rb, gb, jb, La, hc, Ib, 
+    ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, 
+    tc, uc, vc, wc, xc, yc, zc
+) { // zi
+    if (projectileCount >= 1E3) return;
+    hl[projectileCount] = a, 
+    il[projectileCount] = b, 
+    Vec2Set(jl[projectileCount], c, d), 
+    Vec2Set(kl[projectileCount], f, g), 
+    ll[projectileCount] = 0, ml[projectileCount] = h, nl[projectileCount] = k, 
+    ol[projectileCount] = p, pl[projectileCount] = t, ql[projectileCount] = l, 
+    rl[projectileCount] = n, sl[projectileCount] = w, tl[projectileCount] = B, 
+    ul[projectileCount] = M, vl[projectileCount] = floor(randFloat(J)), wl[projectileCount] = y, 
+    xl[projectileCount] = x, yl[projectileCount] = K, zl[projectileCount] = ba, 
+    Al[projectileCount] = U, Bl[projectileCount] = na, Cl[projectileCount] = Fa, 
+    Dl[projectileCount] = Ga, El[projectileCount] = Ca, Fl[projectileCount] = ua, 
+    Gl[projectileCount] = fb, Hl[projectileCount] = ob, Il[projectileCount] = Bb, 
+    Jl[projectileCount] = gc, Kl[projectileCount] = Qb, Ll[projectileCount] = Rb, 
+    Ml[projectileCount] = gb, Nl[projectileCount] = jb, Ol[projectileCount] = La, 
+    Pl[projectileCount] = hc, Ql[projectileCount] = Ib, Rl[projectileCount] = ic, 
+    Sl[projectileCount] = jc, Tl[projectileCount] = kc, Ul[projectileCount] = lc, 
+    Vl[projectileCount] = mc, Wl[projectileCount] = nc, Xl[projectileCount] = oc, 
+    Yl[projectileCount] = pc, Zl[projectileCount] = qc, $l[projectileCount] = rc, 
+    am[projectileCount] = sc, bm[projectileCount] = tc, cm[projectileCount] = uc, 
+    dm[projectileCount] = vc, em[projectileCount] = wc, fm[projectileCount] = xc, 
+    gm[projectileCount] = yc, hm[projectileCount] = zc, 
+    projectileCount++
 }
-mainWindow.fff = jm;
+mainWindow.fff = deleteProjectile;
 
-function jm(a) {
-    hl[a] = hl[W - 1];
-    il[a] = il[W - 1];
-    jl[a].set(jl[W - 1]);
-    kl[a].set(kl[W - 1]);
-    ll[a] = ll[W - 1];
-    ml[a] = ml[W - 1];
-    nl[a] = nl[W - 1];
-    ol[a] = ol[W - 1];
-    pl[a] = pl[W - 1];
-    ql[a] = ql[W - 1];
-    rl[a] = rl[W - 1];
-    sl[a] = sl[W - 1];
-    tl[a] = tl[W - 1];
-    ul[a] = ul[W - 1];
-    vl[a] = vl[W - 1];
-    wl[a] = wl[W - 1];
-    xl[a] = xl[W - 1];
-    yl[a] = yl[W - 1];
-    zl[a] = zl[W - 1];
-    Al[a] = Al[W - 1];
-    Bl[a] = Bl[W - 1];
-    Cl[a] = Cl[W - 1];
-    Dl[a] = Dl[W - 1];
-    El[a] = El[W - 1];
-    Fl[a] = Fl[W - 1];
-    Gl[a] = Gl[W - 1];
-    Hl[a] = Hl[W - 1];
-    Il[a] = Il[W - 1];
-    Jl[a] = Jl[W - 1];
-    Kl[a] = Kl[W - 1];
-    Ll[a] = Ll[W - 1];
-    Ml[a] = Ml[W - 1];
-    Nl[a] = Nl[W - 1];
-    Ol[a] = Ol[W - 1];
-    Pl[a] = Pl[W - 1];
-    Ql[a] = Ql[W - 1];
-    Rl[a] = Rl[W - 1];
-    Sl[a] = Sl[W - 1];
-    Tl[a] = Tl[W - 1];
-    Ul[a] = Ul[W - 1];
-    Vl[a] = Vl[W - 1];
-    Wl[a] = Wl[W - 1];
-    Xl[a] = Xl[W - 1];
-    Yl[a] = Yl[W - 1];
-    Zl[a] = Zl[W - 1];
-    $l[a] = $l[W - 1];
-    am[a] = am[W - 1];
-    bm[a] = bm[W - 1];
-    cm[a] = cm[W - 1];
-    dm[a] = dm[W - 1];
-    em[a] = em[W - 1];
-    fm[a] = fm[W - 1];
-    gm[a] = gm[W - 1];
-    hm[a] = hm[W - 1];
-    W--
+function deleteProjectile(projIdx) { // jm
+    hl[projIdx] = hl[projectileCount - 1];
+    il[projIdx] = il[projectileCount - 1];
+    jl[projIdx].set(jl[projectileCount - 1]);
+    kl[projIdx].set(kl[projectileCount - 1]);
+    ll[projIdx] = ll[projectileCount - 1];
+    ml[projIdx] = ml[projectileCount - 1];
+    nl[projIdx] = nl[projectileCount - 1];
+    ol[projIdx] = ol[projectileCount - 1];
+    pl[projIdx] = pl[projectileCount - 1];
+    ql[projIdx] = ql[projectileCount - 1];
+    rl[projIdx] = rl[projectileCount - 1];
+    sl[projIdx] = sl[projectileCount - 1];
+    tl[projIdx] = tl[projectileCount - 1];
+    ul[projIdx] = ul[projectileCount - 1];
+    vl[projIdx] = vl[projectileCount - 1];
+    wl[projIdx] = wl[projectileCount - 1];
+    xl[projIdx] = xl[projectileCount - 1];
+    yl[projIdx] = yl[projectileCount - 1];
+    zl[projIdx] = zl[projectileCount - 1];
+    Al[projIdx] = Al[projectileCount - 1];
+    Bl[projIdx] = Bl[projectileCount - 1];
+    Cl[projIdx] = Cl[projectileCount - 1];
+    Dl[projIdx] = Dl[projectileCount - 1];
+    El[projIdx] = El[projectileCount - 1];
+    Fl[projIdx] = Fl[projectileCount - 1];
+    Gl[projIdx] = Gl[projectileCount - 1];
+    Hl[projIdx] = Hl[projectileCount - 1];
+    Il[projIdx] = Il[projectileCount - 1];
+    Jl[projIdx] = Jl[projectileCount - 1];
+    Kl[projIdx] = Kl[projectileCount - 1];
+    Ll[projIdx] = Ll[projectileCount - 1];
+    Ml[projIdx] = Ml[projectileCount - 1];
+    Nl[projIdx] = Nl[projectileCount - 1];
+    Ol[projIdx] = Ol[projectileCount - 1];
+    Pl[projIdx] = Pl[projectileCount - 1];
+    Ql[projIdx] = Ql[projectileCount - 1];
+    Rl[projIdx] = Rl[projectileCount - 1];
+    Sl[projIdx] = Sl[projectileCount - 1];
+    Tl[projIdx] = Tl[projectileCount - 1];
+    Ul[projIdx] = Ul[projectileCount - 1];
+    Vl[projIdx] = Vl[projectileCount - 1];
+    Wl[projIdx] = Wl[projectileCount - 1];
+    Xl[projIdx] = Xl[projectileCount - 1];
+    Yl[projIdx] = Yl[projectileCount - 1];
+    Zl[projIdx] = Zl[projectileCount - 1];
+    $l[projIdx] = $l[projectileCount - 1];
+    am[projIdx] = am[projectileCount - 1];
+    bm[projIdx] = bm[projectileCount - 1];
+    cm[projIdx] = cm[projectileCount - 1];
+    dm[projIdx] = dm[projectileCount - 1];
+    em[projIdx] = em[projectileCount - 1];
+    fm[projIdx] = fm[projectileCount - 1];
+    gm[projIdx] = gm[projectileCount - 1];
+    hm[projIdx] = hm[projectileCount - 1];
+    projectileCount--
 }
 mainWindow.fff = km;
 
-function km(a, b) {
+function km(a, b) { // km
     var c = 0;
     b.set(kl[a]);
     var d = floor(Vec2Mag(b) / 4) + 1;
@@ -4528,17 +4561,17 @@ function km(a, b) {
 }
 mainWindow.fff = Bg;
 
-function Bg() {
+function Bg() { // Bg
     var a, b, c, d = new Vec2,
         f = new Vec2,
         g = new Vec2,
         h = new Vec2,
         k = new Vec2,
         p, t, l;
-    for (a = 0; a < W; a++)
-        if (-64 > jl[a].x || 704 < jl[a].x) jm(a--);
+    for (a = 0; a < projectileCount; a++)
+        if (-64 > jl[a].x || 704 < jl[a].x) deleteProjectile(a--);
         else if (0 < vl[a]) vl[a]--;
-        else if (1 == ll[a]) xl[a]++, xl[a] >= yl[a] && jm(a--);
+        else if (1 == ll[a]) xl[a]++, xl[a] >= yl[a] && deleteProjectile(a--);
         else {
             0 < El[a] && (b = El[a], b = 0 <= hl[a] ? Ei(jl[a].x, jl[a].y, b, b) : ti(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, O[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + randFloatRange(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
             0 == zl[a] ? kl[a].y += .01 * Al[a] : (-1 == zl[a] ?
@@ -4563,31 +4596,31 @@ function Bg() {
             if (1 == b || -1 != c)
                 if (ll[a] = 1, xl[a] = 0, 1 <= Ml[a] && 9 >= Ml[a])
                     for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, hm[a]), d.x = rotationLUT[c][0] * p, d.y = rotationLUT[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
-                        Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), spawnProjectile(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 else if (-1 != c && 20 <= Ml[a] && 29 >= Ml[a])
-                    for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = rotationLUT[c][0] * hm[a], d.y = -rotationLUT[c][1] * hm[a]), zi(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
+                    for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = rotationLUT[c][0] * hm[a], d.y = -rotationLUT[c][1] * hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
                         Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], Ml[a], Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], gm[a], hm[a]);
             0 < xl[a] && xl[a]--;
             0 == xl[a] && (ll[a] = 1);
-            if (10 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
+            if (10 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
                 Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (11 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), p = randFloatRange(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, zi(hl[a], -1, h.x, h.y,
+            else if (11 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), p = randFloatRange(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(hl[a], -1, h.x, h.y,
                 k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
             else if (13 == Ml[a]) {
                 if (randFloat(60) < Nl[a])
-                    for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
+                    for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             } else if (14 == Ml[a]) {
                 if (randFloat(60) < Nl[a] && (c = Ei(h.x, h.y, 200, 200), -1 != c))
-                    for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * hm[a] * .1 + rotationLUT[c][1] * p, zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                    for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * hm[a] * .1 + rotationLUT[c][1] * p, spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             } else 15 == Ml[a] && randFloat(60) < gm[a] &&
-                (Vec2Norm(k), Vec2Scale(k, hm[a]), zi(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
+                (Vec2Norm(k), Vec2Scale(k, hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
         }
 }
 mainWindow.fff = Eg;
 
-function Eg() {
+function Eg() { // Eg
     var a, b, c, d, f = new Vec2,
         g = new Vec2,
         h = new Vec2,
@@ -4595,7 +4628,7 @@ function Eg() {
         p = new Vec2,
         t = new Vec2,
         l, n, w, B;
-    for (a = 0; a < W; a++)
+    for (a = 0; a < projectileCount; a++)
         if (!(0 < vl[a])) {
             b = (nl[a] & 7) << 4;
             c = nl[a] >> 3 << 4;
@@ -4702,17 +4735,17 @@ var tm = Array(1E3),
     vm = new Int32Array(1E3);
 mainWindow.fff = wm;
 
-function wm() {
+function wm() { // wm
     aj = 0
 }
 mainWindow.fff = Lg;
 
-function Lg(a, b, c, d, f, g) {
+function Lg(a, b, c, d, f, g) { // Lg
     1E3 != aj && (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(rm[aj], a, b), Vec2Set(sm[aj], c, -2), 0 != c && (sm[aj].x += randFloatRange(-.2, .2), sm[aj].y += randFloatRange(-.2, .2)), tm[aj] = d, um[aj] = f, vm[aj] = g, aj++)
 }
 mainWindow.fff = xm;
 
-function xm(a) {
+function xm(a) { // xm
     rm[a].set(rm[aj - 1]);
     sm[a].set(sm[aj - 1]);
     tm[a] = tm[aj - 1];
@@ -4722,7 +4755,7 @@ function xm(a) {
 }
 mainWindow.fff = Ag;
 
-function Ag() {
+function Ag() { // Ag
     var a;
     for (a = 0; a < aj; a++) {
         if (0 == sm[a].x) {
@@ -4740,7 +4773,7 @@ function Ag() {
 }
 mainWindow.fff = Fg;
 
-function Fg() {
+function Fg() { // Fg
     var a, b, c, d, f;
     for (a = 0; a < aj; a++) 20 <= um[a] ? drawTextCentered(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), Jg(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
 }
@@ -4756,18 +4789,18 @@ var Bm = new Int32Array(100),
     Fm = 0;
 mainWindow.fff = bj;
 
-function bj() {
+function bj() { // bj
     Fm = ym = 0
 }
 mainWindow.fff = Gh;
 
-function Gh(a, b, c, d, f) {
+function Gh(a, b, c, d, f) { // Gh
     if (100 != ym)
         for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = mouseXCurrent < a ? randFloatRange(-.5, -1) : randFloatRange(.5, 1), Am[ym].y = randFloatRange(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
 }
 mainWindow.fff = Gm;
 
-function Gm(a) {
+function Gm(a) { // Gm
     ym--;
     zm[a].set(zm[ym]);
     Am[a].set(Am[ym]);
@@ -4779,7 +4812,7 @@ function Gm(a) {
 }
 mainWindow.fff = dl;
 
-function dl(a) {
+function dl(a) { // dl
     if (2 == a) return true;
     var b;
     for (b = 0; b < ym; b++)
@@ -4788,7 +4821,7 @@ function dl(a) {
 }
 mainWindow.fff = zg;
 
-function zg() {
+function zg() { // zg
     var a, b, c;
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (frameBufferArray = null);
@@ -4797,7 +4830,7 @@ function zg() {
 }
 mainWindow.fff = Dg;
 
-function Dg() {
+function Dg() { // Dg
     var a;
     fh = 2;
     for (a = 0; a < ym; a++)
@@ -5041,7 +5074,7 @@ function drawSmallTextNoOutline(x, y, text, color) {
     drawTextCentered(f, x, y, text, color, -1)
 }
 
-function Tg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) {
+function Tg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) { // Tg
     f = f * k >> 8;
     g = g * k >> 8;
     h = h * k >> 8;
@@ -5070,7 +5103,7 @@ function Tg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) {
     a.a = 0
 }
 
-function Jg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) {
+function Jg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) { // Jg
     b -= d.length * (w + a.b) >> 1;
     Tg(a, b, c - (B >> 1), d, f, g, h, k, p, t, l, n, w, B)
 }
@@ -5192,7 +5225,7 @@ function drawSpriteSheetPartCentered(spriteSheet, x, y, drawWidth, drawHeight, s
     drawSpriteSheetPart(spriteSheet, x - (drawWidth >> 1), y - (drawHeight >> 1), drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor)
 }
 
-function Qg(spriteSheet, _px, _py, d, f, g, h, k, p, t, l, n) {
+function Qg(spriteSheet, _px, _py, d, f, g, h, k, p, t, l, n) { // Qg
     var w = spriteSheet.g,
         B, M, J, y, x;
     k = ~~((k << 8) / d);
@@ -5218,7 +5251,7 @@ function Qg(spriteSheet, _px, _py, d, f, g, h, k, p, t, l, n) {
                 )
 }
 
-function fl(a, b, c, d, f, g, h, k, p, t) {
+function fl(a, b, c, d, f, g, h, k, p, t) { // fl
     a -= c >> 1;
     b -= d >> 1;
     var l, n = enemySpriteSheet.g,
@@ -5239,7 +5272,7 @@ function fl(a, b, c, d, f, g, h, k, p, t) {
             255, x = (((p >> 16 & 255) - y) * t >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((p >> 8 & 255) - y) * t >> 8) + y, y = frameBufferArray[B] & 255, y = (((p & 255) - y) * t >> 8) + y), frameBufferArray[B] = x << 16 | K << 8 | y))
 }
 
-function gh(a, b, c, d, f, g) {
+function gh(a, b, c, d, f, g) { // fl
     var h = 16,
         k = 16,
         p, t, l = itemsSpriteSheet.g,
@@ -5260,7 +5293,7 @@ function gh(a, b, c, d, f, g) {
         for (B = ((d >> 8) * itemsSpriteSheet.h << 8) + c, g = a; g < h; g++, n++, B += p) M = l[B >> 8], 0 >= M || (J = M >> 16 & 255, y = M >> 8 & 255, M &= 255, frameBufferArray[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : f)
 }
 
-function Xg(a, b, c, d, f) {
+function Xg(a, b, c, d, f) { // Xg
     var g, h;
     g = 640 * b + a;
     h = 640 - c;
@@ -5268,7 +5301,7 @@ function Xg(a, b, c, d, f) {
         for (a = 0; a < c; a++, g++) 0 == frameBufferArray[g] && (frameBufferArray[g] = f)
 }
 
-function Li(a, b, c, d) {
+function Li(a, b, c, d) { // Li
     var f, g, h;
     if (abs(c - a) >= abs(d - b))
         for (a >>= 16, c >>= 16, f = abs(c - a), c = a <= c ? 1 : -1, h = floor((d - b) / max(f, 1)); 0 <= f; f--, a += c, b += h) 0 == f && (b = d), g = b >> 16, 0 > g || 432 <= g || (Ji[g] > a && (Ji[g] = a), Ki[g] < a && (Ki[g] = a));
@@ -5276,7 +5309,7 @@ function Li(a, b, c, d) {
         for (b >>= 16, d >>= 16, f = abs(d - b), h = floor((c - a) / max(f, 1)), d = b <= d ? 1 : -1; 0 <= f; f--, a += h, b += d) 0 == f && (a = c), g = a >> 16, 0 > b || 432 <= b || (Ji[b] > g && (Ji[b] = g), Ki[b] < g && (Ki[b] = g))
 }
 
-function mm(a, b, c, d, f, g, h, k) {
+function mm(a, b, c, d, f, g, h, k) { // mm
     var p = (max(abs(f - a), abs(g - b)) >> 16) + 1;
     f = floor((f - a) / p);
     g = floor((g - b) / p);
@@ -5286,7 +5319,7 @@ function mm(a, b, c, d, f, g, h, k) {
 }
 var nn = new Vec2;
 
-function T(a, b, c, d, f) {
+function T(a, b, c, d, f) { // T
     Vec2Sub(nn, a, b);
     c -= Vec2Norm(nn);
     d *= c;
@@ -5297,7 +5330,7 @@ function T(a, b, c, d, f) {
     b.y -= nn.y * f
 }
 
-function S(a, b, c, d) {
+function S(a, b, c, d) { // S
     Vec2Sub(nn, a, b);
     b.set(a);
     nn.y += c;

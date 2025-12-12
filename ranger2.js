@@ -2944,52 +2944,46 @@ function loadLevelData(a) {
     lastStageIdx = currentStage;
     isStageReachedArray[currentStage] = 1;
     si = currentLevelSprite.i;
-    let b, c, d = 0,
-        f, g, h, k, p, t, l;
-    c = currentLevelSprite.g;
-    for (b = 0; b < si; b++){
-        for (a = 0; a < Gi; a++, d++) {
+    let d = 0, f, g, h, k;
+    let c = currentLevelSprite.g;
+    for (let b = 0; b < si; b++){
+        for (let a = 0; a < Gi; a++, d++) {
             f = b ? (d - Gi) : d;
-            g = b == si - 1 ? d : d + Gi;
+            g = (b == si - 1) ? d : d + Gi;
             h = a ? d - 1 : d;
-            k = a == Gi - 1 ? d : d + 1;
+            k = (a == Gi - 1) ? d : d + 1;
             P[b][a] = 64;
+            const _maskedRead = (key) => {
+                let _a, _b, _c;
+                _a = c[key] >> 16 & 255;
+                _b = c[key] >> 8 & 255;
+                _c = c[key] & 255;
+                return (_a == _c && _b == _c && _c) ? 1 : 0;
+            };
             if (16777215 == c[d]) {
-                p = c[f] >> 16 & 255;
-                t = c[f] >> 8 & 255;
-                l = c[f] & 255;
-                f = (p == l && t == l && l) ? 1 : 0;
-                p = c[g] >> 16 & 255;
-                t = c[g] >> 8 & 255;
-                l = c[g] & 255;
-                g = (p == l && t == l && l) ? 1 : 0;
-                p = c[h] >> 16 & 255;
-                t = c[h] >> 8 & 255;
-                l = c[h] & 255;
-                h = (p == l && t == l && l) ? 1 : 0;
-                p = c[k] >> 16 & 255;
-                t = c[k] >> 8 & 255;
-                l = c[k] & 255;
-                k = (p == l && t == l && l) ? 1 : 0;
+                let k0 = _maskedRead(f);
+                let k1 = _maskedRead(g);
+                let k2 = _maskedRead(h);
+                let k3 = _maskedRead(k);
                 
-                f || 1 != g || h || 1 != k 
-                ? f || 1 != g || 1 != h || 1 != k 
-                ? f || 1 != g || 1 != h || k 
-                ? 1 != f || 1 != g || h || 1 != k 
-                ? 1 == f && 1 == g && 1 == h && 1 == k 
+                k0 || 1 != k1 || k2 || 1 != k3 
+                ? k0 || 1 != k1 || 1 != k2 || 1 != k3 
+                ? k0 || 1 != k1 || 1 != k2 || k3 
+                ? 1 != k0 || 1 != k1 || k2 || 1 != k3 
+                ? 1 == k0 && 1 == k1 && 1 == k2 && 1 == k3 
                 ? P[b][a] = 9 
-                : 1 != f || 1 != g || 1 != h || k 
-                ? 1 != f || g || h || 1 != k 
-                ? 1 != f || g || 1 != h || 1 != k 
-                ? 1 != f || g || 1 != h || k 
-                ? f || g || h || k 
-                ? f || 1 != g || h || k 
-                ? 1 != f || g || h || k 
-                ? f || g || h || 1 != k 
-                ? f || g || 1 != h || k 
-                ? f || g || 1 != h || 1 != k 
-                ? 1 != f || 1 != g || h || k || (P[b][a] = 19) 
-                : P[b][a] = 11 
+                : 1 != k0 || 1 != k1 || 1 != k2 || k3 
+                ? 1 != k0 || k1 || k2 || 1 != k3 
+                ? 1 != k0 || k1 || 1 != k2 || 1 != k3 
+                ? 1 != k0 || k1 || 1 != k2 || k3 
+                ? k0 || k1 || k2 || k3 
+                ? k0 || 1 != k1 || k2 || k3 
+                ? 1 != k0 || k1 || k2 || k3 
+                ? k0 || k1 || k2 || 1 != k3 
+                ? k0 || k1 || 1 != k2 || k3 
+                ? k0 || k1 || 1 != k2 || 1 != k3 
+                ? 1 != k0 || 1 != k1 || k2 || k3 || (P[b][a] = 19) 
+                : P[b][a] = 11
                 : P[b][a] = 7 
                 : P[b][a] = 6 
                 : P[b][a] = 5 
@@ -3023,6 +3017,7 @@ function loadLevelData(a) {
                     : 16764057 == c[d] && 21913 == c[h] 
                     ? P[b][a] = 29 
                     : 16764057 == c[d] && 0 != c[h] 
+
                     ? P[b][a] = 28 
                     : 21913 == c[d] && 0 == c[f] 
                     ? P[b][a] = 30 
@@ -3079,22 +3074,30 @@ function loadLevelData(a) {
         }
     }
 
-    for (a = 0; 4 > a; a++) cb[a] = 0;
+    for (let a = 0; 4 > a; a++) cb[a] = 0;
     resetDragSelection();
-    for (a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXs[a], partySpawnYs[a]);
-    for (a = 0; 20 > a; a++) V[a] = 0, Xi[a] = 0;
+    for (let a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXs[a], partySpawnYs[a]);
+    for (let a = 0; 20 > a; a++) V[a] = 0, Xi[a] = 0;
     Mi = 0;
     clearEnemies();
-    for (a = stageAttr9; a < stageListArray[currentStage].length; a += 7) {
-        c = stageListArray[currentStage][a + 0];
-        d = stageListArray[currentStage][a + 1];
-        k = stageListArray[currentStage][a + 3];
-        f = stageListArray[currentStage][a + 4];
-        p = stageListArray[currentStage][a + 5];
-        t = stageListArray[currentStage][a + 6];
-        for (b = 0; b < d; b++) h = randIntRange(k, p + 1), g = randIntRange(f, t + 1), 25 >= P[g][h] || (spawnEnemy(h, g, c, (a - stageAttr9) / 7), V[(a - stageAttr9) / 7]++, Xi[(a - stageAttr9) / 7]++);
-        b = enemyCatalog[c][enemyAttr0];
-        $i < b && ($i = b)
+    for (let a = stageAttr9; a < stageListArray[currentStage].length; a += 7) {
+        let c = stageListArray[currentStage][a + 0];
+        let d = stageListArray[currentStage][a + 1];
+        let k = stageListArray[currentStage][a + 3];
+        let f = stageListArray[currentStage][a + 4];
+        let p = stageListArray[currentStage][a + 5];
+        let t = stageListArray[currentStage][a + 6];
+        for (let b = 0; b < d; b++) {
+            h = randIntRange(k, p + 1);
+            g = randIntRange(f, t + 1);
+
+            if (25 < P[g][h]) {
+                spawnEnemy(h, g, c, (a - stageAttr9) / 7), 
+                V[(a - stageAttr9) / 7]++, Xi[(a - stageAttr9) / 7]++
+            };
+        }
+        let b = enemyCatalog[c][enemyAttr0];
+        if ($i < b) $i = b;
     }
     aj = projectileCount = 0;
     bj();

@@ -1279,12 +1279,12 @@ function drawCanvas() {
                     saveGame();
                     for (a = 0; a < partyMemberCount; a++)
                         partyLP[a] = 0
-                } else currentStage != Mg && (
+                } else currentStage != lastStageIdx && (
                     sa = 0,
                     drawState = 13,
-                    A(6) && (2 == Ng && 4 == Mg || 4 == Ng && 2 == Mg) &&
+                    A(6) && (2 == Ng && 4 == lastStageIdx || 4 == Ng && 2 == lastStageIdx) &&
                     0 == Og && 0 == totalDamageDone && IncrementBadgeCount(6),
-                    A(51) && (13 == Ng && 15 == Mg || 15 == Ng && 13 == Mg)
+                    A(51) && (13 == Ng && 15 == lastStageIdx || 15 == Ng && 13 == lastStageIdx)
                     && 0 == Og && 0 == totalDamageDone && IncrementBadgeCount(51)
                 )
             } else if (13 == drawState)
@@ -1294,7 +1294,7 @@ function drawCanvas() {
                         ug = 0,
                         drawState = 10,
                         Ng = currentStage,
-                        currentStage = Mg,
+                        currentStage = lastStageIdx,
                         saveGame()
                     );
             else if (
@@ -2924,7 +2924,7 @@ var stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     P = Array(si);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < si; iterIdxTemp_1++) P[iterIdxTemp_1] = Array(Gi);
 var loadedLevelIndex = -1,
-    Mg = 0,
+    lastStageIdx = 0, // Mg
     Ng = 0,
     partySpawnXs = [0, 0, 0, 0],
     partySpawnYs = [0, 0, 0, 0],
@@ -2934,21 +2934,149 @@ var loadedLevelIndex = -1,
 mainWindow.fff = loadLevelData;
 
 function loadLevelData(a) {
-    loadedLevelIndex != a && (loadedLevelIndex = a, currentLevelSprite = new Sprite, currentLevelSprite.f("m" + a + ".png"));
-    drawSprite(currentLevelSprite);
+    if (loadedLevelIndex != a) {
+        loadedLevelIndex = a;
+        currentLevelSprite = new Sprite;
+        currentLevelSprite.f("m" + a + ".png");
+    }
+    drawSprite(currentLevelSprite); // check if loaded sprite is valid
     if (uncheckedSpriteCount) return false;
-    Mg = currentStage;
+    lastStageIdx = currentStage;
     isStageReachedArray[currentStage] = 1;
     si = currentLevelSprite.i;
-    var b, c, d = 0,
+    let b, c, d = 0,
         f, g, h, k, p, t, l;
     c = currentLevelSprite.g;
-    for (b = 0; b < si; b++)
-        for (a = 0; a < Gi; a++, d++) f = b ? d - Gi : d, g = b == si - 1 ? d : d + Gi, h = a ? d - 1 : d, k = a == Gi - 1 ? d : d + 1, P[b][a] = 64, 16777215 == c[d] ? (p = c[f] >> 16 & 255, t = c[f] >> 8 & 255, l = c[f] & 255, f = p == l && t == l && l ? 1 : 0, p = c[g] >> 16 & 255, t = c[g] >> 8 & 255, l = c[g] & 255, g = p == l && t == l && l ? 1 : 0, p = c[h] >> 16 & 255, t = c[h] >> 8 & 255, l = c[h] & 255, h = p == l && t == l && l ? 1 : 0, p = c[k] >> 16 & 255, t = c[k] >> 8 & 255, l = c[k] & 255, k = p == l && t == l && l ? 1 : 0, f || 1 != g ||
-            h || 1 != k ? f || 1 != g || 1 != h || 1 != k ? f || 1 != g || 1 != h || k ? 1 != f || 1 != g || h || 1 != k ? 1 == f && 1 == g && 1 == h && 1 == k ? P[b][a] = 9 : 1 != f || 1 != g || 1 != h || k ? 1 != f || g || h || 1 != k ? 1 != f || g || 1 != h || 1 != k ? 1 != f || g || 1 != h || k ? f || g || h || k ? f || 1 != g || h || k ? 1 != f || g || h || k ? f || g || h || 1 != k ? f || g || 1 != h || k ? f || g || 1 != h || 1 != k ? 1 != f || 1 != g || h || k || (P[b][a] = 19) : P[b][a] = 11 : P[b][a] = 7 : P[b][a] = 6 : P[b][a] = 5 : P[b][a] = 4 : P[b][a] = 3 : P[b][a] = 18 : P[b][a] = 17 : P[b][a] = 16 : P[b][a] = 10 : P[b][a] = 8 : P[b][a] = 2 : P[b][a] = 1 : P[b][a] = 0) : 12303291 == c[d] ? P[b][a] = 12 : 11184810 == c[d] ? P[b][a] = 13 : 10066329 == c[d] ? P[b][a] =
-                14 : 6684774 == c[d] ? P[b][a] = 20 : 6697728 == c[d] ? P[b][a] = 24 : 10053171 == c[d] ? P[b][a] = 25 : 13408614 == c[d] ? P[b][a] = 26 : 16764057 == c[d] && 0 == c[h] ? P[b][a] = 27 : 16764057 == c[d] && 21913 == c[h] ? P[b][a] = 29 : 16764057 == c[d] && 0 != c[h] ? P[b][a] = 28 : 21913 == c[d] && 0 == c[f] ? P[b][a] = 30 : 21913 == c[d] && 0 != c[f] ? P[b][a] = 31 : 3355392 == c[d] ? P[b][a] = 32 : 6710835 == c[d] ? P[b][a] = 33 : 10066278 == c[d] ? P[b][a] = 34 : 13421721 == c[d] ? P[b][a] = 35 : 10053120 == c[d] && 10053120 == c[g] ? P[b][a] = 36 : 16724736 == c[d] && 16724736 != c[f] ? P[b][a] = 37 : 3355494 == c[d] && 3355494 != c[f] ? P[b][a] =
-                    38 : 16776960 == c[d] ? P[b][a] = 39 : 3368448 == c[d] ? P[b][a] = 40 : 6723891 == c[d] ? P[b][a] = 41 : 10079334 == c[d] ? P[b][a] = 42 : 10053120 == c[d] && 10053120 != c[g] ? P[b][a] = 44 : 16724736 == c[d] && 16724736 == c[f] ? P[b][a] = 45 : 3355494 == c[d] && 3355494 == c[f] ? P[b][a] = 46 : 6710784 == c[d] ? P[b][a] = 47 : 16724940 == c[d] ? P[b][a] = 48 : 13056 == c[d] ? P[b][a] = 49 : 51 == c[d] ? P[b][a] = 50 : 10040064 == c[d] ? P[b][a] = 51 : 10066431 == c[d] && 10066431 == c[g] ? P[b][a] = 52 : 16737792 == c[d] && 16737792 != c[f] ? P[b][a] = 53 : 16763904 == c[d] ? P[b][a] = 55 : 10066431 == c[d] && 10066431 == c[f] ? P[b][a] = 60 :
-                        16737792 == c[d] && 16737792 == c[f] && (P[b][a] = 61);
+    for (b = 0; b < si; b++){
+        for (a = 0; a < Gi; a++, d++) {
+            f = b ? (d - Gi) : d, 
+            g = b == si - 1 ? d : d + Gi, 
+            h = a ? d - 1 : d, 
+            k = a == Gi - 1 ? d : d + 1, 
+            P[b][a] = 64, 
+            (16777215 == c[d]) 
+                ? (
+                    p = c[f] >> 16 & 255, 
+                    t = c[f] >> 8 & 255, 
+                    l = c[f] & 255, 
+                    f = (p == l && t == l && l) ? 1 : 0, 
+                    p = c[g] >> 16 & 255, 
+                    t = c[g] >> 8 & 255, 
+                    l = c[g] & 255, 
+                    g = (p == l && t == l && l) ? 1 : 0, 
+                    p = c[h] >> 16 & 255, 
+                    t = c[h] >> 8 & 255, 
+                    l = c[h] & 255, 
+                    h = (p == l && t == l && l) ? 1 : 0, 
+                    p = c[k] >> 16 & 255, 
+                    t = c[k] >> 8 & 255, 
+                    l = c[k] & 255, 
+                    k = (p == l && t == l && l) ? 1 : 0, 
+                    f || 1 != g || h || 1 != k 
+                    ? f || 1 != g || 1 != h || 1 != k 
+                    ? f || 1 != g || 1 != h || k 
+                    ? 1 != f || 1 != g || h || 1 != k 
+                    ? 1 == f && 1 == g && 1 == h && 1 == k 
+                    ? P[b][a] = 9 
+                    : 1 != f || 1 != g || 1 != h || k 
+                    ? 1 != f || g || h || 1 != k 
+                    ? 1 != f || g || 1 != h || 1 != k 
+                    ? 1 != f || g || 1 != h || k 
+                    ? f || g || h || k 
+                    ? f || 1 != g || h || k 
+                    ? 1 != f || g || h || k 
+                    ? f || g || h || 1 != k 
+                    ? f || g || 1 != h || k 
+                    ? f || g || 1 != h || 1 != k 
+                    ? 1 != f || 1 != g || h || k || (P[b][a] = 19) 
+                    : P[b][a] = 11 
+                    : P[b][a] = 7 
+                    : P[b][a] = 6 
+                    : P[b][a] = 5 
+                    : P[b][a] = 4 
+                    : P[b][a] = 3 
+                    : P[b][a] = 18 
+                    : P[b][a] = 17 
+                    : P[b][a] = 16 
+                    : P[b][a] = 10 
+                    : P[b][a] = 8 
+                    : P[b][a] = 2 
+                    : P[b][a] = 1 
+                    : P[b][a] = 0
+                )       : (12303291 == c[d]) 
+                        ? P[b][a] = 12 
+                        : 11184810 == c[d] 
+                        ? P[b][a] = 13 
+                        : 10066329 == c[d] 
+                        ? P[b][a] = 14 
+                        : 6684774 == c[d] 
+                        ? P[b][a] = 20 
+                        : 6697728 == c[d] 
+                        ? P[b][a] = 24 
+                        : 10053171 == c[d] 
+                        ? P[b][a] = 25 
+                        : 13408614 == c[d] 
+                        ? P[b][a] = 26 
+                        : 16764057 == c[d] && 0 == c[h] 
+                        ? P[b][a] = 27 
+                        : 16764057 == c[d] && 21913 == c[h] 
+                        ? P[b][a] = 29 
+                        : 16764057 == c[d] && 0 != c[h] 
+                        ? P[b][a] = 28 
+                        : 21913 == c[d] && 0 == c[f] 
+                        ? P[b][a] = 30 
+                        : 21913 == c[d] && 0 != c[f] 
+                        ? P[b][a] = 31 
+                        : 3355392 == c[d] 
+                        ? P[b][a] = 32 
+                        : 6710835 == c[d] 
+                        ? P[b][a] = 33 
+                        : 10066278 == c[d] 
+                        ? P[b][a] = 34 
+                        : 13421721 == c[d] 
+                        ? P[b][a] = 35 
+                        : 10053120 == c[d] && 10053120 == c[g] 
+                        ? P[b][a] = 36 
+                        : 16724736 == c[d] && 16724736 != c[f] 
+                        ? P[b][a] = 37 
+                        : 3355494 == c[d] && 3355494 != c[f] 
+                        ? P[b][a] = 38 
+                        : 16776960 == c[d] 
+                        ? P[b][a] = 39 
+                        : 3368448 == c[d] 
+                        ? P[b][a] = 40 
+                        : 6723891 == c[d] 
+                        ? P[b][a] = 41 
+                        : 10079334 == c[d] 
+                        ? P[b][a] = 42 
+                        : 10053120 == c[d] && 10053120 != c[g] 
+                        ? P[b][a] = 44 
+                        : 16724736 == c[d] && 16724736 == c[f] 
+                        ? P[b][a] = 45 
+                        : 3355494 == c[d] && 3355494 == c[f] 
+                        ? P[b][a] = 46 
+                        : 6710784 == c[d] 
+                        ? P[b][a] = 47 
+                        : 16724940 == c[d] 
+                        ? P[b][a] = 48 
+                        : 13056 == c[d] 
+                        ? P[b][a] = 49 
+                        : 51 == c[d] 
+                        ? P[b][a] = 50 
+                        : 10040064 == c[d] 
+                        ? P[b][a] = 51 
+                        : 10066431 == c[d] && 10066431 == c[g] 
+                        ? P[b][a] = 52 
+                        : 16737792 == c[d] && 16737792 != c[f] 
+                        ? P[b][a] = 53 
+                        : 16763904 == c[d] 
+                        ? P[b][a] = 55 
+                        : 10066431 == c[d] && 10066431 == c[f] 
+                        ? P[b][a] = 60 
+                        : 16737792 == c[d] && 16737792 == c[f] && (P[b][a] = 61);
+        }
+    }
+
     for (a = 0; 4 > a; a++) cb[a] = 0;
     resetDragSelection();
     for (a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXs[a], partySpawnYs[a]);
@@ -2995,14 +3123,14 @@ function wg() { // wg
                 var b = O[a][1].x,
                     c = O[a][1].y;
                 if (4 > b && 0 < stageListArray[currentStage][stageAttr6]) {
-                    Mg = stageListArray[currentStage][stageAttr6];
+                    lastStageIdx = stageListArray[currentStage][stageAttr6];
                     for (var d = 0; 4 > d; d++) partySpawnXs[d] = 77, partySpawnYs[d] = c >> 3
                 } else if (636 <= b && 0 < stageListArray[currentStage][stageAttr7])
-                    for (Mg = stageListArray[currentStage][stageAttr7], d = 0; 4 > d; d++) partySpawnXs[d] = 2, partySpawnYs[d] = c >> 3;
+                    for (lastStageIdx = stageListArray[currentStage][stageAttr7], d = 0; 4 > d; d++) partySpawnXs[d] = 2, partySpawnYs[d] = c >> 3;
                 if (4 > c && 0 < stageListArray[currentStage][stageAttr4])
-                    for (Mg = stageListArray[currentStage][stageAttr4], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 42;
+                    for (lastStageIdx = stageListArray[currentStage][stageAttr4], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 42;
                 else if (356 <= c && 0 < stageListArray[currentStage][stageAttr5])
-                    for (Mg = stageListArray[currentStage][stageAttr5], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 2
+                    for (lastStageIdx = stageListArray[currentStage][stageAttr5], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 2
             } for (a = 0; 20 > a; a++) V[a] = 0;
     for (a = 0; a < enemyCount; a++) V[fj[a]]++;
     for (b = stageAttr9; b < stageListArray[currentStage].length; b += 7) {
@@ -3135,7 +3263,7 @@ function xg() { // xg
             }
         }
     }
-    if (1 == currentStage) 12 == drawState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (Mg = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == drawState && 1 == isStageReachedArray[12] && 1 > h && (Mg = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
+    if (1 == currentStage) 12 == drawState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (lastStageIdx = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == drawState && 1 == isStageReachedArray[12] && 1 > h && (lastStageIdx = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
     else if (2 != currentStage)
         if (3 == currentStage) {
             1 == partyMemberCount && 0 == V[0] && (resetHeroPose(partyMemberCount, 25, 14), partyMemberCount++);
@@ -3166,7 +3294,7 @@ function xg() { // xg
                 for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
                 4 == b && IncrementBadgeCount(19)
             }
-        } else if (6 == currentStage) 12 == drawState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (Mg = 1, partySpawnXs[0] = 18, partySpawnYs[0] = 24, partySpawnXs[1] = 20, partySpawnYs[1] = 24, partySpawnXs[2] = 29, partySpawnYs[2] = 24, partySpawnXs[3] = 31, partySpawnYs[3] = 24);
+        } else if (6 == currentStage) 12 == drawState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (lastStageIdx = 1, partySpawnXs[0] = 18, partySpawnYs[0] = 24, partySpawnXs[1] = 20, partySpawnYs[1] = 24, partySpawnXs[2] = 29, partySpawnYs[2] = 24, partySpawnXs[3] = 31, partySpawnYs[3] = 24);
         else if (7 == currentStage) {
             if (0 == Xi[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
                 if (c = 0, 39 == P[34][75] && c++, 39 == P[35][72] && c++, 39 == P[35][74] && c++, 39 == P[36][75] && c++, 39 == P[38][76] && c++, 1 == c || 2 == c) spawnEnemy(66, 42, 24, 1), V[1]++, Xi[1]++;
@@ -3206,7 +3334,7 @@ function xg() { // xg
                     b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 26 == P[d][c] && b++;
                 4 == b && IncrementBadgeCount(33)
             }
-            A(34) && 10 == Mg && 1 >= g && 41 <= h && IncrementBadgeCount(34)
+            A(34) && 10 == lastStageIdx && 1 >= g && 41 <= h && IncrementBadgeCount(34)
         } else if (10 == currentStage) {
             if (25 >= Xi[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
                 for (a = 0; 15 > a; a++) spawnEnemy(randIntRange(32, 53), randIntRange(33, 34), 37, 0), V[0]++, Xi[0]++;
@@ -4953,12 +5081,18 @@ function ag() {
 var uncheckedSpriteCount = 0;
 
 function Sprite() {
-    this.a = 0;
+    /** Image object */
+    this.a = 0; // image
+    /** image path */
     this.b = "";
-    this.c = 0
-    this.g = 0
-    this.i = 0
-    this.h = 0
+    /** is image ready */
+    this.c = 0;
+    /** image data */
+    this.g = 0;
+    /** width */
+    this.i = 0;
+    /** height */
+    this.h = 0;
 }
 
 function spriteCreateBuffer(sprite, width, height) {
@@ -4967,16 +5101,18 @@ function spriteCreateBuffer(sprite, width, height) {
     for (width = 0; 16 > width; width++);
     sprite.g = new Int32Array(sprite.h * sprite.i)
 }
-Sprite.prototype.f = function (a) {
-    this.b != a && (
-        uncheckedSpriteCount++,
-        this.b = a,
-        this.a = new Image,
-        this.a.src = dataPath + a,
-        delete this.g,
-        this.c =
+
+/** load  */
+Sprite.prototype.f = function (path) {
+    if (this.b != path) {
+        uncheckedSpriteCount++;
+        this.b = path;
+        this.a = new Image;
+        this.a.src = dataPath + path;
+        delete this.g;
+        this.c = 0
         this.g = 0
-    )
+    }
 };
 
 function drawSprite(sprite) {
@@ -4994,7 +5130,6 @@ function drawSprite(sprite) {
         spriteCreateBuffer(sprite, imgWidth, imgHeight);
         imgWidth = 0;
         for (imgHeight = d.length; imgWidth < imgHeight; imgWidth += 4)
-
             sprite.g[imgWidth >> 2] = 0 == d[imgWidth + 3]
                 ? -1
                 : d[imgWidth + 0] << 16 | d[imgWidth + 1] << 8 | d[imgWidth + 2];

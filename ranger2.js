@@ -2057,7 +2057,7 @@ function drawGameUI() {
         for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
             b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         if (!c)
-            for (Fc[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= P[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
+            for (Fc[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         else if (1 == c)
             for (Fc[c] = 1, hidx = 0; 4 > hidx; hidx++)
                 for (b = 0; b < partyStats.length; b++) partySP[hidx] += partyStats[b][hidx],
@@ -2188,7 +2188,7 @@ function ni(a, b) { // ni
     var f, g;
     g = ri(O[a][b].x, O[a][b].y);
     31 == g && (Vec2Scale(c, .95), Yh[a] |= 2);
-    for (var h = 0; h < d; h++) f = O[a][b].y + c.y, g = ri(O[a][b].x, f), 0 > f || 8 * si <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != a ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : O[a][b].y = f), f = O[a][b].x + c.x, g = ri(f, O[a][b].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[a] |= 1) : O[a][b].x = f)
+    for (var h = 0; h < d; h++) f = O[a][b].y + c.y, g = ri(O[a][b].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != a ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : O[a][b].y = f), f = O[a][b].x + c.x, g = ri(f, O[a][b].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[a] |= 1) : O[a][b].x = f)
 }
 mainWindow.fff = ti;
 
@@ -2613,10 +2613,10 @@ function updatePlayerParty() {
             0 < Vh[a] && Vh[a]--;
             if (Yh[a] & 2) {
                 if (0 == ji[a])
-                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(O[a][b].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[a][b].y, 0, 8 * si - 1) >> 3, 30 == P[c][d] && spawnProjectile(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                d = clamp(O[a][0].x, 0, 8 * Gi - 1) >> 3;
-                c = clamp(O[a][0].y, 0, 8 * si - 1) >> 3;
-                31 == P[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), spawnProjectile(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(O[a][b].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(O[a][b].y, 0, 8 * stageHeight - 1) >> 3, 30 == stageTileData[c][d] && spawnProjectile(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                d = clamp(O[a][0].x, 0, 8 * stageWidth - 1) >> 3;
+                c = clamp(O[a][0].y, 0, 8 * stageHeight - 1) >> 3;
+                31 == stageTileData[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), spawnProjectile(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
             } else ji[a] = 0;
             5 == currentStage && Yh[a] & 1 && (Hi |= 1);
@@ -2919,10 +2919,10 @@ var stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
         [84, 85, 86, 87, 88, 89],
         []
     ],
-    Gi = 80,
-    si = 60,
-    P = Array(si);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < si; iterIdxTemp_1++) P[iterIdxTemp_1] = Array(Gi);
+    stageWidth = 80, // Gi
+    stageHeight = 60, // si
+    stageTileData = Array(stageHeight); // P
+for (let i = 0; i < stageHeight; i++) stageTileData[i] = Array(stageWidth);
 var loadedLevelIndex = -1,
     lastStageIdx = 0, // Mg
     Ng = 0,
@@ -2943,133 +2943,134 @@ function loadLevelData(a) {
     if (uncheckedSpriteCount) return false;
     lastStageIdx = currentStage;
     isStageReachedArray[currentStage] = 1;
-    si = currentLevelSprite.i;
-    let d = 0, f, g, h, k;
-    let c = currentLevelSprite.g;
-    for (let b = 0; b < si; b++){
-        for (let a = 0; a < Gi; a++, d++) {
-            f = b ? (d - Gi) : d;
-            g = (b == si - 1) ? d : d + Gi;
-            h = a ? d - 1 : d;
-            k = (a == Gi - 1) ? d : d + 1;
-            P[b][a] = 64;
-            const _maskedRead = (key) => {
+    stageHeight = currentLevelSprite.i;
+    let d = 0;
+    let spriteData = currentLevelSprite.g;
+    for (let b = 0; b < stageHeight; b++) {
+        for (let a = 0; a < stageWidth; a++, d++) {
+            let pu = (b > 0) ? (d - stageWidth) : d; // up
+            let pd = (b == stageHeight - 1) ? d : d + stageWidth; // down
+            let pl = (a > 0) ? d - 1 : d; // left 
+            let pr = (a == stageWidth - 1) ? d : d + 1; // right
+
+            stageTileData[b][a] = 64; // default
+            const _isPixelSolid = (i) => {
                 let _a, _b, _c;
-                _a = c[key] >> 16 & 255;
-                _b = c[key] >> 8 & 255;
-                _c = c[key] & 255;
+                _a = spriteData[i] >> 16 & 255;
+                _b = spriteData[i] >> 8 & 255;
+                _c = spriteData[i] & 255;
                 return (_a == _c && _b == _c && _c) ? 1 : 0;
             };
-            if (16777215 == c[d]) {
-                let k0 = _maskedRead(f);
-                let k1 = _maskedRead(g);
-                let k2 = _maskedRead(h);
-                let k3 = _maskedRead(k);
-                
-                k0 || 1 != k1 || k2 || 1 != k3 
-                ? k0 || 1 != k1 || 1 != k2 || 1 != k3 
-                ? k0 || 1 != k1 || 1 != k2 || k3 
-                ? 1 != k0 || 1 != k1 || k2 || 1 != k3 
-                ? 1 == k0 && 1 == k1 && 1 == k2 && 1 == k3 
-                ? P[b][a] = 9 
-                : 1 != k0 || 1 != k1 || 1 != k2 || k3 
-                ? 1 != k0 || k1 || k2 || 1 != k3 
-                ? 1 != k0 || k1 || 1 != k2 || 1 != k3 
-                ? 1 != k0 || k1 || 1 != k2 || k3 
-                ? k0 || k1 || k2 || k3 
-                ? k0 || 1 != k1 || k2 || k3 
-                ? 1 != k0 || k1 || k2 || k3 
-                ? k0 || k1 || k2 || 1 != k3 
-                ? k0 || k1 || 1 != k2 || k3 
-                ? k0 || k1 || 1 != k2 || 1 != k3 
-                ? 1 != k0 || 1 != k1 || k2 || k3 || (P[b][a] = 19) 
-                : P[b][a] = 11
-                : P[b][a] = 7 
-                : P[b][a] = 6 
-                : P[b][a] = 5 
-                : P[b][a] = 4 
-                : P[b][a] = 3 
-                : P[b][a] = 18 
-                : P[b][a] = 17 
-                : P[b][a] = 16 
-                : P[b][a] = 10 
-                : P[b][a] = 8 
-                : P[b][a] = 2 
-                : P[b][a] = 1 
-                : P[b][a] = 0
-            } else {
-                (12303291 == c[d]) 
-                    ? P[b][a] = 12 
-                    : 11184810 == c[d] 
-                    ? P[b][a] = 13 
-                    : 10066329 == c[d] 
-                    ? P[b][a] = 14 
-                    : 6684774 == c[d] 
-                    ? P[b][a] = 20 
-                    : 6697728 == c[d] 
-                    ? P[b][a] = 24 
-                    : 10053171 == c[d] 
-                    ? P[b][a] = 25 
-                    : 13408614 == c[d] 
-                    ? P[b][a] = 26 
-                    : 16764057 == c[d] && 0 == c[h] 
-                    ? P[b][a] = 27 
-                    : 16764057 == c[d] && 21913 == c[h] 
-                    ? P[b][a] = 29 
-                    : 16764057 == c[d] && 0 != c[h] 
 
-                    ? P[b][a] = 28 
-                    : 21913 == c[d] && 0 == c[f] 
-                    ? P[b][a] = 30 
-                    : 21913 == c[d] && 0 != c[f] 
-                    ? P[b][a] = 31 
-                    : 3355392 == c[d] 
-                    ? P[b][a] = 32 
-                    : 6710835 == c[d] 
-                    ? P[b][a] = 33 
-                    : 10066278 == c[d] 
-                    ? P[b][a] = 34 
-                    : 13421721 == c[d] 
-                    ? P[b][a] = 35 
-                    : 10053120 == c[d] && 10053120 == c[g] 
-                    ? P[b][a] = 36 
-                    : 16724736 == c[d] && 16724736 != c[f] 
-                    ? P[b][a] = 37 
-                    : 3355494 == c[d] && 3355494 != c[f] 
-                    ? P[b][a] = 38 
-                    : 16776960 == c[d] 
-                    ? P[b][a] = 39 
-                    : 3368448 == c[d] 
-                    ? P[b][a] = 40 
-                    : 6723891 == c[d] 
-                    ? P[b][a] = 41 
-                    : 10079334 == c[d] 
-                    ? P[b][a] = 42 
-                    : 10053120 == c[d] && 10053120 != c[g] 
-                    ? P[b][a] = 44 
-                    : 16724736 == c[d] && 16724736 == c[f] 
-                    ? P[b][a] = 45 
-                    : 3355494 == c[d] && 3355494 == c[f] 
-                    ? P[b][a] = 46 
-                    : 6710784 == c[d] 
-                    ? P[b][a] = 47 
-                    : 16724940 == c[d] 
-                    ? P[b][a] = 48 
-                    : 13056 == c[d] 
-                    ? P[b][a] = 49 
-                    : 51 == c[d] 
-                    ? P[b][a] = 50 
-                    : 10040064 == c[d] 
-                    ? P[b][a] = 51 
-                    : 10066431 == c[d] && 10066431 == c[g] 
-                    ? P[b][a] = 52 
-                    : 16737792 == c[d] && 16737792 != c[f] 
-                    ? P[b][a] = 53 
-                    : 16763904 == c[d] 
-                    ? P[b][a] = 55 
-                    : 10066431 == c[d] && 10066431 == c[f] 
-                    ? P[b][a] = 60 
-                    : 16737792 == c[d] && 16737792 == c[f] && (P[b][a] = 61)
+            if (0xffffff == spriteData[d]) { 
+                let k0 = _isPixelSolid(pu);
+                let k1 = _isPixelSolid(pd);
+                let k2 = _isPixelSolid(pl);
+                let k3 = _isPixelSolid(pr);
+                
+                k0 || !k1 || k2 || !k3 
+                ? k0 || !k1 || !k2 || !k3 
+                ? k0 || !k1 || !k2 || k3 
+                ? !k0 || !k1 || k2 || !k3 
+                ? k0 && k1 && k2 && k3 
+                ? stageTileData[b][a] = 9 
+                : !k0 || !k1 || !k2 || k3 
+                ? !k0 || k1 || k2 || !k3 
+                ? !k0 || k1 || !k2 || !k3 
+                ? !k0 || k1 || !k2 || k3 
+                ? k0 || k1 || k2 || k3 
+                ? k0 || !k1 || k2 || k3 
+                ? !k0 || k1 || k2 || k3 
+                ? k0 || k1 || k2 || !k3 
+                ? k0 || k1 || !k2 || k3 
+                ? k0 || k1 || !k2 || !k3 
+                ? !k0 || !k1 || k2 || k3 || (stageTileData[b][a] = 19) 
+                : stageTileData[b][a] = 11
+                : stageTileData[b][a] = 7 
+                : stageTileData[b][a] = 6 
+                : stageTileData[b][a] = 5 
+                : stageTileData[b][a] = 4 
+                : stageTileData[b][a] = 3 
+                : stageTileData[b][a] = 18 
+                : stageTileData[b][a] = 17 
+                : stageTileData[b][a] = 16 
+                : stageTileData[b][a] = 10 
+                : stageTileData[b][a] = 8 
+                : stageTileData[b][a] = 2 
+                : stageTileData[b][a] = 1 
+                : stageTileData[b][a] = 0
+            } else {
+                (12303291 == spriteData[d]) 
+                ? stageTileData[b][a] = 12 
+                : 11184810 == spriteData[d] 
+                ? stageTileData[b][a] = 13 
+                : 10066329 == spriteData[d] 
+                ? stageTileData[b][a] = 14 
+                : 6684774 == spriteData[d] 
+                ? stageTileData[b][a] = 20 
+                : 6697728 == spriteData[d] 
+                ? stageTileData[b][a] = 24 
+                : 10053171 == spriteData[d] 
+                ? stageTileData[b][a] = 25 
+                : 13408614 == spriteData[d] 
+                ? stageTileData[b][a] = 26 
+                : 16764057 == spriteData[d] && 0 == spriteData[pl] 
+                ? stageTileData[b][a] = 27 
+                : 16764057 == spriteData[d] && 21913 == spriteData[pl] 
+                ? stageTileData[b][a] = 29 
+                : 16764057 == spriteData[d] && 0 != spriteData[pl] 
+                ? stageTileData[b][a] = 28 
+                : 21913 == spriteData[d] && 0 == spriteData[pu] 
+                ? stageTileData[b][a] = 30 
+                : 21913 == spriteData[d] && 0 != spriteData[pu] 
+                ? stageTileData[b][a] = 31 
+                : 3355392 == spriteData[d] 
+                ? stageTileData[b][a] = 32 
+                : 6710835 == spriteData[d] 
+                ? stageTileData[b][a] = 33 
+                : 10066278 == spriteData[d] 
+                ? stageTileData[b][a] = 34 
+                : 13421721 == spriteData[d] 
+                ? stageTileData[b][a] = 35 
+                : 10053120 == spriteData[d] && 10053120 == spriteData[pd] 
+                ? stageTileData[b][a] = 36 
+                : 16724736 == spriteData[d] && 16724736 != spriteData[pu] 
+                ? stageTileData[b][a] = 37 
+                : 3355494 == spriteData[d] && 3355494 != spriteData[pu] 
+                ? stageTileData[b][a] = 38 
+                : 16776960 == spriteData[d] 
+                ? stageTileData[b][a] = 39 
+                : 3368448 == spriteData[d] 
+                ? stageTileData[b][a] = 40 
+                : 6723891 == spriteData[d] 
+                ? stageTileData[b][a] = 41 
+                : 10079334 == spriteData[d] 
+                ? stageTileData[b][a] = 42 
+                : 10053120 == spriteData[d] && 10053120 != spriteData[pd] 
+                ? stageTileData[b][a] = 44 
+                : 16724736 == spriteData[d] && 16724736 == spriteData[pu] 
+                ? stageTileData[b][a] = 45 
+                : 3355494 == spriteData[d] && 3355494 == spriteData[pu] 
+                ? stageTileData[b][a] = 46 
+                : 6710784 == spriteData[d] 
+                ? stageTileData[b][a] = 47 
+                : 16724940 == spriteData[d] 
+                ? stageTileData[b][a] = 48 
+                : 13056 == spriteData[d] 
+                ? stageTileData[b][a] = 49 
+                : 51 == spriteData[d] 
+                ? stageTileData[b][a] = 50 
+                : 10040064 == spriteData[d] 
+                ? stageTileData[b][a] = 51 
+                : 10066431 == spriteData[d] && 10066431 == spriteData[pd] 
+                ? stageTileData[b][a] = 52 
+                : 16737792 == spriteData[d] && 16737792 != spriteData[pu] 
+                ? stageTileData[b][a] = 53 
+                : 16763904 == spriteData[d] 
+                ? stageTileData[b][a] = 55 
+                : 10066431 == spriteData[d] && 10066431 == spriteData[pu] 
+                ? stageTileData[b][a] = 60 
+                : 16737792 == spriteData[d] && 16737792 == spriteData[pu] && (stageTileData[b][a] = 61)
             }
         }
     }
@@ -3077,7 +3078,10 @@ function loadLevelData(a) {
     for (let a = 0; 4 > a; a++) cb[a] = 0;
     resetDragSelection();
     for (let a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXs[a], partySpawnYs[a]);
-    for (let a = 0; 20 > a; a++) V[a] = 0, Xi[a] = 0;
+    for (let a = 0; 20 > a; a++) {
+        V[a] = 0;
+        Xi[a] = 0;
+    }
     Mi = 0;
     clearEnemies();
     for (let a = stageAttr9; a < stageListArray[currentStage].length; a += 7) {
@@ -3088,12 +3092,13 @@ function loadLevelData(a) {
         let p = stageListArray[currentStage][a + 5];
         let t = stageListArray[currentStage][a + 6];
         for (let b = 0; b < d; b++) {
-            h = randIntRange(k, p + 1);
-            g = randIntRange(f, t + 1);
+            let h = randIntRange(k, p + 1);
+            let g = randIntRange(f, t + 1);
 
-            if (25 < P[g][h]) {
-                spawnEnemy(h, g, c, (a - stageAttr9) / 7), 
-                V[(a - stageAttr9) / 7]++, Xi[(a - stageAttr9) / 7]++
+            if (stageTileData[g][h] > 25) {
+                spawnEnemy(h, g, c, (a - stageAttr9) / 7);
+                V[(a - stageAttr9) / 7]++;
+                Xi[(a - stageAttr9) / 7]++;
             };
         }
         let b = enemyCatalog[c][enemyAttr0];
@@ -3107,16 +3112,16 @@ function loadLevelData(a) {
 mainWindow.fff = ri;
 
 function ri(a, b) { // ri
-    a = clamp(a, 0, 8 * Gi - 1) >> 3;
-    b = clamp(b, 0, 8 * si - 1) >> 3;
-    return P[b][a]
+    a = clamp(a, 0, 8 * stageWidth - 1) >> 3;
+    b = clamp(b, 0, 8 * stageHeight - 1) >> 3;
+    return stageTileData[b][a]
 }
 mainWindow.fff = dj;
 
 function dj(a, b, c, d, f) { // dj
     var g;
     for (g = b; g <= d; g++)
-        for (b = a; b <= c; b++) P[g][b] = f
+        for (b = a; b <= c; b++) stageTileData[g][b] = f
 }
 mainWindow.fff = wg;
 
@@ -3149,7 +3154,7 @@ function wg() { // wg
         !(c <= Xi[(b - stageAttr9) / 7]) && V[(b - stageAttr9) / 7] < f && 1E3 * rand() < stageListArray[currentStage][stageAttr8] && (
             c = randIntRange(g, h + 1),
             d = randIntRange(d, k + 1),
-            25 >= P[d][c] || (
+            25 >= stageTileData[d][c] || (
                 spawnEnemy(c, d, a, (b - stageAttr9) / 7),
                 V[(b - stageAttr9) / 7]++,
                 Xi[(b - stageAttr9) / 7]++
@@ -3171,9 +3176,9 @@ mainWindow.fff = drawGameStage;
 function drawGameStage() {
     var a, b, c, d;
     a = stageListArray[currentStage][stageTilesetIdxCol];
-    for (c = 0; c < si; c++)
-        for (b = 0; b < Gi; b++)
-            if (d = P[c][b], 64 == d) drawRect(8 * b, 8 * c, 8, 8, 0);
+    for (c = 0; c < stageHeight; c++)
+        for (b = 0; b < stageWidth; b++)
+            if (d = stageTileData[c][b], 64 == d) drawRect(8 * b, 8 * c, 8, 8, 0);
             else {
                 var f = tilesetSprites[a],
                     g = 8,
@@ -3186,8 +3191,8 @@ function drawGameStage() {
                 g = k + g;
                 for (h = k + 640 * h; k < h; k += p, g += 640, d += t)
                     for (; k < g; k++, d++) l = f.g[d], -1 != l && (frameBufferArray[k] = l)
-            } for (c = 0; c < si; c++)
-        for (b = 1; b < Gi - 1; b++) 30 == P[c][b] ? (30 != P[c][b - 1] && Xg(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != P[c][b + 1] && Xg(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == P[c][b] && (31 != P[c][b - 1] && Xg(8 * b - 2, 8 * c, 2, 8, 21913), 31 != P[c][b + 1] && Xg(8 * b + 8, 8 * c, 2, 8, 21913));
+            } for (c = 0; c < stageHeight; c++)
+        for (b = 1; b < stageWidth - 1; b++) 30 == stageTileData[c][b] ? (30 != stageTileData[c][b - 1] && Xg(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != stageTileData[c][b + 1] && Xg(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == stageTileData[c][b] && (31 != stageTileData[c][b - 1] && Xg(8 * b - 2, 8 * c, 2, 8, 21913), 31 != stageTileData[c][b + 1] && Xg(8 * b + 8, 8 * c, 2, 8, 21913));
     if (1 == currentStage) 1 == isStageReachedArray[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
     else if (6 == currentStage) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (14 == currentStage) b = 2 * rotationLUT[gj >> 2 & 511][0], c = 2 * rotationLUT[gj >> 2 & 511][1], spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
@@ -3195,7 +3200,7 @@ function drawGameStage() {
     else if (17 == currentStage) 70 == gj % 360 && spawnProjectile(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (18 == currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
-            for (h = 0; h < partyMemberCount && !(b = clamp(O[h][2].x, 0, 8 * Gi - 1) >> 3, c = clamp(O[h][2].y, 0, 8 * si - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
+            for (h = 0; h < partyMemberCount && !(b = clamp(O[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(O[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
             h == partyMemberCount || gj % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         }
@@ -3215,7 +3220,7 @@ function cj() { // cj
     var a, b, c, d;
     if (17 == currentStage) {
         b = partyGold % 100;
-        for (a = 0; a < b;) c = ~~randFloatRange(27, 70), d = randFloat(2.1), d = 3 + ~~(d * d * d), 32 == P[d][c] && (dj(c, d, c, d, 39), a++);
+        for (a = 0; a < b;) c = ~~randFloatRange(27, 70), d = randFloat(2.1), d = 3 + ~~(d * d * d), 32 == stageTileData[d][c] && (dj(c, d, c, d, 39), a++);
         A(67) && 99 == b && IncrementBadgeCount(67)
     } else if (19 == currentStage)
         for (b = [14, 13, 13, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 19, 19, 19, 17, 17, 17, 0, 0, 0, 0, 17, 17, 17, 19, 19, 19, 20], a = 0; 39 > a; a++) 0 != b[a] && (spawnEnemy(19 + a, b[a], 88, 6), V[6]++, Xi[6]++)
@@ -3229,14 +3234,14 @@ function xg() { // xg
         t = 59,
         l = 0;
     gj++; - 1 != bi && (
-        b = clamp(O[bi][2].x, 0, 8 * Gi - 1) >> 3,
-        f = clamp(O[bi][2].y, 0, 8 * si - 1) >> 3
+        b = clamp(O[bi][2].x, 0, 8 * stageWidth - 1) >> 3,
+        f = clamp(O[bi][2].y, 0, 8 * stageHeight - 1) >> 3
     );
-    g = clamp(O[selectingHero][2].x, 0, 8 * Gi - 1) >> 3;
-    h = clamp(O[selectingHero][2].y, 0, 8 * si - 1) >> 3;
+    g = clamp(O[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
+    h = clamp(O[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
     for (a = 0; a < partyMemberCount; a++)
-        c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3,
-            d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3,
+        c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3,
+            d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3,
             k > c && (k = c),
             p < c && (p = c),
             t > d && (t = d),
@@ -3244,10 +3249,10 @@ function xg() { // xg
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
-        var n = clamp(mouseXCurrent + c[a] >> 3, 0, Gi - 1),
-            w = clamp(mouseYCurrent + d[a] >> 3, 0, si - 1);
+        var n = clamp(mouseXCurrent + c[a] >> 3, 0, stageWidth - 1),
+            w = clamp(mouseYCurrent + d[a] >> 3, 0, stageHeight - 1);
         if (isMouseClicked) {
-            if (39 == P[w][n]) {
+            if (39 == stageTileData[w][n]) {
                 dj(n, w, n, w, 32);
                 a = 1;
                 1 > randFloat(200) ? a = 100 : 1 > randFloat(14) && (a = 7);
@@ -3260,9 +3265,9 @@ function xg() { // xg
                 19 == currentStage && (spawnEnemy(n, w, 87, 5), V[5]++, Xi[5]++);
                 break
             }
-            if (47 == P[w][n]) {
+            if (47 == stageTileData[w][n]) {
                 2 == currentStage && A(4) && IncrementBadgeCount(4);
-                11 == currentStage && (c = 8 * n + 4 - mouseXCurrent, d = 8 * w + 4 - mouseYCurrent, abs(c) >= abs(d) ? 0 < c && 32 == P[w][n + 1] ? (dj(n + 1, w, n + 1, w, 47), dj(n, w, n, w, 32), n += 1) : 0 > c && 32 == P[w][n - 1] && (dj(n - 1, w, n - 1, w, 47), dj(n, w, n, w, 32), --n) : 0 < d && 32 == P[w + 1][n] ? (dj(n, w + 1, n, w + 1, 47), dj(n, w, n, w, 32), w += 1) : 0 > d && 32 == P[w - 1][n] && (dj(n, w - 1, n, w - 1, 47), dj(n, w, n, w, 32), --w), A(44) && (c = abs(64 - n), d = abs(11 - w), Lg(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431), 0 ==
+                11 == currentStage && (c = 8 * n + 4 - mouseXCurrent, d = 8 * w + 4 - mouseYCurrent, abs(c) >= abs(d) ? 0 < c && 32 == stageTileData[w][n + 1] ? (dj(n + 1, w, n + 1, w, 47), dj(n, w, n, w, 32), n += 1) : 0 > c && 32 == stageTileData[w][n - 1] && (dj(n - 1, w, n - 1, w, 47), dj(n, w, n, w, 32), --n) : 0 < d && 32 == stageTileData[w + 1][n] ? (dj(n, w + 1, n, w + 1, 47), dj(n, w, n, w, 32), w += 1) : 0 > d && 32 == stageTileData[w - 1][n] && (dj(n, w - 1, n, w - 1, 47), dj(n, w, n, w, 32), --w), A(44) && (c = abs(64 - n), d = abs(11 - w), Lg(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431), 0 ==
                     c && 0 == d && IncrementBadgeCount(44)));
                 break
             }
@@ -3273,12 +3278,12 @@ function xg() { // xg
         if (3 == currentStage) {
             1 == partyMemberCount && 0 == V[0] && (resetHeroPose(partyMemberCount, 25, 14), partyMemberCount++);
             2 <= partyMemberCount && (dj(25, 13, 25, 14, 64), dj(31, 11, 31, 14, 64));
-            1 == db[0] ? dj(11, 30, 11, 30, 63) : 32 == P[30][11] ? 0 == V[1] && dj(11, 30, 11, 30, 55) : 55 == P[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (dj(11, 30, 11, 30, 63), Gh(92,
+            1 == db[0] ? dj(11, 30, 11, 30, 63) : 32 == stageTileData[30][11] ? 0 == V[1] && dj(11, 30, 11, 30, 55) : 55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (dj(11, 30, 11, 30, 63), Gh(92,
                 244, 3, 0, 0));
             0 == Xi[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f && (spawnEnemy(14, 41, 15, 2), spawnEnemy(16, 41, 15, 2), spawnEnemy(18, 41, 15, 2), V[2] = 3, Xi[2] = 3);
-            1 == db[1] ? dj(16, 41, 16, 41, 63) : 32 == P[41][16] ? 0 == V[2] && 0 != Xi[2] && dj(16, 41, 16, 41, 55) : 55 == P[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (dj(16, 41, 16, 41, 63), Gh(132, 332, 3, 1, 0));
+            1 == db[1] ? dj(16, 41, 16, 41, 63) : 32 == stageTileData[41][16] ? 0 == V[2] && 0 != Xi[2] && dj(16, 41, 16, 41, 55) : 55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (dj(16, 41, 16, 41, 63), Gh(132, 332, 3, 1, 0));
             if (A(7)) {
-                for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
+                for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
                 3 == b && IncrementBadgeCount(7)
             }
             0 != Xi[2] && hj++
@@ -3296,19 +3301,19 @@ function xg() { // xg
         } else if (5 == currentStage) {
             if (3 == partyMemberCount && 0 == V[0] && 0 == V[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (dj(17, 4, 17, 5, 64), dj(77, 20, 77, 24, 64)), !A(16) || 0 != V[0] || 0 != V[1] || Hi & 2 || IncrementBadgeCount(16),
                 !A(17) || 0 != V[0] || 0 != V[1] || Hi & 1 || IncrementBadgeCount(17), A(19)) {
-                for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
+                for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
                 4 == b && IncrementBadgeCount(19)
             }
         } else if (6 == currentStage) 12 == drawState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (lastStageIdx = 1, partySpawnXs[0] = 18, partySpawnYs[0] = 24, partySpawnXs[1] = 20, partySpawnYs[1] = 24, partySpawnXs[2] = 29, partySpawnYs[2] = 24, partySpawnXs[3] = 31, partySpawnYs[3] = 24);
         else if (7 == currentStage) {
             if (0 == Xi[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
-                if (c = 0, 39 == P[34][75] && c++, 39 == P[35][72] && c++, 39 == P[35][74] && c++, 39 == P[36][75] && c++, 39 == P[38][76] && c++, 1 == c || 2 == c) spawnEnemy(66, 42, 24, 1), V[1]++, Xi[1]++;
+                if (c = 0, 39 == stageTileData[34][75] && c++, 39 == stageTileData[35][72] && c++, 39 == stageTileData[35][74] && c++, 39 == stageTileData[36][75] && c++, 39 == stageTileData[38][76] && c++, 1 == c || 2 == c) spawnEnemy(66, 42, 24, 1), V[1]++, Xi[1]++;
                 else
                     for (5 ==
                         c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) spawnEnemy(randIntRange(56, 69), randIntRange(42, 43), c, 1), V[1]++, Xi[1]++;
             c = 43;
             d = 30;
-            1 == db[2] ? dj(c, d, c, d, 63) : 32 == P[d][c] ? 0 == V[2] && dj(c, d, c, d, 55) : 55 == P[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (dj(c, d, c, d, 63), Gh(8 * c + 4, 8 * d + 4, 3, 2, 0));
+            1 == db[2] ? dj(c, d, c, d, 63) : 32 == stageTileData[d][c] ? 0 == V[2] && dj(c, d, c, d, 55) : 55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (dj(c, d, c, d, 63), Gh(8 * c + 4, 8 * d + 4, 3, 2, 0));
             if (1 == Xi[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
                 for (a = 0; 15 > a; a++) spawnEnemy(randIntRange(61, 76), 21, 28, 9), V[9]++, Xi[9]++;
             A(21) && 0 == V[2] && 0 == Og && IncrementBadgeCount(21);
@@ -3319,7 +3324,7 @@ function xg() { // xg
         } else if (8 == currentStage) {
             30 > Xi[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > randFloat(60) && (a = [5, 18, 3, 20], g = [18, 16, 21, 22], b = randInt(4), spawnEnemy(a[b], g[b], 32, 3), V[3]++, Xi[3]++);
             if (A(27)) {
-                for (a = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (Hi = 1);
+                for (a = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (Hi = 1);
                 0 != V[4] || Hi || IncrementBadgeCount(27)
             }
             if (A(28)) {
@@ -3336,7 +3341,7 @@ function xg() { // xg
             A(32) && 100 <= enemyCount && IncrementBadgeCount(32);
             if (A(33)) {
                 for (a =
-                    b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 26 == P[d][c] && b++;
+                    b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 26 == stageTileData[d][c] && b++;
                 4 == b && IncrementBadgeCount(33)
             }
             A(34) && 10 == lastStageIdx && 1 >= g && 41 <= h && IncrementBadgeCount(34)
@@ -3359,9 +3364,9 @@ function xg() { // xg
                 a == partyMemberCount ? hj++ : hj = 0;
                 1800 <= hj && IncrementBadgeCount(53)
             }
-            A(54) && 39 == P[12][44] && 39 == P[12][45] && 39 == P[13][43] && 39 != P[13][44] && 39 != P[13][45] && 39 == P[13][46] && 39 == P[14][43] && 39 != P[14][44] && 39 != P[14][45] && 39 == P[14][46] && 39 != P[15][43] && 39 == P[15][44] && 39 == P[15][45] && IncrementBadgeCount(54)
+            A(54) && 39 == stageTileData[12][44] && 39 == stageTileData[12][45] && 39 == stageTileData[13][43] && 39 != stageTileData[13][44] && 39 != stageTileData[13][45] && 39 == stageTileData[13][46] && 39 == stageTileData[14][43] && 39 != stageTileData[14][44] && 39 != stageTileData[14][45] && 39 == stageTileData[14][46] && 39 != stageTileData[15][43] && 39 == stageTileData[15][44] && 39 == stageTileData[15][45] && IncrementBadgeCount(54)
         } else if (15 == currentStage) 60 > Xi[1] && 42 <= g && 67 >= g &&
-            18 <= h && 24 >= h && 4 > randFloat(60) && (a = [44, 45, 46, 66], g = [24, 24, 24, 24], b = randInt(4), spawnEnemy(a[b], g[b], 60, 1), V[1]++, Xi[1]++), 0 == V[5] && Xi[6] < 150 - (Xi[0] - V[0]) && (c = randIntRange(15, 65), d = randIntRange(1, 18), 25 < P[d][c] && (spawnEnemy(c, d, 59, 6), V[6]++, Xi[6]++)), A(57) && 0 == V[3] && 0 == Og && IncrementBadgeCount(57), A(59) && 198 <= V[0] + V[6] && IncrementBadgeCount(59);
+            18 <= h && 24 >= h && 4 > randFloat(60) && (a = [44, 45, 46, 66], g = [24, 24, 24, 24], b = randInt(4), spawnEnemy(a[b], g[b], 60, 1), V[1]++, Xi[1]++), 0 == V[5] && Xi[6] < 150 - (Xi[0] - V[0]) && (c = randIntRange(15, 65), d = randIntRange(1, 18), 25 < stageTileData[d][c] && (spawnEnemy(c, d, 59, 6), V[6]++, Xi[6]++)), A(57) && 0 == V[3] && 0 == Og && IncrementBadgeCount(57), A(59) && 198 <= V[0] + V[6] && IncrementBadgeCount(59);
         else if (16 == currentStage) {
             f = V[0] + V[1];
             k = V[2] + V[3];
@@ -3370,9 +3375,9 @@ function xg() { // xg
             0 == f && 0 < k && 0 < p && (b = 65);
             0 == k && 0 < f && 0 < p && (b = 66);
             0 == p && 0 < f && 0 < k && (b = 67);
-            0 < b && 100 > Xi[11] && (c = randIntRange(4, 59), d = randIntRange(30, 33), 25 < P[d][c] && (spawnEnemy(c, d, b, 11), V[11]++, Xi[11]++));
+            0 < b && 100 > Xi[11] && (c = randIntRange(4, 59), d = randIntRange(30, 33), 25 < stageTileData[d][c] && (spawnEnemy(c, d, b, 11), V[11]++, Xi[11]++));
             60 > Xi[12] && 70 <= g && 76 >= g &&
-                34 <= h && 41 >= h && (c = randIntRange(5, 70), d = randIntRange(42, 43), 25 < P[d][c] && (spawnEnemy(c, d, 68, 12), V[12]++, Xi[12]++));
+                34 <= h && 41 >= h && (c = randIntRange(5, 70), d = randIntRange(42, 43), 25 < stageTileData[d][c] && (spawnEnemy(c, d, 68, 12), V[12]++, Xi[12]++));
             b = -1;
             for (a = 0; a < enemyCount; a++) 70 == enemyTypeArray[a] && 0 != enemyHealthArray[a] && (b = a);
             if (-1 != b && 10 < Y[b] && enemyHealthArray[b] < 1E4 * (Y[b] - 10) - 5E3)
@@ -3383,7 +3388,7 @@ function xg() { // xg
                 !jh && IncrementBadgeCount(61);
             !A(62) || 0 != V[10] || Hi & 1 || IncrementBadgeCount(62);
             if (A(63)) {
-                for (a = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * Gi - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * si - 1) >> 3, 58 <= c && 76 >= c && 36 <= d && 42 >= d && (ij = 1);
+                for (a = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 58 <= c && 76 >= c && 36 <= d && 42 >= d && (ij = 1);
                 0 != V[9] || ij || IncrementBadgeCount(63)
             }
             A(64) && 0 == p && 0 < f && 0 < k && 100 == V[11] && IncrementBadgeCount(64)
@@ -3392,7 +3397,7 @@ function xg() { // xg
             A(66) && 0 == V[0] && !Hi && IncrementBadgeCount(66);
             A(68) && 0 == V[6] && 5 == V[5] && IncrementBadgeCount(68)
         } else 18 == currentStage ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = randInt(3), spawnEnemy(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60) && (c = randIntRange(8, 23), spawnEnemy(c, 10, 83, 10), V[10]++,
-            Xi[10]++), !A(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !A(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == P[d][c] && (19 == Xi[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of[1] && (dj(47, 15, 50, 15, 24), dj(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == db[4] ? dj(70, 34, 70, 34, 63) : 55 == P[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (dj(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
+            Xi[10]++), !A(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !A(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == stageTileData[d][c] && (19 == Xi[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of[1] && (dj(47, 15, 50, 15, 24), dj(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == db[4] ? dj(70, 34, 70, 34, 63) : 55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (dj(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
 }
 iterIdxTemp_1 = 0;
 const enemyAttr0 = iterIdxTemp_1++,
@@ -3681,7 +3686,7 @@ function $k(a, b, c) { // $k
     Q[a][b].set(Z[a][b]);
     var f = (Vec2Mag(d) >> 2) + 1;
     Vec2Scale(d, 1 / f);
-    for (var g, h, k = 0; k < f; k++) g = Q[a][b].y + d.y, h = ri(Q[a][b].x, g), 0 > g || 8 * si <= g ? Dk[a] |= 2 : 0 <= h && 25 >= h ? (0 < d.y && (Dk[a] |= 2), d.x *= c, d.y = -d.y) : 26 <= h && 26 >= h && 0 < d.y ? (Dk[a] |= 2, d.x *= c, d.y = -d.y) : Q[a][b].y = g, g = Q[a][b].x + d.x, h = ri(g, Q[a][b].y), 0 > g || 640 <= g ? Dk[a] |= 1 : 0 <= h && 25 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : 27 <= h && 29 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : Q[a][b].x = g
+    for (var g, h, k = 0; k < f; k++) g = Q[a][b].y + d.y, h = ri(Q[a][b].x, g), 0 > g || 8 * stageHeight <= g ? Dk[a] |= 2 : 0 <= h && 25 >= h ? (0 < d.y && (Dk[a] |= 2), d.x *= c, d.y = -d.y) : 26 <= h && 26 >= h && 0 < d.y ? (Dk[a] |= 2, d.x *= c, d.y = -d.y) : Q[a][b].y = g, g = Q[a][b].x + d.x, h = ri(g, Q[a][b].y), 0 > g || 640 <= g ? Dk[a] |= 1 : 0 <= h && 25 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : 27 <= h && 29 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : Q[a][b].x = g
 }
 mainWindow.fff = Ei;
 
@@ -4064,11 +4069,11 @@ function enemyDragonBehavior(enemyIdx) {
         d = ri(b - 24, c);
         if (28 >= d || 24 > b) f.x += .03;
         d = ri(b + 24, c);
-        if (28 >= d || b > 8 * Gi - 24) f.x -= .03;
+        if (28 >= d || b > 8 * stageWidth - 24) f.x -= .03;
         d = ri(b, c - 24);
         if (28 >= d || 24 > c) f.y += .03;
         d = ri(b, c + 24);
-        if (28 >= d || c > 8 * si - 24) f.y -= .03;
+        if (28 >= d || c > 8 * stageHeight - 24) f.y -= .03;
         3 > randFloat(100) && (f.x += randFloatRange(-.1, .1), f.y += randFloatRange(-.1, .1));
         Q[enemyIdx][0].add(f);
         f = .013;
@@ -4958,7 +4963,7 @@ function zg() { // zg
     var a, b, c;
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (frameBufferArray = null);
-    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * si + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * si + 12 ? (A(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
+    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * stageHeight + 16 - 1), b = ri(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * stageHeight + 12 ? (A(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = ri(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
         itemForgeLvls[Bm[a]] < Cm[a] && (itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1), A(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), Gm(a--)))
 }
 mainWindow.fff = Dg;

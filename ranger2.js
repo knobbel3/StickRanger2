@@ -2928,9 +2928,9 @@ var loadedLevelIndex = -1,
     Ng = 0,
     partySpawnXs = [0, 0, 0, 0],
     partySpawnYs = [0, 0, 0, 0],
-    V = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    Xi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    Mi = 0;
+    V = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // V
+    Xi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Xi
+    Mi = 0; // Mi
 mainWindow.fff = loadLevelData;
 
 function loadLevelData(a) {
@@ -3220,10 +3220,26 @@ function cj() { // cj
     var a, b, c, d;
     if (17 == currentStage) {
         b = partyGold % 100;
-        for (a = 0; a < b;) c = ~~randFloatRange(27, 70), d = randFloat(2.1), d = 3 + ~~(d * d * d), 32 == stageTileData[d][c] && (dj(c, d, c, d, 39), a++);
+        for (a = 0; a < b;) {
+            c = ~~randFloatRange(27, 70);
+            d = randFloat(2.1);
+            d = 3 + ~~(d * d * d);
+            if (32 == stageTileData[d][c]) {
+                dj(c, d, c, d, 39); 
+                a++;
+            }
+        }
         A(67) && 99 == b && IncrementBadgeCount(67)
-    } else if (19 == currentStage)
-        for (b = [14, 13, 13, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 19, 19, 19, 17, 17, 17, 0, 0, 0, 0, 17, 17, 17, 19, 19, 19, 20], a = 0; 39 > a; a++) 0 != b[a] && (spawnEnemy(19 + a, b[a], 88, 6), V[6]++, Xi[6]++)
+    } else if (19 == currentStage){
+        b = [14, 13, 13, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 19, 19, 19, 17, 17, 17, 0, 0, 0, 0, 17, 17, 17, 19, 19, 19, 20];
+        for (a = 0; 39 > a; a++) {
+            if (0 != b[a]) {
+                spawnEnemy(19 + a, b[a], 88, 6);
+                V[6]++; 
+                Xi[6]++;
+            }
+        }
+    }
 }
 mainWindow.fff = xg;
 

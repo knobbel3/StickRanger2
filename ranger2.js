@@ -1246,7 +1246,7 @@ function drawCanvas() {
             )
                 c = 255,
                     50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)),
-                    Jg(gameFont, 320, 180, stageListArray[currentStage][stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24),
+                    drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24),
                     a = -1E3 + floor(500 * sa / 20),
                     drawLine(a, 164, a + 1E3, 164, 8421504),
                     a = 640 - floor(500 * sa / 20),
@@ -1301,7 +1301,7 @@ function drawCanvas() {
                 30 == drawState && (
                     100 > sa && sa++,
                     c = floor(255 * sa / 100),
-                    Jg(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
+                    drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
                     100 == sa && isMouseClicked
                 )) {
                 for (a = 0; 4 > a; a++) partyLP[a] = 1, $a[a] = 0;
@@ -1349,7 +1349,7 @@ function drawCanvas() {
                 c = floor(255 * statusDuration / 10);
             else {
                 c = 255;
-                Tg(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
+                drawScaledTintedText(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
             }
         } else if (gameSaveStatusDuration > 0) {
             gameSaveStatusDuration--;
@@ -1357,7 +1357,7 @@ function drawCanvas() {
                 c = floor(255 * gameSaveStatusDuration / 10);
             else {
                 c = 255;
-                Tg(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);
+                drawScaledTintedText(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);
             }
         }
 
@@ -2054,8 +2054,8 @@ function drawGameUI() {
         gameFont.a = 1;
         drawText(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
-        for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, Jg(gameFontSmall,
-            b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, Jg(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
+        for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, drawScaledTintedTextCentered(gameFontSmall,
+            b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         if (!c)
             for (Fc[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         else if (1 == c)
@@ -2073,8 +2073,8 @@ function drawGameUI() {
                 }
     }
     gameFontSmall.a = 2;
-    Tg(gameFontSmall, 476, 421, copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
-    Tg(gameFontSmall, 607, 421, "" + currentFPS + fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7)
+    drawScaledTintedText(gameFontSmall, 476, 421, copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    drawScaledTintedText(gameFontSmall, 607, 421, "" + currentFPS + fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7)
 }
 var areUpperJointsDisabled = 1,
     O = Array(4);
@@ -2713,12 +2713,12 @@ function drawPlayerParty() {
                 isSolidRender = 0
             }
         }
-        0 < Hh && (d = ~~O[a][0].x + 0, f = ~~O[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && Tg(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && Tg(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && Tg(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && Tg(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
-            Tg(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 15, 4), 0 < c && Tg(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 18, 4), 0 < c && Tg(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
-        0 < di && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && Tg(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && Tg(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && Tg(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && Tg(gameFontSmall, d + 4, f -
-            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 12, 4), 0 < c && Tg(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 15, 4), 0 < c && (gameFontSmall.b = -1, Jg(gameFontSmall, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
-        0 < Zg && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && Tg(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && Tg(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && Tg(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && Tg(gameFontSmall, d + 4, f -
-            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 12, 4), 0 < c && Tg(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 15, 4), 0 < c && (gameFontSmall.b = -1, Jg(gameFontSmall, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
+        0 < Hh && (d = ~~O[a][0].x + 0, f = ~~O[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
+            drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 15, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 18, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
+        0 < di && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
+            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
+        0 < Zg && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
+            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
     }
     0 < Hh ? Hh-- : 0 < di ? di-- : 0 < Zg && Zg--
 }
@@ -4929,7 +4929,7 @@ mainWindow.fff = Fg;
 
 function Fg() { // Fg
     var a, b, c, d, f;
-    for (a = 0; a < aj; a++) 20 <= um[a] ? drawTextCentered(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), Jg(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
+    for (a = 0; a < aj; a++) 20 <= um[a] ? drawTextCentered(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), drawScaledTintedTextCentered(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
 }
 var ym = 0,
     zm = Array(100);
@@ -5234,38 +5234,38 @@ function drawSmallTextNoOutline(x, y, text, color) {
     drawTextCentered(f, x, y, text, color, -1)
 }
 
-function Tg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) { // Tg
-    f = f * k >> 8;
-    g = g * k >> 8;
-    h = h * k >> 8;
-    k = 255 - k;
-    p = p * n >> 8;
-    t = t * n >> 8;
-    l = l * n >> 8;
-    n = 255 - n;
-    let M, J, y, x, K, ba, U, na, Fa = 640 - w,
-        Ga = ~~((a.c << 8) / w),
-        Ca = a.i.g,
-        ua = 255 != k ? 16777215 : 1,
-        fb = 255 != n ? 0 : 1,
-        ob = d.length;
-    for (M = 0; M < ob; M++, b += w + a.b) {
-        J = d.charCodeAt(M) - 32;
-        0 != a.a && (b -= ~~(jn[a.a - 1][J] * w / a.c));
-        K = 640 * c + b;
-        U = J * a.c;
-        for (x = 0; x < B; x++, K += Fa)
-            for (ba = ~~(x * a.j / B) * a.i.h + U << 8, y = 0; y < w; y++, K++, ba += Ga) na = Ca[ba >> 8], na == ua ? frameBufferArray[K] = f + ((frameBufferArray[K] >> 16 & 255) * k >> 8) << 16 | g + ((frameBufferArray[K] >> 8 & 255) * k >> 8) << 8 | h + ((frameBufferArray[K] & 255) * k >> 8) : na == fb && (frameBufferArray[K] =
-                p + ((frameBufferArray[K] >> 16 & 255) * n >> 8) << 16 | t + ((frameBufferArray[K] >> 8 & 255) * n >> 8) << 8 | l + ((frameBufferArray[K] & 255) * n >> 8));
-        0 != a.a && (b -= ~~(kn[a.a - 1][J] * w / a.c))
+function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight) { // Tg
+    fgR = fgR * fgAlpha >> 8;
+    fgG = fgG * fgAlpha >> 8;
+    fgB = fgB * fgAlpha >> 8;
+    fgAlpha = 255 - fgAlpha;
+    altR = altR * altAlpha >> 8;
+    altG = altG * altAlpha >> 8;
+    altB = altB * altAlpha >> 8;
+    altAlpha = 255 - altAlpha;
+    let M, J, y, x, K, ba, U, na, Fa = 640 - glyphWidth,
+        Ga = ~~((font.c << 8) / glyphWidth),
+        Ca = font.i.g,
+        ua = 255 != fgAlpha ? 16777215 : 1,
+        fb = 255 != altAlpha ? 0 : 1,
+        ob = text.length;
+    for (M = 0; M < ob; M++, x += glyphWidth + font.b) {
+        J = text.charCodeAt(M) - 32;
+        0 != font.a && (x -= ~~(jn[font.a - 1][J] * glyphWidth / font.c));
+        K = 640 * y + x;
+        U = J * font.c;
+        for (x = 0; x < glyphHeight; x++, K += Fa)
+            for (ba = ~~(x * font.j / glyphHeight) * font.i.h + U << 8, y = 0; y < glyphWidth; y++, K++, ba += Ga) na = Ca[ba >> 8], na == ua ? frameBufferArray[K] = fgR + ((frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((frameBufferArray[K] & 255) * fgAlpha >> 8) : na == fb && (frameBufferArray[K] =
+                altR + ((frameBufferArray[K] >> 16 & 255) * altAlpha >> 8) << 16 | altG + ((frameBufferArray[K] >> 8 & 255) * altAlpha >> 8) << 8 | altB + ((frameBufferArray[K] & 255) * altAlpha >> 8));
+        0 != font.a && (x -= ~~(kn[font.a - 1][J] * glyphWidth / font.c))
     }
-    a.b = 0;
-    a.a = 0
+    font.b = 0;
+    font.a = 0
 }
 
-function Jg(a, b, c, d, f, g, h, k, p, t, l, n, w, B) { // Jg
-    b -= d.length * (w + a.b) >> 1;
-    Tg(a, b, c - (B >> 1), d, f, g, h, k, p, t, l, n, w, B)
+function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight) { // Jg
+    x -= text.length * (glyphWidth + font.b) >> 1;
+    drawScaledTintedText(font, x, y - (glyphHeight >> 1), text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight)
 }
 var ug = 1,
     isSolidRender = 0,

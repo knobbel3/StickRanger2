@@ -5163,18 +5163,18 @@ function drawSprite(sprite) {
         sprite.c = 1
     }
 }
-var jn = [
+var charKerningBefore = [
     [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
     [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
-];
-var kn = [
+]; // jn
+var charKerningAfter = [
     [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
     [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
-];
+]; // kn
 
 var gameFont = new GameFont;
 var gameFontSmall = new GameFont;
@@ -5203,12 +5203,12 @@ function drawText(_font, px, py, text, color, outlineColor) {
         K = text.length;
     for (h = 0; h < K; h++, px += _font.c + _font.b) {
         k = text.charCodeAt(h) - 32;
-        0 != _font.a && (px -= jn[_font.a - 1][k]);
+        0 != _font.a && (px -= charKerningBefore[_font.a - 1][k]);
         l = 640 * py + px;
         n = k * _font.c;
         for (t = _font.j; 0 < t; t--, l += B, n += M)
             for (p = _font.c; 0 < p; p--, l++, n++) w = J[n], w == y ? frameBufferArray[l] = color : w == x && (frameBufferArray[l] = outlineColor);
-        0 != _font.a && (px -= kn[_font.a - 1][k])
+        0 != _font.a && (px -= charKerningAfter[_font.a - 1][k])
     }
     _font.b = 0;
     _font.a = 0
@@ -5251,13 +5251,13 @@ function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, al
         ob = text.length;
     for (idx_0 = 0; idx_0 < ob; idx_0++, x += glyphWidth + font.b) {
         J = text.charCodeAt(idx_0) - 32;
-        0 != font.a && (x -= ~~(jn[font.a - 1][J] * glyphWidth / font.c));
+        0 != font.a && (x -= ~~(charKerningBefore[font.a - 1][J] * glyphWidth / font.c));
         K = 640 * y + x;
         U = J * font.c;
         for (idx_1 = 0; idx_1 < glyphHeight; idx_1++, K += Fa)
             for (ba = ~~(idx_1 * font.j / glyphHeight) * font.i.h + U << 8, idx_2 = 0; idx_2 < glyphWidth; idx_2++, K++, ba += Ga) na = Ca[ba >> 8], na == ua ? frameBufferArray[K] = fgR + ((frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((frameBufferArray[K] & 255) * fgAlpha >> 8) : na == fb && (frameBufferArray[K] =
                 altR + ((frameBufferArray[K] >> 16 & 255) * altAlpha >> 8) << 16 | altG + ((frameBufferArray[K] >> 8 & 255) * altAlpha >> 8) << 8 | altB + ((frameBufferArray[K] & 255) * altAlpha >> 8));
-        0 != font.a && (x -= ~~(kn[font.a - 1][J] * glyphWidth / font.c))
+        0 != font.a && (x -= ~~(charKerningAfter[font.a - 1][J] * glyphWidth / font.c))
 
 
     }

@@ -5243,21 +5243,23 @@ function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, al
     altG = altG * altAlpha >> 8;
     altB = altB * altAlpha >> 8;
     altAlpha = 255 - altAlpha;
-    let M, J, y, x, K, ba, U, na, Fa = 640 - glyphWidth,
+    let idx_0, J, idx_2, idx_1, K, ba, U, na, Fa = 640 - glyphWidth,
         Ga = ~~((font.c << 8) / glyphWidth),
         Ca = font.i.g,
         ua = 255 != fgAlpha ? 16777215 : 1,
         fb = 255 != altAlpha ? 0 : 1,
         ob = text.length;
-    for (M = 0; M < ob; M++, x += glyphWidth + font.b) {
-        J = text.charCodeAt(M) - 32;
+    for (idx_0 = 0; idx_0 < ob; idx_0++, x += glyphWidth + font.b) {
+        J = text.charCodeAt(idx_0) - 32;
         0 != font.a && (x -= ~~(jn[font.a - 1][J] * glyphWidth / font.c));
         K = 640 * y + x;
         U = J * font.c;
-        for (x = 0; x < glyphHeight; x++, K += Fa)
-            for (ba = ~~(x * font.j / glyphHeight) * font.i.h + U << 8, y = 0; y < glyphWidth; y++, K++, ba += Ga) na = Ca[ba >> 8], na == ua ? frameBufferArray[K] = fgR + ((frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((frameBufferArray[K] & 255) * fgAlpha >> 8) : na == fb && (frameBufferArray[K] =
+        for (idx_1 = 0; idx_1 < glyphHeight; idx_1++, K += Fa)
+            for (ba = ~~(idx_1 * font.j / glyphHeight) * font.i.h + U << 8, idx_2 = 0; idx_2 < glyphWidth; idx_2++, K++, ba += Ga) na = Ca[ba >> 8], na == ua ? frameBufferArray[K] = fgR + ((frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((frameBufferArray[K] & 255) * fgAlpha >> 8) : na == fb && (frameBufferArray[K] =
                 altR + ((frameBufferArray[K] >> 16 & 255) * altAlpha >> 8) << 16 | altG + ((frameBufferArray[K] >> 8 & 255) * altAlpha >> 8) << 8 | altB + ((frameBufferArray[K] & 255) * altAlpha >> 8));
         0 != font.a && (x -= ~~(kn[font.a - 1][J] * glyphWidth / font.c))
+
+
     }
     font.b = 0;
     font.a = 0

@@ -1322,7 +1322,7 @@ function drawCanvas() {
         0 < bf && (
             bf--,
             a = badgeList[cf][3],
-            Qg(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true),
+            drawSpriteSheetPartTintedScaled(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true),
             b = 440,
             a = min(120 - bf - 0, 4),
             0 < a && drawText(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0),
@@ -1592,7 +1592,7 @@ function drawGameUI() {
             k = f + hidx * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             drawRect(k, n, 16, 16, 0);
-            0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? Qg(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0);
+            0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0);
             Wg(k, n, 16, 16, c, b);
             buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (selectingHero = hidx)
         }
@@ -1889,7 +1889,7 @@ function drawGameUI() {
         k = Na;
         drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (isInventoryVisible = false);
         for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
-            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? Qg(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
@@ -1950,7 +1950,7 @@ function drawGameUI() {
                         fh = 2;
                         h = itemList[hidx][itemHeadwearType];
                         if (10 == itemList[hidx][itemAppearanceCol]){
-                            Qg(
+                            drawSpriteSheetPartTintedScaled(
                                 itemsSpriteSheet, 
                                 f + 80, g + 12 + 20 * d, 
                                 16, 16, 
@@ -2010,7 +2010,7 @@ function drawGameUI() {
         drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBadgesUIVisible = false);
         if (0 == isStageReachedArray[stageIndexOrder[Sa]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
-            for (hidx = 0; hidx < df[Sa].length; hidx++) c = df[Sa][hidx], badgeList[c] && (b = f + 6, d = g + 6 + 24 * hidx, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeList[c][3], badgeCounterArray[c] == badgeList[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), Qg(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < badgeCounterArray[c] && (gameFontMed.b = -1, drawTextCentered(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeList[c][1].length ? drawText(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215,
+            for (hidx = 0; hidx < df[Sa].length; hidx++) c = df[Sa][hidx], badgeList[c] && (b = f + 6, d = g + 6 + 24 * hidx, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeList[c][3], badgeCounterArray[c] == badgeList[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), drawSpriteSheetPartTintedScaled(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < badgeCounterArray[c] && (gameFontMed.b = -1, drawTextCentered(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeList[c][1].length ? drawText(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215,
                 0) : (drawText(gameFontMed, b + 40, d + 1, badgeList[c][0], 16777215, 0), gameFontMed.a = 3, drawText(gameFontMed, b + 40, d + 11, badgeList[c][1], 16777215, 0)));
         drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Sa--;
         drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Sa++;
@@ -2780,7 +2780,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     let headwearType = itemList[partyEquipmentTable[heroIdx][2]][itemHeadwearType]; // headwear type
     if (headwearType != 0) {
         if (partyBodyDrawOptions[heroIdx][2] == 0)
-            Qg(
+            drawSpriteSheetPartTintedScaled(
                 itemsSpriteSheet,
                 ~~joints[0].x - 8, ~~joints[0].y - 8,
                 16, 16,
@@ -2790,7 +2790,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 false
             );
         else
-            Qg(
+            drawSpriteSheetPartTintedScaled(
                 itemsSpriteSheet,
                 ~~joints[0].x - 8, ~~joints[0].y - 8,
                 16, 16,
@@ -4452,23 +4452,23 @@ function Cg() { // Cg
         var h = Nk[c];
         0 < enemyFreezeTimerArray[a] ? (d = 5934817, f = 1989840) : 0 < enemySkipDurationLeftArray[a] ? (d = 3368652, g = f = 13158) : 0 < enemyDmgDurationLeftArray[a] && (d = 3407616, g = f = 3381504);
         var k = (150 - Ck[a]) / 150 * b;
-        if (enemyUpdateFuncIdxArray[a] == pk) 3 > Y[a] ? fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - Ck[a]) / 50));
+        if (enemyUpdateFuncIdxArray[a] == pk) 3 > Y[a] ? drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - Ck[a]) / 50));
         else if (enemyUpdateFuncIdxArray[a] == qk) drawRectCentered(Q[a][2].x, Q[a][2].y - 2 * k, 4 * k, 4 * k, g), drawRectCentered(Q[a][1].x, Q[a][1].y -
-            2.5 * k, 5 * k, 5 * k, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (enemyUpdateFuncIdxArray[a] == rk) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][1].x, Q[a][1].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, g), drawLine(Q[a][6].x, Q[a][6].y, Q[a][4].x, Q[a][4].y, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+            2.5 * k, 5 * k, 5 * k, g), 3 > Y[a] && (k = max(1, k)), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+        else if (enemyUpdateFuncIdxArray[a] == rk) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][1].x, Q[a][1].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, g), drawLine(Q[a][6].x, Q[a][6].y, Q[a][4].x, Q[a][4].y, g), 3 > Y[a] && (k = max(1, k)), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
         else if (enemyUpdateFuncIdxArray[a] == sk) {
             b = 0;
             h = Y[a] - 1;
             20 < Y[a] && (b = 1, h = Y[a] - 20 - 1);
             for (; b < h; b++) drawLine(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, g);
             drawRectCentered(floor(Q[a][h].x) + 1, floor(Q[a][h].y) + 1, floor(2 * k), floor(2 * k), d);
-            fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
+            drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
         } else if (enemyUpdateFuncIdxArray[a] == tk || enemyUpdateFuncIdxArray[a] == Ak) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), 3 > Y[a] && (drawLine(Q[a][1].x, Q[a][1].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][1].x, Q[a][1].y, Q[a][4].x, Q[a][4].y, g)), drawLine(Q[a][3].x, Q[a][3].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][6].x, Q[a][6].y, g), 3 > Y[a] && (drawLine(Q[a][2].x, Q[a][2].y,
-            Q[a][7].x, Q[a][7].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][8].x, Q[a][8].y, g)), drawLine(Q[a][7].x, Q[a][7].y, Q[a][9].x, Q[a][9].y, g), drawLine(Q[a][8].x, Q[a][8].y, Q[a][10].x, Q[a][10].y, g), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+            Q[a][7].x, Q[a][7].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][8].x, Q[a][8].y, g)), drawLine(Q[a][7].x, Q[a][7].y, Q[a][9].x, Q[a][9].y, g), drawLine(Q[a][8].x, Q[a][8].y, Q[a][10].x, Q[a][10].y, g), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
         else if (enemyUpdateFuncIdxArray[a] == uk || enemyUpdateFuncIdxArray[a] == vk) {
             h = enemyUpdateFuncIdxArray[a] == uk ? -2 : 2;
             for (b = 20 >= Y[a] ? Y[a] - 1 : Y[a] - 21; 0 < b; b--) drawRectOutlineCentered(floor(Q[a][b].x), floor(Q[a][b].y + h), 5, 5, g);
-            enemyUpdateFuncIdxArray[a] == uk ? fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
+            enemyUpdateFuncIdxArray[a] == uk ? drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
         } else if (enemyUpdateFuncIdxArray[a] ==
             wk) {
             for (b = 1; 6 > b; b++) drawLine(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, f);
@@ -4478,9 +4478,9 @@ function Cg() { // Cg
             h = enemyCatalog[enemyTypeArray[a]][enemyAttr2];
             for (b = 1; b < h; b++) drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][b + 1].x - 1, Q[a][b + 1].y - 1, g);
             drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][1].x - 1, Q[a][1].y - 1, g);
-            fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
+            drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
         } else enemyUpdateFuncIdxArray[a] == yk ? (drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][1].x, Q[a][1].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), drawLine(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : enemyUpdateFuncIdxArray[a] == zk && (drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x,
-            Q[a][4].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), drawRectOutlineCentered(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = max(1, k)), fl(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
+            Q[a][4].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), drawRectOutlineCentered(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = max(1, k)), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
     }
     for (a = 0; a < enemyCount; a++)
         0 >= Ek[a] || (
@@ -4507,16 +4507,16 @@ function Ch(a, b, c, d) { // Ch
     var t = Nk[g],
         l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         n = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    if (f == pk) fl(b + 0 * d, c - t * d + 1, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == qk) drawRectCentered(b + 5 * d, c - 4 * d, 4 * d, 4 * d, p), drawRectCentered(b + 2 * d, c - 10 * d, 5 * d, 5 * d, p), fl(b - 4 * d, c - 11 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    if (f == pk) drawEnemyScaledSprite(b + 0 * d, c - t * d + 1, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == qk) drawRectCentered(b + 5 * d, c - 4 * d, 4 * d, 4 * d, p), drawRectCentered(b + 2 * d, c - 10 * d, 5 * d, 5 * d, p), drawEnemyScaledSprite(b - 4 * d, c - 11 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
     else if (f == rk) l[0] = b + 0 * d, n[0] = c - 8 * d, l[1] = b - 4 * d, n[1] = c - 8 * d, l[2] = b - 9 * d, n[2] = c - 9 * d, l[3] = b - 7 * d, n[3] = c - 4 * d, l[4] = b + 3 * d, n[4] = c - 8 * d, l[5] = b + 9 * d, n[5] = c - 10 * d,
-        l[6] = b + 7 * d, n[6] = c - 4 * d, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[5], n[5], l[6], n[6], p), drawLine(l[6], n[6], l[4], n[4], p), fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+        l[6] = b + 7 * d, n[6] = c - 4 * d, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[5], n[5], l[6], n[6], p), drawLine(l[6], n[6], l[4], n[4], p), drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
     else if (f == sk) l[0] = b - 3 * d, n[0] = c - 10 * d, l[1] = b + 1 * d, n[1] = c - 10 * d, l[2] = b + 4 * d, n[2] = c - 8 * d, l[3] = b + 5 * d, n[3] = c - 6 * d, l[4] = b + 5 * d, n[4] = c - 4 * d, l[5] = b + 3 * d, n[5] = c - 1 * d, drawLine(l[0], n[0], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[4], n[4], p), drawRectCentered(floor(l[5]),
-        floor(n[5]), floor(2 * d), floor(2 * d), h), fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+        floor(n[5]), floor(2 * d), floor(2 * d), h), drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
     else if (f == tk) l[0] = b + 0 * d, n[0] = c - 15 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 0 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b + 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b + 5 * d, n[6] = c - 8 * d, l[7] = b - 3 * d, n[7] = c - 3 * d, l[8] = b + 3 * d, n[8] = c - 5 * d, l[9] = b - 1 * d, n[9] = c - 1 * d, l[10] = b + 2 * d, n[10] = c - 0 * d, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[1], n[1], l[3], n[3], p), drawLine(l[1], n[1], l[4], n[4], p), drawLine(l[3], n[3], l[5], n[5], p), drawLine(l[4], n[4], l[6], n[6], p), drawLine(l[2], n[2], l[7], n[7], p), drawLine(l[2], n[2],
-        l[8], n[8], p), drawLine(l[7], n[7], l[9], n[9], p), drawLine(l[8], n[8], l[10], n[10], p), fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == uk) drawRectOutlineCentered(b + 0, c + 0, 5, 5, p), drawRectOutlineCentered(b - 1, c - 6, 5, 5, p), drawRectOutlineCentered(b + 0, c - 12, 5, 5, p), fl(b + 0, c - 18, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == vk) drawRectOutlineCentered(b + 0, c - 17, 5, 5, p), drawRectOutlineCentered(b - 1, c - 11, 5, 5, p), drawRectOutlineCentered(b + 0, c - 5, 5, 5, p), fl(b + 0, c + 1, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3) + 16, -16, h, k, 255);
+        l[8], n[8], p), drawLine(l[7], n[7], l[9], n[9], p), drawLine(l[8], n[8], l[10], n[10], p), drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == uk) drawRectOutlineCentered(b + 0, c + 0, 5, 5, p), drawRectOutlineCentered(b - 1, c - 6, 5, 5, p), drawRectOutlineCentered(b + 0, c - 12, 5, 5, p), drawEnemyScaledSprite(b + 0, c - 18, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == vk) drawRectOutlineCentered(b + 0, c - 17, 5, 5, p), drawRectOutlineCentered(b - 1, c - 11, 5, 5, p), drawRectOutlineCentered(b + 0, c - 5, 5, 5, p), drawEnemyScaledSprite(b + 0, c + 1, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3) + 16, -16, h, k, 255);
     else if (f == wk) {
         l[0] = b + 0 * d;
         n[0] = c - 10 * d;
@@ -4544,10 +4544,10 @@ function Ch(a, b, c, d) { // Ch
         for (b = 0; b < f; b++) c = 360 * b / f * PI / 180, l[b + 1] = l[0] + Math.cos(c) * a * d, n[b + 1] = n[0] + Math.sin(c) * a * d;
         for (b = 1; b < f; b++) drawLine(l[b], n[b], l[b + 1], n[b + 1], p);
         drawLine(l[b], n[b], l[1], n[1], p);
-        fl(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)
+        drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)
     } else f == yk ? (l[0] = b + 0 * d, n[0] = c - 6 * d, l[1] = b - 9 * d, n[1] = c -
         9 * d, l[2] = b - 7 * d, n[2] = c - 0 * d, l[3] = b + 9 * d, n[3] = c - 9 * d, l[4] = b + 7 * d, n[4] = c - 0 * d, l[5] = b - 7 * d, n[5] = c - 5 * d, l[6] = b - 5 * d, n[6] = c - 0 * d, l[7] = b + 7 * d, n[7] = c - 5 * d, l[8] = b + 5 * d, n[8] = c - 0 * d, drawLine(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), drawLine(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), drawLine(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), drawLine(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), drawLine(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7),
-            16 * (g >> 3), 16, 16, h)) : f == zk ? (drawLine(b + 5 * d, c - 6 * d, b + 8 * d, c - 11 * d, p), drawLine(b + 8 * d, c - 11 * d, b + 10 * d, c - 3 * d, p), drawLine(b + 10 * d, c - 3 * d, b + 5 * d, c - 6 * d, p), drawRectOutlineCentered(b + 0 * d, c - 9 * d, 6 * d + 1, 6 * d + 1, p), fl(b - 5 * d, c - 13 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == Ak && (l[0] = b + 0 * d, n[0] = c - 16 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 2 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b - 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b - 8 * d, n[6] = c - 10 * d, l[7] = b - 1 * d, n[7] = c - 4 * d, l[8] = b + 2 * d, n[8] = c - 5 * d, l[9] = b - 0 * d, n[9] = c - 1 * d, l[10] = b + 4 * d, n[10] = c - 0 * d)
+            16 * (g >> 3), 16, 16, h)) : f == zk ? (drawLine(b + 5 * d, c - 6 * d, b + 8 * d, c - 11 * d, p), drawLine(b + 8 * d, c - 11 * d, b + 10 * d, c - 3 * d, p), drawLine(b + 10 * d, c - 3 * d, b + 5 * d, c - 6 * d, p), drawRectOutlineCentered(b + 0 * d, c - 9 * d, 6 * d + 1, 6 * d + 1, p), drawEnemyScaledSprite(b - 5 * d, c - 13 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == Ak && (l[0] = b + 0 * d, n[0] = c - 16 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 2 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b - 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b - 8 * d, n[6] = c - 10 * d, l[7] = b - 1 * d, n[7] = c - 4 * d, l[8] = b + 2 * d, n[8] = c - 5 * d, l[9] = b - 0 * d, n[9] = c - 1 * d, l[10] = b + 4 * d, n[10] = c - 0 * d)
 }
 var projectileCount = 0,
     hl = new Int32Array(1E3),
@@ -5387,51 +5387,53 @@ function drawSpriteSheetPartCentered(spriteSheet, x, y, drawWidth, drawHeight, s
     drawSpriteSheetPart(spriteSheet, x - (drawWidth >> 1), y - (drawHeight >> 1), drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor)
 }
 
-function Qg(spriteSheet, _px, _py, d, f, g, h, k, p, t, l, n) { // Qg
-    var w = spriteSheet.g,
+// whiteRCol: replacement color (integer) written when the source pixel equals white (0xFFFFFF / 16777215)
+// grayRCol: replacement color (integer) written when the source pixel equals gray marker (0x666666 / 6710886).
+function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, whiteRCol, grayRCol, copySource) { // Qg
+    let w = spriteSheet.g,
         B, M, J, y, x;
-    k = ~~((k << 8) / d);
-    p = ~~((p << 8) / f);
-    g <<= 8;
-    h <<= 8;
-    0 > _px && (g += ~~(k * -_px));
-    0 > _py && (h += ~~(p * -_py));
-    d = 640 < _px + d ? 640 : ~~(_px + d);
-    f = 432 < _py + f ? 432 : ~~(_py + f);
+    sourceWidth = ~~((sourceWidth << 8) / drawWidth);
+    sourceHeight = ~~((sourceHeight << 8) / drawHeight);
+    sourceX <<= 8;
+    sourceY <<= 8;
+    0 > _px && (sourceX += ~~(sourceWidth * -_px));
+    0 > _py && (sourceY += ~~(sourceHeight * -_py));
+    drawWidth = 640 < _px + drawWidth ? 640 : ~~(_px + drawWidth);
+    drawHeight = 432 < _py + drawHeight ? 432 : ~~(_py + drawHeight);
     _px = 0 > _px ? 0 : ~~_px;
     _py = 0 > _py ? 0 : ~~_py;
     M = 640 * _py + _px;
-    for (J = 640 - (d - _px); _py < f; _py++, M += J, h += p)
-        for (y = ((h >> 8) * spriteSheet.h << 8) + g, B = _px; B < d; B++, M++, y += k)
+    for (J = 640 - (drawWidth - _px); _py < drawHeight; _py++, M += J, sourceY += sourceHeight)
+        for (y = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, B = _px; B < drawWidth; B++, M++, y += sourceWidth)
             x = w[y >> 8],
                 -1 != x && (
                     16777215 == x
-                        ? frameBufferArray[M] = t
+                        ? frameBufferArray[M] = whiteRCol
                         : 6710886 == x
-                            ? frameBufferArray[M] = l
-                            : n && (frameBufferArray[M] = x)
+                            ? frameBufferArray[M] = grayRCol
+                            : copySource && (frameBufferArray[M] = x)
                 )
 }
 
-function fl(a, b, c, d, f, g, h, k, p, t) { // fl
-    a -= c >> 1;
-    b -= d >> 1;
-    var l, n = enemySpriteSheet.g,
+function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY, srcHeight, replaceColW, replaceColAlt, blendAmount) { // fl
+    centerX -= dstWidth >> 1;
+    centerY -= dstHeight >> 1;
+    let l, n = enemySpriteSheet.g,
         w, B, M, J, y, x, K;
-    l = ~~(4096 / c);
-    h = ~~((h << 8) / d);
-    f <<= 8;
-    g <<= 8;
-    0 > a && (f += ~~(l * -a));
-    0 > b && (g += ~~(h * -b));
-    c = 640 < a + c ? 640 : ~~(a + c);
-    d = 432 < b + d ? 432 : ~~(b + d);
-    a = 0 > a ? 0 : ~~a;
-    b = 0 > b ? 0 : ~~b;
-    B = 640 * b + a;
-    for (M = 640 - (c - a); b < d; b++, B += M, g += h)
-        for (J = ((g >> 8) * enemySpriteSheet.h << 8) + f, w = a; w < c; w++, B++, J += l) y = n[J >> 8], -1 != y && (255 == t ? frameBufferArray[B] = 16777215 == y ? k : p : (16777215 == y ? (y = frameBufferArray[B] >> 16 & 255, x = (((k >> 16 & 255) - y) * t >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((k >> 8 & 255) - y) * t >> 8) + y, y = frameBufferArray[B] & 255, y = (((k & 255) - y) * t >> 8) + y) : (y = frameBufferArray[B] >> 16 &
-            255, x = (((p >> 16 & 255) - y) * t >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((p >> 8 & 255) - y) * t >> 8) + y, y = frameBufferArray[B] & 255, y = (((p & 255) - y) * t >> 8) + y), frameBufferArray[B] = x << 16 | K << 8 | y))
+    l = ~~(4096 / dstWidth);
+    srcHeight = ~~((srcHeight << 8) / dstHeight);
+    srcX <<= 8;
+    srcY <<= 8;
+    0 > centerX && (srcX += ~~(l * -centerX));
+    0 > centerY && (srcY += ~~(srcHeight * -centerY));
+    dstWidth = 640 < centerX + dstWidth ? 640 : ~~(centerX + dstWidth);
+    dstHeight = 432 < centerY + dstHeight ? 432 : ~~(centerY + dstHeight);
+    centerX = 0 > centerX ? 0 : ~~centerX;
+    centerY = 0 > centerY ? 0 : ~~centerY;
+    B = 640 * centerY + centerX;
+    for (M = 640 - (dstWidth - centerX); centerY < dstHeight; centerY++, B += M, srcY += srcHeight)
+        for (J = ((srcY >> 8) * enemySpriteSheet.h << 8) + srcX, w = centerX; w < dstWidth; w++, B++, J += l) y = n[J >> 8], -1 != y && (255 == blendAmount ? frameBufferArray[B] = 16777215 == y ? replaceColW : replaceColAlt : (16777215 == y ? (y = frameBufferArray[B] >> 16 & 255, x = (((replaceColW >> 16 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((replaceColW >> 8 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] & 255, y = (((replaceColW & 255) - y) * blendAmount >> 8) + y) : (y = frameBufferArray[B] >> 16 &
+            255, x = (((replaceColAlt >> 16 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((replaceColAlt >> 8 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] & 255, y = (((replaceColAlt & 255) - y) * blendAmount >> 8) + y), frameBufferArray[B] = x << 16 | K << 8 | y))
 }
 
 function gh(a, b, c, d, f, g) { // fl

@@ -3697,12 +3697,30 @@ function deleteEnemy(enemyIdx) {
 mainWindow.fff = $k;
 
 function $k(a, b, c) { // $k
-    var d = new Vec2;
+    let d = new Vec2;
     Vec2Sub(d, Q[a][b], Z[a][b]);
     Q[a][b].set(Z[a][b]);
-    var f = (Vec2Mag(d) >> 2) + 1;
+    let f = (Vec2Mag(d) >> 2) + 1;
     Vec2Scale(d, 1 / f);
-    for (var g, h, k = 0; k < f; k++) g = Q[a][b].y + d.y, h = getStageTileAt(Q[a][b].x, g), 0 > g || 8 * stageHeight <= g ? Dk[a] |= 2 : 0 <= h && 25 >= h ? (0 < d.y && (Dk[a] |= 2), d.x *= c, d.y = -d.y) : 26 <= h && 26 >= h && 0 < d.y ? (Dk[a] |= 2, d.x *= c, d.y = -d.y) : Q[a][b].y = g, g = Q[a][b].x + d.x, h = getStageTileAt(g, Q[a][b].y), 0 > g || 640 <= g ? Dk[a] |= 1 : 0 <= h && 25 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : 27 <= h && 29 >= h ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) : Q[a][b].x = g
+    for (let g, h, k = 0; k < f; k++) 
+        g = Q[a][b].y + d.y, 
+        h = getStageTileAt(Q[a][b].x, g), 
+        (0 > g || 8 * stageHeight <= g ) 
+            ? Dk[a] |= 2 
+            : (0 <= h && 25 >= h) 
+                ? (0 < d.y && (Dk[a] |= 2), d.x *= c, d.y = -d.y) 
+                : (26 <= h && 26 >= h && 0 < d.y) 
+                    ? (Dk[a] |= 2, d.x *= c, d.y = -d.y) 
+                    : Q[a][b].y = g, 
+        g = Q[a][b].x + d.x, 
+        h = getStageTileAt(g, Q[a][b].y), 
+        (0 > g || 640 <= g) 
+            ? Dk[a] |= 1 
+            : (0 <= h && 25 >= h) 
+                ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) 
+                : (27 <= h && 29 >= h) 
+                    ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) 
+                    : Q[a][b].x = g
 }
 mainWindow.fff = Ei;
 

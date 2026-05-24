@@ -3694,33 +3694,33 @@ function deleteEnemy(enemyIdx) {
     enemyFreezeTimerArray[enemyIdx] = enemyFreezeTimerArray[enemyCount - 1];
     enemyCount--
 }
-mainWindow.fff = $k;
+mainWindow.fff = moveEnemyJointWithTileCollision;
 
-function $k(a, b, c) { // $k
+function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
     let d = new Vec2;
-    Vec2Sub(d, Q[a][b], Z[a][b]);
-    Q[a][b].set(Z[a][b]);
+    Vec2Sub(d, Q[enemyIdx][jointIdx], Z[enemyIdx][jointIdx]);
+    Q[enemyIdx][jointIdx].set(Z[enemyIdx][jointIdx]);
     let f = (Vec2Mag(d) >> 2) + 1;
     Vec2Scale(d, 1 / f);
     for (let g, h, k = 0; k < f; k++) 
-        g = Q[a][b].y + d.y, 
-        h = getStageTileAt(Q[a][b].x, g), 
-        (0 > g || 8 * stageHeight <= g ) 
-            ? Dk[a] |= 2 
+        g = Q[enemyIdx][jointIdx].y + d.y, 
+        h = getStageTileAt(Q[enemyIdx][jointIdx].x, g), 
+        (0 > g || 8 * stageHeight <= g) 
+            ? Dk[enemyIdx] |= 2 
             : (0 <= h && 25 >= h) 
-                ? (0 < d.y && (Dk[a] |= 2), d.x *= c, d.y = -d.y) 
+                ? (0 < d.y && (Dk[enemyIdx] |= 2), d.x *= bounceScale, d.y = -d.y) 
                 : (26 <= h && 26 >= h && 0 < d.y) 
-                    ? (Dk[a] |= 2, d.x *= c, d.y = -d.y) 
-                    : Q[a][b].y = g, 
-        g = Q[a][b].x + d.x, 
-        h = getStageTileAt(g, Q[a][b].y), 
+                    ? (Dk[enemyIdx] |= 2, d.x *= bounceScale, d.y = -d.y) 
+                    : Q[enemyIdx][jointIdx].y = g, 
+        g = Q[enemyIdx][jointIdx].x + d.x, 
+        h = getStageTileAt(g, Q[enemyIdx][jointIdx].y), 
         (0 > g || 640 <= g) 
-            ? Dk[a] |= 1 
+            ? Dk[enemyIdx] |= 1 
             : (0 <= h && 25 >= h) 
-                ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) 
+                ? (d.y *= bounceScale, d.x = -d.x, Dk[enemyIdx] |= 1) 
                 : (27 <= h && 29 >= h) 
-                    ? (d.y *= c, d.x = -d.x, Dk[a] |= 1) 
-                    : Q[a][b].x = g
+                    ? (d.y *= bounceScale, d.x = -d.x, Dk[enemyIdx] |= 1) 
+                    : Q[enemyIdx][jointIdx].x = g
 }
 mainWindow.fff = Ei;
 
@@ -3964,14 +3964,14 @@ function enemySlimeBehavior(enemyIdx) {
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 1 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.3, .3), Q[enemyIdx][b].y -= randFloatRange(1, 2);
-        for (b = 0; 1 > b; b++) $k(enemyIdx, b, .5);
+        for (b = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].x = Q[enemyIdx][0].x;
         Q[enemyIdx][yi].y = Q[enemyIdx][0].y - d * c + 1;
         0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
     } else {
         for (b =
             0; 1 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; 1 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         50 <= Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4000,17 +4000,17 @@ function enemyBoxSnakeBehavior(enemyIdx) {
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 3 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
-        $k(enemyIdx, 0, .5);
+        moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
         b = Dk[enemyIdx];
-        $k(enemyIdx, 1, .5);
-        $k(enemyIdx, 2, .5);
+        moveEnemyJointWithTileCollision(enemyIdx, 1, .5);
+        moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
         Dk[enemyIdx] = b;
         Q[enemyIdx][yi].x = Q[enemyIdx][0].x;
         Q[enemyIdx][yi].y = Q[enemyIdx][0].y - d * c + 1;
         0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
     } else {
         for (b = 0; 3 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; 3 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4069,7 +4069,7 @@ function enemyBatBehavior(enemyIdx) {
         if (0 >=
             enemyHealthArray[enemyIdx])
             for (b = 0; 7 > b; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
-        for (b = 0; 7 > b; b++) $k(enemyIdx, b, 1);
+        for (b = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, 1);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
     } else {
@@ -4082,7 +4082,7 @@ function enemyBatBehavior(enemyIdx) {
         T(Q[enemyIdx][4], Q[enemyIdx][5], d, c, c);
         T(Q[enemyIdx][4], Q[enemyIdx][6], d, c, c);
         T(Q[enemyIdx][5], Q[enemyIdx][6], d, c, c);
-        for (b = Dk[enemyIdx] = 0; 7 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4118,7 +4118,7 @@ function enemyDragonBehavior(enemyIdx) {
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
-        for (b = 0; b < Y[enemyIdx]; b++) $k(enemyIdx, b, .5);
+        for (b = 0; b < Y[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, Ck[enemyIdx] = 0, cl(enemyIdx))
     } else {
@@ -4126,7 +4126,7 @@ function enemyDragonBehavior(enemyIdx) {
         f = .5;
         c = 10 * (150 - Ck[enemyIdx]) / 150;
         for (b = 1; b < Y[enemyIdx] - 21; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], c, f, f);
-        for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4165,7 +4165,7 @@ function enemyStickmanBehavior(enemyIdx) {
         bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr63] && bl(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         for (b =
-            Dk[enemyIdx] = 0; 11 > b; b++) $k(enemyIdx, b, .5);
+            Dk[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][1]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] = 3;
@@ -4181,7 +4181,7 @@ function enemyStickmanBehavior(enemyIdx) {
         T(Q[enemyIdx][4], Q[enemyIdx][6], 4 * d, c, c);
         T(Q[enemyIdx][7], Q[enemyIdx][9], 4 * d, c, c);
         T(Q[enemyIdx][8], Q[enemyIdx][10], 4 * d, c, c);
-        for (b = Dk[enemyIdx] = 0; 11 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4208,13 +4208,13 @@ function enemyTreeBehavior(enemyIdx) {
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
-        for (b = 0; b < Y[enemyIdx]; b++) $k(enemyIdx, b, .5);
+        for (b = 0; b < Y[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].x = .5 * (Q[enemyIdx][0].x + Q[enemyIdx][Y[enemyIdx] - 1].x);
         Q[enemyIdx][yi].y = .5 * (Q[enemyIdx][0].y + Q[enemyIdx][Y[enemyIdx] - 1].y);
         0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, cl(enemyIdx))
     } else {
         for (b = 0; b < Y[enemyIdx] - 20; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4245,16 +4245,16 @@ function enemyHangingTreeBehavior(enemyIdx) {
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 3 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
-        $k(enemyIdx, 0, .5);
+        moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
         b = Dk[enemyIdx];
-        $k(enemyIdx, 1, .5);
-        $k(enemyIdx, 2, .5);
+        moveEnemyJointWithTileCollision(enemyIdx, 1, .5);
+        moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
         Dk[enemyIdx] = b;
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
     } else {
         for (b = 0; 3 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; 3 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4304,7 +4304,7 @@ function enemyUpdateFunc7(enemyIdx) {
         for (b = 1; b < g; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], f, .2, .2);
         T(Q[enemyIdx][b], Q[enemyIdx][1], f, .2, .2);
         bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        for (b = Dk[enemyIdx] = 0; b <= g; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] =
@@ -4316,7 +4316,7 @@ function enemyUpdateFunc7(enemyIdx) {
         for (b = 0; b <= g; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         h = h * (150 - Ck[enemyIdx]) / 150;
         for (b = 1; b < g; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], h, .5, .5);
-        for (b = Dk[enemyIdx] = 0; b <= g; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4382,7 +4382,7 @@ function enemyUpdateFunc8(enemyIdx) {
         T(Q[enemyIdx][5], Q[enemyIdx][7], 7 * b, .1 * c, .1 * c);
         bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr63] && bl(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        for (b = Dk[enemyIdx] = 0; 9 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] = 3;
@@ -4399,7 +4399,7 @@ function enemyUpdateFunc8(enemyIdx) {
         T(Q[enemyIdx][5],
             Q[enemyIdx][6], 3 * b, c, c);
         T(Q[enemyIdx][7], Q[enemyIdx][8], 3 * b, c, c);
-        for (b = Dk[enemyIdx] = 0; 9 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
@@ -4438,7 +4438,7 @@ function enemyUpdateFunc9(enemyIdx) {
         T(Q[enemyIdx][3], Q[enemyIdx][4], 8 * d, c, c);
         T(Q[enemyIdx][0], Q[enemyIdx][2], 10 * d, 0, c);
         bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        for (b = Dk[enemyIdx] = 0; 5 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] = 3;
@@ -4452,7 +4452,7 @@ function enemyUpdateFunc9(enemyIdx) {
         T(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
         T(Q[enemyIdx][2], Q[enemyIdx][4], d, c, c);
         T(Q[enemyIdx][3], Q[enemyIdx][4], d, c, c);
-        for (b = Dk[enemyIdx] = 0; 5 > b; b++) $k(enemyIdx, b, .5);
+        for (b = Dk[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx

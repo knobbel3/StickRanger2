@@ -5066,12 +5066,12 @@ function setupAnimRequest() {
         requestAnim(setupAnimRequest);
         Vm++;
         timestampAnim = Date.now();
-        var a = floor(60 * (timestampAnim - Xm) / 1E3 + .5);
-        if (0 > a || 60 <= a) Vm = 0, currentFPS = Ym, Ym = 0, Xm = timestampAnim, a = 0;
+        var a = floor(60 * (timestampAnim - lastTimestamp) / 1E3 + .5);
+        if (0 > a || 60 <= a) Vm = 0, currentFPS = frameCountThisSecond, frameCountThisSecond = 0, lastTimestamp = timestampAnim, a = 0;
         else if (a == Zm) return;
-        Ym++;
+        frameCountThisSecond++;
         Zm = a;
-        $m++
+        totalFrames++
     }
     isMouseClicked = 0 == wasMouseDown && 1 == isMouseDown;
     isMouseReleased = 1 == wasMouseDown && 0 == isMouseDown;
@@ -5103,23 +5103,23 @@ function hostnameCheck() {
 var requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     Vm = 0,
     Zm = 0,
-    Ym = 0,
+    frameCountThisSecond = 0, // Ym
     currentFPS = 0,
-    en = 20,
+    frameInteval = 20, // en, in milliseconds
     timestampAnim = Date.now(),
-    Xm = timestampAnim,
-    fn = timestampAnim + en,
-    gn = timestampAnim,
-    $m = 0;
+    lastTimestamp = timestampAnim, // Xm
+    nextFrameTime = timestampAnim + frameInteval, // fn
+    secondWindowDeadline = timestampAnim, // gn
+    totalFrames = 0; // $m
 
 function computeFrameDelay() { // ag
     timestampAnim = Date.now();
-    let a = clamp(fn - timestampAnim, 5, en);
-    Ym++;
-    $m++;
-    fn += en;
-    if (timestampAnim + a >= gn || timestampAnim < Xm) currentFPS = Ym, Ym = 0, fn = timestampAnim + en, gn = timestampAnim + 1E3;
-    Xm = timestampAnim;
+    let a = clamp(nextFrameTime - timestampAnim, 5, frameInteval);
+    frameCountThisSecond++;
+    totalFrames++;
+    nextFrameTime += frameInteval;
+    if (timestampAnim + a >= secondWindowDeadline || timestampAnim < lastTimestamp) currentFPS = frameCountThisSecond, frameCountThisSecond = 0, nextFrameTime = timestampAnim + frameInteval, secondWindowDeadline = timestampAnim + 1E3;
+    lastTimestamp = timestampAnim;
     return a
 }
 var uncheckedSpriteCount = 0;

@@ -1232,7 +1232,7 @@ function drawCanvas() {
             ),
                 updatePartyStats(), updateStageEdgeSpawns(), xg(),
                 drawGameStage(), updatePlayerParty(),
-                updateEnemies(), zg(), Ag(), Bg(), Cg(), Dg(),
+                updateEnemies(), zg(), updatePopups(), Bg(), Cg(), Dg(),
                 drawPlayerParty(),
                 Eg(), Fg(),
 
@@ -1269,7 +1269,7 @@ function drawCanvas() {
                     c = floor(partyGold / 10 / partyMemberCount);
                     if (0 < c) {
                         for (a = 0; a < partyMemberCount; a++)
-                            Lg(O[a][0].x, O[a][0].y, 0, -c, 60, 16776960);
+                            spawnPopup(O[a][0].x, O[a][0].y, 0, -c, 60, 16776960);
                         partyGold = clamp(partyGold - c * partyMemberCount, 0, 9999999)
                     }
                     for (a = 0; a < partyMemberCount; a++)
@@ -1605,7 +1605,7 @@ function drawGameUI() {
         for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
         if (0 < c && 0 < eb) {
             for (hidx = 0; hidx < partyMemberCount; hidx++) {
-                partyLP[hidx] != partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+                partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
                 partyLP[hidx] = partyMaxLP[hidx];
             }
             eb--;
@@ -1633,10 +1633,10 @@ function drawGameUI() {
             drawTextCentered(gameFont, 528, 187, "G " + c, 16777215, 8409120);
             if (0 < c && c <= partyGold && isMouseClicked && !ta) {
                 for (hidx = 0; hidx < partyMemberCount; hidx++) {
-                    partyLP[hidx] != partyMaxLP[hidx] && Lg(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+                    partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
                     partyLP[hidx] = partyMaxLP[hidx];
                 }
-                eb != hb && Lg(436, 380, 0, hb - eb, 60, 65280);
+                eb != hb && spawnPopup(436, 380, 0, hb - eb, 60, 65280);
                 eb = hb;
                 partyGold = clamp(partyGold - c, 0, 9999999);
             }
@@ -2260,10 +2260,10 @@ function ui(a, b, c, d, f, g, h, k, p, t) { // ui
                 } else 5 == c && (bh[x] = floor(d / 10));
                 isBadgeIncompleteForCurrentStage(43) && 1 == c && 0 < ch[x] && 0 < dh[x] && IncrementBadgeCount(43);
                 partyLP[x] -= y;
-                Lg(O[x][0].x, O[x][0].y, M, y, 60, J);
+                spawnPopup(O[x][0].x, O[x][0].y, M, y, 60, J);
                 Og += y;
                 if (0 > partyLP[x])
-                    for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++) x != n && (partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]), Lg(O[n][0].x, O[n][0].y, M, y, 60, J), Og += y);
+                    for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++) x != n && (partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]), spawnPopup(O[n][0].x, O[n][0].y, M, y, 60, J), Og += y);
                 y = x;
                 if (0 == b) break
             }
@@ -2535,7 +2535,7 @@ function updatePlayerParty() {
             for (c = 0 == partyBodyDrawOptions[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
                 a != b && (
                     partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]),
-                    Lg(O[b][0].x, O[b][0].y, c, d, 60, 16711680),
+                    spawnPopup(O[b][0].x, O[b][0].y, c, d, 60, 16711680),
                     Og += d
                 );
 
@@ -2566,7 +2566,7 @@ function updatePlayerParty() {
                 for (Wh[a] = areUpperJointsDisabled, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
                     randFloatRange(-1, -3);
             if (Wh[a] != areUpperJointsDisabled) {
-                1 == currentStage && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), Lg(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
+                1 == currentStage && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), spawnPopup(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
                 bi == a && (O[bi][ci].x += .2 * (mouseXCurrent - O[bi][ci].x), O[bi][ci].y += .2 * (mouseYCurrent - O[bi][ci].y));
                 b = itemList[partyEquipmentTable[a][0]][itemAppearanceCol];
                 c = heroRangeValues[a];
@@ -3104,7 +3104,7 @@ function loadLevelData(a) {
         let b = enemyCatalog[c][enemyAttr0];
         if ($i < b) $i = b;
     }
-    aj = projectileCount = 0;
+    popupCount = projectileCount = 0;
     bj();
     cj();
     return true
@@ -3168,7 +3168,7 @@ function updateStageEdgeSpawns() { // wg
         for (a = 0; 20 > a; a++) Mi += Xi[a];
         Mi = floor((Mi + partyMemberCount - 1) / partyMemberCount);
         0 < Mi && (b = 100 + comboMultBonus, comboMultBonus += Mi, Mi = floor(Mi * b / 100), di = 60, partyGold = clamp(partyGold + Mi * partyMemberCount, 0, 9999999), isBadgeIncompleteForCurrentStage(0) && IncrementBadgeCount(0), isBadgeIncompleteForCurrentStage(10) && 3600 > gj && IncrementBadgeCount(10), isBadgeIncompleteForCurrentStage(15) && !jh && IncrementBadgeCount(15), isBadgeIncompleteForCurrentStage(20) && 87 <= Hc && IncrementBadgeCount(20), isBadgeIncompleteForCurrentStage(25) && 100 <=
-            comboMultBonus && IncrementBadgeCount(25), isBadgeIncompleteForCurrentStage(30) && 111 <= Hc && IncrementBadgeCount(30), isBadgeIncompleteForCurrentStage(35) && !jh && IncrementBadgeCount(35), isBadgeIncompleteForCurrentStage(40) && 3600 > gj && IncrementBadgeCount(40), isBadgeIncompleteForCurrentStage(45) && 7200 > gj && IncrementBadgeCount(45), isBadgeIncompleteForCurrentStage(50) && !jh && IncrementBadgeCount(50), isBadgeIncompleteForCurrentStage(55) && 227 <= Hc && IncrementBadgeCount(55), isBadgeIncompleteForCurrentStage(60) && IncrementBadgeCount(60), isBadgeIncompleteForCurrentStage(65) && !jh && IncrementBadgeCount(65), isBadgeIncompleteForCurrentStage(70) && 9E3 > gj && IncrementBadgeCount(70), 19 == currentStage && 0 == of[1] && (of[1] = 1), Lg(320, 213, 0, "STAGE CLEAR", 300, 16777215), Lg(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
+            comboMultBonus && IncrementBadgeCount(25), isBadgeIncompleteForCurrentStage(30) && 111 <= Hc && IncrementBadgeCount(30), isBadgeIncompleteForCurrentStage(35) && !jh && IncrementBadgeCount(35), isBadgeIncompleteForCurrentStage(40) && 3600 > gj && IncrementBadgeCount(40), isBadgeIncompleteForCurrentStage(45) && 7200 > gj && IncrementBadgeCount(45), isBadgeIncompleteForCurrentStage(50) && !jh && IncrementBadgeCount(50), isBadgeIncompleteForCurrentStage(55) && 227 <= Hc && IncrementBadgeCount(55), isBadgeIncompleteForCurrentStage(60) && IncrementBadgeCount(60), isBadgeIncompleteForCurrentStage(65) && !jh && IncrementBadgeCount(65), isBadgeIncompleteForCurrentStage(70) && 9E3 > gj && IncrementBadgeCount(70), 19 == currentStage && 0 == of[1] && (of[1] = 1), spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215), spawnPopup(320, 223, 0, 3600 > gj ? floor(gj / 60) + "." + gj % 60 : floor(gj / 3600) + ":" + floor(gj % 3600 / 60) + "." + gj % 60, 300, 16777215))
     }
 }
 mainWindow.fff = drawGameStage;
@@ -3283,7 +3283,7 @@ function xg() { // xg
             }
             if (47 == stageTileData[w][n]) {
                 2 == currentStage && isBadgeIncompleteForCurrentStage(4) && IncrementBadgeCount(4);
-                11 == currentStage && (c = 8 * n + 4 - mouseXCurrent, d = 8 * w + 4 - mouseYCurrent, abs(c) >= abs(d) ? 0 < c && 32 == stageTileData[w][n + 1] ? (fillStageTilesRect(n + 1, w, n + 1, w, 47), fillStageTilesRect(n, w, n, w, 32), n += 1) : 0 > c && 32 == stageTileData[w][n - 1] && (fillStageTilesRect(n - 1, w, n - 1, w, 47), fillStageTilesRect(n, w, n, w, 32), --n) : 0 < d && 32 == stageTileData[w + 1][n] ? (fillStageTilesRect(n, w + 1, n, w + 1, 47), fillStageTilesRect(n, w, n, w, 32), w += 1) : 0 > d && 32 == stageTileData[w - 1][n] && (fillStageTilesRect(n, w - 1, n, w - 1, 47), fillStageTilesRect(n, w, n, w, 32), --w), isBadgeIncompleteForCurrentStage(44) && (c = abs(64 - n), d = abs(11 - w), Lg(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431), 0 ==
+                11 == currentStage && (c = 8 * n + 4 - mouseXCurrent, d = 8 * w + 4 - mouseYCurrent, abs(c) >= abs(d) ? 0 < c && 32 == stageTileData[w][n + 1] ? (fillStageTilesRect(n + 1, w, n + 1, w, 47), fillStageTilesRect(n, w, n, w, 32), n += 1) : 0 > c && 32 == stageTileData[w][n - 1] && (fillStageTilesRect(n - 1, w, n - 1, w, 47), fillStageTilesRect(n, w, n, w, 32), --n) : 0 < d && 32 == stageTileData[w + 1][n] ? (fillStageTilesRect(n, w + 1, n, w + 1, 47), fillStageTilesRect(n, w, n, w, 32), w += 1) : 0 > d && 32 == stageTileData[w - 1][n] && (fillStageTilesRect(n, w - 1, n, w - 1, 47), fillStageTilesRect(n, w, n, w, 32), --w), isBadgeIncompleteForCurrentStage(44) && (c = abs(64 - n), d = abs(11 - w), spawnPopup(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431), 0 ==
                     c && 0 == d && IncrementBadgeCount(44)));
                 break
             }
@@ -3802,7 +3802,7 @@ function al(a, b, c, d, f, g, h, k, p, t, l) { // al
                     if (Fa < U + 2) continue
                 }
                 0 == a && (n = g + floor(randFloat(h - g + 1)), 4 == d ? (enemyDmgPerFrameArray[l] = max(enemyDmgPerFrameArray[l], max(1, n - floor(n * enemyCatalog[enemyTypeArray[l]][enemyAttr43] / 100))), enemyDmgDurationLeftArray[l] = max(enemyDmgDurationLeftArray[l], f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr43] / 100))) : (0 == d ? n = max(1, n - enemyCatalog[enemyTypeArray[l]][enemyAttr39]) : 1 == d ? n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[l]][enemyAttr40] / 100)) : 2 == d ? n = max(1, n - floor(n *
-                    enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100)) : 3 == d && (n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[l]][enemyAttr42] / 100))), enemyHealthArray[l] = max(enemyHealthArray[l] - n, 0), Lg(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), totalDamageDone += n), 2 == d ? (enemySkipDurationLeftArray[l] = 120 - floor(120 * enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100), enemyUpdateSkipProbArray[l] = f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100)) : 5 == d && (enemyFreezeTimerArray[l] = f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr44] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[l] && 0 != d && Hi++, isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[l] && 0 == d && Hi++);
+                    enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100)) : 3 == d && (n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[l]][enemyAttr42] / 100))), enemyHealthArray[l] = max(enemyHealthArray[l] - n, 0), spawnPopup(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), totalDamageDone += n), 2 == d ? (enemySkipDurationLeftArray[l] = 120 - floor(120 * enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100), enemyUpdateSkipProbArray[l] = f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100)) : 5 == d && (enemyFreezeTimerArray[l] = f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr44] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[l] && 0 != d && Hi++, isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[l] && 0 == d && Hi++);
                 n = l;
                 c--;
                 if (0 >= c) break
@@ -3911,13 +3911,13 @@ function cl(a) { // cl
     isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[a] &&
         IncrementBadgeCount(2);
     isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[a] && IncrementBadgeCount(5);
-    3 == currentStage && (8 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(8) && 1800 > gj && IncrementBadgeCount(8), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431)), 15 == enemyTypeArray[a] && (ij++, 3 == ij && (isBadgeIncompleteForCurrentStage(9) && 600 > hj && IncrementBadgeCount(9), Lg(Q[a][0].x, Q[a][0].y, 0, "" + floor(hj / 60) + "SEC", 120, 10066431))));
-    5 == currentStage && 22 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(18) && 1200 > gj && IncrementBadgeCount(18), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
+    3 == currentStage && (8 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(8) && 1800 > gj && IncrementBadgeCount(8), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431)), 15 == enemyTypeArray[a] && (ij++, 3 == ij && (isBadgeIncompleteForCurrentStage(9) && 600 > hj && IncrementBadgeCount(9), spawnPopup(Q[a][0].x, Q[a][0].y, 0, "" + floor(hj / 60) + "SEC", 120, 10066431))));
+    5 == currentStage && 22 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(18) && 1200 > gj && IncrementBadgeCount(18), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[a] && IncrementBadgeCount(22);
     !isBadgeIncompleteForCurrentStage(47) || 50 != enemyTypeArray[a] && 52 != enemyTypeArray[a] || IncrementBadgeCount(47);
-    51 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(49) && 1500 > gj && IncrementBadgeCount(49), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
+    51 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(49) && 1500 > gj && IncrementBadgeCount(49), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[a] && 57 != enemyTypeArray[a] && 58 != enemyTypeArray[a] || IncrementBadgeCount(52);
-    63 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(58) && 3600 > gj && IncrementBadgeCount(58), Lg(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
+    63 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(58) && 3600 > gj && IncrementBadgeCount(58), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(gj / 60) + "SEC", 120, 10066431));
     isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[a] && IncrementBadgeCount(69)
 }
 mainWindow.fff = updateEnemies;
@@ -4897,57 +4897,70 @@ function Eg() { // Eg
             fh = isSolidRender = 0
         }
 }
-var aj = 0,
-    rm = Array(1E3);
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) rm[iterIdxTemp_1] = new Vec2;
-var sm = Array(1E3);
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) sm[iterIdxTemp_1] = new Vec2;
-var tm = Array(1E3),
-    um = new Int32Array(1E3),
-    vm = new Int32Array(1E3);
-mainWindow.fff = wm;
+var popupCount = 0, // aj
+    popupPos = Array(1E3); // rm
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) popupPos[iterIdxTemp_1] = new Vec2;
+var popupVel = Array(1E3); // sm
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) popupVel[iterIdxTemp_1] = new Vec2;
+var popupValue = Array(1E3), // tm
+    popupLife = new Int32Array(1E3), // um
+    popupColor = new Int32Array(1E3); // vm
+mainWindow.fff = clearPopups;
 
-function wm() { // wm
-    aj = 0
+function clearPopups() { // wm
+    popupCount = 0
 }
-mainWindow.fff = Lg;
+mainWindow.fff = spawnPopup;
 
-function Lg(a, b, c, d, f, g) { // Lg
-    1E3 != aj && (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(rm[aj], a, b), Vec2Set(sm[aj], c, -2), 0 != c && (sm[aj].x += randFloatRange(-.2, .2), sm[aj].y += randFloatRange(-.2, .2)), tm[aj] = d, um[aj] = f, vm[aj] = g, aj++)
+function spawnPopup(x, y, vx, vy, life, color) { // Lg
+    (1E3 != popupCount) && (
+        x = clamp(x, 16, 623), 
+        y = clamp(y, 8, 351), 
+        Vec2Set(popupPos[popupCount], x, y), 
+        Vec2Set(popupVel[popupCount], vx, -2), 
+        (0 != vx) && (
+            popupVel[popupCount].x += randFloatRange(-.2, .2), 
+            popupVel[popupCount].y += randFloatRange(-.2, .2)
+        ), 
+        popupValue[popupCount] = vy, 
+        popupLife[popupCount] = life, 
+        popupColor[popupCount] = color, 
+        popupCount++
+    )
 }
-mainWindow.fff = xm;
+mainWindow.fff = removePopup;
 
-function xm(a) { // xm
-    rm[a].set(rm[aj - 1]);
-    sm[a].set(sm[aj - 1]);
-    tm[a] = tm[aj - 1];
-    um[a] = um[aj - 1];
-    vm[a] = vm[aj - 1];
-    aj--
+function removePopup(idx) { // xm
+    popupPos[idx].set(popupPos[popupCount - 1]);
+    popupVel[idx].set(popupVel[popupCount - 1]);
+    popupValue[idx] = popupValue[popupCount - 1];
+    popupLife[idx] = popupLife[popupCount - 1];
+    popupColor[idx] = popupColor[popupCount - 1];
+    popupCount--
 }
-mainWindow.fff = Ag;
+mainWindow.fff = updatePopups;
 
-function Ag() { // Ag
-    var a;
-    for (a = 0; a < aj; a++) {
-        if (0 == sm[a].x) {
-            var b = rm[a],
-                c = sm[a];
+function updatePopups() { // Ag
+    let a;
+    for (a = 0; a < popupCount; a++) {
+        if (0 == popupVel[a].x) {
+            let b = popupPos[a],
+                c = popupVel[a];
             c.y += 0;
             Vec2Scale(c, .95)
-        } else b = rm[a], c = sm[a], c.y += .05, Vec2Scale(c, .99);
+        } else b = popupPos[a], c = popupVel[a], c.y += .05, Vec2Scale(c, .99);
         b.add(c);
-        rm[a].x = clamp(rm[a].x, 16, 623);
-        rm[a].y = clamp(rm[a].y, 8, 351);
-        um[a]--;
-        0 >= um[a] && xm(a--)
+        popupPos[a].x = clamp(popupPos[a].x, 16, 623);
+        popupPos[a].y = clamp(popupPos[a].y, 8, 351);
+        popupLife[a]--;
+        0 >= popupLife[a] && removePopup(a--)
     }
 }
 mainWindow.fff = Fg;
 
 function Fg() { // Fg
     var a, b, c, d, f;
-    for (a = 0; a < aj; a++) 20 <= um[a] ? drawTextCentered(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], vm[a], 0) : (b = vm[a] >> 16 & 255, c = vm[a] >> 8 & 255, d = vm[a] & 255, f = floor(255 * min(um[a], 20) / 20), drawScaledTintedTextCentered(gameFontSmall, ~~rm[a].x, ~~rm[a].y, "" + tm[a], b, c, d, f, 0, 0, 0, f, 5, 7))
+    for (a = 0; a < popupCount; a++) 20 <= popupLife[a] ? drawTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0) : (b = popupColor[a] >> 16 & 255, c = popupColor[a] >> 8 & 255, d = popupColor[a] & 255, f = floor(255 * min(popupLife[a], 20) / 20), drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7))
 }
 var ym = 0,
     zm = Array(100);
@@ -4997,7 +5010,7 @@ function zg() { // zg
     var a, b, c;
     for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
     Fm != b && (frameBufferArray = null);
-    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * stageHeight + 16 - 1), b = getStageTileAt(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * stageHeight + 12 ? (isBadgeIncompleteForCurrentStage(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = getStageTileAt(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), Lg(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
+    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * stageHeight + 16 - 1), b = getStageTileAt(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * stageHeight + 12 ? (isBadgeIncompleteForCurrentStage(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = getStageTileAt(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), spawnPopup(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
         itemForgeLvls[Bm[a]] < Cm[a] && (itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1), isBadgeIncompleteForCurrentStage(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), Gm(a--)))
 }
 mainWindow.fff = Dg;

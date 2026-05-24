@@ -985,7 +985,7 @@ function gameInit(a, b) {
         drawSprite(itemsSpriteSheet);
         drawSprite(effectSpriteSheet);
         drawSprite(medalSpriteSheet);
-        uncheckedSpriteCount > 0 ? _setTimeout(gameInit, ag()) : gameInitStage++
+        uncheckedSpriteCount > 0 ? _setTimeout(gameInit, computeFrameDelay()) : gameInitStage++
     }
     if (2 == gameInitStage) {
         currentStorage ? (c = currentStorage.getItem("ranger2"),
@@ -5089,7 +5089,7 @@ function setupAnimRequest() {
     else
         for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) * ug << 16 | (frameBufferArray[a] >> 8 & 255) * ug << 8 | (frameBufferArray[a] >> 16 & 255) * ug << 0;
     canvasDrawImage(canvasImage, 0, 0);
-    requestAnim || _setTimeout(setupAnimRequest, ag())
+    requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay())
 }
 var iterIdxTemp_3 = 1;
 
@@ -5112,9 +5112,9 @@ var requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFram
     gn = timestampAnim,
     $m = 0;
 
-function ag() {
+function computeFrameDelay() { // ag
     timestampAnim = Date.now();
-    var a = clamp(fn - timestampAnim, 5, en);
+    let a = clamp(fn - timestampAnim, 5, en);
     Ym++;
     $m++;
     fn += en;

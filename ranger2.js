@@ -6,8 +6,10 @@ const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 432;
 
 var iterIdxTemp_1, iterIdxTemp_2, mainWindow = window,
-    ca, da = [0, 0, 0, 0, 0, 0, 0, 0],
-    ea, canvasImageBuffer = new Sprite,
+    userSaveCode, // ca
+    userSaveKey = [0, 0, 0, 0, 0, 0, 0, 0], // da
+    isMinimalTitleMode, // ea
+    canvasImageBuffer = new Sprite,
     titleSprite = new Sprite,
     iconSpriteSheet = new Sprite,
     tilesetSprites = Array(3);
@@ -665,7 +667,7 @@ function saveGame() {
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = randInt(64);
     gameSaveBuffer[a++] = randInt(64);
-    for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = da[b];
+    for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = userSaveKey[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = currentStage >> 6 & 63;
     gameSaveBuffer[a++] = currentStage >> 0 & 63;
@@ -782,7 +784,7 @@ function loadGame(saveString) {
     for (b = 3; b < c; b++) d += gameSaveBuffer[b];
     if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4; // load err
     for (b = 0; 8 > b; b++)
-        if (gameSaveBuffer[b + 5] != da[b]) return 5; // user err
+        if (gameSaveBuffer[b + 5] != userSaveKey[b]) return 5; // user err
     bc();
 
     let p = 0;
@@ -884,13 +886,17 @@ function updatePartyChecksum() {
 var gameInitStage = 0;
 
 function gameInit(a, b) {
-    var c;
+    let c;
     console.log(`gameInit(${a}, ${b}) ${gameInitStage}`);
     if (!gameInitStage) {
-        null != a ? ca = a : ca = "";
-        ea = "0" == b ? true : false;
-        if (8 == ca.length)
-            for (c = 0; 8 > c; c++) da[c] = inverseCodingCharTable[ca[c]];
+        if (a != null) {
+            userSaveCode = a;
+        } else {
+            userSaveCode = "";
+        }
+        isMinimalTitleMode = "0" == b ? true : false;
+        if (8 == userSaveCode.length)
+            for (c = 0; 8 > c; c++) userSaveKey[c] = inverseCodingCharTable[userSaveCode[c]];
         LogMsg(copyrightText2); // Copyright text
         canvasElement.width = 640;
         canvasElement.height = 432;
@@ -947,13 +953,13 @@ function gameInit(a, b) {
         Nf[64] = 96;
         Mf[160] = 94;
         Nf[160] = 126;
-        var f;
+        let f;
         for (c = 0; 1024 > c; c++) randLUT[c] = c / 1024;
         for (c = 0; 1024 > c; c++)
             d = floor(1024 * rand()),
-                f = randLUT[c],
-                randLUT[c] = randLUT[d],
-                randLUT[d] = f;
+            f = randLUT[c],
+            randLUT[c] = randLUT[d],
+            randLUT[d] = f;
         randSeed = floor(1024 * rand()) & 1023;
         randSeedStep = floor(512 * rand()) | 1;
         // clear frame buffer
@@ -988,8 +994,13 @@ function gameInit(a, b) {
         uncheckedSpriteCount > 0 ? _setTimeout(gameInit, computeFrameDelay()) : gameInitStage++
     }
     if (2 == gameInitStage) {
-        currentStorage ? (c = currentStorage.getItem("ranger2"),
-            gameSaveString = null == c ? "" : c) : gameSaveString = "";
+        if (currentStorage){
+            c = currentStorage.getItem("ranger2");
+            gameSaveString = null == c ? "" : c
+        }
+        else {
+            gameSaveString = "";
+        }
         gameLoadStatusCode = loadGame(gameSaveString);
         statusDuration = 100;
 
@@ -1115,9 +1126,9 @@ function drawCanvas() {
             b = 26;
             d = 350;
             var f = 125,
-                g, h = ea ? 0 : 125,
+                g, h = isMinimalTitleMode ? 0 : 125,
                 k, p, t = titleSprite.g,
-                l, n, w, B, M;
+                l, n, w, B,  M;
             k = ~~(89600 / d);
             p = ~~(32E3 / f);
             g = 0;
@@ -1165,7 +1176,7 @@ function drawCanvas() {
                 );
 
             drawIconButton(608, 312, 8, "IMPORT", 16777215) && (
-                8 != ca.length
+                8 != userSaveCode.length
                     ? drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158)
                     : isMouseClicked && (
                         a = promptInput("Import Game Data", "")) && (
@@ -1175,7 +1186,7 @@ function drawCanvas() {
             );
 
             drawIconButton(608, 352, 9, "EXPORT", 16777215) && (
-                8 != ca.length
+                8 != userSaveCode.length
                     ? drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158)
                     : isMouseClicked && promptInput("Export Game Data", gameSaveString)
             );
@@ -5696,7 +5707,7 @@ canvasElement.ontouchcancel = function () {
 var Jf = Array(256),
     Kf = Array(256),
     Lf = Array(256),
-    Mf = Array(256),
+    Mf = Array(256), 
     Nf = Array(256);
 
 domDocument.onkeydown = function (a) {

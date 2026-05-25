@@ -886,7 +886,7 @@ function updatePartyChecksum() {
 var gameInitStage = 0;
 
 function gameInit(a, b) {
-    let c;
+    let _t0;
     console.log(`gameInit(${a}, ${b}) ${gameInitStage}`);
     if (!gameInitStage) {
         if (a != null) {
@@ -896,81 +896,81 @@ function gameInit(a, b) {
         }
         isMinimalTitleMode = "0" == b ? true : false;
         if (8 == userSaveCode.length)
-            for (c = 0; 8 > c; c++) userSaveKey[c] = inverseCodingCharTable[userSaveCode[c]];
+            for (_t0 = 0; 8 > _t0; _t0++) userSaveKey[_t0] = inverseCodingCharTable[userSaveCode[_t0]];
         LogMsg(copyrightText2); // Copyright text
         canvasElement.width = 640;
         canvasElement.height = 432;
-        for (c = 0; 513 > c; c++) rotationLUT[c] = new Float32Array(2);
-        for (c = 0; 512 > c; c++) {
-            var d = TAU * c / 512; // 360 * c / 512 * PI / 180;
-            rotationLUT[c][0] = Math.cos(d);
-            rotationLUT[c][1] = Math.sin(d)
+        for (_t0 = 0; 513 > _t0; _t0++) rotationLUT[_t0] = new Float32Array(2);
+        for (_t0 = 0; 512 > _t0; _t0++) {
+            var _t1 = TAU * _t0 / 512; // 360 * c / 512 * PI / 180;
+            rotationLUT[_t0][0] = Math.cos(_t1);
+            rotationLUT[_t0][1] = Math.sin(_t1)
         }
         // at c = 512
-        rotationLUT[c][0] = rotationLUT[0][0];
-        rotationLUT[c][1] = rotationLUT[0][1];
-        for (c = 0; 256 > c; c++) Jf[c] = false, Kf[c] = false, Lf[c] = false, Mf[c] = 0, Nf[c] = 0;
-        for (c = 0; 10 > c; c++) Mf[48 + c] = 48 + c;
-        for (c = 0; 9 > c; c++) Nf[49 + c] = 33 + c;
-        for (c = 0; 4 > c; c++) Mf[37 + c] = 37 + c;
-        for (c = 0; 4 > c; c++) Nf[37 + c] = 37 + c;
-        Mf[13] = Nf[13] = 13;
-        Mf[16] = Nf[16] = 16;
-        Mf[17] = Nf[17] = 17;
-        Mf[18] = Nf[18] = 18;
-        Mf[32] = Nf[32] = 32;
-        Mf[186] = 58;
-        Nf[186] = 42;
-        Mf[187] = 59;
-        Nf[187] = 43;
-        Mf[188] = 44;
-        Nf[188] = 60;
-        Mf[189] = 45;
-        Nf[189] = 61;
-        Mf[190] = 46;
-        Nf[190] = 62;
-        Mf[191] = 47;
-        Nf[191] = 63;
-        Mf[192] = 64;
-        Nf[192] = 96;
-        Mf[219] = 91;
-        Nf[219] = 123;
-        Mf[220] = 92;
-        Nf[220] = 124;
-        Mf[221] = 93;
-        Nf[221] = 125;
-        Mf[222] = 94;
-        Nf[222] = 126;
-        Mf[226] = 92;
-        Nf[226] = 95;
-        Mf[58] = 58;
-        Nf[58] = 42;
-        Mf[59] = 59;
-        Nf[59] = 43;
-        Mf[173] = 45;
-        Nf[173] = 61;
-        Mf[64] = 64;
-        Nf[64] = 96;
-        Mf[160] = 94;
-        Nf[160] = 126;
-        let f;
-        for (c = 0; 1024 > c; c++) randLUT[c] = c / 1024;
-        for (c = 0; 1024 > c; c++)
-            d = floor(1024 * rand()),
-            f = randLUT[c],
-            randLUT[c] = randLUT[d],
-            randLUT[d] = f;
+        rotationLUT[_t0][0] = rotationLUT[0][0];
+        rotationLUT[_t0][1] = rotationLUT[0][1];
+        for (_t0 = 0; 256 > _t0; _t0++) keyJustPressed[_t0] = false, keyPressPending[_t0] = false, keyHeld[_t0] = false, keyMapNoShift[_t0] = 0, keyMapShift[_t0] = 0;
+        for (_t0 = 0; 10 > _t0; _t0++) keyMapNoShift[48 + _t0] = 48 + _t0;
+        for (_t0 = 0; 9 > _t0; _t0++) keyMapShift[49 + _t0] = 33 + _t0;
+        for (_t0 = 0; 4 > _t0; _t0++) keyMapNoShift[37 + _t0] = 37 + _t0;
+        for (_t0 = 0; 4 > _t0; _t0++) keyMapShift[37 + _t0] = 37 + _t0;
+        keyMapNoShift[13] = keyMapShift[13] = 13;
+        keyMapNoShift[16] = keyMapShift[16] = 16;
+        keyMapNoShift[17] = keyMapShift[17] = 17;
+        keyMapNoShift[18] = keyMapShift[18] = 18;
+        keyMapNoShift[32] = keyMapShift[32] = 32;
+        keyMapNoShift[186] = 58;
+        keyMapShift[186] = 42;
+        keyMapNoShift[187] = 59;
+        keyMapShift[187] = 43;
+        keyMapNoShift[188] = 44;
+        keyMapShift[188] = 60;
+        keyMapNoShift[189] = 45;
+        keyMapShift[189] = 61;
+        keyMapNoShift[190] = 46;
+        keyMapShift[190] = 62;
+        keyMapNoShift[191] = 47;
+        keyMapShift[191] = 63;
+        keyMapNoShift[192] = 64;
+        keyMapShift[192] = 96;
+        keyMapNoShift[219] = 91;
+        keyMapShift[219] = 123;
+        keyMapNoShift[220] = 92;
+        keyMapShift[220] = 124;
+        keyMapNoShift[221] = 93;
+        keyMapShift[221] = 125;
+        keyMapNoShift[222] = 94;
+        keyMapShift[222] = 126;
+        keyMapNoShift[226] = 92;
+        keyMapShift[226] = 95;
+        keyMapNoShift[58] = 58;
+        keyMapShift[58] = 42;
+        keyMapNoShift[59] = 59;
+        keyMapShift[59] = 43;
+        keyMapNoShift[173] = 45;
+        keyMapShift[173] = 61;
+        keyMapNoShift[64] = 64;
+        keyMapShift[64] = 96;
+        keyMapNoShift[160] = 94;
+        keyMapShift[160] = 126;
+        let _t2;
+        for (_t0 = 0; 1024 > _t0; _t0++) randLUT[_t0] = _t0 / 1024;
+        for (_t0 = 0; 1024 > _t0; _t0++)
+            _t1 = floor(1024 * rand()),
+            _t2 = randLUT[_t0],
+            randLUT[_t0] = randLUT[_t1],
+            randLUT[_t1] = _t2;
         randSeed = floor(1024 * rand()) & 1023;
         randSeedStep = floor(512 * rand()) | 1;
         // clear frame buffer
-        for (c = 0; 276480 > c; c++) frameBufferArray[c] = 0;
+        for (_t0 = 0; 276480 > _t0; _t0++) frameBufferArray[_t0] = 0;
 
         gameFont.f("font.png", 8, 12);
         gameFontSmall.f("font_s.png", 5, 7);
         gameFontMed.f("font_m.png", 6, 8);
         titleSprite.f("title.png");
         iconSpriteSheet.f("b.png");
-        for (c = 0; 3 > c; c++) tilesetSprites[c].f("g" + c + ".png");
+        for (_t0 = 0; 3 > _t0; _t0++) tilesetSprites[_t0].f("g" + _t0 + ".png");
         enemySpriteSheet.f("en.png");
         droppedItemSpriteSheet.f("icon.png");
         itemsSpriteSheet.f("item.png");
@@ -985,7 +985,7 @@ function gameInit(a, b) {
         drawSprite(gameFontMed.i);
         drawSprite(titleSprite);
         drawSprite(iconSpriteSheet);
-        for (c = 0; 3 > c; c++) drawSprite(tilesetSprites[c]);
+        for (_t0 = 0; 3 > _t0; _t0++) drawSprite(tilesetSprites[_t0]);
         drawSprite(enemySpriteSheet);
         drawSprite(droppedItemSpriteSheet);
         drawSprite(itemsSpriteSheet);
@@ -995,8 +995,8 @@ function gameInit(a, b) {
     }
     if (2 == gameInitStage) {
         if (currentStorage){
-            c = currentStorage.getItem("ranger2");
-            gameSaveString = null == c ? "" : c
+            _t0 = currentStorage.getItem("ranger2");
+            gameSaveString = null == _t0 ? "" : _t0
         }
         else {
             gameSaveString = "";
@@ -1005,19 +1005,19 @@ function gameInit(a, b) {
         statusDuration = 100;
 
         itemHashTable = Array(256);
-        for (c = 0; 256 > c; c++)
-            if (itemHashTable[c] = 0, itemList[c])
-                for (d = 1; d < itemList[c].length; d++) itemHashTable[c] = hashAdjust(itemHashTable[c], itemList[c][d]);
+        for (_t0 = 0; 256 > _t0; _t0++)
+            if (itemHashTable[_t0] = 0, itemList[_t0])
+                for (_t1 = 1; _t1 < itemList[_t0].length; _t1++) itemHashTable[_t0] = hashAdjust(itemHashTable[_t0], itemList[_t0][_t1]);
         levelHashTable = Array(stageListArray.length);
-        for (c = 0; c < stageListArray.length; c++)
-            if (levelHashTable[c] = 0, stageListArray[c])
-                for (d = 2; d < stageListArray[c].length; d++) levelHashTable[c] = hashAdjust(levelHashTable[c], stageListArray[c][d]);
+        for (_t0 = 0; _t0 < stageListArray.length; _t0++)
+            if (levelHashTable[_t0] = 0, stageListArray[_t0])
+                for (_t1 = 2; _t1 < stageListArray[_t0].length; _t1++) levelHashTable[_t0] = hashAdjust(levelHashTable[_t0], stageListArray[_t0][_t1]);
         itemCatalogHashTable = Array(enemyCatalog.length);
-        for (c = 0; c < enemyCatalog.length; c++)
-            if (itemCatalogHashTable[c] = 0, enemyCatalog[c])
-                for (d = 0; d < enemyCatalog[c].length; d++) itemCatalogHashTable[c] = hashAdjust(itemCatalogHashTable[c], enemyCatalog[c][d]);
-        for (c = zf = 0; c < Jc.length; c++)
-            for (d = 0; d < Jc[c].length; d++) zf = hashAdjust(zf, Jc[c][d]);
+        for (_t0 = 0; _t0 < enemyCatalog.length; _t0++)
+            if (itemCatalogHashTable[_t0] = 0, enemyCatalog[_t0])
+                for (_t1 = 0; _t1 < enemyCatalog[_t0].length; _t1++) itemCatalogHashTable[_t0] = hashAdjust(itemCatalogHashTable[_t0], enemyCatalog[_t0][_t1]);
+        for (_t0 = zf = 0; _t0 < Jc.length; _t0++)
+            for (_t1 = 0; _t1 < Jc[_t0].length; _t1++) zf = hashAdjust(zf, Jc[_t0][_t1]);
 
         // updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
@@ -1506,7 +1506,7 @@ mainWindow.fff = drawGameUI;
 
 function drawGameUI() {
     var hidx, b, c, d, f, g, h, k;
-    Jf[32] && (
+    keyJustPressed[32] && (
         (isMemberUIVisible ||
             isInventoryVisible ||
             isBestiaryVisible ||
@@ -5158,7 +5158,7 @@ function setupAnimRequest() {
     (wasMouseDown = isMouseDown) ? bn++ : bn = 0;
     mouseXCurrent = mouseXRel;
     mouseYCurrent = mouseYRel;
-    for (a = 0; 256 > a; a++) Jf[a] = Kf[a], Kf[a] = false;
+    for (a = 0; 256 > a; a++) keyJustPressed[a] = keyPressPending[a], keyPressPending[a] = false;
     randSeed = randSeed + floor(1024 * rand()) & 1023;
     randSeedStep = floor(512 * rand()) | 1;
     drawCanvas();
@@ -5704,27 +5704,27 @@ canvasElement.ontouchcancel = function () {
     activeTouchCount = 0;
     isMouseDown = false
 };
-var Jf = Array(256),
-    Kf = Array(256),
-    Lf = Array(256),
-    Mf = Array(256), 
-    Nf = Array(256);
+var keyJustPressed = Array(256), // Jf
+    keyPressPending = Array(256), // Kf
+    keyHeld = Array(256), // Lf
+    keyMapNoShift = Array(256), // Mf
+    keyMapShift = Array(256); // Nf
 
 domDocument.onkeydown = function (a) {
     var b = a.keyCode;
     65 <= b & 90 >= b
         ? a.shiftKey || (b += 32)
-        : b = a.shiftKey ? Nf[b] : Mf[b];
+        : b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
 
-    0 <= b && 256 > b && (Lf[b] = true, Kf[b] = true);
+    0 <= b && 256 > b && (keyHeld[b] = true, keyPressPending[b] = true);
     if (0 != b && isCanvasFocused) return false
 };
 
 
 domDocument.onkeyup = function (a) {
     var b = a.keyCode;
-    65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? Nf[b] : Mf[b];
-    0 <= b && 256 > b && (Lf[b] = false);
+    65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
+    0 <= b && 256 > b && (keyHeld[b] = false);
     if (0 != b && isCanvasFocused) return false
 };
 var isCanvasFocused = false,

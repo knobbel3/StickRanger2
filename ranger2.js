@@ -120,7 +120,7 @@ for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) ac[iterIdxTemp_1] 
 mainWindow.fff = bc;
 
 function bc() { // bc
-    var a, b;
+    let a, b;
     resetUIStates();
     partyLevel = partyMemberCount = 1;
     for (a = partyGold = partyEXPAccum = 0; 4 > a; a++) partySP[a] = 0, partyLP[a] = 50, partyMaxLP[a] = 50, $a[a] = 0;
@@ -3762,49 +3762,62 @@ function Ei(a, b, c, d) { // Ei
             }
         } return w
 }
-mainWindow.fff = al;
+mainWindow.fff = applyEffectToEnemies;
 
 // effects
-function al(a, b, c, d, f, g, h, k, p, t, l) { // al
+function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
     var n = -1,
         w, B, M, J, y, x, K = new Vec2,
         ba = new Vec2,
         U, na;
-    t *= .5;
-    l *= .5;
-    0 == b ? (w = k.x - t, B = k.y - l, M = k.x + t, J = k.y + l) : 1 == b && (Vec2Norm(p), Vec2Scale(p, l), w = min(k.x - p.x, k.x + p.x), B = min(k.y - p.y, k.y + p.y), M = max(k.x - p.x, k.x + p.x), J = max(k.y - p.y, k.y + p.y));
-    for (l = 0; l < enemyCount; l++)
-        if (0 != enemyHealthArray[l]) {
-            x = Q[l][yi];
-            y = Lk[enemyUpdateFuncIdxArray[l]] * enemyCatalog[enemyTypeArray[l]][enemyAttr5];
-            t = Mk[enemyUpdateFuncIdxArray[l]] * enemyCatalog[enemyTypeArray[l]][enemyAttr5];
-            if (enemyUpdateFuncIdxArray[l] == uk || enemyUpdateFuncIdxArray[l] == vk) t = 3 * Y[l] + 5 * enemyCatalog[enemyTypeArray[l]][enemyAttr5];
-            if (!(x.x - y > M || x.x + y < w || x.y - t > J || x.y + t < B)) {
-                if (0 == b) {
-                    ba.x = x.x - k.x;
-                    ba.y = x.y - k.y;
+    width *= .5;
+    height *= .5;
+    (0 == shapeMode) 
+        ? (
+            w = centerPos.x - width, 
+            B = centerPos.y - height, 
+            M = centerPos.x + width, 
+            J = centerPos.y + height
+        ) : 1 == shapeMode && (
+            Vec2Norm(directionVec), 
+            Vec2Scale(directionVec, height), 
+            w = min(centerPos.x - directionVec.x, centerPos.x + directionVec.x), 
+            B = min(centerPos.y - directionVec.y, centerPos.y + directionVec.y), 
+            M = max(centerPos.x - directionVec.x, centerPos.x + directionVec.x), 
+            J = max(centerPos.y - directionVec.y, centerPos.y + directionVec.y)
+    );
+    for (height = 0; height < enemyCount; height++)
+        if (0 != enemyHealthArray[height]) {
+            x = Q[height][yi];
+            y = Lk[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyAttr5];
+            width = Mk[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyAttr5];
+            if (enemyUpdateFuncIdxArray[height] == uk || enemyUpdateFuncIdxArray[height] == vk) 
+                width = 3 * Y[height] + 5 * enemyCatalog[enemyTypeArray[height]][enemyAttr5];
+            if (!(x.x - y > M || x.x + y < w || x.y - width > J || x.y + width < B)) {
+                if (0 == shapeMode) {
+                    ba.x = x.x - centerPos.x;
+                    ba.y = x.y - centerPos.y;
                     U = Vec2Mag(ba);
                     U = (U >> 3) + 1;
                     Vec2Scale(ba, 1 / U);
-                    K.set(k);
-                    for (var Fa =
-                        0; Fa <= U; Fa++) {
+                    K.set(centerPos);
+                    for (var Fa = 0; Fa <= U; Fa++) {
                         na = getStageTileAt(K.x, K.y);
                         if (0 <= na && 29 >= na) break;
                         K.add(ba)
                     }
                     if (Fa <= U) continue
-                } else if (1 == b) {
-                    ba.x = 2 * p.x;
-                    ba.y = 2 * p.y;
+                } else if (1 == shapeMode) {
+                    ba.x = 2 * directionVec.x;
+                    ba.y = 2 * directionVec.y;
                     U = Vec2Mag(ba);
                     U = (U >> 3) + 1;
                     Vec2Scale(ba, 1 / U);
-                    Vec2Sub(K, k, p);
+                    Vec2Sub(K, centerPos, directionVec);
                     for (Fa = 0; Fa <= U; Fa++) {
                         na = getStageTileAt(K.x, K.y);
                         if (0 <= na && 29 >= na) break;
-                        if (x.x - y < K.x && x.x + y > K.x && x.y - t < K.y && x.y + t > K.y) {
+                        if (x.x - y < K.x && x.x + y > K.x && x.y - width < K.y && x.y + width > K.y) {
                             Fa = U + 2;
                             break
                         }
@@ -3812,13 +3825,51 @@ function al(a, b, c, d, f, g, h, k, p, t, l) { // al
                     }
                     if (Fa < U + 2) continue
                 }
-                0 == a && (n = g + floor(randFloat(h - g + 1)), 4 == d ? (enemyDmgPerFrameArray[l] = max(enemyDmgPerFrameArray[l], max(1, n - floor(n * enemyCatalog[enemyTypeArray[l]][enemyAttr43] / 100))), enemyDmgDurationLeftArray[l] = max(enemyDmgDurationLeftArray[l], f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr43] / 100))) : (0 == d ? n = max(1, n - enemyCatalog[enemyTypeArray[l]][enemyAttr39]) : 1 == d ? n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[l]][enemyAttr40] / 100)) : 2 == d ? n = max(1, n - floor(n *
-                    enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100)) : 3 == d && (n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[l]][enemyAttr42] / 100))), enemyHealthArray[l] = max(enemyHealthArray[l] - n, 0), spawnPopup(Q[l][yi].x, Q[l][yi].y - t, 0 > ba.x ? -1 : 1, n, 60, 12632256), totalDamageDone += n), 2 == d ? (enemySkipDurationLeftArray[l] = 120 - floor(120 * enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100), enemyUpdateSkipProbArray[l] = f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr41] / 100)) : 5 == d && (enemyFreezeTimerArray[l] = f - floor(f * enemyCatalog[enemyTypeArray[l]][enemyAttr44] / 100)), Ek[l] = 120, 30 != drawState && (Ic = Vg), isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[l] && 0 != d && Hi++, isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[l] && 0 == d && Hi++);
-                n = l;
-                c--;
-                if (0 >= c) break
+                (0 == applyFlag) && (
+                    n = damageMin + floor(randFloat(damageMax - damageMin + 1)), 
+                    (4 == effectType) 
+                        ? (
+                            enemyDmgPerFrameArray[height] = max(
+                                enemyDmgPerFrameArray[height], 
+                                max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyAttr43] / 100))
+                            ), 
+                            enemyDmgDurationLeftArray[height] = max(
+                                enemyDmgDurationLeftArray[height], 
+                                effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyAttr43] / 100)
+                            )
+                        ) 
+                        : (
+                            (0 == effectType) 
+                                ? n = max(1, n - enemyCatalog[enemyTypeArray[height]][enemyAttr39]) 
+                                : (1 == effectType) 
+                                    ? n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyAttr40] / 100)) 
+                                    : (2 == effectType) 
+                                        ? n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyAttr41] / 100)) 
+                                        : 3 == effectType && (
+                                            n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyAttr42] / 100))
+                                ), 
+                            enemyHealthArray[height] = max(enemyHealthArray[height] - n, 0), 
+                            spawnPopup(Q[height][yi].x, Q[height][yi].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256), 
+                            totalDamageDone += n
+                        ), 
+                    (2 == effectType) 
+                        ? (
+                            enemySkipDurationLeftArray[height] = 120 - floor(120 * enemyCatalog[enemyTypeArray[height]][enemyAttr41] / 100), 
+                            enemyUpdateSkipProbArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyAttr41] / 100)
+                        ) 
+                        : 5 == effectType && (
+                            enemyFreezeTimerArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyAttr44] / 100)
+                    ), 
+                    Ek[height] = 120, 
+                    30 != drawState && (Ic = Vg), 
+                    isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && Hi++, 
+                    isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && Hi++
+                );
+                n = height;
+                maxTargets--;
+                if (0 >= maxTargets) break
             }
-        } return n
+        } return n // index of a hit enemy (last one hit), or -1 if none.
 }
 mainWindow.fff = bl;
 
@@ -4771,7 +4822,7 @@ function Bg() { // Bg
             if (1 == p) {
                 c = 0;
                 if (1 == Ll[a] || 2 == Ll[a]) c = 1;
-                c = 0 <= hl[a] ? al(c, sl[a], Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h, k, tl[a], ul[a]) : ui(0, Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h.x, h.y, tl[a], ul[a])
+                c = 0 <= hl[a] ? applyEffectToEnemies(c, sl[a], Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h, k, tl[a], ul[a]) : ui(0, Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h.x, h.y, tl[a], ul[a])
             }
             1 == Jl[a] && 0 == Ml[a] && (c = -1);
             4 == Jl[a] && 99 == Gl[a] && (c = -1);

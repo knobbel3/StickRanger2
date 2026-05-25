@@ -1234,7 +1234,7 @@ function drawCanvas() {
                 drawGameStage(), updatePlayerParty(),
                 updateEnemies(), zg(), updatePopups(), Bg(), Cg(), Dg(),
                 drawPlayerParty(),
-                Eg(), Fg(),
+                Eg(), drawPopups(),
 
                 // display current stage name
                 isSolidRender = 1,
@@ -4956,11 +4956,20 @@ function updatePopups() { // Ag
         0 >= popupLife[a] && removePopup(a--)
     }
 }
-mainWindow.fff = Fg;
+mainWindow.fff = drawPopups;
 
-function Fg() { // Fg
-    var a, b, c, d, f;
-    for (a = 0; a < popupCount; a++) 20 <= popupLife[a] ? drawTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0) : (b = popupColor[a] >> 16 & 255, c = popupColor[a] >> 8 & 255, d = popupColor[a] & 255, f = floor(255 * min(popupLife[a], 20) / 20), drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7))
+function drawPopups() { // Fg
+    let a, b, c, d, f;
+    for (a = 0; a < popupCount; a++) 
+        (20 <= popupLife[a]) 
+            ? drawTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0) 
+            : (
+                b = popupColor[a] >> 16 & 255,
+                c = popupColor[a] >> 8 & 255, 
+                d = popupColor[a] & 255, 
+                f = floor(255 * min(popupLife[a], 20) / 20), 
+                drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7)
+            )
 }
 var ym = 0,
     zm = Array(100);

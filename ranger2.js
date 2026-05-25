@@ -5033,10 +5033,41 @@ mainWindow.fff = updateDrops;
 
 function updateDrops() { // zg
     let a, b, c;
-    for (a = b = 0; a < dropCount; a++) b += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a];
+    for (a = b = 0; a < dropCount; a++) 
+        b += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a];
     dropScore != b && (frameBufferArray = null);
-    for (a = 0; a < dropCount; a++) dropVel[a].y += .04, Vec2Scale(dropVel[a], .98), c = clamp(dropPos[a].y + dropVel[a].y, 8, 8 * stageHeight + 16 - 1), b = getStageTileAt(dropPos[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < dropVel[a].y || (dropPos[a].y = c), c > 8 * stageHeight + 12 ? (isBadgeIncompleteForCurrentStage(29) && 2 == dropType[a] && IncrementBadgeCount(29), removeDrop(a--)) : (c = clamp(dropPos[a].x + dropVel[a].x, 16, 623), b = getStageTileAt(c, dropPos[a].y), 0 <= b && 23 >= b || (dropPos[a].x = c), 100 > dropState[a] ? dropState[a]++ : -1 != ti(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1) && (2 == dropType[a] ? (partyGold = clamp(partyGold + dropValue[a], 0, 9999999), spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960)) : 3 == dropType[a] ? (db[dropValue[a]] = 1, eb++) :
-        itemForgeLvls[dropType[a]] < dropValue[a] && (itemForgeLvls[dropType[a]] = dropValue[a], ac[dropType[a]] = 1), isBadgeIncompleteForCurrentStage(24) && 2 == dropType[a] && 225 <= dropValue[a] && IncrementBadgeCount(24), removeDrop(a--)))
+    for (a = 0; a < dropCount; a++) 
+        dropVel[a].y += .04, 
+        Vec2Scale(dropVel[a], .98), 
+        c = clamp(dropPos[a].y + dropVel[a].y, 8, 8 * stageHeight + 16 - 1), 
+        b = getStageTileAt(dropPos[a].x, c), 
+        (0 <= b && 23 >= b) || 24 <= b && 26 >= b && 0 < dropVel[a].y || (dropPos[a].y = c), 
+        (c > 8 * stageHeight + 12) 
+            ? (
+                isBadgeIncompleteForCurrentStage(29) && 2 == dropType[a] && IncrementBadgeCount(29), 
+                removeDrop(a--)
+            )
+            : (
+                c = clamp(dropPos[a].x + dropVel[a].x, 16, 623), 
+                b = getStageTileAt(c, dropPos[a].y), 
+                0 <= b && 23 >= b || (dropPos[a].x = c), 
+                (100 > dropState[a]) 
+                    ? dropState[a]++ 
+                    : -1 != ti(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1) && (
+                        (2 == dropType[a]) 
+                            ? (
+                                partyGold = clamp(partyGold + dropValue[a], 0, 9999999), 
+                                spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960)
+                            ) 
+                            : (3 == dropType[a]) 
+                                ? (db[dropValue[a]] = 1, eb++) 
+                                : itemForgeLvls[dropType[a]] < dropValue[a] && (
+                                    itemForgeLvls[dropType[a]] = dropValue[a], 
+                                    ac[dropType[a]] = 1),
+                        isBadgeIncompleteForCurrentStage(24) && 2 == dropType[a] && 225 <= dropValue[a] && IncrementBadgeCount(24), 
+                        removeDrop(a--)
+                    )
+            )
 }
 mainWindow.fff = drawDrops;
 

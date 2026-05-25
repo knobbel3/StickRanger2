@@ -3735,36 +3735,71 @@ function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $
 }
 mainWindow.fff = Ei;
 
-function Ei(a, b, c, d) { // Ei
-    var f = a - c,
-        g = b - d;
-    c = a + c;
-    d = b + d;
+/**
+ * finds the closest living enemy to a center point inside an axis-aligned rectangle that is not blocked by stage tiles (ray-stepped line-of-sight check). Returns the index of that enemy or -1 if none found.
+ */
+function findEnemyInArea(cx, cy, rx, ry) { // Ei
+    let f = cx - rx,
+        g = cy - ry;
+    rx = cx + rx;
+    ry = cy + ry;
     for (var h, k, p, t = new Vec2, l = new Vec2, n = 1E3, w = -1, B = 0; B < enemyCount; B++)
         if (0 != enemyHealthArray[B]) {
             h = Lk[enemyCatalog[enemyTypeArray[B]][enemyBehaviorCol]] * enemyCatalog[enemyTypeArray[B]][enemyAttr5];
             k = Mk[enemyCatalog[enemyTypeArray[B]][enemyBehaviorCol]] * enemyCatalog[enemyTypeArray[B]][enemyAttr5];
-            if (enemyUpdateFuncIdxArray[B] == uk || enemyUpdateFuncIdxArray[B] == vk) k = 3 * Y[B] + 5 * enemyCatalog[enemyTypeArray[B]][enemyAttr5];
+            if (enemyUpdateFuncIdxArray[B] == uk || enemyUpdateFuncIdxArray[B] == vk) 
+                k = 3 * Y[B] + 5 * enemyCatalog[enemyTypeArray[B]][enemyAttr5];
             p = Q[B][yi];
-            if (!(p.x - h > c || p.x + h < f || p.y - k > d || p.y + k < g)) {
-                l.x = p.x - a;
-                l.y = p.y - b;
+            if (!(p.x - h > rx || p.x + h < f || p.y - k > ry || p.y + k < g)) {
+                l.x = p.x - cx;
+                l.y = p.y - cy;
                 k = Vec2Mag(l);
                 h = (k >> 3) + 1;
                 Vec2Scale(l, 1 / h);
-                Vec2Set(t, a, b);
+                Vec2Set(t, cx, cy);
                 for (var M = 0; M <= h; M++) {
                     p = getStageTileAt(t.x, t.y);
                     if (0 <= p && 29 >= p) break;
                     t.add(l)
                 }
-                M > h && k < n && (n = k, w = B)
+                (M > h && k < n) && (n = k, w = B)
             }
         } return w
 }
 mainWindow.fff = applyEffectToEnemies;
 
 // effects
+/**
+ * applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration,
+ *                     damageMin, damageMax, centerPos, directionVec, width, height)
+ *
+ * Params:
+ * - applyFlag (int): 0 = actually apply damage/status; non-zero alters behaviour (keeps probing).
+ * - shapeMode (int): 0 = axis-aligned box centered at `centerPos`; 1 = directional sweep using `directionVec`.
+ * - maxTargets (int): maximum number of enemies to affect (decremented per hit).
+ * - effectType (int): effect/damage mode:
+ *     0 = normal damage (flat reduction by enemyAttr39),
+ *     1 = percent-adjusted damage (uses enemyAttr40),
+ *     2 = skip/stun (sets skip duration/probability using enemyAttr41),
+ *     3 = percent-adjusted damage (uses enemyAttr42),
+ *     4 = damage-per-frame / DoT (uses enemyAttr43),
+ *     5 = freeze (uses enemyAttr44).
+ * - effectDuration (int): duration value used for status effects (frames).
+ * - damageMin (int): minimum damage (inclusive).
+ * - damageMax (int): maximum damage (inclusive).
+ * - centerPos (Vec2): effect origin / center position.
+ * - directionVec (Vec2): normalized direction for `shapeMode == 1` (sweep vector).
+ * - width (number): full effect width (function halves it internally).
+ * - height (number): full effect height (function halves it internally).
+ *
+ * Notes:
+ * - Performs per-enemy bounding checks, stepwise tile line-of-sight checks via `getStageTileAt`,
+ *   and skips enemies blocked by tiles.
+ * - Spawns damage popups, updates enemy health/status arrays, badge counters, and global damage totals.
+ *
+ * Returns:
+ * - (int) index of the last enemy hit, or -1 if none were hit.
+ */
 function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
     var n = -1,
         w, B, M, J, y, x, K = new Vec2,

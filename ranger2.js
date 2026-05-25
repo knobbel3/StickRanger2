@@ -1232,7 +1232,7 @@ function drawCanvas() {
             ),
                 updatePartyStats(), updateStageEdgeSpawns(), xg(),
                 drawGameStage(), updatePlayerParty(),
-                updateEnemies(), zg(), updatePopups(), Bg(), Cg(), Dg(),
+                updateEnemies(), updateDrops(), updatePopups(), Bg(), Cg(), drawDrops(),
                 drawPlayerParty(),
                 Eg(), drawPopups(),
 
@@ -2057,7 +2057,7 @@ function drawGameUI() {
         for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, drawScaledTintedTextCentered(gameFontSmall,
             b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         if (!c)
-            for (Fc[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), Gh(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
+            for (Fc[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         else if (1 == c)
             for (Fc[c] = 1, hidx = 0; 4 > hidx; hidx++)
                 for (b = 0; b < partyStats.length; b++) partySP[hidx] += partyStats[b][hidx],
@@ -3105,7 +3105,7 @@ function loadLevelData(a) {
         if ($i < b) $i = b;
     }
     popupCount = projectileCount = 0;
-    bj();
+    clearDrops();
     cj();
     return true
 }
@@ -3273,7 +3273,7 @@ function xg() { // xg
                 a = 1;
                 1 > randFloat(200) ? a = 100 : 1 > randFloat(14) && (a = 7);
                 a = floor(a * (100 + Vb) / 100);
-                Gh(8 * n +
+                spawnDrop(8 * n +
                     4, 8 * w + 4, 2, a, 0);
                 isBadgeIncompleteForCurrentStage(3) && IncrementBadgeCount(3);
                 if (13 == currentStage)
@@ -3294,10 +3294,10 @@ function xg() { // xg
         if (3 == currentStage) {
             1 == partyMemberCount && 0 == V[0] && (resetHeroPose(partyMemberCount, 25, 14), partyMemberCount++);
             2 <= partyMemberCount && (fillStageTilesRect(25, 13, 25, 14, 64), fillStageTilesRect(31, 11, 31, 14, 64));
-            1 == db[0] ? fillStageTilesRect(11, 30, 11, 30, 63) : 32 == stageTileData[30][11] ? 0 == V[1] && fillStageTilesRect(11, 30, 11, 30, 55) : 55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (fillStageTilesRect(11, 30, 11, 30, 63), Gh(92,
+            1 == db[0] ? fillStageTilesRect(11, 30, 11, 30, 63) : 32 == stageTileData[30][11] ? 0 == V[1] && fillStageTilesRect(11, 30, 11, 30, 55) : 55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (fillStageTilesRect(11, 30, 11, 30, 63), spawnDrop(92,
                 244, 3, 0, 0));
             0 == Xi[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f && (spawnEnemy(14, 41, 15, 2), spawnEnemy(16, 41, 15, 2), spawnEnemy(18, 41, 15, 2), V[2] = 3, Xi[2] = 3);
-            1 == db[1] ? fillStageTilesRect(16, 41, 16, 41, 63) : 32 == stageTileData[41][16] ? 0 == V[2] && 0 != Xi[2] && fillStageTilesRect(16, 41, 16, 41, 55) : 55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (fillStageTilesRect(16, 41, 16, 41, 63), Gh(132, 332, 3, 1, 0));
+            1 == db[1] ? fillStageTilesRect(16, 41, 16, 41, 63) : 32 == stageTileData[41][16] ? 0 == V[2] && 0 != Xi[2] && fillStageTilesRect(16, 41, 16, 41, 55) : 55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (fillStageTilesRect(16, 41, 16, 41, 63), spawnDrop(132, 332, 3, 1, 0));
             if (isBadgeIncompleteForCurrentStage(7)) {
                 for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
                 3 == b && IncrementBadgeCount(7)
@@ -3329,7 +3329,7 @@ function xg() { // xg
                         c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) spawnEnemy(randIntRange(56, 69), randIntRange(42, 43), c, 1), V[1]++, Xi[1]++;
             c = 43;
             d = 30;
-            1 == db[2] ? fillStageTilesRect(c, d, c, d, 63) : 32 == stageTileData[d][c] ? 0 == V[2] && fillStageTilesRect(c, d, c, d, 55) : 55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (fillStageTilesRect(c, d, c, d, 63), Gh(8 * c + 4, 8 * d + 4, 3, 2, 0));
+            1 == db[2] ? fillStageTilesRect(c, d, c, d, 63) : 32 == stageTileData[d][c] ? 0 == V[2] && fillStageTilesRect(c, d, c, d, 55) : 55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (fillStageTilesRect(c, d, c, d, 63), spawnDrop(8 * c + 4, 8 * d + 4, 3, 2, 0));
             if (1 == Xi[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
                 for (a = 0; 15 > a; a++) spawnEnemy(randIntRange(61, 76), 21, 28, 9), V[9]++, Xi[9]++;
             isBadgeIncompleteForCurrentStage(21) && 0 == V[2] && 0 == Og && IncrementBadgeCount(21);
@@ -3413,7 +3413,7 @@ function xg() { // xg
             isBadgeIncompleteForCurrentStage(66) && 0 == V[0] && !Hi && IncrementBadgeCount(66);
             isBadgeIncompleteForCurrentStage(68) && 0 == V[6] && 5 == V[5] && IncrementBadgeCount(68)
         } else 18 == currentStage ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = randInt(3), spawnEnemy(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60) && (c = randIntRange(8, 23), spawnEnemy(c, 10, 83, 10), V[10]++,
-            Xi[10]++), !isBadgeIncompleteForCurrentStage(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !isBadgeIncompleteForCurrentStage(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == stageTileData[d][c] && (19 == Xi[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of[1] && (fillStageTilesRect(47, 15, 50, 15, 24), fillStageTilesRect(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == db[4] ? fillStageTilesRect(70, 34, 70, 34, 63) : 55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (fillStageTilesRect(70, 34, 70, 34, 63), Gh(564, 276, 3, 4, 0)))
+            Xi[10]++), !isBadgeIncompleteForCurrentStage(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !isBadgeIncompleteForCurrentStage(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == stageTileData[d][c] && (19 == Xi[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of[1] && (fillStageTilesRect(47, 15, 50, 15, 24), fillStageTilesRect(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == db[4] ? fillStageTilesRect(70, 34, 70, 34, 63) : 55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (fillStageTilesRect(70, 34, 70, 34, 63), spawnDrop(564, 276, 3, 4, 0)))
 }
 iterIdxTemp_1 = 0;
 const enemyAttr0 = iterIdxTemp_1++,
@@ -3904,9 +3904,9 @@ function cl(a) { // cl
     for (b = enemyAttr67; b < enemyAttr67 + 8; b += 2)
         if (c = enemyCatalog[enemyTypeArray[a]][b], 0 != c) {
             var d = floor(100 * (100 + Wb) / 100);
-            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[a]][b + 1] * (100 + Vb) / 100), Gh(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[a]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && dl(c) && Gh(Q[a][0].x, Q[a][0].y, c, 1, 0)
+            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[a]][b + 1] * (100 + Vb) / 100), spawnDrop(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[a]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(Q[a][0].x, Q[a][0].y, c, 1, 0)
         } c = floor(enemyCatalog[enemyTypeArray[a]][enemyAttr65] * (100 + Vb) / 100);
-    1 > 3 * rand() && Gh(Q[a][0].x, Q[a][0].y, 2, c, 0);
+    1 > 3 * rand() && spawnDrop(Q[a][0].x, Q[a][0].y, 2, c, 0);
     30 != drawState && Hc++;
     isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[a] &&
         IncrementBadgeCount(2);
@@ -4971,70 +4971,86 @@ function drawPopups() { // Fg
                 drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7)
             )
 }
-var ym = 0,
-    zm = Array(100);
-for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) zm[iterIdxTemp_1] = new Vec2;
-var Am = Array(100);
-for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) Am[iterIdxTemp_1] = new Vec2;
-var Bm = new Int32Array(100),
-    Cm = new Int32Array(100),
-    Dm = new Int32Array(100),
-    Em = new Int32Array(100),
-    Fm = 0;
-mainWindow.fff = bj;
+var dropCount = 0, // ym
+    dropPos = Array(100); // zm
+for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) dropPos[iterIdxTemp_1] = new Vec2;
+var dropVel = Array(100); // Am
+for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) dropVel[iterIdxTemp_1] = new Vec2;
+var dropType = new Int32Array(100), // Bm, in id
+    dropValue = new Int32Array(100), // Cm, value/amount
+    dropMeta = new Int32Array(100), // Dm, rarity/state
+    dropState = new Int32Array(100), // Em, state/lifetime
+    dropScore = 0; // Fm, aggregated score/weight for drops (sum of 7type + 3value + 11*meta)
+mainWindow.fff = clearDrops;
 
-function bj() { // bj
-    Fm = ym = 0
+function clearDrops() { // bj
+    dropScore = dropCount = 0
 }
-mainWindow.fff = Gh;
+mainWindow.fff = spawnDrop;
 
-function Gh(a, b, c, d, f) { // Gh
-    if (100 != ym)
-        for (a = clamp(a, 16, 623), b = clamp(b, 8, 351), Vec2Set(zm[ym], a, b), Am[ym].x = mouseXCurrent < a ? randFloatRange(-.5, -1) : randFloatRange(.5, 1), Am[ym].y = randFloatRange(-1, -2), Bm[ym] = c, Cm[ym] = d, Dm[ym] = f, Em[ym] = 0, ym++, c = Fm = 0; c < ym; c++) Fm += 7 * Bm[c] + 3 * Cm[c] + 11 * Dm[c]
+function spawnDrop(a, b, c, d, f) { // Gh
+    if (100 != dropCount)
+        for (
+            a = clamp(a, 16, 623), 
+            b = clamp(b, 8, 351), 
+            Vec2Set(dropPos[dropCount], a, b), 
+            dropVel[dropCount].x = (mouseXCurrent < a) 
+                        ? randFloatRange(-.5, -1) 
+                        : randFloatRange(.5, 1), 
+            dropVel[dropCount].y = randFloatRange(-1, -2), 
+            dropType[dropCount] = c, 
+            dropValue[dropCount] = d, 
+            dropMeta[dropCount] = f, 
+            dropState[dropCount] = 0, 
+            dropCount++, 
+            c = dropScore = 0; // end initialization
+            c < dropCount; // condition
+            c++ // repeat
+        ) dropScore += 7 * dropType[c] + 3 * dropValue[c] + 11 * dropMeta[c]
 }
-mainWindow.fff = Gm;
+mainWindow.fff = removeDrop;
 
-function Gm(a) { // Gm
-    ym--;
-    zm[a].set(zm[ym]);
-    Am[a].set(Am[ym]);
-    Bm[a] = Bm[ym];
-    Cm[a] = Cm[ym];
-    Dm[a] = Dm[ym];
-    Em[a] = Em[ym];
-    for (a = Fm = 0; a < ym; a++) Fm += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a]
+function removeDrop(a) { // Gm
+    dropCount--;
+    dropPos[a].set(dropPos[dropCount]);
+    dropVel[a].set(dropVel[dropCount]);
+    dropType[a] = dropType[dropCount];
+    dropValue[a] = dropValue[dropCount];
+    dropMeta[a] = dropMeta[dropCount];
+    dropState[a] = dropState[dropCount];
+    for (a = dropScore = 0; a < dropCount; a++) dropScore += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a]
 }
-mainWindow.fff = dl;
+mainWindow.fff = isDropTypeAbsent;
 
-function dl(a) { // dl
-    if (2 == a) return true;
-    var b;
-    for (b = 0; b < ym; b++)
-        if (Bm[b] == a) return false;
+function isDropTypeAbsent(typeIdx) { // dl
+    if (2 == typeIdx) return true;
+    let b;
+    for (b = 0; b < dropCount; b++)
+        if (dropType[b] == typeIdx) return false;
     return true
 }
-mainWindow.fff = zg;
+mainWindow.fff = updateDrops;
 
-function zg() { // zg
-    var a, b, c;
-    for (a = b = 0; a < ym; a++) b += 7 * Bm[a] + 3 * Cm[a] + 11 * Dm[a];
-    Fm != b && (frameBufferArray = null);
-    for (a = 0; a < ym; a++) Am[a].y += .04, Vec2Scale(Am[a], .98), c = clamp(zm[a].y + Am[a].y, 8, 8 * stageHeight + 16 - 1), b = getStageTileAt(zm[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < Am[a].y || (zm[a].y = c), c > 8 * stageHeight + 12 ? (isBadgeIncompleteForCurrentStage(29) && 2 == Bm[a] && IncrementBadgeCount(29), Gm(a--)) : (c = clamp(zm[a].x + Am[a].x, 16, 623), b = getStageTileAt(c, zm[a].y), 0 <= b && 23 >= b || (zm[a].x = c), 100 > Em[a] ? Em[a]++ : -1 != ti(zm[a].x, zm[a].y - 6, 12, 12, 1) && (2 == Bm[a] ? (partyGold = clamp(partyGold + Cm[a], 0, 9999999), spawnPopup(zm[a].x, zm[a].y, 0, Cm[a], 60, 16776960)) : 3 == Bm[a] ? (db[Cm[a]] = 1, eb++) :
-        itemForgeLvls[Bm[a]] < Cm[a] && (itemForgeLvls[Bm[a]] = Cm[a], ac[Bm[a]] = 1), isBadgeIncompleteForCurrentStage(24) && 2 == Bm[a] && 225 <= Cm[a] && IncrementBadgeCount(24), Gm(a--)))
+function updateDrops() { // zg
+    let a, b, c;
+    for (a = b = 0; a < dropCount; a++) b += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a];
+    dropScore != b && (frameBufferArray = null);
+    for (a = 0; a < dropCount; a++) dropVel[a].y += .04, Vec2Scale(dropVel[a], .98), c = clamp(dropPos[a].y + dropVel[a].y, 8, 8 * stageHeight + 16 - 1), b = getStageTileAt(dropPos[a].x, c), 0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < dropVel[a].y || (dropPos[a].y = c), c > 8 * stageHeight + 12 ? (isBadgeIncompleteForCurrentStage(29) && 2 == dropType[a] && IncrementBadgeCount(29), removeDrop(a--)) : (c = clamp(dropPos[a].x + dropVel[a].x, 16, 623), b = getStageTileAt(c, dropPos[a].y), 0 <= b && 23 >= b || (dropPos[a].x = c), 100 > dropState[a] ? dropState[a]++ : -1 != ti(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1) && (2 == dropType[a] ? (partyGold = clamp(partyGold + dropValue[a], 0, 9999999), spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960)) : 3 == dropType[a] ? (db[dropValue[a]] = 1, eb++) :
+        itemForgeLvls[dropType[a]] < dropValue[a] && (itemForgeLvls[dropType[a]] = dropValue[a], ac[dropType[a]] = 1), isBadgeIncompleteForCurrentStage(24) && 2 == dropType[a] && 225 <= dropValue[a] && IncrementBadgeCount(24), removeDrop(a--)))
 }
-mainWindow.fff = Dg;
+mainWindow.fff = drawDrops;
 
-function Dg() { // Dg
-    var a;
+function drawDrops() { // Dg
+    let a;
     fh = 2;
-    for (a = 0; a < ym; a++)
-        (100 == Em[a] || Em[a] & 6) &&
+    for (a = 0; a < dropCount; a++)
+        (100 == dropState[a] || dropState[a] & 6) &&
             drawSpriteSheetPart(droppedItemSpriteSheet,
-                zm[a].x - 6, zm[a].y - 12,
+                dropPos[a].x - 6, dropPos[a].y - 12,
                 12, 12,
-                12 * itemList[Bm[a]][itemDropIconCol], 0,
+                12 * itemList[dropType[a]][itemDropIconCol], 0,
                 12, 12,
-                itemList[Bm[a]][itemSpriteLocXCol]
+                itemList[dropType[a]][itemSpriteLocXCol]
             );
     fh = 0
 }

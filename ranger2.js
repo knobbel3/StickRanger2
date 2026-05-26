@@ -57,15 +57,15 @@ var partyMemberCount = 1,
     partySP = [0, 0, 0, 0],
     partyLP = [50, 50, 50, 50],
     partyMaxLP = [50, 50, 50, 50],
-    $a = [0, 0, 0, 0], // $a
+    heroEmitCurrent = [0, 0, 0, 0], // $a
     heroEmitValues = [0, 0, 0, 0],
     heroChargeValues = [0, 0, 0, 0],
     cb = [0, 0, 0, 0], // cb
-    db = [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    eb = 0, // eb
-    hb = 0, // hb
-    ib = [0, 0, 0, 0], // ib
-    kb = 0, // kb
+    stageEventFlags = [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    collectedStageFlagsCount = 0, // eb
+    stageFlagsSetCount = 0, // hb
+    autoMoveEnabled = [0, 0, 0, 0], // ib
+    cliffStopEnabled = 0, // kb
     partyHealthLvls = [0, 0, 0, 0],
     partyShortAtkLvls = [0, 0, 0, 0],
     partyMidAtkLvls = [0, 0, 0, 0],
@@ -115,27 +115,31 @@ var partyMemberCount = 1,
     Zb = -1, // Zb
     itemForgeLvls = Array(256);
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemForgeLvls[iterIdxTemp_1] = 0;
-var ac = Array(256);
-for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) ac[iterIdxTemp_1] = 0;
-mainWindow.fff = bc;
+var itemIsNew = Array(256); // ac, 
+for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemIsNew[iterIdxTemp_1] = 0;
+mainWindow.fff = resetGameProgress;
 
-function bc() { // bc
+function resetGameProgress() { // bc
     let a, b;
     resetUIStates();
     partyLevel = partyMemberCount = 1;
-    for (a = partyGold = partyEXPAccum = 0; 4 > a; a++) partySP[a] = 0, partyLP[a] = 50, partyMaxLP[a] = 50, $a[a] = 0;
-    for (a = 0; 9 > a; a++) db[a] = 0;
-    for (b = hb = eb = 0; b < partyStats.length; b++)
+    for (a = partyGold = partyEXPAccum = 0; 4 > a; a++) 
+        partySP[a] = 0, 
+        partyLP[a] = 50, 
+        partyMaxLP[a] = 50, 
+        heroEmitCurrent[a] = 0;
+    for (a = 0; 9 > a; a++) stageEventFlags[a] = 0;
+    for (b = stageFlagsSetCount = collectedStageFlagsCount = 0; b < partyStats.length; b++)
         for (a = 0; 4 > a; a++) partyStats[b][a] = 0;
     for (a = 0; 4 > a; a++)
         for (b = 0; 8 > b; b++) partyEquipmentTable[a][b] = 0;
-    for (a = 0; 256 > a; a++) itemForgeLvls[a] = 0, ac[a] = 0;
+    for (a = 0; 256 > a; a++) itemForgeLvls[a] = 0, itemIsNew[a] = 0;
     for (a = 0; a < stageCount; a++) isStageReachedArray[a] = 0;
-    for (a = 0; a < enemyTypeCount; a++) Bc[a] = 0;
+    for (a = 0; a < enemyTypeCount; a++) bestiaryEntryState[a] = 0;
     for (a = 0; a < badgeCount; a++) badgeCounterArray[a] = 0;
-    for (a = 0; a < Ec; a++) Fc[a] = 0;
-    for (a = 0; 4 > a; a++) ib[a] = 0;
-    kb = 0
+    for (a = 0; a < Ec; a++) shrineRewardClaimed[a] = 0;
+    for (a = 0; 4 > a; a++) autoMoveEnabled[a] = 0;
+    cliffStopEnabled = 0
 }
 mainWindow.fff = resetUIStates;
 
@@ -187,7 +191,7 @@ const itemNameCol = iterIdxTemp_1++,
     md = iterIdxTemp_1++, // md
     nd = iterIdxTemp_1++, // nd
     od = iterIdxTemp_1++, // od
-    pd = iterIdxTemp_1++, // pd
+    pd = iterIdxTemp_1++, // pd 
     qd = iterIdxTemp_1++, // qd
     rd = iterIdxTemp_1++, // rd
     sd = iterIdxTemp_1++, // sd
@@ -639,11 +643,11 @@ function IncrementBadgeCount(badgeIndex) {
         var b = 0;
         badgeIndex = badgeList[badgeIndex][2];
         for (var c = 0; c < badgeList.length; c++) badgeList[c] && badgeIndex == badgeList[c][2] && badgeCounterArray[c] == badgeList[c][4] && b++;
-        5 == b && (itemForgeLvls[ef[badgeIndex]] = 1, ac[ef[badgeIndex]] = 1)
+        5 == b && (itemForgeLvls[ef[badgeIndex]] = 1, itemIsNew[ef[badgeIndex]] = 1)
     }
 }
 var Ec = 10,
-    Fc = Array(Ec);
+    shrineRewardClaimed = Array(Ec);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < Ec; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
 var shrineRewardOptions = [
     ["Gold Shower", 15],
@@ -711,27 +715,27 @@ function saveGame() {
     for (b = gameSaveBuffer[a++] = 0; 256 > b; b++) gameSaveBuffer[a++] = itemForgeLvls[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = 10;
-    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = db[b];
-    gameSaveBuffer[a++] = eb;
+    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = stageEventFlags[b];
+    gameSaveBuffer[a++] = collectedStageFlagsCount;
     gameSaveBuffer[a++] = stageCount >> 6 & 63;
     gameSaveBuffer[a++] = stageCount >> 0 & 63;
     for (b = 0; b < stageCount; b++) gameSaveBuffer[a++] = isStageReachedArray[b];
     gameSaveBuffer[a++] = enemyTypeCount >> 6 & 63;
     gameSaveBuffer[a++] = enemyTypeCount >> 0 & 63;
-    for (b = 0; b < enemyTypeCount; b++) gameSaveBuffer[a++] = Bc[b];
+    for (b = 0; b < enemyTypeCount; b++) gameSaveBuffer[a++] = bestiaryEntryState[b];
 
     let f = 5;
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
     for (b = 0; 4 > b; b++)
-        gameSaveBuffer[a++] = ib[b];
-    gameSaveBuffer[a++] = kb;
+        gameSaveBuffer[a++] = autoMoveEnabled[b];
+    gameSaveBuffer[a++] = cliffStopEnabled;
     gameSaveBuffer[a++] = badgeCount >> 6 & 63;
     gameSaveBuffer[a++] = badgeCount >> 0 & 63;
     for (b = 0; b < badgeCount; b++) gameSaveBuffer[a++] = badgeCounterArray[b];
     gameSaveBuffer[a++] = Ec >> 6 & 63;
     gameSaveBuffer[a++] = Ec >> 0 & 63;
-    for (b = 0; b < Ec; b++) gameSaveBuffer[a++] = Fc[b];
+    for (b = 0; b < Ec; b++) gameSaveBuffer[a++] = shrineRewardClaimed[b];
     f = 4;
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
@@ -785,7 +789,7 @@ function loadGame(saveString) {
     if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4; // load err
     for (b = 0; 8 > b; b++)
         if (gameSaveBuffer[b + 5] != userSaveKey[b]) return 5; // user err
-    bc();
+    resetGameProgress();
 
     let p = 0;
     p++; p++; p++; p++; p++;
@@ -808,25 +812,25 @@ function loadGame(saveString) {
 
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; 9 > b; b++) db[b] = gameSaveBuffer[p++];
-    eb = gameSaveBuffer[p++];
+    for (b = 0; 9 > b; b++) stageEventFlags[b] = gameSaveBuffer[p++];
+    collectedStageFlagsCount = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     for (b = 0; b < g; b++) isStageReachedArray[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; b < g; b++) Bc[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) bestiaryEntryState[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     if (5 <= g) {
-        for (b = 0; 4 > b; b++) ib[b] = gameSaveBuffer[p++];
-        kb = gameSaveBuffer[p++]
+        for (b = 0; 4 > b; b++) autoMoveEnabled[b] = gameSaveBuffer[p++];
+        cliffStopEnabled = gameSaveBuffer[p++]
     }
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     for (b = 0; b < g; b++) badgeCounterArray[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) Fc[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) shrineRewardClaimed[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     for (b = 0; b < g; b++) of[b] = gameSaveBuffer[p++];
@@ -859,7 +863,7 @@ function updatePartyChecksum() {
         c = hashAdjust(c, partySP[a]),
             c = hashAdjust(c, partyLP[a]),
             c = hashAdjust(c, partyMaxLP[a]),
-            c = hashAdjust(c, $a[a]),
+            c = hashAdjust(c, heroEmitCurrent[a]),
             c = hashAdjust(c, heroEmitValues[a]),
             c = hashAdjust(c, heroChargeValues[a]),
             c = hashAdjust(c, partyHealthLvls[a]),
@@ -874,12 +878,12 @@ function updatePartyChecksum() {
             c = hashAdjust(c, partyEquipmentTable[a][b]);
 
     for (a = 0; 256 > a; a++) c = hashAdjust(c, itemForgeLvls[a]);
-    for (a = 0; 9 > a; a++) c = hashAdjust(c, db[a]);
-    c = hashAdjust(c, eb);
+    for (a = 0; 9 > a; a++) c = hashAdjust(c, stageEventFlags[a]);
+    c = hashAdjust(c, collectedStageFlagsCount);
     for (a = 0; a < stageCount; a++) c = hashAdjust(c, isStageReachedArray[a]);
-    for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, Bc[a]);
+    for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, bestiaryEntryState[a]);
     for (a = 0; a < badgeCount; a++) c = hashAdjust(c, badgeCounterArray[a]);
-    for (a = 0; a < Ec; a++) c = hashAdjust(c, Fc[a]);
+    for (a = 0; a < Ec; a++) c = hashAdjust(c, shrineRewardClaimed[a]);
     partyChecksum = c ^ 16777215
 }
 
@@ -1196,7 +1200,7 @@ function drawCanvas() {
         } else if (4 == drawState || 5 == drawState)
             4 == drawState
                 ? (
-                    bc(),
+                    resetGameProgress(),
                     partyEquipmentTable[0][0] = 4,
                     currentStage = itemForgeLvls[4] = 1,
                     partySpawnXs[0] = 20,
@@ -1285,7 +1289,7 @@ function drawCanvas() {
                     }
                     for (a = 0; a < partyMemberCount; a++)
                         partyLP[a] = 1,
-                            $a[a] = 0;
+                            heroEmitCurrent[a] = 0;
 
                     saveGame();
                     for (a = 0; a < partyMemberCount; a++)
@@ -1315,7 +1319,7 @@ function drawCanvas() {
                     drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
                     100 == sa && isMouseClicked
                 )) {
-                for (a = 0; 4 > a; a++) partyLP[a] = 1, $a[a] = 0;
+                for (a = 0; 4 > a; a++) partyLP[a] = 1, heroEmitCurrent[a] = 0;
                 ug = 0;
                 drawState = 10;
                 currentStage = 1;
@@ -1427,7 +1431,7 @@ function updatePartyStats() {
         if (heroHasAccessoryEffect(hidx, te) && 0 < heroEmitValues[hidx])
             heroEmitValues[hidx] = max(heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, te), 1);
 
-        $a[hidx] = clamp($a[hidx], 0, heroEmitValues[hidx]);
+        heroEmitCurrent[hidx] = clamp(heroEmitCurrent[hidx], 0, heroEmitValues[hidx]);
     }
 
     // weapons 
@@ -1486,7 +1490,7 @@ function updatePartyStats() {
             heroHasAccessoryEffect(hidx, Fe) && (Xb += countAccessoryLvlBonuses(hidx, Fe)),
             heroHasAccessoryEffect(hidx, Me) && (Vg += 60 * countAccessoryLvlBonuses(hidx, Me));
     Ic = clamp(Ic, 0, Vg);
-    for (let hidx = hb = 0; 9 > hidx; hidx++) 1 == db[hidx] && hb++
+    for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
 }
 mainWindow.fff = Wg;
 
@@ -1596,7 +1600,7 @@ function drawGameUI() {
         drawRect(f + hidx * d + 28, g + 8, floor(48 * partyLP[hidx] / partyMaxLP[hidx]), 7, 10027008);
         drawText(gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
         drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
-        drawRect(f + hidx * d + 28, g + 17, 48 * $a[hidx] / max(heroEmitValues[hidx], 1), 5, 221);
+        drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / max(heroEmitValues[hidx], 1), 5, 221);
         buttonCheck(f + hidx * d, g, 24, 24) && (Xg(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && selectingHero == hidx && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (selectingHero = hidx));
         for (b = 0; 5 > b; b++) {
             c = partyEquipmentTable[hidx][b];
@@ -1612,14 +1616,14 @@ function drawGameUI() {
     f = 472;
     g = 379;
     d = 36;
-    if (drawIconButton(f + -1 * d, g, 13, "" + eb + "/" + hb, 16777215) && isMouseClicked) {
+    if (drawIconButton(f + -1 * d, g, 13, "" + collectedStageFlagsCount + "/" + stageFlagsSetCount, 16777215) && isMouseClicked) {
         for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
-        if (0 < c && 0 < eb) {
+        if (0 < c && 0 < collectedStageFlagsCount) {
             for (hidx = 0; hidx < partyMemberCount; hidx++) {
                 partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
                 partyLP[hidx] = partyMaxLP[hidx];
             }
-            eb--;
+            collectedStageFlagsCount--;
             jh++;
         }
     }
@@ -1629,7 +1633,7 @@ function drawGameUI() {
     drawIconButton(f + 3 * d, g, 4, "MEDAL", isBadgesUIVisible ? 16750950 : 16777215) && isMouseClicked && (isBadgesUIVisible = !isBadgesUIVisible) && (isBestiaryVisible = false);
     drawIconButton(f + 4 * d, g, 5, "OPTION", isOptionsVisible ? 16750950 : 16777215) && isMouseClicked && (isOptionsVisible = !isOptionsVisible);
     c = 0;
-    for (b = ac.length - 1; 0 <= b; b--) c += ac[b];
+    for (b = itemIsNew.length - 1; 0 <= b; b--) c += itemIsNew[b];
     0 < c && drawText(gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
     if (1 == currentStage) {
         gameFont.a = 1;
@@ -1638,7 +1642,7 @@ function drawGameUI() {
             for (hidx = c = 0; hidx < partyMemberCount; hidx++) 
                 c += partyMaxLP[hidx] - partyLP[hidx];
             0 < c && (c = 10);
-            c += 10 * (hb - eb);
+            c += 10 * (stageFlagsSetCount - collectedStageFlagsCount);
             gameFont.a = 1;
             drawTextCentered(gameFont, 530, 168, "INN", 15908203, 8409120);
             drawTextCentered(gameFont, 528, 187, "G " + c, 16777215, 8409120);
@@ -1647,8 +1651,8 @@ function drawGameUI() {
                     partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
                     partyLP[hidx] = partyMaxLP[hidx];
                 }
-                eb != hb && spawnPopup(436, 380, 0, hb - eb, 60, 65280);
-                eb = hb;
+                collectedStageFlagsCount != stageFlagsSetCount && spawnPopup(436, 380, 0, stageFlagsSetCount - collectedStageFlagsCount, 60, 65280);
+                collectedStageFlagsCount = stageFlagsSetCount;
                 partyGold = clamp(partyGold - c, 0, 9999999);
             }
         }
@@ -1901,12 +1905,12 @@ function drawGameUI() {
         drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (isInventoryVisible = false);
         for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
             0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
-                0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (ac[c] = 0)), 0 < ac[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
+                0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (itemIsNew[c] = 0)), 0 < itemIsNew[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
             drawMenuButton(_ox + 12 + 28 * hidx, _oy + 238, hidx, k[hidx], Na == hidx ? 16737894 : 16777215) && isMouseClicked && (Na = hidx);
             c = 0;
-            for (b = Jc[hidx].length - 1; 0 <= b; b--) c += ac[Jc[hidx][b]];
+            for (b = Jc[hidx].length - 1; 0 <= b; b--) c += itemIsNew[Jc[hidx][b]];
             0 < c && drawText(gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1)
         }
         drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked && Oa--;
@@ -1927,10 +1931,10 @@ function drawGameUI() {
         if (0 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
             drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         } else {
-            if (0 == Bc[c]) {
+            if (0 == bestiaryEntryState[c]) {
                 h = enemyCatalog[c][enemyAttr66], 
                 drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (
-                    partyGold = clamp(partyGold - h, 0, 9999999), Bc[c] = 1
+                    partyGold = clamp(partyGold - h, 0, 9999999), bestiaryEntryState[c] = 1
                 )
             } else {
                 drawText(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyAttr0], 16777215, 0); 
@@ -1945,11 +1949,11 @@ function drawGameUI() {
                 0 != enemyCatalog[c][enemyAttr43] && (drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224), b += 13); 
                 0 < b && drawText(gameFontMed, f, g + 48, "RES ", 16777215, 0); 
                 drawText(gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0); 
-                if (1 == Bc[c]) {
+                if (1 == bestiaryEntryState[c]) {
                     h = enemyCatalog[c][enemyAttr66];
                     if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked) {
                         partyGold = clamp(partyGold - h, 0, 9999999);
-                        Bc[c] = 2;
+                        bestiaryEntryState[c] = 2;
                     }
                 } else {
                     for (d = b = 0; 4 > b; b++) {
@@ -2043,12 +2047,12 @@ function drawGameUI() {
             drawLine(f + 72 + hidx * d + 6, g + 43, f + 72 + hidx * d + 17, g + 43, 15908203);
             for (b = 0; 11 > b; b++) l[b].x = f + 72 + hidx * d + p[b], l[b].y = g + 20 + t[b];
             drawHero(hidx, l, 0, 1, 15908203, 16777215, 2);
-            drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[ib[hidx]], 16777215, 0);
-            buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40) && (Xg(f + 72 + hidx * d, g + 20, 24, 24, 8388608), drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[ib[hidx]], 16711680, 0), isMouseClicked && (ib[hidx] = 1 - ib[hidx]))
+            drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16777215, 0);
+            buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40) && (Xg(f + 72 + hidx * d, g + 20, 24, 24, 8388608), drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16711680, 0), isMouseClicked && (autoMoveEnabled[hidx] = 1 - autoMoveEnabled[hidx]))
         }
         drawText(gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
-        drawText(gameFontMed, f + 78, g + 64, c[kb], 16777215, 0);
-        buttonCheck(f + 0, g + 64 - 2, 192, 12) && (drawText(gameFontMed, f + 78, g + 64, c[kb], 16711680, 0), isMouseClicked && (kb = 1 - kb));
+        drawText(gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16777215, 0);
+        buttonCheck(f + 0, g + 64 - 2, 192, 12) && (drawText(gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16711680, 0), isMouseClicked && (cliffStopEnabled = 1 - cliffStopEnabled));
         1 == currentStage ? drawTextCentered(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : drawTextCentered(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = stageListArray[currentStage][stageAttr3];
@@ -2066,16 +2070,16 @@ function drawGameUI() {
         drawText(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
         for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, drawScaledTintedTextCentered(gameFontSmall,
-            b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == Fc[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
+            b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == shrineRewardClaimed[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         if (!c)
-            for (Fc[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
+            for (shrineRewardClaimed[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         else if (1 == c)
-            for (Fc[c] = 1, hidx = 0; 4 > hidx; hidx++)
+            for (shrineRewardClaimed[c] = 1, hidx = 0; 4 > hidx; hidx++)
                 for (b = 0; b < partyStats.length; b++) partySP[hidx] += partyStats[b][hidx],
                     partyStats[b][hidx] = 0;
-        else if (2 == c) Fc[c] = 1, db[3] = 1, eb++;
+        else if (2 == c) shrineRewardClaimed[c] = 1, stageEventFlags[3] = 1, collectedStageFlagsCount++;
         else if (3 == c)
-            for (Fc[c] = 1, hidx = 0; 2 > hidx; hidx++)
+            for (shrineRewardClaimed[c] = 1, hidx = 0; 2 > hidx; hidx++)
                 if (99 > partyLevel) {
                     partyEXPAccum = LevelExpThresholds[partyLevel];
                     partyLevel++;
@@ -2504,7 +2508,7 @@ mainWindow.fff = Di;
 function Di(a) { // Di
     var b = O[a][2].x,
         c = O[a][2].y;
-    if (1 != ib[a]) {
+    if (1 != autoMoveEnabled[a]) {
         var d = Ei(O[a][0].x, O[a][0].y, 200, 50);
         if (-1 != d) {
             if (0 != Yh[a])
@@ -2520,7 +2524,7 @@ function Di(a) { // Di
                     0 <= h && 26 >= h && (g = 4);
                     var k;
                     1 == f ? (k = O[a][9].x < O[a][10].x ? 7 : 8, partyBodyDrawOptions[a][2] = 1) : (k = O[a][9].x > O[a][10].x ? 7 : 8, partyBodyDrawOptions[a][2] = 0);
-                    if (!kb) {
+                    if (!cliffStopEnabled) {
                         h = getStageTileAt(b + 20 * f, c + 8 + 0);
                         var p = getStageTileAt(b + 20 * f, c + 8 + 8),
                             t = getStageTileAt(b + 20 * f, c + 8 + 16),
@@ -2588,8 +2592,8 @@ function updatePlayerParty() {
                 else if (bi != a && 0 != b && -1 != c) {
                     Zh[a] = heroAgiValues[a] + randIntRange(-1, 1);
                     partyBodyDrawOptions[a][2] = d < Q[c][yi].x ? 1 : 0;
-                    k = 0; - 1 == heroEmitValues[a] ? ($a[a] =
-                        0, fi[a] = 0) : $a[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? ($a[a] = clamp($a[a] + heroChargeValues[a], 0, heroEmitValues[a]), fi[a] = 0, heroHasAccessoryEffect(a, re) && 100 * rand() < countAccessoryLvlBonuses(a, re) && ($a[a] = heroEmitValues[a])) : ($a[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, se) && 100 * rand() < countAccessoryLvlBonuses(a, se) && ($a[a] = heroEmitValues[a]));
+                    k = 0; - 1 == heroEmitValues[a] ? (heroEmitCurrent[a] =
+                        0, fi[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), fi[a] = 0, heroHasAccessoryEffect(a, re) && 100 * rand() < countAccessoryLvlBonuses(a, re) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, se) && 100 * rand() < countAccessoryLvlBonuses(a, se) && (heroEmitCurrent[a] = heroEmitValues[a]));
                     if (0 != b)
                         if (3 == b) Vec2Sub(g, Q[c][yi], O[a][5]), Vec2Sub(h, Q[c][yi], O[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), O[a][5].add(g), O[a][4].sub(g), f.set(O[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), O[a][6].add(h), O[a][3].sub(h), f.set(O[a][6]), k = 1540, ei[a] = 1), Uh[a].set(Q[c][yi]), Vh[a] = 5;
                         else if (4 == b) {
@@ -3305,10 +3309,10 @@ function xg() { // xg
         if (3 == currentStage) {
             1 == partyMemberCount && 0 == V[0] && (resetHeroPose(partyMemberCount, 25, 14), partyMemberCount++);
             2 <= partyMemberCount && (fillStageTilesRect(25, 13, 25, 14, 64), fillStageTilesRect(31, 11, 31, 14, 64));
-            1 == db[0] ? fillStageTilesRect(11, 30, 11, 30, 63) : 32 == stageTileData[30][11] ? 0 == V[1] && fillStageTilesRect(11, 30, 11, 30, 55) : 55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (fillStageTilesRect(11, 30, 11, 30, 63), spawnDrop(92,
+            1 == stageEventFlags[0] ? fillStageTilesRect(11, 30, 11, 30, 63) : 32 == stageTileData[30][11] ? 0 == V[1] && fillStageTilesRect(11, 30, 11, 30, 55) : 55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (fillStageTilesRect(11, 30, 11, 30, 63), spawnDrop(92,
                 244, 3, 0, 0));
             0 == Xi[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f && (spawnEnemy(14, 41, 15, 2), spawnEnemy(16, 41, 15, 2), spawnEnemy(18, 41, 15, 2), V[2] = 3, Xi[2] = 3);
-            1 == db[1] ? fillStageTilesRect(16, 41, 16, 41, 63) : 32 == stageTileData[41][16] ? 0 == V[2] && 0 != Xi[2] && fillStageTilesRect(16, 41, 16, 41, 55) : 55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (fillStageTilesRect(16, 41, 16, 41, 63), spawnDrop(132, 332, 3, 1, 0));
+            1 == stageEventFlags[1] ? fillStageTilesRect(16, 41, 16, 41, 63) : 32 == stageTileData[41][16] ? 0 == V[2] && 0 != Xi[2] && fillStageTilesRect(16, 41, 16, 41, 55) : 55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (fillStageTilesRect(16, 41, 16, 41, 63), spawnDrop(132, 332, 3, 1, 0));
             if (isBadgeIncompleteForCurrentStage(7)) {
                 for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
                 3 == b && IncrementBadgeCount(7)
@@ -3340,7 +3344,7 @@ function xg() { // xg
                         c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) spawnEnemy(randIntRange(56, 69), randIntRange(42, 43), c, 1), V[1]++, Xi[1]++;
             c = 43;
             d = 30;
-            1 == db[2] ? fillStageTilesRect(c, d, c, d, 63) : 32 == stageTileData[d][c] ? 0 == V[2] && fillStageTilesRect(c, d, c, d, 55) : 55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (fillStageTilesRect(c, d, c, d, 63), spawnDrop(8 * c + 4, 8 * d + 4, 3, 2, 0));
+            1 == stageEventFlags[2] ? fillStageTilesRect(c, d, c, d, 63) : 32 == stageTileData[d][c] ? 0 == V[2] && fillStageTilesRect(c, d, c, d, 55) : 55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (fillStageTilesRect(c, d, c, d, 63), spawnDrop(8 * c + 4, 8 * d + 4, 3, 2, 0));
             if (1 == Xi[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
                 for (a = 0; 15 > a; a++) spawnEnemy(randIntRange(61, 76), 21, 28, 9), V[9]++, Xi[9]++;
             isBadgeIncompleteForCurrentStage(21) && 0 == V[2] && 0 == Og && IncrementBadgeCount(21);
@@ -3424,7 +3428,7 @@ function xg() { // xg
             isBadgeIncompleteForCurrentStage(66) && 0 == V[0] && !Hi && IncrementBadgeCount(66);
             isBadgeIncompleteForCurrentStage(68) && 0 == V[6] && 5 == V[5] && IncrementBadgeCount(68)
         } else 18 == currentStage ? (6 > Xi[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = randInt(3), spawnEnemy(a[b], 42, 83, 9), V[9]++, Xi[9]++), 9 > Xi[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60) && (c = randIntRange(8, 23), spawnEnemy(c, 10, 83, 10), V[10]++,
-            Xi[10]++), !isBadgeIncompleteForCurrentStage(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !isBadgeIncompleteForCurrentStage(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == stageTileData[d][c] && (19 == Xi[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of[1] && (fillStageTilesRect(47, 15, 50, 15, 24), fillStageTilesRect(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == db[4] ? fillStageTilesRect(70, 34, 70, 34, 63) : 55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (fillStageTilesRect(70, 34, 70, 34, 63), spawnDrop(564, 276, 3, 4, 0)))
+            Xi[10]++), !isBadgeIncompleteForCurrentStage(71) || 0 != V[7] || 0 != V[8] || Hi & 2 || IncrementBadgeCount(71), !isBadgeIncompleteForCurrentStage(72) || 0 != V[7] || 0 != V[8] || Hi & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (Xi[7] < 20 * (35 - V[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == stageTileData[d][c] && (19 == Xi[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), V[7]++, Xi[7]++)), 1 > Xi[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), V[4]++, Xi[4]++), 1 == of[1] && (fillStageTilesRect(47, 15, 50, 15, 24), fillStageTilesRect(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == stageEventFlags[4] ? fillStageTilesRect(70, 34, 70, 34, 63) : 55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (fillStageTilesRect(70, 34, 70, 34, 63), spawnDrop(564, 276, 3, 4, 0)))
 }
 iterIdxTemp_1 = 0;
 const enemyAttr0 = iterIdxTemp_1++,
@@ -3497,8 +3501,8 @@ const enemyAttr0 = iterIdxTemp_1++,
     enemyAttr67 = iterIdxTemp_1++,
     enemyTypeCount = 128,
     enemyCatalog = Array(enemyTypeCount),
-    Bc = Array(enemyTypeCount);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < enemyTypeCount; iterIdxTemp_1++) Bc[iterIdxTemp_1] = 0;
+    bestiaryEntryState = Array(enemyTypeCount); // 0/1/2
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < enemyTypeCount; iterIdxTemp_1++) bestiaryEntryState[iterIdxTemp_1] = 0;
 enemyCatalog[0] = [1, 0, 0, 0, 0, 1, 3394611, 3355443, 0, 30, 1, 0, 2, 0, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 7, 10, 9, 10, 0, 0, 71, 1E3];
 enemyCatalog[1] = [2, 0, 0, 0, 0, 1, 3394815, 3355545, 0, 60, 1, 0, 2, 0, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 5, 20, 10, 30, 0, 0, 71, 1E3];
 enemyCatalog[2] = [3, 0, 0, 0, 0, 1, 13369344, 3342336, 0, 90, 0, 2, 0, 2, 4288217088, 1, 16, 16, 8, 8, 0, 0, 20, 10, 0, 100, 0, 0, 0, 0, 3, 5, 1, 10, 50, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 6, 30, 28, 5, 0, 0, 71, 1E3];
@@ -3801,7 +3805,7 @@ mainWindow.fff = applyEffectToEnemies;
  * - (int) index of the last enemy hit, or -1 if none were hit.
  */
 function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
-    var n = -1,
+    let n = -1,
         w, B, M, J, y, x, K = new Vec2,
         ba = new Vec2,
         U, na;
@@ -5157,10 +5161,10 @@ function updateDrops() { // zg
                                 spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960)
                             ) 
                             : (3 == dropType[a]) 
-                                ? (db[dropValue[a]] = 1, eb++) 
+                                ? (stageEventFlags[dropValue[a]] = 1, collectedStageFlagsCount++) 
                                 : itemForgeLvls[dropType[a]] < dropValue[a] && (
                                     itemForgeLvls[dropType[a]] = dropValue[a], 
-                                    ac[dropType[a]] = 1),
+                                    itemIsNew[dropType[a]] = 1),
                         isBadgeIncompleteForCurrentStage(24) && 2 == dropType[a] && 225 <= dropValue[a] && IncrementBadgeCount(24), 
                         removeDrop(a--)
                     )

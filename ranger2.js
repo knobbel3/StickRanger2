@@ -296,32 +296,32 @@ function Ue(a, b) { // Ue
         if (itemList[a][itemStatModifingCol + c] == b) return itemList[a][itemStatModifingCol + c + 1];
     return 0
 }
-mainWindow.fff = Ve;
+mainWindow.fff = getItemStatWithForge;
 
-function Ve(a, b) { // Ve
+function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
     var c = 0;
-    0 == b
+    0 == _columnIdx
         ? c = 0
-        : b == itemList[a][itemStatModifingCol + 0]
-            ? c = itemList[a][itemStatModifingCol + 1]
-            : b == itemList[a][itemStatModifingCol + 2]
-                ? c = itemList[a][itemStatModifingCol + 3]
-                : b == itemList[a][itemStatModifingCol + 4] && (c = itemList[a][itemStatModifingCol + 5]);
+        : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 0]
+            ? c = itemList[_itemIdx][itemStatModifingCol + 1]
+            : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 2]
+                ? c = itemList[_itemIdx][itemStatModifingCol + 3]
+                : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 4] && (c = itemList[_itemIdx][itemStatModifingCol + 5]);
     if (0 != c) {
-        var d = itemForgeLvls[a] - 1;
-        a == Zb && d++;
-        return itemList[a][b] + floor(itemList[a][b] * d * c / 100)
+        var d = itemForgeLvls[_itemIdx] - 1;
+        _itemIdx == Zb && d++;
+        return itemList[_itemIdx][_columnIdx] + floor(itemList[_itemIdx][_columnIdx] * d * c / 100)
     }
-    return itemList[a][b]
+    return itemList[_itemIdx][_columnIdx]
 }
-mainWindow.fff = Xe;
+mainWindow.fff = getItemForgeMultiplier;
 
-function Xe(a, b) { // Xe
+function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     var c = 0;
-    0 == b ? c = 0 : b == itemList[a][itemStatModifingCol + 0] ? c = itemList[a][itemStatModifingCol + 1] : b == itemList[a][itemStatModifingCol + 2] ? c = itemList[a][itemStatModifingCol + 3] : b == itemList[a][itemStatModifingCol + 4] && (c = itemList[a][itemStatModifingCol + 5]);
+    0 == _columnIdx ? c = 0 : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 0] ? c = itemList[_itemIdx][itemStatModifingCol + 1] : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 2] ? c = itemList[_itemIdx][itemStatModifingCol + 3] : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 4] && (c = itemList[_itemIdx][itemStatModifingCol + 5]);
     if (0 != c) {
-        var d = itemForgeLvls[a] - 1;
-        a == Zb && d++;
+        var d = itemForgeLvls[_itemIdx] - 1;
+        _itemIdx == Zb && d++;
         return d * c
     }
     return -1
@@ -1245,11 +1245,11 @@ function drawCanvas() {
                 isOptionsVisible && buttonCheck(428, 196, 204, 148) && (ta = true),
                 isShrineUIVisible && buttonCheck(218, 8, 204, 180) && (ta = true)
             ),
-                updatePartyStats(), updateStageEdgeSpawns(), xg(),
+                updatePartyStats(), updateStageEdgeSpawns(), updateStageTick(),
                 drawGameStage(), updatePlayerParty(),
-                updateEnemies(), updateDrops(), updatePopups(), Bg(), Cg(), drawDrops(),
+                updateEnemies(), updateDrops(), updatePopups(), updateProjectiles(), Cg(), drawDrops(),
                 drawPlayerParty(),
-                Eg(), drawPopups(),
+                drawProjectiles(), drawPopups(),
 
                 // display current stage name
                 isSolidRender = 1,
@@ -1492,19 +1492,19 @@ function updatePartyStats() {
     Ic = clamp(Ic, 0, Vg);
     for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
 }
-mainWindow.fff = Wg;
+mainWindow.fff = handleInventoryButton;
 
-function Wg(a, b, c, d, f, g) { // Wg
+function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // Wg
     var h;
-    if (buttonCheck(a, b, c, d))
-        if (Xg(a, b, c, d, 6684672), isMouseClicked && 0 != f) {
-            (isInventoryVisible = isInventoryVisible && Jc[Na][28 * Oa + Pa] == f ? false : true) && (isShrineUIVisible = false);
-            for (a = 0; a < Jc.length; a++) {
-                for (h = 0; h < Jc[a].length && Jc[a][h] != f; h++);
-                if (Jc[a][h] == f) break
+    if (buttonCheck(_x, _y, _width, _height))
+        if (fillEmptyPixelsRect(_x, _y, _width, _height, 6684672), isMouseClicked && 0 != _itemId) {
+            (isInventoryVisible = isInventoryVisible && Jc[Na][28 * Oa + Pa] == _itemId ? false : true) && (isShrineUIVisible = false);
+            for (_x = 0; _x < Jc.length; _x++) {
+                for (h = 0; h < Jc[_x].length && Jc[_x][h] != _itemId; h++);
+                if (Jc[_x][h] == _itemId) break
             }
-            a != Jc.length && (Na = a, Oa = floor(h / 28), Pa = h % 28)
-        } else isMouseClicked && ((isInventoryVisible = isInventoryVisible && Na == g ? false : true) && (isShrineUIVisible = false), Na = g, Pa = Oa = 0)
+            _x != Jc.length && (Na = _x, Oa = floor(h / 28), Pa = h % 28)
+        } else isMouseClicked && ((isInventoryVisible = isInventoryVisible && Na == _pageIdx ? false : true) && (isShrineUIVisible = false), Na = _pageIdx, Pa = Oa = 0)
 }
 mainWindow.fff = drawGameUI;
 
@@ -1601,14 +1601,14 @@ function drawGameUI() {
         drawText(gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
         drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
         drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / max(heroEmitValues[hidx], 1), 5, 221);
-        buttonCheck(f + hidx * d, g, 24, 24) && (Xg(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && selectingHero == hidx && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (selectingHero = hidx));
+        buttonCheck(f + hidx * d, g, 24, 24) && (fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && selectingHero == hidx && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (selectingHero = hidx));
         for (b = 0; 5 > b; b++) {
             c = partyEquipmentTable[hidx][b];
             k = f + hidx * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             drawRect(k, n, 16, 16, 0);
-            0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? gh(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0);
-            Wg(k, n, 16, 16, c, b);
+            0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0);
+            handleInventoryButton(k, n, 16, 16, c, b);
             buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (selectingHero = hidx)
         }
     }
@@ -1798,7 +1798,7 @@ function drawGameUI() {
             h = itemList[c][itemHeadwearType];
             drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]);
             fh = 0;
-            drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), Wg(b, d, 24, 24, c, hidx)
+            drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), handleInventoryButton(b, d, 24, 24, c, hidx)
         }
     }
 
@@ -1810,12 +1810,12 @@ function drawGameUI() {
 
         if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na) { // item upgrade panel
             drawTextCentered(gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
-            hidx = Ve(c, wd);
+            hidx = getItemStatWithForge(c, wd);
             if (0 == hidx) 
                  drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "---");
             else if (itemForgeLvls[c] < hidx) {
                 Zb = -1;
-                h = Ve(c, xd) * itemForgeLvls[c];
+                h = getItemStatWithForge(c, xd) * itemForgeLvls[c];
                 if (drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "G " + h) && h <= partyGold) {
                     Zb = c;
                     if (isMouseClicked) {
@@ -1833,27 +1833,27 @@ function drawGameUI() {
             if (10 > itemList[c][itemAppearanceCol]) {
                 gameFontMed.a = 4;
                 drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0);
-                h = "AT " + Ve(c, Vc) + "-" + Ve(c, Wc);
-                if (10 <= Ve(c, itemAtkCountCol) && 11 >= Ve(c, itemAtkCountCol)) {
-                    h += " *" + Ve(c, Xc) + ">" + ~~(Ve(c, ld) * Ve(c, Ed) / 60);
-                } else if (0 != Ve(c, itemAtkCountCol)) {
-                    h += " *" + Ve(c, Xc) + ">" + Ve(c, Ed);
+                h = "AT " + getItemStatWithForge(c, Vc) + "-" + getItemStatWithForge(c, Wc);
+                if (10 <= getItemStatWithForge(c, itemAtkCountCol) && 11 >= getItemStatWithForge(c, itemAtkCountCol)) {
+                    h += " *" + getItemStatWithForge(c, Xc) + ">" + ~~(getItemStatWithForge(c, ld) * getItemStatWithForge(c, Ed) / 60);
+                } else if (0 != getItemStatWithForge(c, itemAtkCountCol)) {
+                    h += " *" + getItemStatWithForge(c, Xc) + ">" + getItemStatWithForge(c, Ed);
                 } else {
-                    1 < Ve(c, Xc) && (h += " *" + Ve(c, Xc));
-                    if (99 == Ve(c, Uc)) {
+                    1 < getItemStatWithForge(c, Xc) && (h += " *" + getItemStatWithForge(c, Xc));
+                    if (99 == getItemStatWithForge(c, Uc)) {
                         h += " all";
                     } else {
-                        1 < Ve(c, Uc) && (h += " " + Ve(c, Uc) + "hit"); 
+                        1 < getItemStatWithForge(c, Uc) && (h += " " + getItemStatWithForge(c, Uc) + "hit"); 
                         drawText(gameFontMed, _ox, _oy + 12, h, 16777215, 0); 
-                        0 == Na && drawText(gameFontMed, _ox, _oy + 24, "AGI " + Ve(c, Zc), 16777215, 0); 
-                        0 == Na && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + Ve(c, $c), 16777215, 0); 
+                        0 == Na && drawText(gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, Zc), 16777215, 0); 
+                        0 == Na && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, $c), 16777215, 0); 
                         if (0 == Na) {
-                            drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + Ve(c, vd), 16777215, 0);
+                            drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + getItemStatWithForge(c, vd), 16777215, 0);
                         } else {
-                            if (-1 == Ve(c, vd)) {
+                            if (-1 == getItemStatWithForge(c, vd)) {
                                 drawText(gameFontMed, _ox, _oy + 48, "EMIT passive", 16777215, 0);
                             } else {
-                                drawText(gameFontMed, _ox, _oy + 48, "EMIT " + Ve(c, vd), 16777215, 0); 
+                                drawText(gameFontMed, _ox, _oy + 48, "EMIT " + getItemStatWithForge(c, vd), 16777215, 0); 
                                 drawText(gameFontMed, _ox, _oy + 60, "SML", 16777215, 0); 
                                 0 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0); 
                                 1 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0); 
@@ -1861,14 +1861,14 @@ function drawGameUI() {
                                 drawText(gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0); 
                                 0 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0); 
                                 1 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0); 
-                                2 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    ice " + Ve(c, ud) + "%", 10070783, 0); 
+                                2 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    ice " + getItemStatWithForge(c, ud) + "%", 10070783, 0); 
                                 3 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0); 
                                 4 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    poison", 52224, 0); 
-                                hidx = Xe(c, hd); 
+                                hidx = getItemForgeMultiplier(c, hd); 
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0); 
-                                hidx = Xe(c, ld); 
+                                hidx = getItemForgeMultiplier(c, ld); 
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0); 
-                                hidx = Xe(c, Td);
+                                hidx = getItemForgeMultiplier(c, Td);
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
                             }
                         }
@@ -1882,13 +1882,13 @@ function drawGameUI() {
                     } else {
                         drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0); 
                         d = 1; 
-                        hidx = Ve(c, heroHealthModifierCol),
+                        hidx = getItemStatWithForge(c, heroHealthModifierCol),
                         0 < hidx && (drawText(gameFontMed, _ox, _oy + 12 * d, "LP +" + hidx, 16777215, 0), d++); 
-                        hidx = Ve(c, heroDefenseModifierCol); 
+                        hidx = getItemStatWithForge(c, heroDefenseModifierCol); 
                         0 < hidx && (drawText(gameFontMed, _ox, _oy + 12 * d, "DF +" + hidx, 16777215, 0), d++); 
-                        hidx = Ve(c, heroMagicDefModifierCol); 
+                        hidx = getItemStatWithForge(c, heroMagicDefModifierCol); 
                         0 < hidx && (drawText(gameFontMed, _ox, _oy + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0), d++); 
-                        hidx = Ve(c, heroDodgeModifierCol);
+                        hidx = getItemStatWithForge(c, heroDodgeModifierCol);
                         0 < hidx && drawText(gameFontMed, _ox, _oy + 12 * d, "DODGE +" + hidx, 16777215, 0);
                     }
                 } else {
@@ -1904,7 +1904,7 @@ function drawGameUI() {
         k = Na;
         drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (isInventoryVisible = false);
         for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
-            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? gh(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (itemIsNew[c] = 0)), 0 < itemIsNew[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
@@ -1977,7 +1977,7 @@ function drawGameUI() {
                             ) 
                         } else {
                             if (20 == itemList[hidx][itemAppearanceCol] || 30 == itemList[hidx][itemAppearanceCol]) {
-                               gh(
+                               drawItemSpriteTinted(
                                 f + 80, g + 12 + 20 * d, 
                                 16 * (h & 15), 16 * (h >> 4), 
                                 itemList[hidx][itemSpriteLocXCol], 
@@ -1994,7 +1994,7 @@ function drawGameUI() {
                                 if (0 < itemForgeLvls[hidx]) {
                                     drawRect(f + 80 - 6, g + 12 + 20 * d + 6, 4, 4, 0);
                                     drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168);
-                                    Wg(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0);
+                                    handleInventoryButton(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0);
                                 }
                                 d++;
                             }
@@ -2008,8 +2008,8 @@ function drawGameUI() {
                 d = g + 96 + 28 * ~~(hidx / 7);
                 drawRect(b, d, 24, 24, 0);
                 hidx == bestiaryEnemySelection && drawRectOutline(b, d, 24, 24, 16711680);
-                buttonCheck(b, d, 24, 24) && (Xg(b, d, 24, 24, 6684672), isMouseClicked && (bestiaryEnemySelection = hidx));
-                Ch(c, b + 12, d + 20, 2)
+                buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), isMouseClicked && (bestiaryEnemySelection = hidx));
+                drawEnemyStatic(c, b + 12, d + 20, 2)
             }
         }
         drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && currentBestiaryPage--;
@@ -2048,7 +2048,7 @@ function drawGameUI() {
             for (b = 0; 11 > b; b++) l[b].x = f + 72 + hidx * d + p[b], l[b].y = g + 20 + t[b];
             drawHero(hidx, l, 0, 1, 15908203, 16777215, 2);
             drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16777215, 0);
-            buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40) && (Xg(f + 72 + hidx * d, g + 20, 24, 24, 8388608), drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16711680, 0), isMouseClicked && (autoMoveEnabled[hidx] = 1 - autoMoveEnabled[hidx]))
+            buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40) && (fillEmptyPixelsRect(f + 72 + hidx * d, g + 20, 24, 24, 8388608), drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16711680, 0), isMouseClicked && (autoMoveEnabled[hidx] = 1 - autoMoveEnabled[hidx]))
         }
         drawText(gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
         drawText(gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16777215, 0);
@@ -2070,7 +2070,7 @@ function drawGameUI() {
         drawText(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
         for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, drawScaledTintedTextCentered(gameFontSmall,
-            b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == shrineRewardClaimed[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (Xg(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
+            b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == shrineRewardClaimed[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (fillEmptyPixelsRect(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         if (!c)
             for (shrineRewardClaimed[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         else if (1 == c)
@@ -2192,42 +2192,42 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     bh[heroIdx] = 0;
     ji[heroIdx] = 0
 }
-mainWindow.fff = ni;
+mainWindow.fff = moveJointWithCollisions;
 
-function ni(a, b) { // ni
+function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
     var c = new Vec2;
-    Vec2Sub(c, O[a][b], Mh[a][b]);
-    O[a][b].set(Mh[a][b]);
+    Vec2Sub(c, O[_entityIdx][_jointIdx], Mh[_entityIdx][_jointIdx]);
+    O[_entityIdx][_jointIdx].set(Mh[_entityIdx][_jointIdx]);
     var d = (Vec2Mag(c) >> 2) + 1;
     Vec2Scale(c, 1 / d);
     var f, g;
-    g = getStageTileAt(O[a][b].x, O[a][b].y);
-    31 == g && (Vec2Scale(c, .95), Yh[a] |= 2);
-    for (var h = 0; h < d; h++) f = O[a][b].y + c.y, g = getStageTileAt(O[a][b].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != a ? (c.x *= .5, c.y = -c.y, Yh[a] |= 1) : O[a][b].y = f), f = O[a][b].x + c.x, g = getStageTileAt(f, O[a][b].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[a] |= 1) : O[a][b].x = f)
+    g = getStageTileAt(O[_entityIdx][_jointIdx].x, O[_entityIdx][_jointIdx].y);
+    31 == g && (Vec2Scale(c, .95), Yh[_entityIdx] |= 2);
+    for (var h = 0; h < d; h++) f = O[_entityIdx][_jointIdx].y + c.y, g = getStageTileAt(O[_entityIdx][_jointIdx].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != _entityIdx ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : O[_entityIdx][_jointIdx].y = f), f = O[_entityIdx][_jointIdx].x + c.x, g = getStageTileAt(f, O[_entityIdx][_jointIdx].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[_entityIdx] |= 1) : O[_entityIdx][_jointIdx].x = f)
 }
-mainWindow.fff = ti;
+mainWindow.fff = findNearestPartyMemberInRect;
 
-function ti(a, b, c, d, f) { // ti
-    var g = a - c - 5,
-        h = b - d - 10;
-    c = a + c + 5;
-    d = b + d + 10;
+function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { // ti
+    var g = _cx - _halfW - 5,
+        h = _cy - _halfH - 10;
+    _halfW = _cx + _halfW + 5;
+    _halfH = _cy + _halfH + 10;
     var k, p = new Vec2,
         t = new Vec2,
         l, n, w = 1E3,
         B = -1;
-    f = 0 == f ? 29 : 23;
+    _modelFlag = 0 == _modelFlag ? 29 : 23;
     for (var M = 0; M < partyMemberCount; M++)
-        if (Wh[M] != areUpperJointsDisabled && (k = O[M][2], !(k.x > c || k.x < g || k.y > d || k.y < h))) {
-            t.x = k.x - a;
-            t.y = k.y - b;
+        if (Wh[M] != areUpperJointsDisabled && (k = O[M][2], !(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h))) {
+            t.x = k.x - _cx;
+            t.y = k.y - _cy;
             l = Vec2Mag(t);
             k = (l >> 3) + 1;
             Vec2Scale(t, 1 / k);
-            Vec2Set(p, a, b);
+            Vec2Set(p, _cx, _cy);
             for (var J = 0; J <= k; J++) {
                 n = getStageTileAt(p.x, p.y);
-                if (0 <= n && n <= f) break;
+                if (0 <= n && n <= _modelFlag) break;
                 p.add(t)
             }
             J > k && l < w && (w = l, B = M)
@@ -2284,9 +2284,9 @@ function ui(a, b, c, d, f, g, h, k, p, t) { // ui
             }
         } return y
 }
-mainWindow.fff = vi;
+mainWindow.fff = pickHeroJointUnderMouse;
 
-function vi() { // vi
+function pickHeroJointUnderMouse() { // vi
     var a = new Vec2,
         b, c;
     if (-1 == bi) {
@@ -2503,18 +2503,18 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         }
     }
 }
-mainWindow.fff = Di;
+mainWindow.fff = updatePartyMemberAI;
 
-function Di(a) { // Di
-    var b = O[a][2].x,
-        c = O[a][2].y;
-    if (1 != autoMoveEnabled[a]) {
-        var d = findEnemyInArea(O[a][0].x, O[a][0].y, 200, 50);
+function updatePartyMemberAI(memberIdx) { // Di
+    var b = O[memberIdx][2].x,
+        c = O[memberIdx][2].y;
+    if (1 != autoMoveEnabled[memberIdx]) {
+        var d = findEnemyInArea(O[memberIdx][0].x, O[memberIdx][0].y, 200, 50);
         if (-1 != d) {
-            if (0 != Yh[a])
-                if (0 < ai[a]) ai[a]--;
+            if (0 != Yh[memberIdx])
+                if (0 < ai[memberIdx]) ai[memberIdx]--;
                 else {
-                    ai[a] = 15;
+                    ai[memberIdx] = 15;
                     var f = b > Q[d][yi].x ? -1 : 1,
                         g = .6,
                         h;
@@ -2523,7 +2523,7 @@ function Di(a) { // Di
                     h = getStageTileAt(b + 14 * f, c - 3);
                     0 <= h && 26 >= h && (g = 4);
                     var k;
-                    1 == f ? (k = O[a][9].x < O[a][10].x ? 7 : 8, partyBodyDrawOptions[a][2] = 1) : (k = O[a][9].x > O[a][10].x ? 7 : 8, partyBodyDrawOptions[a][2] = 0);
+                    1 == f ? (k = O[memberIdx][9].x < O[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 1) : (k = O[memberIdx][9].x > O[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 0);
                     if (!cliffStopEnabled) {
                         h = getStageTileAt(b + 20 * f, c + 8 + 0);
                         var p = getStageTileAt(b + 20 * f, c + 8 + 8),
@@ -2531,10 +2531,10 @@ function Di(a) { // Di
                             l = getStageTileAt(b + 20 * f, c + 8 + 24);
                         30 <= h && 30 <= p && 30 <= t && 30 <= l && (k = (k = 7, 8), f *= -1)
                     }
-                    O[a][k].x += 4 * f;
-                    O[a][k].y -=
+                    O[memberIdx][k].x += 4 * f;
+                    O[memberIdx][k].y -=
                         3 * g
-                } 2 == Yh[a] && (b < Q[d][yi].x ? (O[a][0].x += .25, O[a][1].x += .25, partyBodyDrawOptions[a][2] = 1) : (O[a][0].x -= .25, O[a][1].x -= .25, partyBodyDrawOptions[a][2] = 0), c < Q[d][yi].y ? (O[a][0].y += .25, O[a][1].y += .25) : (O[a][0].y -= .25, O[a][1].y -= .25), O[a][0].x += randFloatRange(-.25, .25), O[a][0].y += randFloatRange(-.25, .25), O[a][1].x += randFloatRange(-.25, .25), O[a][1].y += randFloatRange(-.25, .25))
+                } 2 == Yh[memberIdx] && (b < Q[d][yi].x ? (O[memberIdx][0].x += .25, O[memberIdx][1].x += .25, partyBodyDrawOptions[memberIdx][2] = 1) : (O[memberIdx][0].x -= .25, O[memberIdx][1].x -= .25, partyBodyDrawOptions[memberIdx][2] = 0), c < Q[d][yi].y ? (O[memberIdx][0].y += .25, O[memberIdx][1].y += .25) : (O[memberIdx][0].y -= .25, O[memberIdx][1].y -= .25), O[memberIdx][0].x += randFloatRange(-.25, .25), O[memberIdx][0].y += randFloatRange(-.25, .25), O[memberIdx][1].x += randFloatRange(-.25, .25), O[memberIdx][1].y += randFloatRange(-.25, .25))
         }
     }
 }
@@ -2544,7 +2544,7 @@ function updatePlayerParty() {
     var a, b, c, d, f = new Vec2,
         g = new Vec2,
         h = new Vec2;
-    vi();
+    pickHeroJointUnderMouse();
     for (a = 0; a < partyMemberCount; a++) {
         if (0 < dh[a] && (dh[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, randFloat(60) < b && (d += 1), partyLP[a] -= d, partyDamageTakenThisStage += d, 0 > partyLP[a]))
             for (c = 0 == partyBodyDrawOptions[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
@@ -2559,23 +2559,23 @@ function updatePlayerParty() {
             if (0 < ch[a] && (ch[a]--, randFloat(100) < hi[a])) continue;
             Xh[a]++;
             if (Wh[a] == areUpperJointsDisabled)
-                for (b = 0; 11 > b; b++) S(O[a][b], Mh[a][b], .05, .99);
+                for (b = 0; 11 > b; b++) stepWithVerticalBias(O[a][b], Mh[a][b], .05, .99);
             else if (2 == Yh[a])
-                for (b = 0; 11 > b; b++) S(O[a][b], Mh[a][b], .01, .99);
+                for (b = 0; 11 > b; b++) stepWithVerticalBias(O[a][b], Mh[a][b], .01, .99);
             else if (20 > Xh[a])
-                S(O[a][0], Mh[a][0], -.2, .99),
-                    S(O[a][1], Mh[a][1], 0, .99),
-                    S(O[a][2], Mh[a][2], -.1, .99),
-                    S(O[a][3], Mh[a][3], 0, .99),
-                    S(O[a][4], Mh[a][4], 0, .99),
-                    S(O[a][5], Mh[a][5], 0, .99),
-                    S(O[a][6], Mh[a][6], 0, .99),
-                    S(O[a][7], Mh[a][7], 0, .99),
-                    S(O[a][8], Mh[a][8], 0, .99),
-                    S(O[a][9], Mh[a][9], .3, .99),
-                    S(O[a][10], Mh[a][10], .3, .99);
+                stepWithVerticalBias(O[a][0], Mh[a][0], -.2, .99),
+                    stepWithVerticalBias(O[a][1], Mh[a][1], 0, .99),
+                    stepWithVerticalBias(O[a][2], Mh[a][2], -.1, .99),
+                    stepWithVerticalBias(O[a][3], Mh[a][3], 0, .99),
+                    stepWithVerticalBias(O[a][4], Mh[a][4], 0, .99),
+                    stepWithVerticalBias(O[a][5], Mh[a][5], 0, .99),
+                    stepWithVerticalBias(O[a][6], Mh[a][6], 0, .99),
+                    stepWithVerticalBias(O[a][7], Mh[a][7], 0, .99),
+                    stepWithVerticalBias(O[a][8], Mh[a][8], 0, .99),
+                    stepWithVerticalBias(O[a][9], Mh[a][9], .3, .99),
+                    stepWithVerticalBias(O[a][10], Mh[a][10], .3, .99);
             else
-                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, Pe) ? S(O[a][b], Mh[a][b], .05 / countAccessoryLvlBonuses(a, Pe), .99) : S(O[a][b], Mh[a][b], .05, .99);
+                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, Pe) ? stepWithVerticalBias(O[a][b], Mh[a][b], .05 / countAccessoryLvlBonuses(a, Pe), .99) : stepWithVerticalBias(O[a][b], Mh[a][b], .05, .99);
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
             if (0 == d && Wh[a] != areUpperJointsDisabled)
                 for (Wh[a] = areUpperJointsDisabled, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
@@ -2605,18 +2605,18 @@ function updatePlayerParty() {
                             f.set(O[a][k]);
                             k = k << 8 | 3;
                             ei[a] = fi[a]
-                        } else 5 == b ? (d < Q[c][yi].x ? (O[a][5].x += 1, O[a][6].x += 1, O[a][1].x -= 2) : (--O[a][5].x, --O[a][6].x, O[a][1].x += 2), O[a][5].y < O[a][6].y ? (f.set(O[a][5]), k = 1283, ei[a] = 0) : (f.set(O[a][6]), k = 1540, ei[a] = 1), T(O[a][5], O[a][6], 5, .1, .1)) : d < Q[c][yi].x ? O[a][5].x < O[a][6].x ? (O[a][5].x += 4, O[a][4].x -= 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x += 4, O[a][3].x -= 4, f.set(O[a][6]), k =
+                        } else 5 == b ? (d < Q[c][yi].x ? (O[a][5].x += 1, O[a][6].x += 1, O[a][1].x -= 2) : (--O[a][5].x, --O[a][6].x, O[a][1].x += 2), O[a][5].y < O[a][6].y ? (f.set(O[a][5]), k = 1283, ei[a] = 0) : (f.set(O[a][6]), k = 1540, ei[a] = 1), applySeparationCorrection(O[a][5], O[a][6], 5, .1, .1)) : d < Q[c][yi].x ? O[a][5].x < O[a][6].x ? (O[a][5].x += 4, O[a][4].x -= 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x += 4, O[a][3].x -= 4, f.set(O[a][6]), k =
                             1540, ei[a] = 1) : O[a][5].x > O[a][6].x ? (O[a][5].x -= 4, O[a][4].x += 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x -= 4, O[a][3].x += 4, f.set(O[a][6]), k = 1540, ei[a] = 1);
                     2 == b && (Sh[a] = 30);
                     partyBodyDrawOptions[a][ei[a]] = fi[a];
                     spawnHeroAttackPattern(a, k, fi[a], f.x, f.y, c)
                 }
-                bi != a && 0 != b && -1 == c && Di(a)
+                bi != a && 0 != b && -1 == c && updatePartyMemberAI(a)
             }
-            Wh[a] == areUpperJointsDisabled ? (T(O[a][1], O[a][2], 3.6, .5, .5), T(O[a][3], O[a][5], 4.8, .5, .5), T(O[a][4], O[a][6], 4.8, .5, .5), T(O[a][7], O[a][9], 4.8, .5, .5), T(O[a][8], O[a][10], 4.8, .5, .5)) : (T(O[a][0], O[a][1], 3.6, .5, .5), T(O[a][1], O[a][2], 3.6, .5, .5), T(O[a][1], O[a][3], 4.8, .5, .5), T(O[a][1], O[a][4], 4.8,
-                .5, .5), T(O[a][3], O[a][5], 4.8, .5, .5), T(O[a][4], O[a][6], 4.8, .5, .5), T(O[a][2], O[a][7], 4.8, .5, .5), T(O[a][2], O[a][8], 4.8, .5, .5), T(O[a][7], O[a][9], 4.8, .5, .5), T(O[a][8], O[a][10], 4.8, .5, .5), T(O[a][7], O[a][8], 6, .1, .1));
+            Wh[a] == areUpperJointsDisabled ? (applySeparationCorrection(O[a][1], O[a][2], 3.6, .5, .5), applySeparationCorrection(O[a][3], O[a][5], 4.8, .5, .5), applySeparationCorrection(O[a][4], O[a][6], 4.8, .5, .5), applySeparationCorrection(O[a][7], O[a][9], 4.8, .5, .5), applySeparationCorrection(O[a][8], O[a][10], 4.8, .5, .5)) : (applySeparationCorrection(O[a][0], O[a][1], 3.6, .5, .5), applySeparationCorrection(O[a][1], O[a][2], 3.6, .5, .5), applySeparationCorrection(O[a][1], O[a][3], 4.8, .5, .5), applySeparationCorrection(O[a][1], O[a][4], 4.8,
+                .5, .5), applySeparationCorrection(O[a][3], O[a][5], 4.8, .5, .5), applySeparationCorrection(O[a][4], O[a][6], 4.8, .5, .5), applySeparationCorrection(O[a][2], O[a][7], 4.8, .5, .5), applySeparationCorrection(O[a][2], O[a][8], 4.8, .5, .5), applySeparationCorrection(O[a][7], O[a][9], 4.8, .5, .5), applySeparationCorrection(O[a][8], O[a][10], 4.8, .5, .5), applySeparationCorrection(O[a][7], O[a][8], 6, .1, .1));
             0 < (Yh[a] & 1) && (Xh[a] = 0);
-            for (b = Yh[a] = 0; 11 > b; b++) ni(a, b);
+            for (b = Yh[a] = 0; 11 > b; b++) moveJointWithCollisions(a, b);
             Rh[a] = Rh[a] + 1 & 15;
             Nh[a][Rh[a]].set(O[a][5]);
             Oh[a][Rh[a]].set(O[a][3]);
@@ -2714,10 +2714,10 @@ function drawPlayerParty() {
                 0 > U && (U = 0);
                 432 <= n && (n = 431);
                 for (l = U; l <= n; l++) Ji[l] = 640, Ki[l] = -1;
-                Li(w, B, M, J);
-                Li(M, J, y, x);
-                Li(K, ba, y, x);
-                Li(w, B, K, ba);
+                updateScanlineBoundsFromLine(w, B, M, J);
+                updateScanlineBoundsFromLine(M, J, y, x);
+                updateScanlineBoundsFromLine(K, ba, y, x);
+                updateScanlineBoundsFromLine(w, B, K, ba);
                 w = t >> 24 & 255;
                 B = t >> 16 & 255;
                 M = t >> 8 & 255;
@@ -3207,7 +3207,7 @@ function drawGameStage() {
                 for (h = k + 640 * h; k < h; k += p, g += 640, d += t)
                     for (; k < g; k++, d++) l = f.g[d], -1 != l && (frameBufferArray[k] = l)
             } for (c = 0; c < stageHeight; c++)
-        for (b = 1; b < stageWidth - 1; b++) 30 == stageTileData[c][b] ? (30 != stageTileData[c][b - 1] && Xg(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != stageTileData[c][b + 1] && Xg(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == stageTileData[c][b] && (31 != stageTileData[c][b - 1] && Xg(8 * b - 2, 8 * c, 2, 8, 21913), 31 != stageTileData[c][b + 1] && Xg(8 * b + 8, 8 * c, 2, 8, 21913));
+        for (b = 1; b < stageWidth - 1; b++) 30 == stageTileData[c][b] ? (30 != stageTileData[c][b - 1] && fillEmptyPixelsRect(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != stageTileData[c][b + 1] && fillEmptyPixelsRect(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == stageTileData[c][b] && (31 != stageTileData[c][b - 1] && fillEmptyPixelsRect(8 * b - 2, 8 * c, 2, 8, 21913), 31 != stageTileData[c][b + 1] && fillEmptyPixelsRect(8 * b + 8, 8 * c, 2, 8, 21913));
     if (1 == currentStage) 1 == isStageReachedArray[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
     else if (6 == currentStage) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (14 == currentStage) b = 2 * rotationLUT[globalFrameCounter >> 2 & 511][0], c = 2 * rotationLUT[globalFrameCounter >> 2 & 511][1], spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
@@ -3256,9 +3256,9 @@ function initStageState() { // cj
         }
     }
 }
-mainWindow.fff = xg;
+mainWindow.fff = updateStageTick;
 
-function xg() { // xg
+function updateStageTick() { // xg
     var a, b, c, d, f = b = 0,
         g, h, k = 79,
         p = 0,
@@ -3910,9 +3910,9 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
             }
         } return n // index of a hit enemy (last one hit), or -1 if none.
 }
-mainWindow.fff = bl;
+mainWindow.fff = spawnEnemyLoot;
 
-function bl(a, b, c, d) { // bl
+function spawnEnemyLoot(a, b, c, d) { // bl
     var itemPos = new Vec2,
         itemIdx = enemyTypeArray[a] + b,
         selectedItem = enemyCatalog[itemIdx];
@@ -3967,7 +3967,7 @@ function bl(a, b, c, d) { // bl
             selectedItem[enemyAttr60],
         yc = selectedItem[enemyAttr61],
         selectedItem = selectedItem[enemyAttr62],
-        zc = ti(c, d, La, La, 0);
+        zc = findNearestPartyMemberInRect(c, d, La, La, 0);
     if (-1 != zc)
         if (0 < Fk[a]) Fk[a]--;
         else if (!(randFloat(1E3) >= jb)) {
@@ -3989,12 +3989,12 @@ function bl(a, b, c, d) { // bl
                 for (p = 0; p < Qb; p++) gb = floor(c / 8), jb = floor(d / 8), spawnEnemy(gb, jb, itemIdx + Bb, 0)
         }
 }
-mainWindow.fff = cl;
+mainWindow.fff = onEnemyDeath;
 
-function cl(a) { // cl
+function onEnemyDeath(_enemyIdx) { // cl
     var b;
-    b = abs(enemyCatalog[enemyTypeArray[a]][enemyAttr0] - partyLevel);
-    var c = floor(enemyCatalog[enemyTypeArray[a]][enemyAttr64] * (100 + Xb) / 100);
+    b = abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr0] - partyLevel);
+    var c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr64] * (100 + Xb) / 100);
     $i + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
     partyEXPAccum = clamp(partyEXPAccum + c, 0, 9999999);
     if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
@@ -4003,23 +4003,23 @@ function cl(a) { // cl
         Hh = 60
     }
     for (b = enemyAttr67; b < enemyAttr67 + 8; b += 2)
-        if (c = enemyCatalog[enemyTypeArray[a]][b], 0 != c) {
+        if (c = enemyCatalog[enemyTypeArray[_enemyIdx]][b], 0 != c) {
             var d = floor(100 * (100 + Wb) / 100);
-            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[a]][b + 1] * (100 + Vb) / 100), spawnDrop(Q[a][0].x, Q[a][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[a]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(Q[a][0].x, Q[a][0].y, c, 1, 0)
-        } c = floor(enemyCatalog[enemyTypeArray[a]][enemyAttr65] * (100 + Vb) / 100);
-    1 > 3 * rand() && spawnDrop(Q[a][0].x, Q[a][0].y, 2, c, 0);
+            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * (100 + Vb) / 100), spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, c, 1, 0)
+        } c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr65] * (100 + Vb) / 100);
+    1 > 3 * rand() && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0);
     30 != drawState && Hc++;
-    isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[a] &&
+    isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx] &&
         IncrementBadgeCount(2);
-    isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[a] && IncrementBadgeCount(5);
-    3 == currentStage && (8 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(8) && 1800 > globalFrameCounter && IncrementBadgeCount(8), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431)), 15 == enemyTypeArray[a] && (stagePresenceOrEncounterCounter++, 3 == stagePresenceOrEncounterCounter && (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrames && IncrementBadgeCount(9), spawnPopup(Q[a][0].x, Q[a][0].y, 0, "" + floor(consecutiveConditionFrames / 60) + "SEC", 120, 10066431))));
-    5 == currentStage && 22 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(18) && 1200 > globalFrameCounter && IncrementBadgeCount(18), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431));
-    isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[a] && IncrementBadgeCount(22);
-    !isBadgeIncompleteForCurrentStage(47) || 50 != enemyTypeArray[a] && 52 != enemyTypeArray[a] || IncrementBadgeCount(47);
-    51 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(49) && 1500 > globalFrameCounter && IncrementBadgeCount(49), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431));
-    !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[a] && 57 != enemyTypeArray[a] && 58 != enemyTypeArray[a] || IncrementBadgeCount(52);
-    63 == enemyTypeArray[a] && (isBadgeIncompleteForCurrentStage(58) && 3600 > globalFrameCounter && IncrementBadgeCount(58), spawnPopup(Q[a][0].x, Q[a][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431));
-    isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[a] && IncrementBadgeCount(69)
+    isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(5);
+    3 == currentStage && (8 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(8) && 1800 > globalFrameCounter && IncrementBadgeCount(8), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431)), 15 == enemyTypeArray[_enemyIdx] && (stagePresenceOrEncounterCounter++, 3 == stagePresenceOrEncounterCounter && (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrames && IncrementBadgeCount(9), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, "" + floor(consecutiveConditionFrames / 60) + "SEC", 120, 10066431))));
+    5 == currentStage && 22 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(18) && 1200 > globalFrameCounter && IncrementBadgeCount(18), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431));
+    isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(22);
+    !isBadgeIncompleteForCurrentStage(47) || 50 != enemyTypeArray[_enemyIdx] && 52 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(47);
+    51 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(49) && 1500 > globalFrameCounter && IncrementBadgeCount(49), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431));
+    !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[_enemyIdx] && 57 != enemyTypeArray[_enemyIdx] && 58 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(52);
+    63 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(58) && 3600 > globalFrameCounter && IncrementBadgeCount(58), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(globalFrameCounter / 60) + "SEC", 120, 10066431));
+    isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(69)
 }
 mainWindow.fff = updateEnemies;
 
@@ -4058,20 +4058,20 @@ function enemySlimeBehavior(enemyIdx) {
         for (b = 0; 1 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
         Y[enemyIdx] = randSelect(1, 2)
     } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], .03, .99);
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .03, .99);
         0 < (Dk[enemyIdx] & 2) && (5 > randFloat(100) && (Q[enemyIdx][0].x += randFloat(1 == Y[enemyIdx] ? -.2 : .2), Q[enemyIdx][0].y -= randFloat(.5)), 1 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2)));
         var d = Nk[enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr4]];
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y - d * c + 1);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y - d * c + 1);
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 1 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.3, .3), Q[enemyIdx][b].y -= randFloatRange(1, 2);
         for (b = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].x = Q[enemyIdx][0].x;
         Q[enemyIdx][yi].y = Q[enemyIdx][0].y - d * c + 1;
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
+        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
         for (b =
-            0; 1 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+            0; 1 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         for (b = Dk[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         50 <= Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4088,16 +4088,16 @@ function enemyBoxSnakeBehavior(enemyIdx) {
         for (b = 0; 3 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
         Y[enemyIdx] = 1
     } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
-        S(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
-        S(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
-        var d = ti(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != d && (Q[enemyIdx][0].x += O[d][2].x < Q[enemyIdx][0].x ? -.001 : .001);
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
+        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
+        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
+        var d = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != d && (Q[enemyIdx][0].x += O[d][2].x < Q[enemyIdx][0].x ? -.001 : .001);
         0 < (Dk[enemyIdx] & 2) && (b = 0, -1 != d ? b = O[d][2].x < Q[enemyIdx][0].x ? -1 : 1 : b = randSelect(-1, 1), 10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(.4, .6) * b, Q[enemyIdx][0].y += randFloatRange(-1.5, -2)));
-        T(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
-        T(Q[enemyIdx][1], Q[enemyIdx][2], 0, 0, .01);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 0, 0, .01);
         d =
             Nk[enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr4]];
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y - d * c + 1);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y - d * c + 1);
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 3 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
@@ -4108,9 +4108,9 @@ function enemyBoxSnakeBehavior(enemyIdx) {
         Dk[enemyIdx] = b;
         Q[enemyIdx][yi].x = Q[enemyIdx][0].x;
         Q[enemyIdx][yi].y = Q[enemyIdx][0].y - d * c + 1;
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
+        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; 3 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 3 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         for (b = Dk[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4139,15 +4139,15 @@ function enemyBatBehavior(enemyIdx) {
         for (b = 0; 7 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
         Y[enemyIdx] = 1
     } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        S(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99);
-        S(Q[enemyIdx][2], Z[enemyIdx][2], 0, .99);
-        S(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99);
-        S(Q[enemyIdx][4], Z[enemyIdx][4], 0, .99);
-        S(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99);
-        S(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][4], Z[enemyIdx][4], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99);
         Vec2Set(c, 0, 0);
-        var d = ti(Q[enemyIdx][0].x,
+        var d = findNearestPartyMemberInRect(Q[enemyIdx][0].x,
             Q[enemyIdx][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, O[d][2], Q[enemyIdx][0]), d = Vec2Norm(c), d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr36] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
         Q[enemyIdx][0].add(c);
         10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(-1, 1), Q[enemyIdx][0].y += randFloatRange(-1, 1));
@@ -4157,32 +4157,32 @@ function enemyBatBehavior(enemyIdx) {
         Q[enemyIdx][6].x += randFloatRange(0, .1);
         c = .5;
         d = 6 * b;
-        T(Q[enemyIdx][0], Q[enemyIdx][1], 3 * b, c, c);
-        T(Q[enemyIdx][0], Q[enemyIdx][4], 3 * b, c, c);
-        T(Q[enemyIdx][1], Q[enemyIdx][2], d, c, c);
-        T(Q[enemyIdx][1], Q[enemyIdx][3], d, c, c);
-        T(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
-        T(Q[enemyIdx][4], Q[enemyIdx][5], d, c, c);
-        T(Q[enemyIdx][4], Q[enemyIdx][6], d, c, c);
-        T(Q[enemyIdx][5], Q[enemyIdx][6], d, c, c);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 3 * b, c, c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][4], 3 * b, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][3], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][5], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][6], d, c, c);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         Dk[enemyIdx] = 0;
         if (0 >=
             enemyHealthArray[enemyIdx])
             for (b = 0; 7 > b; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
         for (b = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, 1);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
+        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; 8 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 8 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         c = .5;
         d = 6 * (150 - Ck[enemyIdx]) / 150;
-        T(Q[enemyIdx][1], Q[enemyIdx][2], d, c, c);
-        T(Q[enemyIdx][1], Q[enemyIdx][3], d, c, c);
-        T(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
-        T(Q[enemyIdx][4], Q[enemyIdx][5], d, c, c);
-        T(Q[enemyIdx][4], Q[enemyIdx][6], d, c, c);
-        T(Q[enemyIdx][5], Q[enemyIdx][6], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][3], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][5], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][6], d, c, c);
         for (b = Dk[enemyIdx] = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4194,8 +4194,8 @@ function enemyDragonBehavior(enemyIdx) {
     var b, c, d, f = new Vec2;
     if (0 == Y[enemyIdx]) Y[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr2];
     else if (20 >= Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        for (b = 1; b < Y[enemyIdx]; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], 0, .9);
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
+        for (b = 1; b < Y[enemyIdx]; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 0, .9);
         Vec2Sub(f, Q[enemyIdx][0], Z[enemyIdx][0]);
         Vec2Norm(f);
         Vec2Scale(f, .008);
@@ -4213,20 +4213,20 @@ function enemyDragonBehavior(enemyIdx) {
         Q[enemyIdx][0].add(f);
         f = .013;
         c = 5;
-        for (b = 0; b < Y[enemyIdx] - 1; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], c, 0, f);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x,
+        for (b = 0; b < Y[enemyIdx] - 1; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], c, 0, f);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x,
             Q[enemyIdx][0].y);
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
         for (b = 0; b < Y[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, Ck[enemyIdx] = 0, cl(enemyIdx))
+        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, Ck[enemyIdx] = 0, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; b < Y[enemyIdx] - 20; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; b < Y[enemyIdx] - 20; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         f = .5;
         c = 10 * (150 - Ck[enemyIdx]) / 150;
-        for (b = 1; b < Y[enemyIdx] - 21; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], c, f, f);
+        for (b = 1; b < Y[enemyIdx] - 21; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], c, f, f);
         for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4239,10 +4239,10 @@ function enemyStickmanBehavior(enemyIdx) {
     b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr5];
     if (0 == Y[enemyIdx]) Y[enemyIdx] = 1;
     else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        enemyUpdateFuncIdxArray[enemyIdx] == tk ? (S(Q[enemyIdx][0], Z[enemyIdx][0], -.2, .99), S(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), S(Q[enemyIdx][2], Z[enemyIdx][2], -.1, .99), S(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), S(Q[enemyIdx][4], Z[enemyIdx][4], 0, .99), S(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), S(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), S(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), S(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), S(Q[enemyIdx][9], Z[enemyIdx][9], .3, .99), S(Q[enemyIdx][10], Z[enemyIdx][10], .3, .99)) : enemyUpdateFuncIdxArray[enemyIdx] == Ak && (S(Q[enemyIdx][0], Z[enemyIdx][0], -.02, .99), S(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), S(Q[enemyIdx][2], Z[enemyIdx][2], -.01, .99), S(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), S(Q[enemyIdx][4],
-            Z[enemyIdx][4], 0, .99), S(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), S(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), S(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), S(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), S(Q[enemyIdx][9], Z[enemyIdx][9], .1, .99), S(Q[enemyIdx][10], Z[enemyIdx][10], .1, .99));
+        enemyUpdateFuncIdxArray[enemyIdx] == tk ? (stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.2, .99), stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], -.1, .99), stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), stepWithVerticalBias(Q[enemyIdx][4], Z[enemyIdx][4], 0, .99), stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), stepWithVerticalBias(Q[enemyIdx][9], Z[enemyIdx][9], .3, .99), stepWithVerticalBias(Q[enemyIdx][10], Z[enemyIdx][10], .3, .99)) : enemyUpdateFuncIdxArray[enemyIdx] == Ak && (stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.02, .99), stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], -.01, .99), stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), stepWithVerticalBias(Q[enemyIdx][4],
+            Z[enemyIdx][4], 0, .99), stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), stepWithVerticalBias(Q[enemyIdx][9], Z[enemyIdx][9], .1, .99), stepWithVerticalBias(Q[enemyIdx][10], Z[enemyIdx][10], .1, .99));
         if (50 > randFloat(100) && 0 < (Dk[enemyIdx] & 2)) {
-            var c = ti(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != c ? Y[enemyIdx] = O[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
+            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != c ? Y[enemyIdx] = O[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
             var d = c = 1,
                 f = 0;
             enemyUpdateFuncIdxArray[enemyIdx] == Ak && (c = .25, d = .3, f = .25);
@@ -4252,36 +4252,36 @@ function enemyStickmanBehavior(enemyIdx) {
         c = .5;
         d = 1.2 * b;
         enemyUpdateFuncIdxArray[enemyIdx] == Ak && (c = .02, d = 1 * b);
-        T(Q[enemyIdx][0], Q[enemyIdx][1], 3 * d, c, c);
-        T(Q[enemyIdx][1], Q[enemyIdx][2], 3 * d, c, c);
-        T(Q[enemyIdx][1], Q[enemyIdx][3], 4 * d, c, c);
-        T(Q[enemyIdx][1], Q[enemyIdx][4], 4 * d, c, c);
-        T(Q[enemyIdx][3], Q[enemyIdx][5], 4 * d, c, c);
-        T(Q[enemyIdx][4], Q[enemyIdx][6], 4 * d, c, c);
-        T(Q[enemyIdx][2], Q[enemyIdx][7], 4 * d, c, c);
-        T(Q[enemyIdx][2], Q[enemyIdx][8], 4 * d, c, c);
-        T(Q[enemyIdx][7], Q[enemyIdx][9], 4 * d, c, c);
-        T(Q[enemyIdx][8], Q[enemyIdx][10], 4 * d, c, c);
-        T(Q[enemyIdx][7], Q[enemyIdx][8], 5 * d, c, c);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr63] && bl(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 3 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 3 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][3], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][4], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][5], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][7], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][8], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][9], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][8], Q[enemyIdx][10], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][8], 5 * d, c, c);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr63] && spawnEnemyLoot(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         for (b =
             Dk[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][1]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] = 3;
             for (b = Ck[enemyIdx] = 0; 11 > b; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
-            cl(enemyIdx)
+            onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; 11 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 11 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         c = .5;
         d = 1.2 * (150 - Ck[enemyIdx]) / 150;
-        T(Q[enemyIdx][1], Q[enemyIdx][2], 3 * d, c, c);
-        T(Q[enemyIdx][3], Q[enemyIdx][5], 4 * d, c, c);
-        T(Q[enemyIdx][4], Q[enemyIdx][6], 4 * d, c, c);
-        T(Q[enemyIdx][7], Q[enemyIdx][9], 4 * d, c, c);
-        T(Q[enemyIdx][8], Q[enemyIdx][10], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 3 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][5], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][9], 4 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][8], Q[enemyIdx][10], 4 * d, c, c);
         for (b = Dk[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4295,26 +4295,26 @@ function enemyTreeBehavior(enemyIdx) {
         for (Y[enemyIdx] = floor(randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr2] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr3] + 2)), b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += 4, Q[enemyIdx][b].y += 4, Z[enemyIdx][b].set(Q[enemyIdx][b]);
     else if (20 >= Y[enemyIdx]) {
         if (enemyUpdateFuncIdxArray[enemyIdx] == uk) {
-            for (b = 0; b < Y[enemyIdx] - 1; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], -.04, .99);
-            S(Q[enemyIdx][b], Z[enemyIdx][b], 1, .99)
+            for (b = 0; b < Y[enemyIdx] - 1; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], -.04, .99);
+            stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 1, .99)
         } else {
-            for (b = 0; b < Y[enemyIdx] - 1; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .04, .99);
-            S(Q[enemyIdx][b], Z[enemyIdx][b], -1, .99)
+            for (b = 0; b < Y[enemyIdx] - 1; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .04, .99);
+            stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], -1, .99)
         }
         10 > randFloat(100) && (b = floor(randFloat(Y[enemyIdx] - 1)), Q[enemyIdx][b].x += randFloatRange(-.5, .5));
-        T(Q[enemyIdx][0], Q[enemyIdx][1], 8, .2, .2);
-        for (b = 1; b < Y[enemyIdx] - 2; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], 6, .2, .2);
-        T(Q[enemyIdx][b], Q[enemyIdx][b + 1], 6, .2, 0);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 8, .2, .2);
+        for (b = 1; b < Y[enemyIdx] - 2; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], 6, .2, .2);
+        applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], 6, .2, 0);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
         for (b = 0; b < Y[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].x = .5 * (Q[enemyIdx][0].x + Q[enemyIdx][Y[enemyIdx] - 1].x);
         Q[enemyIdx][yi].y = .5 * (Q[enemyIdx][0].y + Q[enemyIdx][Y[enemyIdx] - 1].y);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, cl(enemyIdx))
+        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; b < Y[enemyIdx] - 20; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; b < Y[enemyIdx] - 20; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4331,17 +4331,17 @@ function enemyHangingTreeBehavior(enemyIdx) {
         for (b = 0; 3 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
         Y[enemyIdx] = 1
     } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
-        S(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
-        S(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
-        b = ti(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != b && (Q[enemyIdx][0].x += O[b][2].x < Q[enemyIdx][0].x ? -.001 : .001);
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
+        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
+        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
+        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != b && (Q[enemyIdx][0].x += O[b][2].x < Q[enemyIdx][0].x ? -.001 : .001);
         if (0 < (Dk[enemyIdx] & 2)) {
             var c = 0; - 1 != b ? c = O[b][2].x < Q[enemyIdx][0].x ? -1 : 1 : c = randSelect(-1, 1);
             10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(.4, .6) * c, Q[enemyIdx][0].y += randFloatRange(-1.5, -2))
         }
-        T(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
-        T(Q[enemyIdx][1], Q[enemyIdx][2], 0, 0, .01);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x,
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 0, 0, .01);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x,
             Q[enemyIdx][0].y);
         Dk[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
@@ -4352,9 +4352,9 @@ function enemyHangingTreeBehavior(enemyIdx) {
         moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
         Dk[enemyIdx] = b;
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, cl(enemyIdx))
+        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; 3 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 3 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         for (b = Dk[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4371,8 +4371,8 @@ function enemyUpdateFunc7(enemyIdx) {
         for (b = 0; b <= g; b++) Q[enemyIdx][b].x += 4, Q[enemyIdx][b].y += 4, Z[enemyIdx][b].set(Q[enemyIdx][b]);
         Y[enemyIdx] = 1
     } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        for (b = 1; b <= g; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], 0, .99);
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
+        for (b = 1; b <= g; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 0, .99);
         Vec2Sub(f, Q[enemyIdx][0], Z[enemyIdx][0]);
         Vec2Norm(f);
         Vec2Scale(f, .008);
@@ -4401,22 +4401,22 @@ function enemyUpdateFunc7(enemyIdx) {
         f.x = Math.cos(0) * h - Math.cos(c) * h;
         f.y = Math.sin(0) * h - Math.sin(c) * h;
         f = Vec2Mag(f);
-        for (b = 0; b < g; b++) T(Q[enemyIdx][0], Q[enemyIdx][b + 1], h, 0, .2);
-        for (b = 1; b < g; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], f, .2, .2);
-        T(Q[enemyIdx][b], Q[enemyIdx][1], f, .2, .2);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        for (b = 0; b < g; b++) applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][b + 1], h, 0, .2);
+        for (b = 1; b < g; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], f, .2, .2);
+        applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][1], f, .2, .2);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         for (b = Dk[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] =
                 3;
             for (b = Ck[enemyIdx] = 0; b <= g; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
-            cl(enemyIdx)
+            onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; b <= g; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; b <= g; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         h = h * (150 - Ck[enemyIdx]) / 150;
-        for (b = 1; b < g; b++) T(Q[enemyIdx][b], Q[enemyIdx][b + 1], h, .5, .5);
+        for (b = 1; b < g; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], h, .5, .5);
         for (b = Dk[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4449,57 +4449,57 @@ function enemyUpdateFunc8(enemyIdx) {
         for (b = 0; 9 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
         Y[enemyIdx] = 1
     } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], -.05, .99);
-        S(Q[enemyIdx][1], Z[enemyIdx][1], -.1, .99);
-        S(Q[enemyIdx][2], Z[enemyIdx][2], .8, .99);
-        S(Q[enemyIdx][3], Z[enemyIdx][3], -.1, .99);
-        S(Q[enemyIdx][4], Z[enemyIdx][4],
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.05, .99);
+        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], -.1, .99);
+        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .8, .99);
+        stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], -.1, .99);
+        stepWithVerticalBias(Q[enemyIdx][4], Z[enemyIdx][4],
             .8, .99);
-        S(Q[enemyIdx][5], Z[enemyIdx][5], -.1, .99);
-        S(Q[enemyIdx][6], Z[enemyIdx][6], .8, .99);
-        S(Q[enemyIdx][7], Z[enemyIdx][7], -.1, .99);
-        S(Q[enemyIdx][8], Z[enemyIdx][8], .8, .99);
+        stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], -.1, .99);
+        stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], .8, .99);
+        stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], -.1, .99);
+        stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], .8, .99);
         if (50 > randFloat(100) && 0 < (Dk[enemyIdx] & 2)) {
-            var c = ti(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 500, 25, 0); - 1 != c ? Y[enemyIdx] = O[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
+            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 500, 25, 0); - 1 != c ? Y[enemyIdx] = O[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
             1 == Y[enemyIdx] ? (Q[enemyIdx][2].x < Q[enemyIdx][6].x ? (Q[enemyIdx][6].x += randFloat(-1), Q[enemyIdx][6].y += randFloatRange(-1, -1)) : (Q[enemyIdx][2].x += randFloat(-1), Q[enemyIdx][2].y += randFloatRange(-1, -1)), Q[enemyIdx][4].x < Q[enemyIdx][8].x ? (Q[enemyIdx][8].x += randFloat(-1), Q[enemyIdx][8].y += randFloatRange(-1, -1)) : (Q[enemyIdx][4].x += randFloat(-1), Q[enemyIdx][4].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (--Q[enemyIdx][0].x, Q[enemyIdx][0].y -= 3)) : (Q[enemyIdx][2].x < Q[enemyIdx][6].x ?
                 (Q[enemyIdx][2].x += randFloat(1), Q[enemyIdx][2].y += randFloatRange(-1, -1)) : (Q[enemyIdx][6].x += randFloat(1), Q[enemyIdx][6].y += randFloatRange(-1, -1)), Q[enemyIdx][4].x < Q[enemyIdx][8].x ? (Q[enemyIdx][4].x += randFloat(1), Q[enemyIdx][4].y += randFloatRange(-1, -1)) : (Q[enemyIdx][8].x += randFloat(1), Q[enemyIdx][8].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (Q[enemyIdx][0].x += 1, Q[enemyIdx][0].y -= 3))
         }
         c = .3;
         b = 2.2 * b;
-        T(Q[enemyIdx][0], Q[enemyIdx][5], 3 * b, .1 * c, c);
-        T(Q[enemyIdx][0], Q[enemyIdx][7], 3 * b, .1 * c, c);
-        T(Q[enemyIdx][0], Q[enemyIdx][6], 3 * b, .1 * c, c);
-        T(Q[enemyIdx][5], Q[enemyIdx][6], 2 * b, .2 * c, .2 * c);
-        T(Q[enemyIdx][0], Q[enemyIdx][8], 3 * b, .1 * c, c);
-        T(Q[enemyIdx][7], Q[enemyIdx][8], 2 * b, .2 * c, .2 * c);
-        T(Q[enemyIdx][0], Q[enemyIdx][1], 4 * b, .1 * c, c);
-        T(Q[enemyIdx][0], Q[enemyIdx][3], 4 * b, .1 * c, c);
-        T(Q[enemyIdx][0], Q[enemyIdx][2], 4 * b, .1 * c, c);
-        T(Q[enemyIdx][1],
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][5], 3 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][7], 3 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][6], 3 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][6], 2 * b, .2 * c, .2 * c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][8], 3 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][8], 2 * b, .2 * c, .2 * c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 4 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][3], 4 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][2], 4 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][1],
             Q[enemyIdx][2], 3 * b, .2 * c, .2 * c);
-        T(Q[enemyIdx][0], Q[enemyIdx][4], 4 * b, .1 * c, c);
-        T(Q[enemyIdx][3], Q[enemyIdx][4], 3 * b, .2 * c, .2 * c);
-        T(Q[enemyIdx][2], Q[enemyIdx][4], 8 * b, .1 * c, .1 * c);
-        T(Q[enemyIdx][5], Q[enemyIdx][7], 7 * b, .1 * c, .1 * c);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr63] && bl(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][4], 4 * b, .1 * c, c);
+        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], 3 * b, .2 * c, .2 * c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][4], 8 * b, .1 * c, .1 * c);
+        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][7], 7 * b, .1 * c, .1 * c);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr63] && spawnEnemyLoot(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         for (b = Dk[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] = 3;
             Ck[enemyIdx] = 0;
             for (b = 1; 9 > b; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
-            cl(enemyIdx)
+            onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; 9 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 9 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         c = .5;
         b = 1.2 * (150 - Ck[enemyIdx]) / 150;
-        T(Q[enemyIdx][1], Q[enemyIdx][2], 4 * b, c, c);
-        T(Q[enemyIdx][3], Q[enemyIdx][4], 4 * b, c, c);
-        T(Q[enemyIdx][5],
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 4 * b, c, c);
+        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], 4 * b, c, c);
+        applySeparationCorrection(Q[enemyIdx][5],
             Q[enemyIdx][6], 3 * b, c, c);
-        T(Q[enemyIdx][7], Q[enemyIdx][8], 3 * b, c, c);
+        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][8], 3 * b, c, c);
         for (b = Dk[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4515,10 +4515,10 @@ function enemyUpdateFunc9(enemyIdx) {
         for (b = 0; 5 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
         Y[enemyIdx] = 1
     } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        S(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        for (b = 1; 5 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], 0, .9);
+        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
+        for (b = 1; 5 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 0, .9);
         Vec2Set(c, 0, 0);
-        b = ti(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, O[b][2], Q[enemyIdx][0]), b = Vec2Norm(c), b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr36] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
+        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, O[b][2], Q[enemyIdx][0]), b = Vec2Norm(c), b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr36] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
         b = getStageTileAt(Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         31 != b && (c.y += .03);
         b = getStageTileAt(Q[enemyIdx][0].x - 8, Q[enemyIdx][0].y);
@@ -4532,27 +4532,27 @@ function enemyUpdateFunc9(enemyIdx) {
         2 > randFloat(100) && (c.x += randFloatRange(-.5, .5), c.y += randFloatRange(-.5, .5));
         Q[enemyIdx][0].add(c);
         c = .1;
-        T(Q[enemyIdx][0], Q[enemyIdx][1], 6 * d, 0, c);
-        T(Q[enemyIdx][1], Q[enemyIdx][2], 4 * d, 0, c);
-        T(Q[enemyIdx][2], Q[enemyIdx][3], 6 * d, 0, c);
-        T(Q[enemyIdx][2], Q[enemyIdx][4], 6 * d, 0, c);
-        T(Q[enemyIdx][3], Q[enemyIdx][4], 8 * d, c, c);
-        T(Q[enemyIdx][0], Q[enemyIdx][2], 10 * d, 0, c);
-        bl(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 6 * d, 0, c);
+        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 4 * d, 0, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], 6 * d, 0, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][4], 6 * d, 0, c);
+        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], 8 * d, c, c);
+        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][2], 10 * d, 0, c);
+        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         for (b = Dk[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         Q[enemyIdx][yi].set(Q[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             Y[enemyIdx] = 3;
             for (b = Ck[enemyIdx] = 0; 5 > b; b++) Q[enemyIdx][b].x += randFloatRange(-2, 2), Q[enemyIdx][b].y -= randFloatRange(2, 4);
-            cl(enemyIdx)
+            onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; 5 > b; b++) S(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 5 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
         c = .5;
         d = 7 * d * (150 - Ck[enemyIdx]) / 150;
-        T(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
-        T(Q[enemyIdx][2], Q[enemyIdx][4], d, c, c);
-        T(Q[enemyIdx][3], Q[enemyIdx][4], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][4], d, c, c);
+        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], d, c, c);
         for (b = Dk[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
@@ -4614,59 +4614,59 @@ function Cg() { // Cg
             )
         )
 }
-mainWindow.fff = Ch;
+mainWindow.fff = drawEnemyStatic;
 
-function Ch(a, b, c, d) { // Ch
-    var f = enemyCatalog[a][enemyBehaviorCol],
-        g = enemyCatalog[a][enemyAttr4],
-        h = enemyCatalog[a][enemyAttr6],
-        k = enemyCatalog[a][enemyAttr7],
-        p = enemyCatalog[a][enemyAttr8];
-    d = clamp(enemyCatalog[a][enemyAttr5], 1, d);
+function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
+    var f = enemyCatalog[_typeIdx][enemyBehaviorCol],
+        g = enemyCatalog[_typeIdx][enemyAttr4],
+        h = enemyCatalog[_typeIdx][enemyAttr6],
+        k = enemyCatalog[_typeIdx][enemyAttr7],
+        p = enemyCatalog[_typeIdx][enemyAttr8];
+    _scale = clamp(enemyCatalog[_typeIdx][enemyAttr5], 1, _scale);
     var t = Nk[g],
         l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         n = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    if (f == pk) drawEnemyScaledSprite(b + 0 * d, c - t * d + 1, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == qk) drawRectCentered(b + 5 * d, c - 4 * d, 4 * d, 4 * d, p), drawRectCentered(b + 2 * d, c - 10 * d, 5 * d, 5 * d, p), drawEnemyScaledSprite(b - 4 * d, c - 11 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == rk) l[0] = b + 0 * d, n[0] = c - 8 * d, l[1] = b - 4 * d, n[1] = c - 8 * d, l[2] = b - 9 * d, n[2] = c - 9 * d, l[3] = b - 7 * d, n[3] = c - 4 * d, l[4] = b + 3 * d, n[4] = c - 8 * d, l[5] = b + 9 * d, n[5] = c - 10 * d,
-        l[6] = b + 7 * d, n[6] = c - 4 * d, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[5], n[5], l[6], n[6], p), drawLine(l[6], n[6], l[4], n[4], p), drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == sk) l[0] = b - 3 * d, n[0] = c - 10 * d, l[1] = b + 1 * d, n[1] = c - 10 * d, l[2] = b + 4 * d, n[2] = c - 8 * d, l[3] = b + 5 * d, n[3] = c - 6 * d, l[4] = b + 5 * d, n[4] = c - 4 * d, l[5] = b + 3 * d, n[5] = c - 1 * d, drawLine(l[0], n[0], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[4], n[4], p), drawRectCentered(floor(l[5]),
-        floor(n[5]), floor(2 * d), floor(2 * d), h), drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == tk) l[0] = b + 0 * d, n[0] = c - 15 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 0 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b + 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b + 5 * d, n[6] = c - 8 * d, l[7] = b - 3 * d, n[7] = c - 3 * d, l[8] = b + 3 * d, n[8] = c - 5 * d, l[9] = b - 1 * d, n[9] = c - 1 * d, l[10] = b + 2 * d, n[10] = c - 0 * d, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[1], n[1], l[3], n[3], p), drawLine(l[1], n[1], l[4], n[4], p), drawLine(l[3], n[3], l[5], n[5], p), drawLine(l[4], n[4], l[6], n[6], p), drawLine(l[2], n[2], l[7], n[7], p), drawLine(l[2], n[2],
-        l[8], n[8], p), drawLine(l[7], n[7], l[9], n[9], p), drawLine(l[8], n[8], l[10], n[10], p), drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == uk) drawRectOutlineCentered(b + 0, c + 0, 5, 5, p), drawRectOutlineCentered(b - 1, c - 6, 5, 5, p), drawRectOutlineCentered(b + 0, c - 12, 5, 5, p), drawEnemyScaledSprite(b + 0, c - 18, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == vk) drawRectOutlineCentered(b + 0, c - 17, 5, 5, p), drawRectOutlineCentered(b - 1, c - 11, 5, 5, p), drawRectOutlineCentered(b + 0, c - 5, 5, 5, p), drawEnemyScaledSprite(b + 0, c + 1, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3) + 16, -16, h, k, 255);
+    if (f == pk) drawEnemyScaledSprite(_px + 0 * _scale, _py - t * _scale + 1, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == qk) drawRectCentered(_px + 5 * _scale, _py - 4 * _scale, 4 * _scale, 4 * _scale, p), drawRectCentered(_px + 2 * _scale, _py - 10 * _scale, 5 * _scale, 5 * _scale, p), drawEnemyScaledSprite(_px - 4 * _scale, _py - 11 * _scale, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == rk) l[0] = _px + 0 * _scale, n[0] = _py - 8 * _scale, l[1] = _px - 4 * _scale, n[1] = _py - 8 * _scale, l[2] = _px - 9 * _scale, n[2] = _py - 9 * _scale, l[3] = _px - 7 * _scale, n[3] = _py - 4 * _scale, l[4] = _px + 3 * _scale, n[4] = _py - 8 * _scale, l[5] = _px + 9 * _scale, n[5] = _py - 10 * _scale,
+        l[6] = _px + 7 * _scale, n[6] = _py - 4 * _scale, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[5], n[5], l[6], n[6], p), drawLine(l[6], n[6], l[4], n[4], p), drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == sk) l[0] = _px - 3 * _scale, n[0] = _py - 10 * _scale, l[1] = _px + 1 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 4 * _scale, n[2] = _py - 8 * _scale, l[3] = _px + 5 * _scale, n[3] = _py - 6 * _scale, l[4] = _px + 5 * _scale, n[4] = _py - 4 * _scale, l[5] = _px + 3 * _scale, n[5] = _py - 1 * _scale, drawLine(l[0], n[0], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[4], n[4], p), drawRectCentered(floor(l[5]),
+        floor(n[5]), floor(2 * _scale), floor(2 * _scale), h), drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == tk) l[0] = _px + 0 * _scale, n[0] = _py - 15 * _scale, l[1] = _px + 0 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 0 * _scale, n[2] = _py - 7 * _scale, l[3] = _px - 2 * _scale, n[3] = _py - 8 * _scale, l[4] = _px + 3 * _scale, n[4] = _py - 11 * _scale, l[5] = _px - 5 * _scale, n[5] = _py - 7 * _scale, l[6] = _px + 5 * _scale, n[6] = _py - 8 * _scale, l[7] = _px - 3 * _scale, n[7] = _py - 3 * _scale, l[8] = _px + 3 * _scale, n[8] = _py - 5 * _scale, l[9] = _px - 1 * _scale, n[9] = _py - 1 * _scale, l[10] = _px + 2 * _scale, n[10] = _py - 0 * _scale, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[1], n[1], l[3], n[3], p), drawLine(l[1], n[1], l[4], n[4], p), drawLine(l[3], n[3], l[5], n[5], p), drawLine(l[4], n[4], l[6], n[6], p), drawLine(l[2], n[2], l[7], n[7], p), drawLine(l[2], n[2],
+        l[8], n[8], p), drawLine(l[7], n[7], l[9], n[9], p), drawLine(l[8], n[8], l[10], n[10], p), drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == uk) drawRectOutlineCentered(_px + 0, _py + 0, 5, 5, p), drawRectOutlineCentered(_px - 1, _py - 6, 5, 5, p), drawRectOutlineCentered(_px + 0, _py - 12, 5, 5, p), drawEnemyScaledSprite(_px + 0, _py - 18, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
+    else if (f == vk) drawRectOutlineCentered(_px + 0, _py - 17, 5, 5, p), drawRectOutlineCentered(_px - 1, _py - 11, 5, 5, p), drawRectOutlineCentered(_px + 0, _py - 5, 5, 5, p), drawEnemyScaledSprite(_px + 0, _py + 1, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3) + 16, -16, h, k, 255);
     else if (f == wk) {
-        l[0] = b + 0 * d;
-        n[0] = c - 10 * d;
-        l[1] = b - 7 * d;
-        n[1] = c - 19 * d;
-        l[2] = b + 5 * d;
-        n[2] = c - 21 * d;
-        l[3] = b + 12 * d;
-        n[3] = c - 12 * d;
-        l[4] = b + 7 * d;
-        n[4] = c - 2 * d;
+        l[0] = _px + 0 * _scale;
+        n[0] = _py - 10 * _scale;
+        l[1] = _px - 7 * _scale;
+        n[1] = _py - 19 * _scale;
+        l[2] = _px + 5 * _scale;
+        n[2] = _py - 21 * _scale;
+        l[3] = _px + 12 * _scale;
+        n[3] = _py - 12 * _scale;
+        l[4] = _px + 7 * _scale;
+        n[4] = _py - 2 * _scale;
         l[5] =
-            b - 5 * d;
-        n[5] = c - 0 * d;
-        l[6] = b - 12 * d;
-        n[6] = c - 10 * d;
-        for (b = 1; 6 > b; b++) drawLine(l[b], n[b], l[b + 1], n[b + 1], k);
-        drawLine(l[b], n[b], l[1], n[1], k);
-        drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
+            _px - 5 * _scale;
+        n[5] = _py - 0 * _scale;
+        l[6] = _px - 12 * _scale;
+        n[6] = _py - 10 * _scale;
+        for (_px = 1; 6 > _px; _px++) drawLine(l[_px], n[_px], l[_px + 1], n[_px + 1], k);
+        drawLine(l[_px], n[_px], l[1], n[1], k);
+        drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * _scale), floor(16 * _scale), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
     } else if (f == xk) {
-        f = enemyCatalog[a][enemyAttr2];
-        a = enemyCatalog[a][enemyAttr3];
-        l[0] = b + 0 * d;
-        n[0] = c - 10 * d;
-        for (b = 0; b < f; b++) c = 360 * b / f * PI / 180, l[b + 1] = l[0] + Math.cos(c) * a * d, n[b + 1] = n[0] + Math.sin(c) * a * d;
-        for (b = 1; b < f; b++) drawLine(l[b], n[b], l[b + 1], n[b + 1], p);
-        drawLine(l[b], n[b], l[1], n[1], p);
-        drawEnemyScaledSprite(l[0], n[0], 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)
-    } else f == yk ? (l[0] = b + 0 * d, n[0] = c - 6 * d, l[1] = b - 9 * d, n[1] = c -
-        9 * d, l[2] = b - 7 * d, n[2] = c - 0 * d, l[3] = b + 9 * d, n[3] = c - 9 * d, l[4] = b + 7 * d, n[4] = c - 0 * d, l[5] = b - 7 * d, n[5] = c - 5 * d, l[6] = b - 5 * d, n[6] = c - 0 * d, l[7] = b + 7 * d, n[7] = c - 5 * d, l[8] = b + 5 * d, n[8] = c - 0 * d, drawLine(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), drawLine(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), drawLine(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), drawLine(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), drawLine(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * d), floor(16 * d), 16 * (g & 7),
-            16 * (g >> 3), 16, 16, h)) : f == zk ? (drawLine(b + 5 * d, c - 6 * d, b + 8 * d, c - 11 * d, p), drawLine(b + 8 * d, c - 11 * d, b + 10 * d, c - 3 * d, p), drawLine(b + 10 * d, c - 3 * d, b + 5 * d, c - 6 * d, p), drawRectOutlineCentered(b + 0 * d, c - 9 * d, 6 * d + 1, 6 * d + 1, p), drawEnemyScaledSprite(b - 5 * d, c - 13 * d, 16 * d, 16 * d, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == Ak && (l[0] = b + 0 * d, n[0] = c - 16 * d, l[1] = b + 0 * d, n[1] = c - 10 * d, l[2] = b + 2 * d, n[2] = c - 7 * d, l[3] = b - 2 * d, n[3] = c - 8 * d, l[4] = b - 3 * d, n[4] = c - 11 * d, l[5] = b - 5 * d, n[5] = c - 7 * d, l[6] = b - 8 * d, n[6] = c - 10 * d, l[7] = b - 1 * d, n[7] = c - 4 * d, l[8] = b + 2 * d, n[8] = c - 5 * d, l[9] = b - 0 * d, n[9] = c - 1 * d, l[10] = b + 4 * d, n[10] = c - 0 * d)
+        f = enemyCatalog[_typeIdx][enemyAttr2];
+        _typeIdx = enemyCatalog[_typeIdx][enemyAttr3];
+        l[0] = _px + 0 * _scale;
+        n[0] = _py - 10 * _scale;
+        for (_px = 0; _px < f; _px++) _py = 360 * _px / f * PI / 180, l[_px + 1] = l[0] + Math.cos(_py) * _typeIdx * _scale, n[_px + 1] = n[0] + Math.sin(_py) * _typeIdx * _scale;
+        for (_px = 1; _px < f; _px++) drawLine(l[_px], n[_px], l[_px + 1], n[_px + 1], p);
+        drawLine(l[_px], n[_px], l[1], n[1], p);
+        drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)
+    } else f == yk ? (l[0] = _px + 0 * _scale, n[0] = _py - 6 * _scale, l[1] = _px - 9 * _scale, n[1] = _py -
+        9 * _scale, l[2] = _px - 7 * _scale, n[2] = _py - 0 * _scale, l[3] = _px + 9 * _scale, n[3] = _py - 9 * _scale, l[4] = _px + 7 * _scale, n[4] = _py - 0 * _scale, l[5] = _px - 7 * _scale, n[5] = _py - 5 * _scale, l[6] = _px - 5 * _scale, n[6] = _py - 0 * _scale, l[7] = _px + 7 * _scale, n[7] = _py - 5 * _scale, l[8] = _px + 5 * _scale, n[8] = _py - 0 * _scale, drawLine(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), drawLine(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), drawLine(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), drawLine(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), drawLine(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * _scale), floor(16 * _scale), 16 * (g & 7),
+            16 * (g >> 3), 16, 16, h)) : f == zk ? (drawLine(_px + 5 * _scale, _py - 6 * _scale, _px + 8 * _scale, _py - 11 * _scale, p), drawLine(_px + 8 * _scale, _py - 11 * _scale, _px + 10 * _scale, _py - 3 * _scale, p), drawLine(_px + 10 * _scale, _py - 3 * _scale, _px + 5 * _scale, _py - 6 * _scale, p), drawRectOutlineCentered(_px + 0 * _scale, _py - 9 * _scale, 6 * _scale + 1, 6 * _scale + 1, p), drawEnemyScaledSprite(_px - 5 * _scale, _py - 13 * _scale, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == Ak && (l[0] = _px + 0 * _scale, n[0] = _py - 16 * _scale, l[1] = _px + 0 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 2 * _scale, n[2] = _py - 7 * _scale, l[3] = _px - 2 * _scale, n[3] = _py - 8 * _scale, l[4] = _px - 3 * _scale, n[4] = _py - 11 * _scale, l[5] = _px - 5 * _scale, n[5] = _py - 7 * _scale, l[6] = _px - 8 * _scale, n[6] = _py - 10 * _scale, l[7] = _px - 1 * _scale, n[7] = _py - 4 * _scale, l[8] = _px + 2 * _scale, n[8] = _py - 5 * _scale, l[9] = _px - 0 * _scale, n[9] = _py - 1 * _scale, l[10] = _px + 4 * _scale, n[10] = _py - 0 * _scale)
 }
 var projectileCount = 0,
     hl = new Int32Array(1E3),
@@ -4822,9 +4822,9 @@ function deleteProjectile(projIdx) { // jm
     hm[projIdx] = hm[projectileCount - 1];
     projectileCount--
 }
-mainWindow.fff = km;
+mainWindow.fff = moveProjectileWithCollision;
 
-function km(a, b) { // km
+function moveProjectileWithCollision(a, b) { // km
     var c = 0;
     b.set(kl[a]);
     var d = floor(Vec2Mag(b) / 4) + 1;
@@ -4832,9 +4832,9 @@ function km(a, b) { // km
     for (var f, g, h = 0; h < d; h++) f = jl[a].y + b.y, g = getStageTileAt(jl[a].x, f), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].y = f : 3 == Dl[a] ? (b.y = -b.y, kl[a].y = -kl[a].y) : 4 == Dl[a] && (0 < kl[a].y ? c = 1 : kl[a].y = 0) : jl[a].y = f, f = jl[a].x + b.x, g = getStageTileAt(f, jl[a].y), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].x = f : 3 == Dl[a] ? (b.x = -b.x, kl[a].x = -kl[a].x) : 4 == Dl[a] && (kl[a].x = 0) : jl[a].x = f;
     return c
 }
-mainWindow.fff = Bg;
+mainWindow.fff = updateProjectiles;
 
-function Bg() { // Bg
+function updateProjectiles() { // Bg
     var a, b, c, d = new Vec2,
         f = new Vec2,
         g = new Vec2,
@@ -4846,12 +4846,12 @@ function Bg() { // Bg
         else if (0 < vl[a]) vl[a]--;
         else if (1 == ll[a]) xl[a]++, xl[a] >= yl[a] && deleteProjectile(a--);
         else {
-            0 < El[a] && (b = El[a], b = 0 <= hl[a] ? findEnemyInArea(jl[a].x, jl[a].y, b, b) : ti(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, O[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + randFloatRange(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
+            0 < El[a] && (b = El[a], b = 0 <= hl[a] ? findEnemyInArea(jl[a].x, jl[a].y, b, b) : findNearestPartyMemberInRect(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, O[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + randFloatRange(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
             0 == zl[a] ? kl[a].y += .01 * Al[a] : (-1 == zl[a] ?
                 d.set(jl[a]) : (c = hl[a], l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, Vec2Sub(d, jl[a], l[c][zl[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -Al[a]), kl[a].add(d));
             Vec2Scale(kl[a], .01 * Bl[a]);
             b = 0;
-            0 > il[a] ? b = km(a, d) : jl[a].add(kl[a]);
+            0 > il[a] ? b = moveProjectileWithCollision(a, d) : jl[a].add(kl[a]);
             0 > il[a] ? (h.set(jl[a]), k.set(kl[a])) : (c = hl[a], p = il[a] >> 8, t = il[a] & 255, l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], jl[a]), k.set(kl[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * jl[a].x + g.x * jl[a].y + l[c][p].x, h.y = f.y * jl[a].x + g.y * jl[a].y + l[c][p].y, k.x = f.x * kl[a].x + g.x * kl[a].y, k.y = f.y * kl[a].x + g.y * kl[a].y));
             p = 1;
             1 == Jl[a] && 0 == Ml[a] &&
@@ -4891,9 +4891,9 @@ function Bg() { // Bg
                 (Vec2Norm(k), Vec2Scale(k, hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
         }
 }
-mainWindow.fff = Eg;
+mainWindow.fff = drawProjectiles;
 
-function Eg() { // Eg
+function drawProjectiles() { // Eg
     var a, b, c, d, f = new Vec2,
         g = new Vec2,
         h = new Vec2,
@@ -4971,10 +4971,10 @@ function Eg() { // Eg
                 0 > n && (n = 0);
                 432 <= c && (c = 431);
                 for (b = n; b <= c; b++) Ji[b] = 640, Ki[b] = -1;
-                mm(w, B, M, J, y, x, K, ba);
-                mm(y, x, K, ba, U, na, Fa, Ga);
-                mm(U, na, Fa, Ga, Ca, ua, fb, ob);
-                mm(Ca, ua, fb, ob, w, B, M, J);
+                rasterizeLineToScanlineBounds(w, B, M, J, y, x, K, ba);
+                rasterizeLineToScanlineBounds(y, x, K, ba, U, na, Fa, Ga);
+                rasterizeLineToScanlineBounds(U, na, Fa, Ga, Ca, ua, fb, ob);
+                rasterizeLineToScanlineBounds(Ca, ua, fb, ob, w, B, M, J);
                 w = Bb.g;
                 B = Bb.h;
                 M = l >> 24 & 255;
@@ -5154,7 +5154,7 @@ function updateDrops() { // zg
                 0 <= b && 23 >= b || (dropPos[a].x = c), 
                 (100 > dropState[a]) 
                     ? dropState[a]++ 
-                    : -1 != ti(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1) && (
+                    : -1 != findNearestPartyMemberInRect(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1) && (
                         (2 == dropType[a]) 
                             ? (
                                 partyGold = clamp(partyGold + dropValue[a], 0, 9999999), 
@@ -5624,70 +5624,70 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
             255, x = (((replaceColAlt >> 16 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((replaceColAlt >> 8 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] & 255, y = (((replaceColAlt & 255) - y) * blendAmount >> 8) + y), frameBufferArray[B] = x << 16 | K << 8 | y))
 }
 
-function gh(a, b, c, d, f, g) { // gh
+function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tintColor) { // gh
     var h = 16,
         k = 16,
         p, t, l = itemsSpriteSheet.g,
         n, w, B, M;
     p = ~~(4096 / h);
     t = ~~(4096 / k);
-    c <<= 8;
-    d <<= 8;
-    0 > a && (c += ~~(p * -a));
-    0 > b && (d += ~~(t * -b));
-    h = 640 < a + h ? 640 : ~~(a + h);
-    k = 432 < b + k ? 432 : ~~(b + k);
-    a = 0 > a ? 0 : ~~a;
-    b = 0 > b ? 0 : ~~b;
-    n = 640 * b + a;
-    w = 640 - (h - a);
-    for (var J, y, x = g >> 16 & 255, K = g >> 8 & 255, ba = g & 255; b < k; b++, n += w, d += t)
-        for (B = ((d >> 8) * itemsSpriteSheet.h << 8) + c, g = a; g < h; g++, n++, B += p) M = l[B >> 8], 0 >= M || (J = M >> 16 & 255, y = M >> 8 & 255, M &= 255, frameBufferArray[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : f)
+    _sourceX <<= 8;
+    _sourceY <<= 8;
+    0 > _px && (_sourceX += ~~(p * -_px));
+    0 > _py && (_sourceY += ~~(t * -_py));
+    h = 640 < _px + h ? 640 : ~~(_px + h);
+    k = 432 < _py + k ? 432 : ~~(_py + k);
+    _px = 0 > _px ? 0 : ~~_px;
+    _py = 0 > _py ? 0 : ~~_py;
+    n = 640 * _py + _px;
+    w = 640 - (h - _px);
+    for (var J, y, x = _tintColor >> 16 & 255, K = _tintColor >> 8 & 255, ba = _tintColor & 255; _py < k; _py++, n += w, _sourceY += t)
+        for (B = ((_sourceY >> 8) * itemsSpriteSheet.h << 8) + _sourceX, _tintColor = _px; _tintColor < h; _tintColor++, n++, B += p) M = l[B >> 8], 0 >= M || (J = M >> 16 & 255, y = M >> 8 & 255, M &= 255, frameBufferArray[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : _defaultColor)
 }
 
-function Xg(a, b, c, d, f) { // Xg
+function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
     var g, h;
-    g = 640 * b + a;
-    h = 640 - c;
-    for (b = 0; b < d; b++, g += h)
-        for (a = 0; a < c; a++, g++) 0 == frameBufferArray[g] && (frameBufferArray[g] = f)
+    g = 640 * _top + _left;
+    h = 640 - _width;
+    for (_top = 0; _top < _height; _top++, g += h)
+        for (_left = 0; _left < _width; _left++, g++) 0 == frameBufferArray[g] && (frameBufferArray[g] = _color)
 }
 
-function Li(a, b, c, d) { // Li
+function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
     var f, g, h;
-    if (abs(c - a) >= abs(d - b))
-        for (a >>= 16, c >>= 16, f = abs(c - a), c = a <= c ? 1 : -1, h = floor((d - b) / max(f, 1)); 0 <= f; f--, a += c, b += h) 0 == f && (b = d), g = b >> 16, 0 > g || 432 <= g || (Ji[g] > a && (Ji[g] = a), Ki[g] < a && (Ki[g] = a));
+    if (abs(_x1 - _x0) >= abs(_y1 - _y0))
+        for (_x0 >>= 16, _x1 >>= 16, f = abs(_x1 - _x0), _x1 = _x0 <= _x1 ? 1 : -1, h = floor((_y1 - _y0) / max(f, 1)); 0 <= f; f--, _x0 += _x1, _y0 += h) 0 == f && (_y0 = _y1), g = _y0 >> 16, 0 > g || 432 <= g || (Ji[g] > _x0 && (Ji[g] = _x0), Ki[g] < _x0 && (Ki[g] = _x0));
     else
-        for (b >>= 16, d >>= 16, f = abs(d - b), h = floor((c - a) / max(f, 1)), d = b <= d ? 1 : -1; 0 <= f; f--, a += h, b += d) 0 == f && (a = c), g = a >> 16, 0 > b || 432 <= b || (Ji[b] > g && (Ji[b] = g), Ki[b] < g && (Ki[b] = g))
+        for (_y0 >>= 16, _y1 >>= 16, f = abs(_y1 - _y0), h = floor((_x1 - _x0) / max(f, 1)), _y1 = _y0 <= _y1 ? 1 : -1; 0 <= f; f--, _x0 += h, _y0 += _y1) 0 == f && (_x0 = _x1), g = _x0 >> 16, 0 > _y0 || 432 <= _y0 || (Ji[_y0] > g && (Ji[_y0] = g), Ki[_y0] < g && (Ki[_y0] = g))
 }
 
-function mm(a, b, c, d, f, g, h, k) { // mm
-    var p = (max(abs(f - a), abs(g - b)) >> 16) + 1;
-    f = floor((f - a) / p);
-    g = floor((g - b) / p);
-    h = floor((h - c) / p);
-    k = floor((k - d) / p);
-    for (var t, l, n = 0; n < p; n++, a += f, b += g, c += h, d += k) t = a >> 16, l = b >> 16, 0 > l || 432 <= l || (Ji[l] > t && (Ji[l] = t, om[l] = c, qm[l] = d), Ki[l] < t && (Ki[l] = t, nm[l] = c, pm[l] = d))
+function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay1) { // mm
+    var p = (max(abs(_x1 - _x0), abs(_y1 - _y0)) >> 16) + 1;
+    _x1 = floor((_x1 - _x0) / p);
+    _y1 = floor((_y1 - _y0) / p);
+    _ax1 = floor((_ax1 - _ax0) / p);
+    _ay1 = floor((_ay1 - _ay0) / p);
+    for (var t, l, n = 0; n < p; n++, _x0 += _x1, _y0 += _y1, _ax0 += _ax1, _ay0 += _ay1) t = _x0 >> 16, l = _y0 >> 16, 0 > l || 432 <= l || (Ji[l] > t && (Ji[l] = t, om[l] = _ax0, qm[l] = _ay0), Ki[l] < t && (Ki[l] = t, nm[l] = _ax0, pm[l] = _ay0))
 }
 var nn = new Vec2;
 
-function T(a, b, c, d, f) { // T
-    Vec2Sub(nn, a, b);
-    c -= Vec2Norm(nn);
-    d *= c;
-    f *= c;
-    a.x += nn.x * d;
-    a.y += nn.y * d;
-    b.x -= nn.x * f;
-    b.y -= nn.y * f
+function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { // T
+    Vec2Sub(nn, _a, _b);
+    _targetDist -= Vec2Norm(nn);
+    _weightA *= _targetDist;
+    _weightB *= _targetDist;
+    _a.x += nn.x * _weightA;
+    _a.y += nn.y * _weightA;
+    _b.x -= nn.x * _weightB;
+    _b.y -= nn.y * _weightB
 }
 
-function S(a, b, c, d) { // S
-    Vec2Sub(nn, a, b);
-    b.set(a);
-    nn.y += c;
-    Vec2Scale(nn, d);
-    a.add(nn)
+function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
+    Vec2Sub(nn, _a, _b);
+    _b.set(_a);
+    nn.y += _yBias;
+    Vec2Scale(nn, _scale);
+    _a.add(nn)
 }
 mainWindow.full_screen = toggleFullscreen;
 
@@ -6015,5 +6015,5 @@ function drawCancelButton(x, y) {
 function drawButtonBoldedText(x, y, w, h, text) {
     drawRectCentered(x, y, w, h, 0);
     drawTextCentered(gameFont, x, y, text, 16777215, 8409120);
-    return buttonCheckCentered(x, y, w, h) ? (Xg(x - (w >> 1), y - (h >> 1), w, h, 6684672), true) : false
+    return buttonCheckCentered(x, y, w, h) ? (fillEmptyPixelsRect(x - (w >> 1), y - (h >> 1), w, h, 6684672), true) : false
 };

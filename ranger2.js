@@ -20,36 +20,40 @@ var currentLevelSprite = new Sprite,
     itemsSpriteSheet = new Sprite,
     effectSpriteSheet = new Sprite,
     medalSpriteSheet = new Sprite,
-    drawState = 0,
-    sa = 0,
+    gameScreenState = 0,
+    screenStateTimer = 0, // sa
     currentStage = 0,
-    ta = false,
-    isMemberUIVisible = false,
-    isInventoryVisible = false,
-    isBestiaryVisible = false,
-    isBadgesUIVisible = false,
-    isOptionsVisible = false,
-    isShrineUIVisible = false,
-    Ba = false,
-    Da = false,
-    Ea = false,
-    Ha = false,
-    Ia = false,
-    Ja = false,
+    clickInUI = false, // ta
+
+    memberUIVisible = false,
+    inventoryUIVisible = false,
+    bestiaryUIVisible = false,
+    badgesUIVisible = false,
+    optionsUIVisible = false,
+    shrineUIVisible = false,
+    
+    memberUIVisibleBackup = false, // Ba
+    inventoryUIVisibleBackup = false, // Da
+    bestiaryUIVisibleBackup = false, // Ea
+    badgesUIVisibleBackup = false, // Ha
+    optionsUIVisibleBackup = false, // Ia
+    shrineUIVisibleBackup = false, // Ja
+
     selectingHero = 0,
-    selectedStatIndex = 0,
-    Na = 0,
-    Oa = 0,
-    Pa = 0,
+    selectedStatIndex = 0, 
+    inventoryTabIdx = 0, // Na, 0..4 for "ARMS","CHARGE","HEAD","RING","AMULET"
+    inventoryPageIdx = 0, // Oa, 
+    inventorySlotIdx = 0, // Pa, 0..27 grid index; used to highlight/select a cell
     currentBestiaryPage = 0,
     bestiaryEnemySelection = 0,
-    Sa = 0,
+    badgesUIStageIdx = 0, // Sa
     LevelExpThresholds = Array(100);
 LevelExpThresholds[0] = 0;
 for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) 
     LevelExpThresholds[iterIdxTemp_1] = LevelExpThresholds[iterIdxTemp_1 - 1] + 1E3 * iterIdxTemp_1;
 LevelExpThresholds[98] = 9999999;
 LevelExpThresholds[99] = 9999999;
+
 var partyMemberCount = 1,
     partyLevel = 1,
     partyEXPAccum = 0,
@@ -60,12 +64,16 @@ var partyMemberCount = 1,
     heroEmitCurrent = [0, 0, 0, 0], // $a
     heroEmitValues = [0, 0, 0, 0],
     heroChargeValues = [0, 0, 0, 0],
-    cb = [0, 0, 0, 0], // cb
+    heroEmitCooldown = [0, 0, 0, 0], // cb
+
     stageEventFlags = [0, 0, 0, 0, 0, 0, 0, 0, 0],
     collectedStageFlagsCount = 0, // eb
     stageFlagsSetCount = 0, // hb
+
     autoMoveEnabled = [0, 0, 0, 0], // ib
     cliffStopEnabled = 0, // kb
+
+    // real values
     partyHealthLvls = [0, 0, 0, 0],
     partyShortAtkLvls = [0, 0, 0, 0],
     partyMidAtkLvls = [0, 0, 0, 0],
@@ -74,6 +82,8 @@ var partyMemberCount = 1,
     partyElemLvls = [0, 0, 0, 0],
     partyDodgeLvls = [0, 0, 0, 0],
     partyStats = [partyHealthLvls, partyShortAtkLvls, partyMidAtkLvls, partyLongAtkLvls, partyPhysLvls, partyElemLvls, partyDodgeLvls],
+
+    // fake values!!
     partyMaxLPBonus_vals = [0, 0, 0, 0],
     partyShortAtk_vals = [0, 0, 0, 0],
     partyMidAtk_vals = [0, 0, 0, 0],
@@ -94,15 +104,16 @@ var partyMemberCount = 1,
     heroProjDefenseFlatArray = [0, 0, 0, 0],
     heroMagicDefenseFlatArray = [0, 0, 0, 0],
     heroDodgeChanceArray = [0, 0, 0, 0],
-    Nb = [0, 0, 0, 0], // Nb
-    Ob = [0, 0, 0, 0], // Ob
-    Pb = [0, 0, 0, 0], // Pb
-    Sb = [0, 0, 0, 0], // Sb
-    Tb = [0, 0, 0, 0], // Tb
-    Ub = [Nb, Ob, Pb, Sb, Tb], // Ub
-    Vb = 0, // Vb
-    Wb = 0, // Wb
-    Xb = 0, // Xb
+    physAtkBonusPercent = [0, 0, 0, 0], // Nb
+    fireAtkBonusPercent = [0, 0, 0, 0], // Ob
+    iceAtkBonusPercent = [0, 0, 0, 0], // Pb
+    lightningAtkBonusPercent = [0, 0, 0, 0], // Sb
+    poisonAtkBonusPercent = [0, 0, 0, 0], // Tb
+    atkBonusPercentByElement = [physAtkBonusPercent, fireAtkBonusPercent, iceAtkBonusPercent, lightningAtkBonusPercent, poisonAtkBonusPercent], // Ub
+    
+    partyRewardValueBonusPercent = 0, // Vb
+    partyDropChanceBonusPercent = 0, // Wb
+    partyEnemyHpBonusPercent = 0, // Xb
     /** [partyN][i] */
     partyEquipmentTable = [
         // "arms", "charge", "head", "ring", "amulet"
@@ -112,8 +123,9 @@ var partyMemberCount = 1,
         [0, 0, 0, 0, 0, 0, 0, 0],
         []
     ],
-    Zb = -1, // Zb
+    forgePreviewItemIdx = -1, // Zb
     itemForgeLvls = Array(256);
+
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemForgeLvls[iterIdxTemp_1] = 0;
 var itemIsNew = Array(256); // ac, 
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemIsNew[iterIdxTemp_1] = 0;
@@ -144,11 +156,12 @@ function resetGameProgress() { // bc
 mainWindow.fff = resetUIStates;
 
 function resetUIStates() {
-    sa = 0;
-    Ba = Da = Ea = Ha = Ia = Ja = ta = isMemberUIVisible = isInventoryVisible = isBestiaryVisible = isBadgesUIVisible = isOptionsVisible = isShrineUIVisible = false;
-    comboMultBonus = Hc = Ic = selectingHero = selectedStatIndex = Na = Oa = Pa = 0
+    screenStateTimer = 0;
+    memberUIVisibleBackup = inventoryUIVisibleBackup = bestiaryUIVisibleBackup = badgesUIVisibleBackup = optionsUIVisibleBackup = shrineUIVisibleBackup = clickInUI = memberUIVisible = inventoryUIVisible = bestiaryUIVisible = badgesUIVisible = optionsUIVisible = shrineUIVisible = false;
+    comboMultBonus = Hc = Ic = selectingHero = selectedStatIndex = inventoryTabIdx = inventoryPageIdx = inventorySlotIdx  = 0
 }
-var Jc = [
+
+var inventoryItemLists = [
     [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [7, 8, 12, 13, 14, 16, 18, 20, 22, 23, 25, 27, 34, 35, 39, 40, 44, 46, 47, 48, 55, 56, 57, 58, 59, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 131, 132, 133, 134, 135, 0, 0, 0, 0, 0, 0, 0],
     [28, 29, 30, 31, 32, 33, 36, 37, 45, 60, 0, 0, 0, 0, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 0, 0, 0, 0, 0],
@@ -309,7 +322,7 @@ function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
                 : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 4] && (c = itemList[_itemIdx][itemStatModifingCol + 5]);
     if (0 != c) {
         var d = itemForgeLvls[_itemIdx] - 1;
-        _itemIdx == Zb && d++;
+        _itemIdx == forgePreviewItemIdx && d++;
         return itemList[_itemIdx][_columnIdx] + floor(itemList[_itemIdx][_columnIdx] * d * c / 100)
     }
     return itemList[_itemIdx][_columnIdx]
@@ -321,7 +334,7 @@ function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     0 == _columnIdx ? c = 0 : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 0] ? c = itemList[_itemIdx][itemStatModifingCol + 1] : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 2] ? c = itemList[_itemIdx][itemStatModifingCol + 3] : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 4] && (c = itemList[_itemIdx][itemStatModifingCol + 5]);
     if (0 != c) {
         var d = itemForgeLvls[_itemIdx] - 1;
-        _itemIdx == Zb && d++;
+        _itemIdx == forgePreviewItemIdx && d++;
         return d * c
     }
     return -1
@@ -532,9 +545,9 @@ var badgeCount = 128,
     badgeList = Array(badgeCount),
     badgeCounterArray = Array(badgeCount);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < badgeCount; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
-var bf = 0,
-    cf = 0,
-    df = [
+var badgePopupTimer = 0, // bf
+    lastCompletedBadgeIdx = 0, // cf
+    badgeIndicesByStage = [ // df
         [0, 1, 2, 3, 4],
         [5, 6, 7, 8, 9],
         [10, 11, 12, 13, 14],
@@ -638,8 +651,8 @@ mainWindow.fff = IncrementBadgeCount;
 function IncrementBadgeCount(badgeIndex) {
     badgeCounterArray[badgeIndex]++;
     if (badgeCounterArray[badgeIndex] == badgeList[badgeIndex][4]) {
-        cf = badgeIndex;
-        bf = 120;
+        lastCompletedBadgeIdx = badgeIndex;
+        badgePopupTimer = 120;
         var b = 0;
         badgeIndex = badgeList[badgeIndex][2];
         for (var c = 0; c < badgeList.length; c++) badgeList[c] && badgeIndex == badgeList[c][2] && badgeCounterArray[c] == badgeList[c][4] && b++;
@@ -1020,8 +1033,8 @@ function gameInit(a, b) {
         for (_t0 = 0; _t0 < enemyCatalog.length; _t0++)
             if (itemCatalogHashTable[_t0] = 0, enemyCatalog[_t0])
                 for (_t1 = 0; _t1 < enemyCatalog[_t0].length; _t1++) itemCatalogHashTable[_t0] = hashAdjust(itemCatalogHashTable[_t0], enemyCatalog[_t0][_t1]);
-        for (_t0 = zf = 0; _t0 < Jc.length; _t0++)
-            for (_t1 = 0; _t1 < Jc[_t0].length; _t1++) zf = hashAdjust(zf, Jc[_t0][_t1]);
+        for (_t0 = zf = 0; _t0 < inventoryItemLists.length; _t0++)
+            for (_t1 = 0; _t1 < inventoryItemLists[_t0].length; _t1++) zf = hashAdjust(zf, inventoryItemLists[_t0][_t1]);
 
         // updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
@@ -1109,7 +1122,7 @@ function drawCanvas() {
         // d != zf && (frameBufferArray = null);
 
         vf = vf + 1 & 63;
-        if (!drawState)
+        if (!gameScreenState)
             currentStage = 0,
                 partySpawnXs[0] = 20,
                 partySpawnXs[1] = 28,
@@ -1119,10 +1132,10 @@ function drawCanvas() {
                 partySpawnYs[1] = 45,
                 partySpawnYs[2] = 45,
                 partySpawnYs[3] = 45,
-                drawState++;
-        else if (1 == drawState) loadLevelData(0) && drawState++;
-        else if (2 == drawState || 3 == drawState) { // title menu
-            ta = false;
+                gameScreenState++;
+        else if (1 == gameScreenState) loadLevelData(0) && gameScreenState++;
+        else if (2 == gameScreenState || 3 == gameScreenState) { // title menu
+            clickInUI = false;
             updatePlayerParty();
             drawGameStage();
             drawPlayerParty();
@@ -1150,31 +1163,31 @@ function drawCanvas() {
                     M = t[B >> 8],
                         -1 != M && (frameBufferArray[n] = M);
 
-            2 == drawState
+            2 == gameScreenState
                 ? (
                     drawTextCentered(gameFont, 320, 220, "NEW GAME", 16777215, 10053171),
                     buttonCheckCentered(320, 220, 128, 24) &&
                     (isMouseClicked &&
-                        (drawState = (0 == gameLoadStatusCode) ? 3 : 4),
+                        (gameScreenState = (0 == gameLoadStatusCode) ? 3 : 4),
                         drawLine(256, 228, 384, 228, 11141120)
                     ),
                     0 == gameLoadStatusCode && (
                         drawTextCentered(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171),
                         buttonCheckCentered(320, 260, 128, 24) && (
-                            isMouseClicked && (drawState = 5),
+                            isMouseClicked && (gameScreenState = 5),
                             drawLine(256, 268, 384, 268, 11141120)
                         )
                     )
                 )
-                : 3 == drawState && (
+                : 3 == gameScreenState && (
                     drawTextCentered(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171),
                     buttonCheckCentered(320, 220, 128, 24) && (
-                        isMouseClicked && (drawState = 4),
+                        isMouseClicked && (gameScreenState = 4),
                         drawLine(192, 228, 448, 228, 11141120)
                     ),
                     drawTextCentered(gameFont, 320, 260, "CANCEL", 16777215, 10053171),
                     buttonCheckCentered(320, 260, 128, 24) && (
-                        isMouseClicked && (drawState = 2),
+                        isMouseClicked && (gameScreenState = 2),
                         drawLine(256, 268, 384, 268, 11141120)
                     )
                 );
@@ -1197,8 +1210,8 @@ function drawCanvas() {
             drawRect(0, 408, 640, 16, 0);
             drawTextCentered(gameFont, 320, 417, copyrightText2, -1, 6697728)
 
-        } else if (4 == drawState || 5 == drawState)
-            4 == drawState
+        } else if (4 == gameScreenState || 5 == gameScreenState)
+            4 == gameScreenState
                 ? (
                     resetGameProgress(),
                     partyEquipmentTable[0][0] = 4,
@@ -1213,7 +1226,7 @@ function drawCanvas() {
                     partySpawnYs[3] = 40,
                     updatePartyStats()
                 )
-                : 5 == drawState && (
+                : 5 == gameScreenState && (
                     resetUIStates(),
                     currentStage = 1,
                     partySpawnXs[0] = 20,
@@ -1226,24 +1239,24 @@ function drawCanvas() {
                     partySpawnYs[3] = 40
                 ),
                 ug = 0,
-                drawState = 10;
+                gameScreenState = 10;
 
-        else if (10 == drawState)
+        else if (10 == gameScreenState)
             loadLevelData(currentStage) && (
                 1 == currentStage && (comboMultBonus >>= 1),
-                sa = 0,
-                drawState++
+                screenStateTimer = 0,
+                gameScreenState++
             );
-        else if (11 == drawState || 12 == drawState || 13 == drawState || 30 == drawState)
+        else if (11 == gameScreenState || 12 == gameScreenState || 13 == gameScreenState || 30 == gameScreenState)
             if (isMouseClicked && (
-                ta = false,
-                360 <= mouseYCurrent && (ta = true),
-                isMemberUIVisible && buttonCheck(8, 8, 204, 196) && (ta = true),
-                isInventoryVisible && buttonCheck(218, 8, 204, 260) && (ta = true),
-                isBestiaryVisible && buttonCheck(428, 8, 204, 180) && (ta = true),
-                isBadgesUIVisible && buttonCheck(428, 8, 204, 180) && (ta = true),
-                isOptionsVisible && buttonCheck(428, 196, 204, 148) && (ta = true),
-                isShrineUIVisible && buttonCheck(218, 8, 204, 180) && (ta = true)
+                clickInUI = false,
+                360 <= mouseYCurrent && (clickInUI = true),
+                memberUIVisible && buttonCheck(8, 8, 204, 196) && (clickInUI = true),
+                inventoryUIVisible && buttonCheck(218, 8, 204, 260) && (clickInUI = true),
+                bestiaryUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
+                badgesUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
+                optionsUIVisible && buttonCheck(428, 196, 204, 148) && (clickInUI = true),
+                shrineUIVisible && buttonCheck(218, 8, 204, 180) && (clickInUI = true)
             ),
                 updatePartyStats(), updateStageEdgeSpawns(), updateStageTick(),
                 drawGameStage(), updatePlayerParty(),
@@ -1257,29 +1270,29 @@ function drawCanvas() {
                 isSolidRender = 0,
                 drawText(gameFont, 8, 8, stageListArray[currentStage][stageNameCol], 16777215, 0),
                 drawGameUI(),
-                11 == drawState
+                11 == gameScreenState
             )
                 c = 255,
-                    50 < sa && (c = 255 - floor(255 * (sa - 50) / 20)),
+                    50 < screenStateTimer && (c = 255 - floor(255 * (screenStateTimer - 50) / 20)),
                     drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24),
-                    a = -1E3 + floor(500 * sa / 20),
+                    a = -1E3 + floor(500 * screenStateTimer / 20),
                     drawLine(a, 164, a + 1E3, 164, 8421504),
-                    a = 640 - floor(500 * sa / 20),
+                    a = 640 - floor(500 * screenStateTimer / 20),
                     drawLine(a, 193, a + 1E3, 193, 8421504),
-                    sa++,
-                    ug = clamp(sa / 30, 0, 1),
-                    70 <= sa && (
+                    screenStateTimer++,
+                    ug = clamp(screenStateTimer / 30, 0, 1),
+                    70 <= screenStateTimer && (
                         ug = 1,
-                        sa = 0,
-                        drawState++
+                        screenStateTimer = 0,
+                        gameScreenState++
                     );
 
-            else if (12 == drawState) {
+            else if (12 == gameScreenState) {
                 for (a = b = 0; a < partyMemberCount; a++)
                     b += partyLP[a];
                 if (0 == b) {
-                    sa = 0;
-                    drawState = 30;
+                    screenStateTimer = 0;
+                    gameScreenState = 30;
                     comboMultBonus = Hc = Ic = 0;
                     c = floor(partyGold / 10 / partyMemberCount);
                     if (0 < c) {
@@ -1295,33 +1308,33 @@ function drawCanvas() {
                     for (a = 0; a < partyMemberCount; a++)
                         partyLP[a] = 0
                 } else currentStage != lastStageIdx && (
-                    sa = 0,
-                    drawState = 13,
+                    screenStateTimer = 0,
+                    gameScreenState = 13,
                     isBadgeIncompleteForCurrentStage(6) && (2 == Ng && 4 == lastStageIdx || 4 == Ng && 2 == lastStageIdx) &&
                     0 == partyDamageTakenThisStage && 0 == totalDamageDone && IncrementBadgeCount(6),
                     isBadgeIncompleteForCurrentStage(51) && (13 == Ng && 15 == lastStageIdx || 15 == Ng && 13 == lastStageIdx)
                     && 0 == partyDamageTakenThisStage && 0 == totalDamageDone && IncrementBadgeCount(51)
                 )
-            } else if (13 == drawState)
-                sa++,
-                    ug = clamp(1 - sa / 20, 0, 1),
-                    20 == sa && (
+            } else if (13 == gameScreenState)
+                screenStateTimer++,
+                    ug = clamp(1 - screenStateTimer / 20, 0, 1),
+                    20 == screenStateTimer && (
                         ug = 0,
-                        drawState = 10,
+                        gameScreenState = 10,
                         Ng = currentStage,
                         currentStage = lastStageIdx,
                         saveGame()
                     );
             else if (
-                30 == drawState && (
-                    100 > sa && sa++,
-                    c = floor(255 * sa / 100),
+                30 == gameScreenState && (
+                    100 > screenStateTimer && screenStateTimer++,
+                    c = floor(255 * screenStateTimer / 100),
                     drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
-                    100 == sa && isMouseClicked
+                    100 == screenStateTimer && isMouseClicked
                 )) {
                 for (a = 0; 4 > a; a++) partyLP[a] = 1, heroEmitCurrent[a] = 0;
                 ug = 0;
-                drawState = 10;
+                gameScreenState = 10;
                 currentStage = 1;
                 partySpawnXs[0] = 20;
                 partySpawnXs[1] = 28;
@@ -1334,27 +1347,27 @@ function drawCanvas() {
                 saveGame()
             }
         // updatePartyChecksum();
-        0 < bf && (
-            bf--,
-            a = badgeList[cf][3],
+        0 < badgePopupTimer && (
+            badgePopupTimer--,
+            a = badgeList[lastCompletedBadgeIdx][3],
             drawSpriteSheetPartTintedScaled(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true),
             b = 440,
-            a = min(120 - bf - 0, 4),
+            a = min(120 - badgePopupTimer - 0, 4),
             0 < a && drawText(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0),
-            a = min(120 - bf - 2, 4),
+            a = min(120 - badgePopupTimer - 2, 4),
             0 < a && drawText(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0),
-            a = min(120 - bf - 4, 4),
+            a = min(120 - badgePopupTimer - 4, 4),
             0 < a && drawText(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0),
             b = 438,
-            a = min(120 - bf - 6, 4),
+            a = min(120 - badgePopupTimer - 6, 4),
             0 < a && drawText(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0),
-            a = min(120 - bf - 8, 4),
+            a = min(120 - badgePopupTimer - 8, 4),
             0 < a && drawText(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0),
-            a = min(120 - bf - 10, 4),
+            a = min(120 - badgePopupTimer - 10, 4),
             0 < a && drawText(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0),
-            a = min(120 - bf - 12, 4),
+            a = min(120 - badgePopupTimer - 12, 4),
             0 < a && drawText(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0),
-            a = min(120 - bf - 14, 4),
+            a = min(120 - badgePopupTimer - 14, 4),
             0 < a && drawText(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0)
         );
 
@@ -1411,11 +1424,11 @@ function updatePartyStats() {
         if (heroHasAccessoryEffect(hidx, accessoryDodgeChanceCol))
             heroDodgeChanceArray[hidx] += countAccessoryLvlBonuses(hidx, accessoryDodgeChanceCol);
 
-        Nb[hidx] = partyPhys_vals[hidx];
-        Ob[hidx] = partyElem_vals[hidx];
-        Pb[hidx] = partyElem_vals[hidx];
-        Sb[hidx] = partyElem_vals[hidx];
-        Tb[hidx] = partyElem_vals[hidx];
+        physAtkBonusPercent[hidx] = partyPhys_vals[hidx];
+        fireAtkBonusPercent[hidx] = partyElem_vals[hidx];
+        iceAtkBonusPercent[hidx] = partyElem_vals[hidx];
+        lightningAtkBonusPercent[hidx] = partyElem_vals[hidx];
+        poisonAtkBonusPercent[hidx] = partyElem_vals[hidx];
         partyMaxLP[hidx] = floor((50 + headgearHpPercent) * (100 + partyMaxLPBonus_vals[hidx]) / 100);
 
         if (heroHasAccessoryEffect(hidx, accessoryHealthBonusCol))
@@ -1446,8 +1459,8 @@ function updatePartyStats() {
                 maxAtkArray[c] = getModifiedStatVal(hidx, itemIdx, Wc);
                 minAtkArray[c] = floor(minAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
                 maxAtkArray[c] = floor(maxAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
-                minAtkArray[c] = floor(minAtkArray[c] * (100 + Ub[g][hidx]) / 100);
-                maxAtkArray[c] = floor(maxAtkArray[c] * (100 + Ub[g][hidx]) / 100);
+                minAtkArray[c] = floor(minAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
+                maxAtkArray[c] = floor(maxAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
 
                 if (heroHasAccessoryEffect(hidx, oe)) {
                     minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
@@ -1482,12 +1495,12 @@ function updatePartyStats() {
                 )
             }
         }
-    Xb = Wb = Vb = 0;
+    partyEnemyHpBonusPercent = partyDropChanceBonusPercent = partyRewardValueBonusPercent = 0;
     Vg = 180;
     for (let hidx = 0; 4 > hidx; hidx++)
-        heroHasAccessoryEffect(hidx, Ce) && (Vb += countAccessoryLvlBonuses(hidx, Ce)),
-            heroHasAccessoryEffect(hidx, Ee) && (Wb += countAccessoryLvlBonuses(hidx, Ee)),
-            heroHasAccessoryEffect(hidx, Fe) && (Xb += countAccessoryLvlBonuses(hidx, Fe)),
+        heroHasAccessoryEffect(hidx, Ce) && (partyRewardValueBonusPercent += countAccessoryLvlBonuses(hidx, Ce)),
+            heroHasAccessoryEffect(hidx, Ee) && (partyDropChanceBonusPercent += countAccessoryLvlBonuses(hidx, Ee)),
+            heroHasAccessoryEffect(hidx, Fe) && (partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, Fe)),
             heroHasAccessoryEffect(hidx, Me) && (Vg += 60 * countAccessoryLvlBonuses(hidx, Me));
     Ic = clamp(Ic, 0, Vg);
     for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
@@ -1498,39 +1511,39 @@ function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // 
     var h;
     if (buttonCheck(_x, _y, _width, _height))
         if (fillEmptyPixelsRect(_x, _y, _width, _height, 6684672), isMouseClicked && 0 != _itemId) {
-            (isInventoryVisible = isInventoryVisible && Jc[Na][28 * Oa + Pa] == _itemId ? false : true) && (isShrineUIVisible = false);
-            for (_x = 0; _x < Jc.length; _x++) {
-                for (h = 0; h < Jc[_x].length && Jc[_x][h] != _itemId; h++);
-                if (Jc[_x][h] == _itemId) break
+            (inventoryUIVisible = inventoryUIVisible && inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx ] == _itemId ? false : true) && (shrineUIVisible = false);
+            for (_x = 0; _x < inventoryItemLists.length; _x++) {
+                for (h = 0; h < inventoryItemLists[_x].length && inventoryItemLists[_x][h] != _itemId; h++);
+                if (inventoryItemLists[_x][h] == _itemId) break
             }
-            _x != Jc.length && (Na = _x, Oa = floor(h / 28), Pa = h % 28)
-        } else isMouseClicked && ((isInventoryVisible = isInventoryVisible && Na == _pageIdx ? false : true) && (isShrineUIVisible = false), Na = _pageIdx, Pa = Oa = 0)
+            _x != inventoryItemLists.length && (inventoryTabIdx = _x, inventoryPageIdx = floor(h / 28), inventorySlotIdx  = h % 28)
+        } else isMouseClicked && ((inventoryUIVisible = inventoryUIVisible && inventoryTabIdx == _pageIdx ? false : true) && (shrineUIVisible = false), inventoryTabIdx = _pageIdx, inventorySlotIdx  = inventoryPageIdx = 0)
 }
 mainWindow.fff = drawGameUI;
 
 function drawGameUI() {
     var hidx, b, c, d, f, g, h, k;
     keyJustPressed[32] && (
-        (isMemberUIVisible ||
-            isInventoryVisible ||
-            isBestiaryVisible ||
-            isBadgesUIVisible ||
-            isOptionsVisible ||
-            isShrineUIVisible) ? (
-            Ba = isMemberUIVisible,
-            Da = isInventoryVisible,
-            Ea = isBestiaryVisible,
-            Ha = isBadgesUIVisible,
-            Ia = isOptionsVisible,
-            Ja = isShrineUIVisible,
-            isMemberUIVisible = isInventoryVisible = isBestiaryVisible = isBadgesUIVisible = isOptionsVisible = isShrineUIVisible = false
+        (memberUIVisible ||
+            inventoryUIVisible ||
+            bestiaryUIVisible ||
+            badgesUIVisible ||
+            optionsUIVisible ||
+            shrineUIVisible) ? (
+            memberUIVisibleBackup = memberUIVisible,
+            inventoryUIVisibleBackup = inventoryUIVisible,
+            bestiaryUIVisibleBackup = bestiaryUIVisible,
+            badgesUIVisibleBackup = badgesUIVisible,
+            optionsUIVisibleBackup = optionsUIVisible,
+            shrineUIVisibleBackup = shrineUIVisible,
+            memberUIVisible = inventoryUIVisible = bestiaryUIVisible = badgesUIVisible = optionsUIVisible = shrineUIVisible = false
         ) : (
-            isMemberUIVisible = Ba,
-            isInventoryVisible = Da,
-            isBestiaryVisible = Ea,
-            isBadgesUIVisible = Ha,
-            isOptionsVisible = Ia,
-            isShrineUIVisible = Ja
+            memberUIVisible = memberUIVisibleBackup,
+            inventoryUIVisible = inventoryUIVisibleBackup,
+            bestiaryUIVisible = bestiaryUIVisibleBackup,
+            badgesUIVisible = badgesUIVisibleBackup,
+            optionsUIVisible = optionsUIVisibleBackup,
+            shrineUIVisible = shrineUIVisibleBackup
         )
     );
     drawRect(0, 361, 640, 70, stageListArray[currentStage][stageUIBgColorCol]);
@@ -1601,7 +1614,7 @@ function drawGameUI() {
         drawText(gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
         drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
         drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / max(heroEmitValues[hidx], 1), 5, 221);
-        buttonCheck(f + hidx * d, g, 24, 24) && (fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && selectingHero == hidx && (isMemberUIVisible = !isMemberUIVisible), isMouseClicked && (selectingHero = hidx));
+        buttonCheck(f + hidx * d, g, 24, 24) && (fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608), isMouseClicked && selectingHero == hidx && (memberUIVisible = !memberUIVisible), isMouseClicked && (selectingHero = hidx));
         for (b = 0; 5 > b; b++) {
             c = partyEquipmentTable[hidx][b];
             k = f + hidx * d + b % 3 * 20;
@@ -1627,11 +1640,11 @@ function drawGameUI() {
             stageFlagUsesCount++;
         }
     }
-    drawIconButton(f + 0 * d, g, 1, "STATUS", isMemberUIVisible ? 16750950 : 16777215) && isMouseClicked && (isMemberUIVisible = !isMemberUIVisible);
-    drawIconButton(f + 1 * d, g, 2, "ITEM", isInventoryVisible ? 16750950 : 16777215) && isMouseClicked && (isInventoryVisible = !isInventoryVisible) && (isShrineUIVisible = false);
-    drawIconButton(f + 2 * d, g, 3, "MONSTER", isBestiaryVisible ? 16750950 : 16777215) && isMouseClicked && (isBestiaryVisible = !isBestiaryVisible) && (isBadgesUIVisible = false);
-    drawIconButton(f + 3 * d, g, 4, "MEDAL", isBadgesUIVisible ? 16750950 : 16777215) && isMouseClicked && (isBadgesUIVisible = !isBadgesUIVisible) && (isBestiaryVisible = false);
-    drawIconButton(f + 4 * d, g, 5, "OPTION", isOptionsVisible ? 16750950 : 16777215) && isMouseClicked && (isOptionsVisible = !isOptionsVisible);
+    drawIconButton(f + 0 * d, g, 1, "STATUS", memberUIVisible ? 16750950 : 16777215) && isMouseClicked && (memberUIVisible = !memberUIVisible);
+    drawIconButton(f + 1 * d, g, 2, "ITEM", inventoryUIVisible ? 16750950 : 16777215) && isMouseClicked && (inventoryUIVisible = !inventoryUIVisible) && (shrineUIVisible = false);
+    drawIconButton(f + 2 * d, g, 3, "MONSTER", bestiaryUIVisible ? 16750950 : 16777215) && isMouseClicked && (bestiaryUIVisible = !bestiaryUIVisible) && (badgesUIVisible = false);
+    drawIconButton(f + 3 * d, g, 4, "MEDAL", badgesUIVisible ? 16750950 : 16777215) && isMouseClicked && (badgesUIVisible = !badgesUIVisible) && (bestiaryUIVisible = false);
+    drawIconButton(f + 4 * d, g, 5, "OPTION", optionsUIVisible ? 16750950 : 16777215) && isMouseClicked && (optionsUIVisible = !optionsUIVisible);
     c = 0;
     for (b = itemIsNew.length - 1; 0 <= b; b--) c += itemIsNew[b];
     0 < c && drawText(gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
@@ -1646,7 +1659,7 @@ function drawGameUI() {
             gameFont.a = 1;
             drawTextCentered(gameFont, 530, 168, "INN", 15908203, 8409120);
             drawTextCentered(gameFont, 528, 187, "G " + c, 16777215, 8409120);
-            if (0 < c && c <= partyGold && isMouseClicked && !ta) {
+            if (0 < c && c <= partyGold && isMouseClicked && !clickInUI) {
                 for (hidx = 0; hidx < partyMemberCount; hidx++) {
                     partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
                     partyLP[hidx] = partyMaxLP[hidx];
@@ -1661,7 +1674,7 @@ function drawGameUI() {
         if (buttonCheckCentered(52, 308, 56, 40)) {
             gameFont.a = 1;
             drawTextCentered(gameFont, 54, 296, "SMITH", 15908203, 8409120);
-            isMouseClicked && !ta && (isInventoryVisible = !isInventoryVisible) && (isShrineUIVisible = false);
+            isMouseClicked && !clickInUI && (inventoryUIVisible = !inventoryUIVisible) && (shrineUIVisible = false);
         }
     } else if (12 == currentStage) {
         gameFont.a = 1;
@@ -1669,11 +1682,11 @@ function drawGameUI() {
         if (buttonCheckCentered(416, 108, 48, 40)) {
             gameFont.a = 1;
             drawTextCentered(gameFont, 418, 104, "SHRINE", 15908203, 8409120);
-            isMouseClicked && !ta && (isShrineUIVisible = !isShrineUIVisible) && (isInventoryVisible = false);
+            isMouseClicked && !clickInUI && (shrineUIVisible = !shrineUIVisible) && (inventoryUIVisible = false);
         }
     };
     
-    if (isMemberUIVisible) {
+    if (memberUIVisible) {
         g = f = 14;
         drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][stageUIBgColorCol]);
         gameFont.a = 1;
@@ -1708,7 +1721,7 @@ function drawGameUI() {
             }
         }
         
-        drawCancelButton(f + 188, g + 4) && isMouseClicked && (isMemberUIVisible = false);
+        drawCancelButton(f + 188, g + 4) && isMouseClicked && (memberUIVisible = false);
         
         g += 64;
         // show stats
@@ -1802,24 +1815,24 @@ function drawGameUI() {
         }
     }
 
-    if (isInventoryVisible) {
+    if (inventoryUIVisible) {
         let _ox = 224;
         let _oy = 14;
         drawRect(_ox - 6, _oy - 6, 204, 260, stageListArray[currentStage][stageUIBgColorCol]);
-        let c = Jc[Na][28 * Oa + Pa];
+        let c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx ];
 
-        if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= Na) { // item upgrade panel
+        if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= inventoryTabIdx) { // item upgrade panel
             drawTextCentered(gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
             hidx = getItemStatWithForge(c, wd);
             if (0 == hidx) 
                  drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "---");
             else if (itemForgeLvls[c] < hidx) {
-                Zb = -1;
+                forgePreviewItemIdx = -1;
                 h = getItemStatWithForge(c, xd) * itemForgeLvls[c];
                 if (drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "G " + h) && h <= partyGold) {
-                    Zb = c;
+                    forgePreviewItemIdx = c;
                     if (isMouseClicked) {
-                        Zb = -1;
+                        forgePreviewItemIdx = -1;
                         partyGold = clamp(partyGold - h, 0, 9999999);
                         itemForgeLvls[c]++;
                     }
@@ -1845,9 +1858,9 @@ function drawGameUI() {
                     } else {
                         1 < getItemStatWithForge(c, Uc) && (h += " " + getItemStatWithForge(c, Uc) + "hit"); 
                         drawText(gameFontMed, _ox, _oy + 12, h, 16777215, 0); 
-                        0 == Na && drawText(gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, Zc), 16777215, 0); 
-                        0 == Na && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, $c), 16777215, 0); 
-                        if (0 == Na) {
+                        0 == inventoryTabIdx && drawText(gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, Zc), 16777215, 0); 
+                        0 == inventoryTabIdx && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, $c), 16777215, 0); 
+                        if (0 == inventoryTabIdx) {
                             drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + getItemStatWithForge(c, vd), 16777215, 0);
                         } else {
                             if (-1 == getItemStatWithForge(c, vd)) {
@@ -1900,31 +1913,31 @@ function drawGameUI() {
             }
         }
 
-        Zb = -1;
-        k = Na;
-        drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (isInventoryVisible = false);
-        for (hidx = 0; 28 > hidx; hidx++) c = Jc[Na][28 * Oa + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
-            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == Na ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == Na || 4 == Na ? drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == Pa && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), Pa != hidx ? isMouseReleased && (Pa = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+        forgePreviewItemIdx = -1;
+        k = inventoryTabIdx;
+        drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (inventoryUIVisible = false);
+        for (hidx = 0; 28 > hidx; hidx++) c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
+            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == inventoryTabIdx ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == inventoryTabIdx || 4 == inventoryTabIdx ? drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == inventorySlotIdx  && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), inventorySlotIdx  != hidx ? isMouseReleased && (inventorySlotIdx  = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (itemIsNew[c] = 0)), 0 < itemIsNew[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
-            drawMenuButton(_ox + 12 + 28 * hidx, _oy + 238, hidx, k[hidx], Na == hidx ? 16737894 : 16777215) && isMouseClicked && (Na = hidx);
+            drawMenuButton(_ox + 12 + 28 * hidx, _oy + 238, hidx, k[hidx], inventoryTabIdx == hidx ? 16737894 : 16777215) && isMouseClicked && (inventoryTabIdx = hidx);
             c = 0;
-            for (b = Jc[hidx].length - 1; 0 <= b; b--) c += itemIsNew[Jc[hidx][b]];
+            for (b = inventoryItemLists[hidx].length - 1; 0 <= b; b--) c += itemIsNew[inventoryItemLists[hidx][b]];
             0 < c && drawText(gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1)
         }
-        drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked && Oa--;
-        drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215) && isMouseClicked && Oa++;
-        h = ~~(Jc[Na].length / 28);
-        Oa = clamp(Oa, 0, h - 1);
-        drawTextCentered(gameFontSmall, _ox + 96, _oy + 209, "" + (Oa + 1) + "/" + h, 3355443, -1)
+        drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked && inventoryPageIdx--;
+        drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215) && isMouseClicked && inventoryPageIdx++;
+        h = ~~(inventoryItemLists[inventoryTabIdx].length / 28);
+        inventoryPageIdx = clamp(inventoryPageIdx, 0, h - 1);
+        drawTextCentered(gameFontSmall, _ox + 96, _oy + 209, "" + (inventoryPageIdx + 1) + "/" + h, 3355443, -1)
     }
 
-    if (isBestiaryVisible) {
+    if (bestiaryUIVisible) {
         let f = 434;
         let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
-        drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBestiaryVisible = false);
+        drawCancelButton(f + 188, g + 4) && isMouseClicked && (bestiaryUIVisible = false);
         bestiaryEnemySelection = clamp(bestiaryEnemySelection, 0, bestiaryPageItems[currentBestiaryPage].length - 1);
         let c = bestiaryPageItems[currentBestiaryPage][bestiaryEnemySelection];
 
@@ -2018,27 +2031,27 @@ function drawGameUI() {
         drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
         1 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][stageNameCol], -1, 0)
     }
-    if (isBadgesUIVisible) {
+    if (badgesUIVisible) {
         let f = 434;
         let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
-        drawCancelButton(f + 188, g + 4) && isMouseClicked && (isBadgesUIVisible = false);
-        if (0 == isStageReachedArray[stageIndexOrder[Sa]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        drawCancelButton(f + 188, g + 4) && isMouseClicked && (badgesUIVisible = false);
+        if (0 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else
-            for (hidx = 0; hidx < df[Sa].length; hidx++) c = df[Sa][hidx], badgeList[c] && (b = f + 6, d = g + 6 + 24 * hidx, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeList[c][3], badgeCounterArray[c] == badgeList[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), drawSpriteSheetPartTintedScaled(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < badgeCounterArray[c] && (gameFontMed.b = -1, drawTextCentered(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeList[c][1].length ? drawText(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215,
+            for (hidx = 0; hidx < badgeIndicesByStage[badgesUIStageIdx].length; hidx++) c = badgeIndicesByStage[badgesUIStageIdx][hidx], badgeList[c] && (b = f + 6, d = g + 6 + 24 * hidx, drawRect(b - 1, d + 5, 10, 10, 0), drawRect(b + 14, d, 20, 20, 0), h = badgeList[c][3], badgeCounterArray[c] == badgeList[c][4] ? (drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168), drawSpriteSheetPartTintedScaled(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true)) : (drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924), 0 < badgeCounterArray[c] && (gameFontMed.b = -1, drawTextCentered(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1))), gameFontMed.a = 3, 0 == badgeList[c][1].length ? drawText(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215,
                 0) : (drawText(gameFontMed, b + 40, d + 1, badgeList[c][0], 16777215, 0), gameFontMed.a = 3, drawText(gameFontMed, b + 40, d + 11, badgeList[c][1], 16777215, 0)));
-        drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && Sa--;
-        drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && Sa++;
-        Sa = wrapStageIndex(Sa);
-        drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (Sa + 1) + "/" + stageIndexOrder.length, 3355443, -1);
-        1 == isStageReachedArray[stageIndexOrder[Sa]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[Sa]][stageNameCol], -1, 0)
+        drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked && badgesUIStageIdx--;
+        drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked && badgesUIStageIdx++;
+        badgesUIStageIdx = wrapStageIndex(badgesUIStageIdx);
+        drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        1 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]] && drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[badgesUIStageIdx]][stageNameCol], -1, 0)
     }
-    if (isOptionsVisible) {
+    if (optionsUIVisible) {
         let f = 434;
         let g = 202;
         d = 32;
         drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][stageUIBgColorCol]);
-        drawCancelButton(f + 188, g + 4) && isMouseClicked && (isOptionsVisible = false);
+        drawCancelButton(f + 188, g + 4) && isMouseClicked && (optionsUIVisible = false);
         c = ["ON", "OFF"];
         drawText(gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
         for (hidx = 0; hidx < partyMemberCount; hidx++) {
@@ -2056,13 +2069,13 @@ function drawGameUI() {
         1 == currentStage ? drawTextCentered(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : drawTextCentered(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = stageListArray[currentStage][stageAttr3];
-        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == currentStage ? drawState = 0 : (ug = 0, drawState = 10, currentStage = 1, partySpawnXs[0] = 20, partySpawnXs[1] = 28, partySpawnXs[2] = 36, partySpawnXs[3] = 44, partySpawnYs[0] = 40, partySpawnYs[1] = 40, partySpawnYs[2] = 40, partySpawnYs[3] = 40), saveGame(), isOptionsVisible = false)
+        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == currentStage ? gameScreenState = 0 : (ug = 0, gameScreenState = 10, currentStage = 1, partySpawnXs[0] = 20, partySpawnXs[1] = 28, partySpawnXs[2] = 36, partySpawnXs[3] = 44, partySpawnYs[0] = 40, partySpawnYs[1] = 40, partySpawnYs[2] = 40, partySpawnYs[3] = 40), saveGame(), optionsUIVisible = false)
     }
-    if (isShrineUIVisible) {
+    if (shrineUIVisible) {
         f = 224;
         g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
-        drawCancelButton(f + 188, g + 4) && isMouseClicked && (isShrineUIVisible = false);
+        drawCancelButton(f + 188, g + 4) && isMouseClicked && (shrineUIVisible = false);
         for (hidx = h = 0; hidx < badgeList.length; hidx++) badgeList[hidx] && badgeCounterArray[hidx] == badgeList[hidx][4] && h++;
         gameFontMed.a = 3;
         drawText(gameFontMed, f + 27, g + 6, "Achievement Medal", 16777215, 0);
@@ -2072,7 +2085,7 @@ function drawGameUI() {
         for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) b = f + 6, d = g + 26 + 24 * hidx, drawRect(b + 14, d, 20, 20, 0), 100 > shrineRewardOptions[hidx][1] ? (gameFontSmall.b = -2, drawScaledTintedTextCentered(gameFontSmall,
             b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)) : (gameFontSmall.a = 3, gameFontSmall.b = -3, drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14)), 1 == shrineRewardClaimed[hidx] ? (drawRect(b - 1, d + 5, 10, 10, 0), drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168)) : buttonCheck(b + 14, d, 20, 20) && (fillEmptyPixelsRect(b + 14, d, 20, 20, 6684672), shrineRewardOptions[hidx][1] <= h && isMouseClicked && (c = hidx)), gameFontMed.a = 3, gameFontMed.b = 1, drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         if (!c)
-            for (shrineRewardClaimed[c] = 1, isShrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + Vb) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
+            for (shrineRewardClaimed[c] = 1, shrineUIVisible = false, hidx = 0; 100 > hidx;) f = randIntRange(2, 78), g = randIntRange(1, 44), 25 >= stageTileData[g][f] || (h = floor(100 * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         else if (1 == c)
             for (shrineRewardClaimed[c] = 1, hidx = 0; 4 > hidx; hidx++)
                 for (b = 0; b < partyStats.length; b++) partySP[hidx] += partyStats[b][hidx],
@@ -2293,7 +2306,7 @@ function pickHeroJointUnderMouse() { // vi
     var a = new Vec2,
         b, c;
     if (-1 == bi) {
-        if (isMouseClicked && !ta) {
+        if (isMouseClicked && !clickInUI) {
             b = 20;
             a.x = mouseXCurrent - Mh[selectingHero][0].x;
             a.y = mouseYCurrent - (Mh[selectingHero][0].y - 8);
@@ -2590,7 +2603,7 @@ function updatePlayerParty() {
                 c = heroRangeValues[a];
                 d = O[a][1].x;
                 var k = O[a][1].y;
-                c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < cb[a] && cb[a]--, 0 == cb[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, O[a][6].x, O[a][6].y, k), cb[a] = itemList[partyEquipmentTable[a][1]][ld])));
+                c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < heroEmitCooldown[a] && heroEmitCooldown[a]--, 0 == heroEmitCooldown[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, O[a][6].x, O[a][6].y, k), heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][ld])));
                 if (0 < Zh[a]) Zh[a]--;
                 else if (bi != a && 0 != b && -1 != c) {
                     Zh[a] = heroAgiValues[a] + randIntRange(-1, 1);
@@ -3093,7 +3106,7 @@ function loadLevelData(a) {
         }
     }
 
-    for (let a = 0; 4 > a; a++) cb[a] = 0;
+    for (let a = 0; 4 > a; a++) heroEmitCooldown[a] = 0;
     resetDragSelection();
     for (let a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXs[a], partySpawnYs[a]);
     for (let a = 0; 20 > a; a++) {
@@ -3145,7 +3158,7 @@ mainWindow.fff = updateStageEdgeSpawns;
 
 function updateStageEdgeSpawns() { // wg
     var a;
-    if (12 == drawState)
+    if (12 == gameScreenState)
         for (a = 0; a < partyMemberCount; a++)
             if (Wh[a] != areUpperJointsDisabled) {
                 var b = O[a][1].x,
@@ -3290,7 +3303,7 @@ function updateStageTick() { // xg
                 fillStageTilesRect(n, w, n, w, 32);
                 a = 1;
                 1 > randFloat(200) ? a = 100 : 1 > randFloat(14) && (a = 7);
-                a = floor(a * (100 + Vb) / 100);
+                a = floor(a * (100 + partyRewardValueBonusPercent) / 100);
                 spawnDrop(8 * n +
                     4, 8 * w + 4, 2, a, 0);
                 isBadgeIncompleteForCurrentStage(3) && IncrementBadgeCount(3);
@@ -3307,7 +3320,7 @@ function updateStageTick() { // xg
             }
         }
     }
-    if (1 == currentStage) 12 == drawState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (lastStageIdx = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == drawState && 1 == isStageReachedArray[12] && 1 > h && (lastStageIdx = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
+    if (1 == currentStage) 12 == gameScreenState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (lastStageIdx = 6, partySpawnXs[0] = 33, partySpawnYs[0] = 24, partySpawnXs[1] = 35, partySpawnYs[1] = 24, partySpawnXs[2] = 44, partySpawnYs[2] = 24, partySpawnXs[3] = 46, partySpawnYs[3] = 24), 12 == gameScreenState && 1 == isStageReachedArray[12] && 1 > h && (lastStageIdx = 12, partySpawnXs[0] = 67, partySpawnYs[0] = 42, partySpawnXs[1] = 69, partySpawnYs[1] = 42, partySpawnXs[2] = 71, partySpawnYs[2] = 42, partySpawnXs[3] = 73, partySpawnYs[3] = 42);
     else if (2 != currentStage)
         if (3 == currentStage) {
             1 == partyMemberCount && 0 == activeSpawnCounts[0] && (resetHeroPose(partyMemberCount, 25, 14), partyMemberCount++);
@@ -3338,7 +3351,7 @@ function updateStageTick() { // xg
                 for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
                 4 == b && IncrementBadgeCount(19)
             }
-        } else if (6 == currentStage) 12 == drawState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (lastStageIdx = 1, partySpawnXs[0] = 18, partySpawnYs[0] = 24, partySpawnXs[1] = 20, partySpawnYs[1] = 24, partySpawnXs[2] = 29, partySpawnYs[2] = 24, partySpawnXs[3] = 31, partySpawnYs[3] = 24);
+        } else if (6 == currentStage) 12 == gameScreenState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (lastStageIdx = 1, partySpawnXs[0] = 18, partySpawnYs[0] = 24, partySpawnXs[1] = 20, partySpawnYs[1] = 24, partySpawnXs[2] = 29, partySpawnYs[2] = 24, partySpawnXs[3] = 31, partySpawnYs[3] = 24);
         else if (7 == currentStage) {
             if (0 == totalSpawnedByGroup[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
                 if (c = 0, 39 == stageTileData[34][75] && c++, 39 == stageTileData[35][72] && c++, 39 == stageTileData[35][74] && c++, 39 == stageTileData[36][75] && c++, 39 == stageTileData[38][76] && c++, 1 == c || 2 == c) spawnEnemy(66, 42, 24, 1), activeSpawnCounts[1]++, totalSpawnedByGroup[1]++;
@@ -3903,7 +3916,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                             enemyFreezeTimerArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyAttr44] / 100)
                     ), 
                     Ek[height] = 120, 
-                    30 != drawState && (Ic = Vg), 
+                    30 != gameScreenState && (Ic = Vg), 
                     isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && stageConditionBitmask++, 
                     isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && stageConditionBitmask++
                 );
@@ -3997,7 +4010,7 @@ mainWindow.fff = onEnemyDeath;
 function onEnemyDeath(_enemyIdx) { // cl
     var b;
     b = abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr0] - partyLevel);
-    var c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr64] * (100 + Xb) / 100);
+    var c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr64] * (100 + partyEnemyHpBonusPercent) / 100);
     $i + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
     partyEXPAccum = clamp(partyEXPAccum + c, 0, 9999999);
     if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
@@ -4007,11 +4020,11 @@ function onEnemyDeath(_enemyIdx) { // cl
     }
     for (b = enemyAttr67; b < enemyAttr67 + 8; b += 2)
         if (c = enemyCatalog[enemyTypeArray[_enemyIdx]][b], 0 != c) {
-            var d = floor(100 * (100 + Wb) / 100);
-            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * (100 + Vb) / 100), spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, c, 1, 0)
-        } c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr65] * (100 + Vb) / 100);
+            var d = floor(100 * (100 + partyDropChanceBonusPercent) / 100);
+            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, c, 1, 0)
+        } c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr65] * (100 + partyRewardValueBonusPercent) / 100);
     1 > 3 * rand() && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0);
-    30 != drawState && Hc++;
+    30 != gameScreenState && Hc++;
     isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx] &&
         IncrementBadgeCount(2);
     isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(5);

@@ -289,11 +289,11 @@ const accessoryDodgeChanceCol = iterIdxTemp_1++,
     Re = iterIdxTemp_1++, // Re
     Se = iterIdxTemp_1++, // Se
     Te = iterIdxTemp_1++;
-mainWindow.fff = Ue;
+mainWindow.fff = getItemModifierAmount;
 
-function Ue(a, b) { // Ue
+function getItemModifierAmount(itemIdx, columnIdx) { // Ue
     for (var c = 0; 6 > c; c += 2)
-        if (itemList[a][itemStatModifingCol + c] == b) return itemList[a][itemStatModifingCol + c + 1];
+        if (itemList[itemIdx][itemStatModifingCol + c] == columnIdx) return itemList[itemIdx][itemStatModifingCol + c + 1];
     return 0
 }
 mainWindow.fff = getItemStatWithForge;
@@ -1247,7 +1247,7 @@ function drawCanvas() {
             ),
                 updatePartyStats(), updateStageEdgeSpawns(), updateStageTick(),
                 drawGameStage(), updatePlayerParty(),
-                updateEnemies(), updateDrops(), updatePopups(), updateProjectiles(), Cg(), drawDrops(),
+                updateEnemies(), updateDrops(), updatePopups(), updateProjectiles(), drawEnemies(), drawDrops(),
                 drawPlayerParty(),
                 drawProjectiles(), drawPopups(),
 
@@ -2233,54 +2233,57 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
             J > k && l < w && (w = l, B = M)
         } return B
 }
-mainWindow.fff = ui;
+mainWindow.fff = damagePartyMemberInArea;
 
-function ui(a, b, c, d, f, g, h, k, p, t) { // ui
-    p *= .5;
-    t *= .5;
-    a = h - p - 5;
-    var l = k - t - 10;
-    p = h + p + 5;
-    t = k + t + 10;
+/**
+*  Purpose: Finds party members inside a rectangular area, checks line-of-sight, and applies an area hit/effect (damage/status); returns the affected party index or -1.
+*/
+function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgMin, dmgMax, _cy, _cx, _w, _h) { // ui
+    _w *= .5;
+    _h *= .5;
+    __unused = _cy - _w - 5;
+    var l = _cx - _h - 10;
+    _w = _cy + _w + 5;
+    _h = _cx + _h + 10;
     for (var n, w = new Vec2, B = new Vec2, M, J, y = -1, x = 0; x < partyMemberCount; x++)
-        if (Wh[x] != areUpperJointsDisabled && (n = O[x][2], !(n.x > p || n.x < a || n.y > t || n.y < l))) {
-            B.x = n.x - h;
-            B.y = n.y - k;
+        if (Wh[x] != areUpperJointsDisabled && (n = O[x][2], !(n.x > _w || n.x < __unused || n.y > _h || n.y < l))) {
+            B.x = n.x - _cy;
+            B.y = n.y - _cx;
             n = Vec2Mag(B);
             M = (n >> 3) + 1;
             Vec2Scale(B, 1 / M);
-            Vec2Set(w, h, k);
+            Vec2Set(w, _cy, _cx);
             for (n = 0; n <= M; n++) {
                 J = getStageTileAt(w.x, w.y);
                 if (0 <= J && 29 >= J) break;
                 w.add(B)
             }
             if (!(n <= M)) {
-                y = f + floor(randFloat(g - f + 1));
+                y = dmgMin + floor(randFloat(dmgMax - dmgMin + 1));
                 M = 0 == partyBodyDrawOptions[x][2] ? 1 : -1;
                 J = 16711680;
                 $h[x] = 2;
-                0 == c ? y = max(y - heroMeleeDefensesFlatArray[x], 1) : 6 == c ? y = max(y - heroProjDefenseFlatArray[x], 1) : 1 <= c && (y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1));
+                0 == attackType ? y = max(y - heroMeleeDefensesFlatArray[x], 1) : 6 == attackType ? y = max(y - heroProjDefenseFlatArray[x], 1) : 1 <= attackType && (y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1));
                 randFloat(100) < heroDodgeChanceArray[x] && (y = 0, J = 16744576, $h[x] = 0);
-                1 == c && heroHasAccessoryEffect(x,
+                1 == attackType && heroHasAccessoryEffect(x,
                     Qe) && (y = max(y - countAccessoryLvlBonuses(x, Qe), 1));
-                if (2 == c) ch[x] = 120, hi[x] = d, heroHasAccessoryEffect(x, Re) && (hi[x] = max(floor(hi[x] * (100 - countAccessoryLvlBonuses(x, Re)) / 100), 0));
-                else if (3 == c) heroHasAccessoryEffect(x, Se) && randFloat(100) < countAccessoryLvlBonuses(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
-                else if (4 == c) {
-                    dh[x] = d;
+                if (2 == attackType) ch[x] = 120, hi[x] = auxValue, heroHasAccessoryEffect(x, Re) && (hi[x] = max(floor(hi[x] * (100 - countAccessoryLvlBonuses(x, Re)) / 100), 0));
+                else if (3 == attackType) heroHasAccessoryEffect(x, Se) && randFloat(100) < countAccessoryLvlBonuses(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
+                else if (4 == attackType) {
+                    dh[x] = auxValue;
                     ii[x] = y;
                     heroHasAccessoryEffect(x, Te) && (dh[x] = max(dh[x] - 60 * countAccessoryLvlBonuses(x, Te), 0));
                     y = x;
                     continue
-                } else 5 == c && (bh[x] = floor(d / 10));
-                isBadgeIncompleteForCurrentStage(43) && 1 == c && 0 < ch[x] && 0 < dh[x] && IncrementBadgeCount(43);
+                } else 5 == attackType && (bh[x] = floor(auxValue / 10));
+                isBadgeIncompleteForCurrentStage(43) && 1 == attackType && 0 < ch[x] && 0 < dh[x] && IncrementBadgeCount(43);
                 partyLP[x] -= y;
                 spawnPopup(O[x][0].x, O[x][0].y, M, y, 60, J);
                 partyDamageTakenThisStage += y;
                 if (0 > partyLP[x])
                     for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++) x != n && (partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]), spawnPopup(O[n][0].x, O[n][0].y, M, y, 60, J), partyDamageTakenThisStage += y);
                 y = x;
-                if (0 == b) break
+                if (0 == stopOnHit) break
             }
         } return y
 }
@@ -4558,9 +4561,9 @@ function enemyUpdateFunc9(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = Cg;
+mainWindow.fff = drawEnemies;
 
-function Cg() { // Cg
+function drawEnemies() { // Cg
     var a, b;
     for (a = 0; a < enemyCount; a++) {
         var c = enemyCatalog[enemyTypeArray[a]][enemyAttr4],
@@ -4861,7 +4864,7 @@ function updateProjectiles() { // Bg
             if (1 == p) {
                 c = 0;
                 if (1 == Ll[a] || 2 == Ll[a]) c = 1;
-                c = 0 <= hl[a] ? applyEffectToEnemies(c, sl[a], Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h, k, tl[a], ul[a]) : ui(0, Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h.x, h.y, tl[a], ul[a])
+                c = 0 <= hl[a] ? applyEffectToEnemies(c, sl[a], Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h, k, tl[a], ul[a]) : damagePartyMemberInArea(0, Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h.x, h.y, tl[a], ul[a])
             }
             1 == Jl[a] && 0 == Ml[a] && (c = -1);
             4 == Jl[a] && 99 == Gl[a] && (c = -1);

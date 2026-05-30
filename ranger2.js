@@ -5048,7 +5048,7 @@ function updatePopups() { // Ag
     let a;
     for (a = 0; a < popupCount; a++) {
         if (0 == popupVel[a].x) {
-            let b = popupPos[a],
+            var b = popupPos[a],
                 c = popupVel[a];
             c.y += 0;
             Vec2Scale(c, .95)

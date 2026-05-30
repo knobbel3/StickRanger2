@@ -289,11 +289,11 @@ const accessoryDodgeChanceCol = iterIdxTemp_1++,
     Re = iterIdxTemp_1++, // Re
     Se = iterIdxTemp_1++, // Se
     Te = iterIdxTemp_1++;
-mainWindow.fff = Ue;
+mainWindow.fff = getItemModifierAmount;
 
-function Ue(a, b) { // Ue
+function getItemModifierAmount(itemIdx, columnIdx) { // Ue
     for (var c = 0; 6 > c; c += 2)
-        if (itemList[a][itemStatModifingCol + c] == b) return itemList[a][itemStatModifingCol + c + 1];
+        if (itemList[itemIdx][itemStatModifingCol + c] == columnIdx) return itemList[itemIdx][itemStatModifingCol + c + 1];
     return 0
 }
 mainWindow.fff = getItemStatWithForge;
@@ -1247,7 +1247,7 @@ function drawCanvas() {
             ),
                 updatePartyStats(), updateStageEdgeSpawns(), updateStageTick(),
                 drawGameStage(), updatePlayerParty(),
-                updateEnemies(), updateDrops(), updatePopups(), updateProjectiles(), Cg(), drawDrops(),
+                updateEnemies(), updateDrops(), updatePopups(), updateProjectiles(), updateEnemies(), drawDrops(),
                 drawPlayerParty(),
                 drawProjectiles(), drawPopups(),
 
@@ -2233,9 +2233,9 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
             J > k && l < w && (w = l, B = M)
         } return B
 }
-mainWindow.fff = ui;
+mainWindow.fff = damagePartyMemberInArea;
 
-function ui(a, b, c, d, f, g, h, k, p, t) { // ui
+function damagePartyMemberInArea(a, b, c, d, f, g, h, k, p, t) { // ui
     p *= .5;
     t *= .5;
     a = h - p - 5;
@@ -4558,9 +4558,9 @@ function enemyUpdateFunc9(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = Cg;
+mainWindow.fff = updateEnemies;
 
-function Cg() { // Cg
+function updateEnemies() { // Cg
     var a, b;
     for (a = 0; a < enemyCount; a++) {
         var c = enemyCatalog[enemyTypeArray[a]][enemyAttr4],
@@ -4861,7 +4861,7 @@ function updateProjectiles() { // Bg
             if (1 == p) {
                 c = 0;
                 if (1 == Ll[a] || 2 == Ll[a]) c = 1;
-                c = 0 <= hl[a] ? applyEffectToEnemies(c, sl[a], Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h, k, tl[a], ul[a]) : ui(0, Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h.x, h.y, tl[a], ul[a])
+                c = 0 <= hl[a] ? applyEffectToEnemies(c, sl[a], Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h, k, tl[a], ul[a]) : damagePartyMemberInArea(0, Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h.x, h.y, tl[a], ul[a])
             }
             1 == Jl[a] && 0 == Ml[a] && (c = -1);
             4 == Jl[a] && 99 == Gl[a] && (c = -1);

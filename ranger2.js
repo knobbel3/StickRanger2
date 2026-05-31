@@ -3111,17 +3111,17 @@ function loadLevelData(a) {
 }
 mainWindow.fff = getStageTileAt;
 
-function getStageTileAt(a, b) { // ri
-    a = clamp(a, 0, 8 * stageWidth - 1) >> 3;
-    b = clamp(b, 0, 8 * stageHeight - 1) >> 3;
-    return stageTileData[b][a]
+function getStageTileAt(x, y) { // ri
+    x = clamp(x, 0, 8 * stageWidth - 1) >> 3;
+    y = clamp(y, 0, 8 * stageHeight - 1) >> 3;
+    return stageTileData[y][x]
 }
 mainWindow.fff = fillStageTilesRect;
 
-function fillStageTilesRect(a, b, c, d, f) { // dj
-    var g;
-    for (g = b; g <= d; g++)
-        for (b = a; b <= c; b++) stageTileData[g][b] = f
+function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
+    let _row;
+    for (_row = _ty0; _row <= _ty1; _row++)
+        for (_ty0 = _tx0; _ty0 <= _tx1; _ty0++) stageTileData[_row][_ty0] = _tid
 }
 mainWindow.fff = updateStageEdgeSpawns;
 

@@ -219,89 +219,95 @@ iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
-const zd = iterIdxTemp_1++, // zd
-    itemAtkCountCol = iterIdxTemp_1++,
-    Bd = iterIdxTemp_1++, // Bd
-    Cd = iterIdxTemp_1++, // Cd
-    Ed = iterIdxTemp_1++, // Ed
-    Fd = iterIdxTemp_1++, // Fd
-    Gd = iterIdxTemp_1++, // Gd
-    Hd = iterIdxTemp_1++, // Hd
-    Id = iterIdxTemp_1++, // Id
-    Jd = iterIdxTemp_1++, // Jd
-    Kd = iterIdxTemp_1++, // Kd
-    Ld = iterIdxTemp_1++, // Ld
-    Md = iterIdxTemp_1++, // Md
-    Nd = iterIdxTemp_1++, // Nd
-    Od = iterIdxTemp_1++, // Od
-    Pd = iterIdxTemp_1++, // Pd
-    Sd = iterIdxTemp_1++, // Sd
-    Td = iterIdxTemp_1++, // Td
-    Ud = iterIdxTemp_1++, // Ud
-    Vd = iterIdxTemp_1++, // Vd
-    Wd = iterIdxTemp_1++, // Wd
-    Xd = iterIdxTemp_1++, // Xd
-    Yd = iterIdxTemp_1++, // Yd
-    Zd = iterIdxTemp_1++; // Zd
+const itemProjectileParam1Col = iterIdxTemp_1++, // zd, projectile config parameter; read into ic and forwarded into spawnProjectile().
+    itemAttackModeCol = iterIdxTemp_1++, // attack mode code; drives the *N attack UI and the special 10/11/20 cases.
+    itemProjectileParam2Col = iterIdxTemp_1++, // Bd, projectile config parameter; read into kc and forwarded into spawnProjectile().
+    itemProjectileParam3Col = iterIdxTemp_1++, // Cd, projectile config parameter; read into Sf and forwarded into spawnProjectile().
+    itemAttackPowerCol = iterIdxTemp_1++, // Ed, attack power / shot strength; shown in the AT ... *N > UI and used in the forge preview.
+    itemProjectileTemplateCol = iterIdxTemp_1++, // Fd, nested projectile/item template reference; the attack code dereferences selectedItem = selectedItem[Fd] before spawning.
+    
+    itemProjectileAux1Col = iterIdxTemp_1++, // Gd, nested projectile/item template reference; the attack code dereferences selectedItem = selectedItem[Fd] before spawning.
+    itemProjectileAux2Col = iterIdxTemp_1++, // Hd, auxiliary projectile config value; same pattern as Gd, forwarded into spawnProjectile() and stored on the projectile state.
+    
+    itemAuxValueACol = iterIdxTemp_1++, // Id, auxiliary item parameter forwarded into projectile spawn (unknown semantic).
+    itemAuxValueBCol = iterIdxTemp_1++, // Jd, auxiliary item parameter forwarded into projectile spawn.
+    
+    itemAuxValueCCol = iterIdxTemp_1++, // Kd, auxiliary item parameter forwarded into projectile spawn.
+    itemDisplayStatACol = iterIdxTemp_1++, // Ld, item display/forge stat column used in AT UI calculations.
+    itemAuxValueDCol = iterIdxTemp_1++, // Md, auxiliary item parameter forwarded into projectile spawn.
+    itemProjectileFlagCol = iterIdxTemp_1++, // Nd, small integer flag stored on projectile state and used in hit/draw logic.
+    itemProjectileParamTimeCol = iterIdxTemp_1++, // Od, time/auxiliary numeric parameter stored on projectile state and used during updates.
+    itemHitCountCol = iterIdxTemp_1++, // Pd, number-of-hits stat for the item; influences UI (all / N hit) and projectile behavior.
+    itemProjectileEffectModeCol = iterIdxTemp_1++, // Sd, projectile effect/damage-mode code read from the item row and forwarded into projectile hit logic.
+    itemStatACol = iterIdxTemp_1++, // Td, stat index used with getModifiedStatVal() for display and calculations.
+
+    itemExtraStatCol1 = iterIdxTemp_1++, // Ud, auxiliary item stat forwarded into projectile/item logic.
+    itemExtraStatCol2 = iterIdxTemp_1++, // Vd, auxiliary item stat forwarded into projectile/item logic 
+
+    itemSpawnTargetRangeCol = iterIdxTemp_1++, // Wd, range/index used to locate nearest party member / spawn target; forwarded into spawn logic.
+
+    itemExtraParamACol = iterIdxTemp_1++, // Xd, auxiliary item parameter passed to spawn logic.
+    itemExtraParamBCol = iterIdxTemp_1++, // Yd, auxiliary item parameter passed to spawn logic.
+    itemExtraParamCCol = iterIdxTemp_1++; // Zd, trailing auxiliary item parameter forwarded into spawn logic.
 iterIdxTemp_1 = 6;
 
-const itemSpriteLocYCol = iterIdxTemp_1++,
-    heroHealthModifierCol = iterIdxTemp_1++,
-    heroDefenseModifierCol = iterIdxTemp_1++,
-    heroMagicDefModifierCol = iterIdxTemp_1++,
-    heroDodgeModifierCol = iterIdxTemp_1++;
+const itemSpriteLocYCol = iterIdxTemp_1++, // item sprite source Y/index used by draw routines (sprite-sheet source Y).
+    heroHealthModifierCol = iterIdxTemp_1++, // percent HP modifier applied to hero max-HP (from equipped item).
+    heroDefenseModifierCol = iterIdxTemp_1++, // flat defense bonus applied to hero (added to melee/projectile defense arrays).
+    heroMagicDefModifierCol = iterIdxTemp_1++, // percent magic-resist modifier applied to hero (from equipped item).
+    heroDodgeModifierCol = iterIdxTemp_1++; // dodge chance bonus (flat) applied to hero when item is equipped.
 iterIdxTemp_1 = 6;
 iterIdxTemp_1++;
 
-const accessoryIdxCol = iterIdxTemp_1++,
+const accessoryTempIdxCol = iterIdxTemp_1++, // accessory template id column - identifies the accessory effect/type equipped (used by equip checks).
 
-    accessoryPrimaryPrefixCol = iterIdxTemp_1++,
-    accessoryPrimaryValueCol = iterIdxTemp_1++,
-    accessoryPrimarySuffixCol = iterIdxTemp_1++,
+    accessoryPrimaryPrefixCol = iterIdxTemp_1++, // accessory primary label prefix (string) - drawn before primary value in the accessory UI.
+    accessoryPrimaryValueCol = iterIdxTemp_1++, // accessory primary level/value column (int) - numeric primary level summed for accessory bonuses.
+    accessoryPrimarySuffixCol = iterIdxTemp_1++, // accessory primary label suffix (string) - drawn after primary value in the accessory UI.
 
-    accessorySecondaryLabelPrefixCol = iterIdxTemp_1++,
-    accessorySecondaryValueCol = iterIdxTemp_1++,
-    accessorySecondaryLabelSuffixCol = iterIdxTemp_1++;
+    accessorySecondaryLabelPrefixCol = iterIdxTemp_1++, // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
+    accessorySecondaryValueCol = iterIdxTemp_1++, // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
+    accessorySecondaryLabelSuffixCol = iterIdxTemp_1++; // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
 
 iterIdxTemp_1 = 1;
-const accessoryArmsBonusCol0 = iterIdxTemp_1++,
-    accessoryChargeBonusCol = iterIdxTemp_1++,
-    accessoryArmsBonusCol1 = iterIdxTemp_1++,
-    oe = iterIdxTemp_1++, // oe
-    pe = iterIdxTemp_1++, // pe
-    qe = iterIdxTemp_1++, // qe
-    re = iterIdxTemp_1++, // re
-    se = iterIdxTemp_1++, // se
-    te = iterIdxTemp_1++, // te
-    ue = iterIdxTemp_1++; // ue
+const accessoryArmsBonusCol0 = iterIdxTemp_1++, // ARMS accessory bonus effect column (grants "ARMS Lv +" for ring-type accessories; counted by heroHasAccessoryEffect/countAccessoryLvlBonuses)
+    accessoryChargeBonusCol = iterIdxTemp_1++, // CHARGE accessory bonus effect column (grants "CHARGE Lv +" for amulet-type accessories; counted by heroHasAccessoryEffect/countAccessoryLvlBonuses)
+    accessoryArmsBonusCol1 = iterIdxTemp_1++, // Secondary ARMS accessory bonus effect column (used by multi-effect accessories like Master Ring; supports primary/secondary sums via sumAccessorySecondaryValues)
+    accessoryEffectAtkBonusCol = iterIdxTemp_1++, // oe, returns/identifies the accessory effect that boosts weapon attack; used with heroHasAccessoryEffect and countAccessoryLvlBonuses.
+    accessoryEffectAgiPenaltyCol = iterIdxTemp_1++, // pe, identifies an accessory effect that reduces hero agility (AGI) by accessory level.
+    accessoryEffectRangeAndCountCol = iterIdxTemp_1++, // qe, accessory effect that increases attack range (for certain item appearances) and contributes to item secondary values (range/count bonuses).
+    accessoryEffectEmitFullChargeChance_duringChargeCol = iterIdxTemp_1++, // re, accessory effect that gives a chance (per accessory level) to immediately fill the emit gauge while the hero is charging.
+    accessoryEffectEmitFullChargeChance_onFireCol = iterIdxTemp_1++, // se, accessory effect that gives a chance (per accessory level) to immediately refill the emit gauge when an emit completes/fires.
+    accessoryEffectEmitMaxReductionCol = iterIdxTemp_1++, // te, accessory effect that reduces the hero's maximum emit value (lowers required charge), applied per accessory level.
+    accessoryEffectMultiShotIncreaseCol = iterIdxTemp_1++; // ue, accessory effect that increases the attack shot count / multiple-shot count by accessory levels.
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
-const accessoryDodgeChanceCol = iterIdxTemp_1++,
-    we = iterIdxTemp_1++, // we
-    xe = iterIdxTemp_1++, // xe
-    ye = iterIdxTemp_1++, // ye
-    ze = iterIdxTemp_1++, // ze
-    Ae = iterIdxTemp_1++, // Ae
-    Be = iterIdxTemp_1++, // Be
-    Ce = iterIdxTemp_1++, // Ce
-    Ee = iterIdxTemp_1++, // Ee
-    Fe = iterIdxTemp_1++, // Fe
-    Ge = iterIdxTemp_1++, // Ge
-    He = iterIdxTemp_1++, // He
-    Ie = iterIdxTemp_1++, // Ie
-    Je = iterIdxTemp_1++, // Je
-    accessoryMeleeDefenceCol = iterIdxTemp_1++,
-    accessoryMagicDefenseCol = iterIdxTemp_1++,
-    Me = iterIdxTemp_1++, // Me
-    Ne = iterIdxTemp_1++, // Ne
-    accessoryHealthBonusCol = iterIdxTemp_1++,
-    Pe = iterIdxTemp_1++, // Pe
-    Qe = iterIdxTemp_1++, // Qe
-    Re = iterIdxTemp_1++, // Re
-    Se = iterIdxTemp_1++, // Se
-    Te = iterIdxTemp_1++;
+const accessoryDodgeChanceCol = iterIdxTemp_1++, // accessory effect that grants a flat dodge-chance bonus per accessory level.
+    accessoryEffectPhysicalProcChanceCol = iterIdxTemp_1++, // we, accessory effect that gives a chance (per accessory level) to multiply physical weapon ATK by the accessory's secondary value (physical proc/crit).
+    accessoryEffectFireStatBonusCol = iterIdxTemp_1++, // xe, accessory effect that adds its primary value to the item's fire-related stat (applied when item element == fire).
+    accessoryEffectIceStatBonusCol = iterIdxTemp_1++, // ye, accessory effect that adds its primary value to the item's ice-related stat (applied when item element == ice).
+    accessoryEffectLightningMaxAtkPercentCol = iterIdxTemp_1++, // ze, accessory effect that increases the max ATK percent for lightning-element items (applies only to maxAtk).
+    accessoryEffectLightningElemBonusCol = iterIdxTemp_1++, // Ae, accessory effect that modifies lightning-element item behavior (e.g., increments selectedItemIdx for certain attack modes / forge interactions).
+    accessoryEffectPoisonAtkPercentCol = iterIdxTemp_1++, // Be, accessory effect that increases ATK percent for poison-element items (applies to min/max ATK).
+    accessoryRewardValueBonusCol = iterIdxTemp_1++, // Ce, accessory effect that increases party reward value percent (adds to stage reward value).
+    accessoryDropChanceBonusCol = iterIdxTemp_1++, // Ee, accessory effect that increases party drop chance percent.
+    accessoryEnemyHpBonusCol = iterIdxTemp_1++, // Fe, accessory effect that increases enemy HP percent (used to scale stage enemy HP).
+    accessoryFireAtkPercentCol = iterIdxTemp_1++, // Ge, accessory effect that increases min/max ATK percent for fire-element items.
+    accessoryIceAtkPercentCol = iterIdxTemp_1++, // He, accessory effect that increases min/max ATK percent for ice-element items.
+    accessoryEffectPoisonStatBonusCol = iterIdxTemp_1++, // Ie, accessory effect that adds a (large) amount to an item stat when element == poison (applied as +60 * level in code).
+    accessoryMultiShotSpreadDivisorCol = iterIdxTemp_1++, // Je, accessory effect that reduces multi-shot angular spread (divides the shot-step We when present).
+    accessoryMeleeDefenceCol = iterIdxTemp_1++, // accessory effect that grants flat melee/proj defense per level (added to hero melee/proj defense arrays).
+    accessoryMagicDefenseCol = iterIdxTemp_1++, // accessory effect that grants flat magic-defense percent per level (added to hero magic defense).
+    accessoryComboMaxIncreaseCol = iterIdxTemp_1++, // Me, accessory effect that increases the combo/charge max (Vg) by 60 per accessory level (affects combo bar max).
+    accessoryChargeValueBonusCol = iterIdxTemp_1++, // Ne, accessory effect that increases hero charge/emit-value (adds to heroChargeValues when present).
+    accessoryHealthBonusCol = iterIdxTemp_1++, // accessory effect that multiplies party max HP by a percent per accessory level.
+    accessoryJointStepDividerCol = iterIdxTemp_1++, // Pe, accessory effect that alters joint/body step smoothing (used to divide the per-joint stepWithVerticalBias step amount when present).
+    accessoryMagicDamageReductionCol = iterIdxTemp_1++, // Qe, accessory effect that subtracts a flat amount from incoming magic-damage (attackType == 1).
+    accessoryStunChanceReductionCol = iterIdxTemp_1++, // Re, accessory effect that reduces the "skip/chance" parameter hi[...] applied on attackType==2 (reduces skip/stun probability or similar).
+    accessoryDamageNegationChanceCol = iterIdxTemp_1++, // Se, accessory effect that gives a random chance to fully negate certain attacks (attackType == 3 branch).
+    accessoryDebuffDurationReductionCol = iterIdxTemp_1++; // Te, accessory effect that reduces debuff/duration timers (subtracts from dh[...] when attackType==4).
 mainWindow.fff = getItemModifierAmount;
 
 function getItemModifierAmount(itemIdx, columnIdx) { // Ue
@@ -378,8 +384,8 @@ function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
 mainWindow.fff = heroHasAccessoryEffect;
 
 function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
-    return itemList[partyEquipmentTable[partyIdx][3]][accessoryIdxCol] == accessoryIdx ||
-        itemList[partyEquipmentTable[partyIdx][4]][accessoryIdxCol] == accessoryIdx
+    return itemList[partyEquipmentTable[partyIdx][3]][accessoryTempIdxCol] == accessoryIdx ||
+        itemList[partyEquipmentTable[partyIdx][4]][accessoryTempIdxCol] == accessoryIdx
         ? true
         : false
 }
@@ -387,16 +393,16 @@ mainWindow.fff = countAccessoryLvlBonuses;
 
 function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
     var c = 0;
-    itemList[partyEquipmentTable[partyIdx][3]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][accessoryPrimaryValueCol]);
-    itemList[partyEquipmentTable[partyIdx][4]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessoryPrimaryValueCol]);
+    itemList[partyEquipmentTable[partyIdx][3]][accessoryTempIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][accessoryPrimaryValueCol]);
+    itemList[partyEquipmentTable[partyIdx][4]][accessoryTempIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessoryPrimaryValueCol]);
     return c
 }
 mainWindow.fff = sumAccessorySecondaryValues;
 
 function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     var c = 0;
-    itemList[partyEquipmentTable[partyIdx][3]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][accessorySecondaryValueCol]);
-    itemList[partyEquipmentTable[partyIdx][4]][accessoryIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessorySecondaryValueCol]);
+    itemList[partyEquipmentTable[partyIdx][3]][accessoryTempIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][accessorySecondaryValueCol]);
+    itemList[partyEquipmentTable[partyIdx][4]][accessoryTempIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessorySecondaryValueCol]);
     return c
 }
 var itemList = Array(256);
@@ -414,9 +420,9 @@ itemList[121] = ["Claw", 3, 4, 1, 0, 12298905, 1, 1, 0, 0, 0, 6, 8, 1, 0, 15, 12
 itemList[126] = ["Cat claw", 3, 4, 1, 0, 13421772, 1, 1, 0, 0, 0, 2, 3, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 4, 1500, itemAgilityCol, -10, 0, 0, 0, 0, 0, 0];
 itemList[7] = ["Bash", 4, 2, 1, 0, 16737894, 1, 1, 0, 0, 0, 20, 30, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
 itemList[8] = ["Range attack", 4, 2, 1, 0, 13421772, 1, 1, 0, 0, 99, 10, 15, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 50, projectileAccelerationCol, 100, projectileSpeedScaleCol, 50, 0, 0, 0, 0];
-itemList[23] = ["Sand blaster", 4, 2, 1, 0, 13408563, 2, 1, 0, 0, 0, 8, 12, 1, 1, 5, 12, 0, 0, 4294967295, 1, 0, 0, 0, 16, 16, 0, 7, 10, 10, 0, 0, 100, 0, 0, 0, 0, 0, 20, 5, 80, itemChargeEmitValueCol, 5, Ed, 50, 0, 0, 1, 4, 50, 1, 10, 10, 1, 8, 2160892211, 2, 16, 24, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 3];
+itemList[23] = ["Sand blaster", 4, 2, 1, 0, 13408563, 2, 1, 0, 0, 0, 8, 12, 1, 1, 5, 12, 0, 0, 4294967295, 1, 0, 0, 0, 16, 16, 0, 7, 10, 10, 0, 0, 100, 0, 0, 0, 0, 0, 20, 5, 80, itemChargeEmitValueCol, 5, itemAttackPowerCol, 50, 0, 0, 1, 4, 50, 1, 10, 10, 1, 8, 2160892211, 2, 16, 24, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 3];
 itemList[34] = ["Fire cracker", 4, 2, 1, 0, 16750899, 3, 5, 8, 0, 0, 4, 8, 1, 90, 5, 12, 0, 0, 4294940979, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, -1, 90, 100, 0, 0, 0, 1, 5, 10, 5, 80, attackCooldownCol, 50, 0, 0, 0, 0, 0, 0];
-itemList[47] = ["Range burst", 4, 2, 1, 0, 16764057, 1, 1, 0, 0, 99, 15, 20, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 15, 5, 80, projectileAccelerationCol, 50, projectileSpeedScaleCol, 25, Ed, 20, 0, 2, 0, 1, 5, 5, 1, 59, 3439316121, 2, 20, 20, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 1];
+itemList[47] = ["Range burst", 4, 2, 1, 0, 16764057, 1, 1, 0, 0, 99, 15, 20, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 15, 5, 80, projectileAccelerationCol, 50, projectileSpeedScaleCol, 25, itemAttackPowerCol, 20, 0, 2, 0, 1, 5, 5, 1, 59, 3439316121, 2, 20, 20, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 1];
 itemList[55] = ["Deadly blow", 4, 3, 1, 0, 6689041, 1, 1, 0, 0, 0, 30, 45, 1, 0, 5, 12, 0, 0, 4288221457, 2, 256, 8, 0, 32, 16, 0, 0, 15, 5, 0, 0, 100, 0, 0, 0, 0, 0, 15, 7, 100, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
 itemList[93] = ["Flame cracker", 4, 3, 1, 0, 16750899, 3, 5, 16, 0, 0, 4, 8, 1, 90, 5, 12, 0, 0, 4294940979, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, -1, 90, 100, 0, 0, 0, 1, 5, 10, 17, 160, attackCooldownCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[98] = ["Spiral breaker", 4, 3, 1, 0, 8974062, 2, 1, 0, 0, 0, 8, 10, 10, 1, 5, 12, 1, 28, 4280435780, 2, 12, 12, 0, 16, 16, 180, 0, 30, 20, 0, 0, 100, 0, 0, 0, 0, 0, 15, 11, 160, itemProjectileCountCol, 10, 0, 0, 0, 0, 0, 0];
@@ -432,17 +438,17 @@ itemList[122] = ["Sabel", 3, 7, 2, 0, 12303291, 1, 1, 0, 12, 3, 10, 12, 1, 1, 20
 itemList[127] = ["Fire sabel", 3, 7, 2, 0, 16737843, 1, 1, 0, 12, 0, 2, 3, 1, 1, 20, 24, 1, 0, 872388881, 2, 0, 0, 1, 0, 24, 0, 10, 10, 0, 0, 0, 100, 0, 0, 0, 1, 1, 3, 5, 300, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 10, 0, 0, 50, 1, 1, 29, 1728026897, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
 itemList[12] = ["Slash", 4, 6, 2, 0, 6710886, 1, 1, 0, 12, 2, 15, 25, 1, 1, 20, 24, 1, 0, 1721307409, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 60, itemAtkMinCol, 50, itemAtkMaxCol, 50, itemHitCountStatCol, 25, 0, 0];
 itemList[18] = ["Flame slayer", 4, 6, 2, 0, 16737843, 1, 1, 0, 12, 0, 3, 4, 1, 1, 20, 24, 1, 0, 1728026897, 2, 0, 0, 1, 0, 24, 0, 60, 20, 0, 0, 0, 100, 0, 0, 0, 1, 2, 15, 5, 80, itemAtkMinCol, 50, itemAtkMaxCol, 50, attackCooldownCol, 20, 1, 11, 3, 0, 60, 1, 1, 29, 2583664913, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
-itemList[35] = ["Soul blade", 4, 6, 2, 0, 12303308, 0, 5, 20, 0, 0, 4, 8, 1, 10, 20, 0, 0, 0, 4290493439, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, 1, 10, 100, 0, 2, 0, 0, 0, -1, 5, 90, itemAtkMinCol, 25, itemAtkMaxCol, 25, Ed, 25, 1, 13, 1, 1, 4, 20, 1, 25, 4294945297, 2, 16, 16, 0, 16, 16, 0, 10, 120, 10, 0, 0, 100, 0, 0];
+itemList[35] = ["Soul blade", 4, 6, 2, 0, 12303308, 0, 5, 20, 0, 0, 4, 8, 1, 10, 20, 0, 0, 0, 4290493439, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, 1, 10, 100, 0, 2, 0, 0, 0, -1, 5, 90, itemAtkMinCol, 25, itemAtkMaxCol, 25, itemAttackPowerCol, 25, 1, 13, 1, 1, 4, 20, 1, 25, 4294945297, 2, 16, 16, 0, 16, 16, 0, 10, 120, 10, 0, 0, 100, 0, 0];
 itemList[44] = ["Flame saber", 4, 6, 2, 0, 16746547, 1, 1, 0, 8, 0, 3, 4, 3, 1, 20, 24, 1, 29, 1728026897, 2, 12, 32, 1, 0, 32, 0, 0, 180, 10, 0, 0, 95, 0, 0, 0, 1, 3, 15, 5, 80, itemAtkMinCol, 25, itemAtkMaxCol, 25, attackCooldownCol, 50, 0, 0];
 itemList[56] = ["Power slash", 4, 8, 2, 0, 6710886, 1, 1, 0, 12, 3, 20, 30, 1, 1, 20, 24, 1, 0, 1721307409, 2, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 120, itemAtkMinCol, 50, itemAtkMaxCol, 50, itemHitCountStatCol, 25, 0, 0];
 itemList[94] = ["Ice blade", 4, 8, 2, 0, 12303359, 1, 1, 0, 8, 0, 5, 5, 1, 1, 20, 24, 1, 0, 867941375, 2, 0, 0, 1, 0, 24, 0, 120, 120, 0, 0, 0, 100, 0, 0, 0, 2, 50, 15, 6, 500, itemIceBonusPercentCol, 2, 0, 0, 0, 0, 1, 10, 0, 1, 60, 1, 1, 36, 2579217407, 2, 24, 24, 1, 0, 24, 0, 30, 300, 10, 0, 0, 100, 0, 0];
-itemList[99] = ["Salamander", 4, 8, 2, 0, 16724753, 0, 5, 20, 0, 0, 3, 4, 1, 10, 20, 0, 0, 0, 4294949819, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, 1, 10, 100, 0, 2, 0, 1, 1, -1, 3, 8E3, Ed, 100, 0, 0, 0, 0, 1, 13, 20, 0, 1, 1, 1, 12, 4294914833, 2, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 96, 0, 0];
+itemList[99] = ["Salamander", 4, 8, 2, 0, 16724753, 0, 5, 20, 0, 0, 3, 4, 1, 10, 20, 0, 0, 0, 4294949819, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, 1, 10, 100, 0, 2, 0, 1, 1, -1, 3, 8E3, itemAttackPowerCol, 100, 0, 0, 0, 0, 1, 13, 20, 0, 1, 1, 1, 12, 4294914833, 2, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 96, 0, 0];
 itemList[104] = ["Gale slash", 4, 8, 2, 0, 3381708, 0, 2, 0, 0, 0, 3, 4, 1, 10, 20, 24, 1, 59, 859019724, 2, 24, 24, 0, 0, 0, 0, 1E3, 100, 10, 0, 0, 100, 0, 0, 0, 0, 0, 15, 11, 300, attackCooldownCol, 50, 0, 0, 0, 0, 0, 10, 0, 1, 60, 1, 1, 59, 859019724, 2, 24, 24, 0, 20, 20, 0, 0, 1, 12, 0, 0, 100, 0, 0];
 itemList[109] = ["Quick slash", 4, 8, 2, 0, 3394713, 1, 1, 0, 12, 3, 15, 25, 1, 1, 20, 24, 1, 0, 1714670745, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 8, 5, 500, itemAtkMinCol, 50, itemAtkMaxCol, 50, itemHitCountStatCol, 25, 0, 0];
 itemList[132] = ["Lightning saber", 4, 7, 2, 0, 16776960, 1, 1, 0, 0, 0, 1, 22, 1, 1, 20, 24, 1, 36, 872414976, 2, 0, 0, 1, 0, 24, 0, 60, 60, 0, 0, 0, 100, 0, 0, 0, 3, 0, 15, 5, 3E3, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 15, 45, 0, 60, 5, 1, 36, 4294967040, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
 itemList[10] = ["Spear", 3, 10, 3, 1, 10066329, 0, 3, 0, 24, 0, 1, 9, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 0];
 itemList[19] = ["Lightning spear", 3, 10, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 1, 3, 50, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 20, 45, 0, 1, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
-itemList[43] = ["Barrage spear", 3, 10, 3, 1, 12303291, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 5, 50, Ed, 34, 0, 0, 0, 0, 1, 4, 50, 1, 3, 1, 1, 5, 2578085649, 1, 16, 24, 0, 16, 16, 20, 5, 20, 5, 0, 0, 90, 0, 0];
+itemList[43] = ["Barrage spear", 3, 10, 3, 1, 12303291, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 5, 50, itemAttackPowerCol, 34, 0, 0, 0, 0, 1, 4, 50, 1, 3, 1, 1, 5, 2578085649, 1, 16, 24, 0, 16, 16, 20, 5, 20, 5, 0, 0, 90, 0, 0];
 itemList[52] = ["Thunder halberd", 3, 11, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 2, 3, 500, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 20, 45, 0, 2, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
 itemList[91] = ["Steel halberd", 3, 11, 3, 1, 13421772, 0, 3, 0, 24, 3, 1, 9, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 11, 100, 0, 0, itemAtkMaxCol, 20, 0, 0, 0, 0];
 itemList[123] = ["Thunder trident", 3, 12, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 3, 3, 1E3, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 20, 45, 0, 3, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
@@ -460,7 +466,7 @@ itemList[11] = ["Bow", 3, 16, 4, 2, 16764006, 0, 4, 0, 0, 0, 3, 4, 1, 10, 30, 12
 itemList[21] = ["Fire bow", 3, 16, 4, 2, 16729105, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 1, 5, 60, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 31, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
 itemList[26] = ["Poison bow", 3, 16, 4, 2, 10079232, 0, 4, 0, 0, 0, 5, 5, 1, 10, 30, 120, 1, 6, 4284913920, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 1, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 9, 4282672640, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
 itemList[38] = ["Light bow", 3, 16, 4, 2, 16768409, 0, 4, 0, 0, 0, 2, 3, 1, 10, 25, 120, 1, 6, 4294958489, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 6, 80, itemAgilityCol, -4, 0, 0, 0, 0, 0, 0];
-itemList[53] = ["Flame bow", 3, 16, 4, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 2, 5, 60, itemAtkMinCol, 25, itemAtkMaxCol, 25, Td, 100, 1, 4, 3, 1, 1, 0, 1, 6, 4294927889, 2, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 3];
+itemList[53] = ["Flame bow", 3, 16, 4, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 2, 5, 60, itemAtkMinCol, 25, itemAtkMaxCol, 25, itemStatACol, 100, 1, 4, 3, 1, 1, 0, 1, 6, 4294927889, 2, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 3];
 itemList[124] = ["High poison bow", 3, 16, 4, 2, 10040268, 0, 4, 0, 0, 0, 10, 10, 1, 10, 30, 120, 1, 6, 4288230348, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 2, 7, 100, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 9, 4284874905, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
 itemList[129] = ["Wind bow", 3, 16, 4, 2, 10092543, 0, 4, 0, 0, 0, 2, 3, 1, 10, 25, 120, 1, 6, 4288282623, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 6, 240, itemAgilityCol, -4, 0, 0, 0, 0, 0, 0];
 itemList[14] = ["Triple arrow", 4, 16, 4, 2, 13395456, 0, 4, 30, 0, 0, 8, 9, 3, 10, 30, 120, 1, 6, 4291585536, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 7, 50, itemProjectileCountCol, 34, 0, 0, 0, 0, 0, 0];
@@ -469,7 +475,7 @@ itemList[25] = ["Poison arrow", 4, 16, 4, 2, 52224, 0, 4, 0, 0, 0, 10, 10, 1, 10
 itemList[46] = ["Multiple arrow", 4, 16, 4, 2, 10053120, 0, 4, 30, 0, 0, 4, 5, 8, 10, 30, 120, 1, 6, 3432605184, 1, 16, 16, 0, 8, 8, 0, 0, 300, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 7, 80, itemProjectileCountCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[58] = ["PoisonMist shot", 4, 18, 4, 2, 6736896, 0, 3, 0, 0, 0, 10, 10, 1, 20, 30, 120, 1, 6, 4284926976, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 4, 120, 20, 11, 120, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 12, 0, 1, 20, 2, 0, 9, 3425920512, 1, 16, 16, 0, 12, 12, 0, 10, 60, 20, 0, 0, 100, 0, 1];
 itemList[96] = ["Explosive arrow", 4, 16, 4, 2, 16729105, 0, 4, 45, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294923537, 1, 16, 16, 0, 8, 8, 0, 60, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 20, 5, 800, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 30, 12, 1, 13, 3439289873, 2, 24, 24, 0, 20, 20, 0, 0, 120, 20, 0, 0, 80, 0, 3];
-itemList[101] = ["Soul arrow", 4, 16, 4, 2, 12320767, 5, 5, 15, 0, 0, 5, 6, 1, 10, 0, 0, 0, 0, 4290510847, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, -1, 10, 100, 0, 2, 0, 0, 0, -1, 3, 3E3, Ed, 100, 0, 0, 0, 0, 1, 14, 6, 1, 1, 20, 1, 6, 4280435780, 1, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 0];
+itemList[101] = ["Soul arrow", 4, 16, 4, 2, 12320767, 5, 5, 15, 0, 0, 5, 6, 1, 10, 0, 0, 0, 0, 4290510847, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, -1, 10, 100, 0, 2, 0, 0, 0, -1, 3, 3E3, itemAttackPowerCol, 100, 0, 0, 0, 0, 1, 14, 6, 1, 1, 20, 1, 6, 4280435780, 1, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 0];
 itemList[106] = ["Flame shot", 4, 18, 4, 2, 16737809, 0, 3, 0, 0, 0, 2, 3, 1, 20, 30, 120, 1, 6, 4294927889, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 1, 2, 20, 5, 800, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 12, 0, 1, 30, 2, 1, 13, 4294927889, 2, 12, 12, 0, 16, 16, 0, 0, 120, 10, 0, 0, 97, 0, 1];
 itemList[111] = ["Multiple shot", 4, 18, 4, 2, 6697728, 0, 3, 5, 0, 0, 5, 6, 8, 20, 30, 120, 1, 6, 4284887808, 1, 16, 16, 0, 8, 8, 0, 0, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 10, 9, 240, itemProjectileCountCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[134] = ["Ice shot", 4, 18, 4, 2, 10066431, 0, 3, 0, 0, 0, 5, 5, 1, 20, 30, 120, 1, 6, 4287138047, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 2, 30, 20, 9, 600, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 12, 0, 1, 30, 15, 1, 10, 4287151103, 2, 16, 16, 0, 12, 12, 0, 10, 120, 20, 0, 0, 90, 0, 1];
@@ -480,16 +486,16 @@ itemList[54] = ["Fire ball", 3, 30, 5, 2, 16733457, 0, 3, 0, 0, 0, 4, 6, 1, 8, 3
 itemList[92] = ["Poison shot", 3, 30, 5, 2, 6736896, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 0, 1, 4284913920, 1, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 4, 120, 2, 13, 100, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 0];
 itemList[125] = ["LightningBullet", 3, 29, 5, 2, 16776960, 0, 3, 0, 0, 0, 1, 9, 1, 10, 30, 90, 1, 15, 4294967091, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 3, 0, 3, 21, 50, itemAtkMinCol, 0, itemAtkMaxCol, 50, 0, 0, 0, 0];
 itemList[130] = ["Ice bullet", 3, 29, 5, 2, 8947967, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 1, 15, 4284901068, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 2, 25, 3, 4, 200, itemIceBonusPercentCol, 20, 0, 0, 0, 0, 0, 0];
-itemList[16] = ["Fire bomb", 4, 30, 5, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 90, 0, 3, 4294927889, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 0, 0, 1, 2, 10, 5, 80, itemAtkMinCol, 34, itemAtkMaxCol, 34, Ed, 20, 1, 2, 0, 1, 5, 2, 0, 30, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
-itemList[27] = ["Lightning orb", 4, 30, 5, 2, 16763921, 0, 4, 0, 0, 0, 1, 9, 1, 8, 30, 90, 0, 0, 4294954001, 2, 32, 32, 0, 8, 8, 0, 180, 180, 10, 0, 0, 100, 0, 0, 0, 3, 0, 10, 5, 80, Ed, 50, 0, 0, 0, 0, 1, 12, 10, 1, 10, 20, 1, 36, 4294945297, 2, 16, 24, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 0];
+itemList[16] = ["Fire bomb", 4, 30, 5, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 90, 0, 3, 4294927889, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 0, 0, 1, 2, 10, 5, 80, itemAtkMinCol, 34, itemAtkMaxCol, 34, itemAttackPowerCol, 20, 1, 2, 0, 1, 5, 2, 0, 30, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
+itemList[27] = ["Lightning orb", 4, 30, 5, 2, 16763921, 0, 4, 0, 0, 0, 1, 9, 1, 8, 30, 90, 0, 0, 4294954001, 2, 32, 32, 0, 8, 8, 0, 180, 180, 10, 0, 0, 100, 0, 0, 0, 3, 0, 10, 5, 80, itemAttackPowerCol, 50, 0, 0, 0, 0, 1, 12, 10, 1, 10, 20, 1, 36, 4294945297, 2, 16, 24, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 0];
 itemList[40] = ["Ice bomb", 4, 30, 5, 2, 10066431, 0, 4, 0, 0, 0, 4, 5, 1, 20, 30, 90, 0, 0, 4287138047, 2, 16, 16, 0, 8, 8, 0, 180, 180, 10, 0, 0, 100, 0, 0, 0, 2, 50, 20, 6, 50, itemChargeEmitValueCol, -10, 0, 0, 0, 0, 1, 2, 0, 0, 15, 5, 1, 5, 4287138047, 2, 20, 32, 1, 0, 32, 0, 20, 60, 60, 0, 0, 90, 0, 1];
-itemList[48] = ["Explosion", 4, 30, 5, 2, 16729105, 0, 6, 30, 0, 0, 2, 3, 8, -5, 30, 90, 0, 3, 4294919185, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 50, 5, 150, itemAtkMinCol, 34, itemAtkMaxCol, 34, Ed, 13, 2, 3, 0, 1, 8, 1, 1, 29, 4294927889, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 95, 0, 0];
-itemList[59] = ["Lightning bolt", 4, 30, 5, 2, 16772625, 0, 4, 0, 0, 0, 1, 9, 1, 20, 30, 90, 0, 0, 4294945297, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 3, 0, 50, 5, 150, 0, 0, itemAtkMaxCol, 40, Ed, 20, 1, 4, 10, 1, 50, 1, 1, 36, 4294940945, 2, 16, 32, 1, 0, 32, 100, 30, 60, 20, 0, 0, 99, 0, 3];
+itemList[48] = ["Explosion", 4, 30, 5, 2, 16729105, 0, 6, 30, 0, 0, 2, 3, 8, -5, 30, 90, 0, 3, 4294919185, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 50, 5, 150, itemAtkMinCol, 34, itemAtkMaxCol, 34, itemAttackPowerCol, 13, 2, 3, 0, 1, 8, 1, 1, 29, 4294927889, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 95, 0, 0];
+itemList[59] = ["Lightning bolt", 4, 30, 5, 2, 16772625, 0, 4, 0, 0, 0, 1, 9, 1, 20, 30, 90, 0, 0, 4294945297, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 3, 0, 50, 5, 150, 0, 0, itemAtkMaxCol, 40, itemAttackPowerCol, 20, 1, 4, 10, 1, 50, 1, 1, 36, 4294940945, 2, 16, 32, 1, 0, 32, 100, 30, 60, 20, 0, 0, 99, 0, 3];
 itemList[97] = ["Ice trail", 4, 30, 5, 2, 6711039, 0, 3, 0, 0, 0, 5, 10, 1, 20, 30, 90, 0, 0, 4288256511, 2, 16, 16, 0, 8, 8, 0, 1800, 180, 10, 0, 0, 100, 0, 3, 0, 2, 30, 20, 5, 800, attackCooldownCol, 50, 0, 0, 0, 0, 1, 12, 0, 1, 30, 2, 0, 53, 4288256511, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 99, 0, 0];
 itemList[102] = ["Fire wave", 4, 31, 5, 2, 16724753, 0, 3, 4, 0, 0, 4, 5, 30, 15, 30, 90, 0, 0, 4294919185, 2, 24, 24, 0, 8, 8, 0, 0, 300, 20, 0, 0, 99, 0, 3, 0, 1, 3, 40, 12, 250, itemAtkMinCol, 25, itemAtkMaxCol, 20, 0, 0, 0, 0];
 itemList[107] = ["Lightning burst", 4, 31, 5, 2, 16776977, 0, 6, 30, 0, 0, 1, 150, 8, -25, 30, 90, 1, 36, 4294967057, 2, 32, 32, 0, 16, 16, 0, 25, 26, 10, 0, 0, 100, 0, 2, 0, 3, 0, 10, 5, 800, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 0];
-itemList[112] = ["Ice wide", 4, 31, 5, 2, 10066431, 0, 3, 0, 0, 0, 5, 10, 5, 20, 30, 90, 0, 0, 4287138047, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 2, 30, 20, 6, 500, Ed, 20, 0, 0, 0, 0, 1, 3, 0, 0, 5, 5, 1, 36, 4287138047, 2, 16, 24, 1, 0, 24, 0, 30, 60, 10, 0, 0, 99, 0, 3];
-itemList[135] = ["Solar flare", 4, 29, 5, 2, 16720435, 0, 6, 60, 0, 0, 3, 5, 8, -5, 30, 90, 0, 3, 4294910515, 2, 16, 16, 0, 8, 8, 120, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 60, 3, 6E3, itemAtkMinCol, 50, itemAtkMaxCol, 50, Ed, 25, 2, 3, 0, 1, 8, 1, 1, 12, 2298421811, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 94, 0, 0];
+itemList[112] = ["Ice wide", 4, 31, 5, 2, 10066431, 0, 3, 0, 0, 0, 5, 10, 5, 20, 30, 90, 0, 0, 4287138047, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 2, 30, 20, 6, 500, itemAttackPowerCol, 20, 0, 0, 0, 0, 1, 3, 0, 0, 5, 5, 1, 36, 4287138047, 2, 16, 24, 1, 0, 24, 0, 30, 60, 10, 0, 0, 99, 0, 3];
+itemList[135] = ["Solar flare", 4, 29, 5, 2, 16720435, 0, 6, 60, 0, 0, 3, 5, 8, -5, 30, 90, 0, 3, 4294910515, 2, 16, 16, 0, 8, 8, 120, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 60, 3, 6E3, itemAtkMinCol, 50, itemAtkMaxCol, 50, itemAttackPowerCol, 25, 2, 3, 0, 1, 8, 1, 1, 12, 2298421811, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 94, 0, 0];
 itemList[28] = ["Headband", 6, 64, 10, 0, 13369344, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 10, heroHealthModifierCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[29] = ["Bandana", 6, 65, 10, 0, 6724044, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 100, heroDodgeModifierCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[30] = ["Knit", 6, 66, 10, 0, 16737792, 10040064, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 20, heroHealthModifierCol, 20, 0, 0, 0, 0, 0, 0];
@@ -512,34 +518,34 @@ itemList[69] = ["Witch", 6, 72, 10, 0, 16737996, 10027110, 0, 0, 10, 0, 0, 0, 0,
 itemList[70] = ["Santa", 6, 73, 10, 0, 13421823, 3355596, 10, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, heroMagicDefModifierCol, 20, 0, 0, 0, 0, 0, 0];
 // accessories
 itemList[71] = ["Craft Ring", 8, 128, 20, 0, 6710886, 11184810, accessoryArmsBonusCol0, "ARMS Lv +", 1, "", "", 0, ""];
-itemList[73] = ["Iron Ring", 8, 128, 20, 0, 6710886, 4473924, oe, "AT +", 20, "%", "", 0, ""];
-itemList[75] = ["Wood Ring", 8, 128, 20, 0, 10053120, 6697728, qe, "RANGE +", 60, "", "COUNT +", 60, ""];
-itemList[77] = ["Diamond Ring", 8, 128, 20, 0, 16777215, 6710886, we, "Physical Critical hit ", 25, "%", "Critical damage +", 100, "%"];
-itemList[79] = ["Gold Ring", 8, 128, 20, 0, 16777164, 14658851, Ce, "Gold +", 50, "%", "", 0, ""];
-itemList[81] = ["Ruby Ring", 8, 128, 20, 0, 16724787, 5588036, xe, "Fire hit rate per second +", 1, "", "", 0, ""];
-itemList[83] = ["Topaz Ring", 8, 128, 20, 0, 16763904, 5592388, ze, "Lightning damage +", 30, "%", "", 0, ""];
+itemList[73] = ["Iron Ring", 8, 128, 20, 0, 6710886, 4473924, accessoryEffectAtkBonusCol, "AT +", 20, "%", "", 0, ""];
+itemList[75] = ["Wood Ring", 8, 128, 20, 0, 10053120, 6697728, accessoryEffectRangeAndCountCol, "RANGE +", 60, "", "COUNT +", 60, ""];
+itemList[77] = ["Diamond Ring", 8, 128, 20, 0, 16777215, 6710886, accessoryEffectPhysicalProcChanceCol, "Physical Critical hit ", 25, "%", "Critical damage +", 100, "%"];
+itemList[79] = ["Gold Ring", 8, 128, 20, 0, 16777164, 14658851, accessoryRewardValueBonusCol, "Gold +", 50, "%", "", 0, ""];
+itemList[81] = ["Ruby Ring", 8, 128, 20, 0, 16724787, 5588036, accessoryEffectFireStatBonusCol, "Fire hit rate per second +", 1, "", "", 0, ""];
+itemList[83] = ["Topaz Ring", 8, 128, 20, 0, 16763904, 5592388, accessoryEffectLightningMaxAtkPercentCol, "Lightning damage +", 30, "%", "", 0, ""];
 itemList[85] = ["Shell Ring", 8, 128, 20, 0, 14803938, 13546410, accessoryDodgeChanceCol, "Dodge +", 10, "%", "", 0, ""];
-itemList[87] = ["Emerald Ring", 8, 128, 20, 0, 65382, 4478276, Be, "Poison damage +", 40, "%", "", 0, ""];
-itemList[113] = ["Aquamarine Ring", 8, 128, 20, 0, 6711039, 4473992, He, "Ice damage +", 40, "%", "", 0, ""];
+itemList[87] = ["Emerald Ring", 8, 128, 20, 0, 65382, 4478276, accessoryEffectPoisonAtkPercentCol, "Poison damage +", 40, "%", "", 0, ""];
+itemList[113] = ["Aquamarine Ring", 8, 128, 20, 0, 6711039, 4473992, accessoryIceAtkPercentCol, "Ice damage +", 40, "%", "", 0, ""];
 itemList[115] = ["Stone Ring", 8, 128, 20, 0, 13421789, 11184827, accessoryMeleeDefenceCol, "DF +", 1, "", "", 0, ""];
 itemList[117] = ["Pearl Ring", 8, 128, 20, 0, 13546410, 6710886, accessoryMagicDefenseCol, "MAGIC DF +", 10, "%", "", 0, ""];
-itemList[119] = ["Warrior Ring", 8, 128, 20, 0, 16737792, 8930338, Me, "Combo duration +", 1, " sec", "", 0, ""];
+itemList[119] = ["Warrior Ring", 8, 128, 20, 0, 16737792, 8930338, accessoryComboMaxIncreaseCol, "Combo duration +", 1, " sec", "", 0, ""];
 itemList[136] = ["Master Ring", 8, 128, 20, 0, 16763955, 10053171, accessoryArmsBonusCol1, "ARMS Lv +", 1, "", "CHARGE Lv +", 1, ""];
-itemList[137] = ["Titanium Ring", 8, 128, 20, 0, 6640976, 13421772, pe, "AGI -", 2, "", "", 0, ""];
-itemList[138] = ["Morion Ring", 8, 128, 20, 0, 7829367, 3355443, Ne, "Charge +", 1, "", "", 0, ""];
+itemList[137] = ["Titanium Ring", 8, 128, 20, 0, 6640976, 13421772, accessoryEffectAgiPenaltyCol, "AGI -", 2, "", "", 0, ""];
+itemList[138] = ["Morion Ring", 8, 128, 20, 0, 7829367, 3355443, accessoryChargeValueBonusCol, "Charge +", 1, "", "", 0, ""];
 itemList[72] = ["Craft Amulet", 8, 144, 30, 0, 6710886, 13421772, accessoryChargeBonusCol, "CHARGE Lv +", 1, "", "", 0, ""];
 itemList[74] = ["Shell Amulet", 8, 144, 30, 0, 14803938, 13546410, accessoryDodgeChanceCol, "Dodge +", 10, "%", "", 0, ""];
-itemList[76] = ["Elf Amulet", 8, 144, 30, 0, 65433, 3381606, ue, "Multiple shots +", 2, "", "", 0, ""];
-itemList[78] = ["Crystal Amulet", 8, 144, 30, 0, 15658734, 4473924, te, "EMIT -", 2, "", "", 0, ""];
-itemList[80] = ["Bandit Amulet", 8, 144, 30, 0, 15765064, 10102789, Ee, "Drop +", 50, "%", "", 0, ""];
-itemList[82] = ["Amethyst Amulet", 8, 144, 30, 0, 10027212, 8947848, re, "", 2, "% chance of full charge", "", 0, ""];
-itemList[84] = ["Platinum Amulet", 8, 144, 30, 0, 16777215, 14540253, Fe, "EXP +", 50, "%", "", 0, ""];
-itemList[86] = ["Citrine Amulet", 8, 144, 30, 0, 16763904, 8939076, se, "", 30, "% chance of recharge", "", 0, ""];
-itemList[88] = ["Sapphire Amulet", 8, 144, 30, 0, 3355647, 4473992, ye, "Ice slow effect +", 20, "%", "", 0, ""];
-itemList[114] = ["Garnet Amulet", 8, 144, 30, 0, 16724787, 5588036, Ge, "Fire damage +", 30, "%", "", 0, ""];
-itemList[116] = ["Peridot Amulet", 8, 144, 30, 0, 10092288, 4478276, Ie, "Poison effect time +", 3, " sec", "", 0, ""];
-itemList[118] = ["Ammolite Amulet", 8, 144, 30, 0, 6736896, 13382400, Je, "Injection angle 1/", 2, "", "", 0, ""];
-itemList[120] = ["Warrior Amulet", 8, 144, 30, 0, 16737792, 8930338, Me, "Combo duration +", 1, " sec", "", 0, ""];
+itemList[76] = ["Elf Amulet", 8, 144, 30, 0, 65433, 3381606, accessoryEffectMultiShotIncreaseCol, "Multiple shots +", 2, "", "", 0, ""];
+itemList[78] = ["Crystal Amulet", 8, 144, 30, 0, 15658734, 4473924, accessoryEffectEmitMaxReductionCol, "EMIT -", 2, "", "", 0, ""];
+itemList[80] = ["Bandit Amulet", 8, 144, 30, 0, 15765064, 10102789, accessoryDropChanceBonusCol, "Drop +", 50, "%", "", 0, ""];
+itemList[82] = ["Amethyst Amulet", 8, 144, 30, 0, 10027212, 8947848, accessoryEffectEmitFullChargeChance_duringChargeCol, "", 2, "% chance of full charge", "", 0, ""];
+itemList[84] = ["Platinum Amulet", 8, 144, 30, 0, 16777215, 14540253, accessoryEnemyHpBonusCol, "EXP +", 50, "%", "", 0, ""];
+itemList[86] = ["Citrine Amulet", 8, 144, 30, 0, 16763904, 8939076, accessoryEffectEmitFullChargeChance_onFireCol, "", 30, "% chance of recharge", "", 0, ""];
+itemList[88] = ["Sapphire Amulet", 8, 144, 30, 0, 3355647, 4473992, accessoryEffectIceStatBonusCol, "Ice slow effect +", 20, "%", "", 0, ""];
+itemList[114] = ["Garnet Amulet", 8, 144, 30, 0, 16724787, 5588036, accessoryFireAtkPercentCol, "Fire damage +", 30, "%", "", 0, ""];
+itemList[116] = ["Peridot Amulet", 8, 144, 30, 0, 10092288, 4478276, accessoryEffectPoisonStatBonusCol, "Poison effect time +", 3, " sec", "", 0, ""];
+itemList[118] = ["Ammolite Amulet", 8, 144, 30, 0, 6736896, 13382400, accessoryMultiShotSpreadDivisorCol, "Injection angle 1/", 2, "", "", 0, ""];
+itemList[120] = ["Warrior Amulet", 8, 144, 30, 0, 16737792, 8930338, accessoryComboMaxIncreaseCol, "Combo duration +", 1, " sec", "", 0, ""];
 itemList[139] = ["Giant Amulet", 8, 144, 30, 0, 16711782, 16764057, accessoryHealthBonusCol, "LP +", 50, "%", "", 0, ""];
 var badgeCount = 128,
     badgeList = Array(badgeCount),
@@ -1437,12 +1443,12 @@ function updatePartyStats() {
         partyLP[hidx] = clamp(partyLP[hidx], 0, partyMaxLP[hidx]);
 
         heroChargeValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], itemChargeEmitValueCol);
-        if (heroHasAccessoryEffect(hidx, Ne) && 0 < heroChargeValues[hidx])
-            heroChargeValues[hidx] = max(heroChargeValues[hidx] + countAccessoryLvlBonuses(hidx, Ne), 1);
+        if (heroHasAccessoryEffect(hidx, accessoryChargeValueBonusCol) && 0 < heroChargeValues[hidx])
+            heroChargeValues[hidx] = max(heroChargeValues[hidx] + countAccessoryLvlBonuses(hidx, accessoryChargeValueBonusCol), 1);
 
         heroEmitValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], itemChargeEmitValueCol);
-        if (heroHasAccessoryEffect(hidx, te) && 0 < heroEmitValues[hidx])
-            heroEmitValues[hidx] = max(heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, te), 1);
+        if (heroHasAccessoryEffect(hidx, accessoryEffectEmitMaxReductionCol) && 0 < heroEmitValues[hidx])
+            heroEmitValues[hidx] = max(heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, accessoryEffectEmitMaxReductionCol), 1);
 
         heroEmitCurrent[hidx] = clamp(heroEmitCurrent[hidx], 0, heroEmitValues[hidx]);
     }
@@ -1462,46 +1468,46 @@ function updatePartyStats() {
                 minAtkArray[c] = floor(minAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
                 maxAtkArray[c] = floor(maxAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
 
-                if (heroHasAccessoryEffect(hidx, oe)) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, oe)) / 100);
+                if (heroHasAccessoryEffect(hidx, accessoryEffectAtkBonusCol)) {
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectAtkBonusCol)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectAtkBonusCol)) / 100);
                 }
-                if (heroHasAccessoryEffect(hidx, Ge) && 1 == g) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Ge)) / 100);
+                if (heroHasAccessoryEffect(hidx, accessoryFireAtkPercentCol) && 1 == g) {
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryFireAtkPercentCol)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryFireAtkPercentCol)) / 100);
                 }
-                if (heroHasAccessoryEffect(hidx, He) && 2 == g) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, He)) / 100);
+                if (heroHasAccessoryEffect(hidx, accessoryIceAtkPercentCol) && 2 == g) {
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryIceAtkPercentCol)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryIceAtkPercentCol)) / 100);
                 }
 
-                if (heroHasAccessoryEffect(hidx, ze) && 3 == g)
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, ze)) / 100);
+                if (heroHasAccessoryEffect(hidx, accessoryEffectLightningMaxAtkPercentCol) && 3 == g)
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectLightningMaxAtkPercentCol)) / 100);
 
-                if (heroHasAccessoryEffect(hidx, Be) && 4 == g) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
+                if (heroHasAccessoryEffect(hidx, accessoryEffectPoisonAtkPercentCol) && 4 == g) {
+                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectPoisonAtkPercentCol)) / 100);
+                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectPoisonAtkPercentCol)) / 100);
                 }
 
                 atkCountArray[c] = getModifiedStatVal(hidx, itemIdx, itemProjectileCountCol);
-                if (heroHasAccessoryEffect(hidx, ue) && 1 < atkCountArray[c])
-                    atkCountArray[c] += countAccessoryLvlBonuses(hidx, ue);
+                if (heroHasAccessoryEffect(hidx, accessoryEffectMultiShotIncreaseCol) && 1 < atkCountArray[c])
+                    atkCountArray[c] += countAccessoryLvlBonuses(hidx, accessoryEffectMultiShotIncreaseCol);
 
                 heroItem || (
                     heroAgiValues[hidx] = getModifiedStatVal(hidx, itemIdx, itemAgilityCol),
-                    heroHasAccessoryEffect(hidx, pe) && (heroAgiValues[hidx] -= countAccessoryLvlBonuses(hidx, pe)),
+                    heroHasAccessoryEffect(hidx, accessoryEffectAgiPenaltyCol) && (heroAgiValues[hidx] -= countAccessoryLvlBonuses(hidx, accessoryEffectAgiPenaltyCol)),
                     heroRangeValues[hidx] = getModifiedStatVal(hidx, itemIdx, itemRangeCol),
-                    !heroHasAccessoryEffect(hidx, qe) || 4 != itemList[itemIdx][itemAppearanceCol] && 5 != itemList[itemIdx][itemAppearanceCol] || (heroRangeValues[hidx] += countAccessoryLvlBonuses(hidx, qe))
+                    !heroHasAccessoryEffect(hidx, accessoryEffectRangeAndCountCol) || 4 != itemList[itemIdx][itemAppearanceCol] && 5 != itemList[itemIdx][itemAppearanceCol] || (heroRangeValues[hidx] += countAccessoryLvlBonuses(hidx, accessoryEffectRangeAndCountCol))
                 )
             }
         }
     partyEnemyHpBonusPercent = partyDropChanceBonusPercent = partyRewardValueBonusPercent = 0;
     Vg = 180;
     for (let hidx = 0; 4 > hidx; hidx++)
-        heroHasAccessoryEffect(hidx, Ce) && (partyRewardValueBonusPercent += countAccessoryLvlBonuses(hidx, Ce)),
-            heroHasAccessoryEffect(hidx, Ee) && (partyDropChanceBonusPercent += countAccessoryLvlBonuses(hidx, Ee)),
-            heroHasAccessoryEffect(hidx, Fe) && (partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, Fe)),
-            heroHasAccessoryEffect(hidx, Me) && (Vg += 60 * countAccessoryLvlBonuses(hidx, Me));
+        heroHasAccessoryEffect(hidx, accessoryRewardValueBonusCol) && (partyRewardValueBonusPercent += countAccessoryLvlBonuses(hidx, accessoryRewardValueBonusCol)),
+            heroHasAccessoryEffect(hidx, accessoryDropChanceBonusCol) && (partyDropChanceBonusPercent += countAccessoryLvlBonuses(hidx, accessoryDropChanceBonusCol)),
+            heroHasAccessoryEffect(hidx, accessoryEnemyHpBonusCol) && (partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, accessoryEnemyHpBonusCol)),
+            heroHasAccessoryEffect(hidx, accessoryComboMaxIncreaseCol) && (Vg += 60 * countAccessoryLvlBonuses(hidx, accessoryComboMaxIncreaseCol));
     Ic = clamp(Ic, 0, Vg);
     for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
 }
@@ -1747,13 +1753,13 @@ function drawGameUI() {
 
                     let atkRangeTxt = "AT " + minAtkArray[4 * _slotIdx + selectingHero] + "-" + maxAtkArray[4 * _slotIdx + selectingHero];
 
-                    if (itemList[_equipmentIdx][itemAtkCountCol] === 10 || 
-                        itemList[_equipmentIdx][itemAtkCountCol] === 11) {
-                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, _equipmentIdx, attackCooldownCol) * getModifiedStatVal(selectingHero, _equipmentIdx, Ed) / 60);
-                    } else if (0 != itemList[_equipmentIdx][itemAtkCountCol]) {
-                        let b = getModifiedStatVal(selectingHero, _equipmentIdx, Ed);
-                        if (heroHasAccessoryEffect(selectingHero, Ae) && 3 == itemList[_equipmentIdx][itemElementTypeCol] && 20 == itemList[_equipmentIdx][itemAtkCountCol]) {
-                            b += countAccessoryLvlBonuses(selectingHero, Ae);
+                    if (itemList[_equipmentIdx][itemAttackModeCol] === 10 || 
+                        itemList[_equipmentIdx][itemAttackModeCol] === 11) {
+                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, _equipmentIdx, attackCooldownCol) * getModifiedStatVal(selectingHero, _equipmentIdx, itemAttackPowerCol) / 60);
+                    } else if (0 != itemList[_equipmentIdx][itemAttackModeCol]) {
+                        let b = getModifiedStatVal(selectingHero, _equipmentIdx, itemAttackPowerCol);
+                        if (heroHasAccessoryEffect(selectingHero, accessoryEffectLightningElemBonusCol) && 3 == itemList[_equipmentIdx][itemElementTypeCol] && 20 == itemList[_equipmentIdx][itemAttackModeCol]) {
+                            b += countAccessoryLvlBonuses(selectingHero, accessoryEffectLightningElemBonusCol);
                         }
                         atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + b;
                     } else {
@@ -1787,7 +1793,7 @@ function drawGameUI() {
                                 1 == itemList[_equipmentIdx][itemElementTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
                                 if (2 == itemList[_equipmentIdx][itemElementTypeCol]) {
                                     let iceVal = getModifiedStatVal(selectingHero, _equipmentIdx, itemIceBonusPercentCol);
-                                    heroHasAccessoryEffect(selectingHero, ye) && (iceVal += countAccessoryLvlBonuses(selectingHero, ye));
+                                    heroHasAccessoryEffect(selectingHero, accessoryEffectIceStatBonusCol) && (iceVal += countAccessoryLvlBonuses(selectingHero, accessoryEffectIceStatBonusCol));
                                     drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    ice " + iceVal + "%", 10070783, 0)
                                 }
                                 3 == itemList[_equipmentIdx][itemElementTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    lightning", 15658496, 0);
@@ -1847,10 +1853,10 @@ function drawGameUI() {
                 gameFontMed.a = 4;
                 drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0);
                 h = "AT " + getItemStatWithForge(c, itemAtkMinCol) + "-" + getItemStatWithForge(c, itemAtkMaxCol);
-                if (10 <= getItemStatWithForge(c, itemAtkCountCol) && 11 >= getItemStatWithForge(c, itemAtkCountCol)) {
-                    h += " *" + getItemStatWithForge(c, itemProjectileCountCol) + ">" + ~~(getItemStatWithForge(c, attackCooldownCol) * getItemStatWithForge(c, Ed) / 60);
-                } else if (0 != getItemStatWithForge(c, itemAtkCountCol)) {
-                    h += " *" + getItemStatWithForge(c, itemProjectileCountCol) + ">" + getItemStatWithForge(c, Ed);
+                if (10 <= getItemStatWithForge(c, itemAttackModeCol) && 11 >= getItemStatWithForge(c, itemAttackModeCol)) {
+                    h += " *" + getItemStatWithForge(c, itemProjectileCountCol) + ">" + ~~(getItemStatWithForge(c, attackCooldownCol) * getItemStatWithForge(c, itemAttackPowerCol) / 60);
+                } else if (0 != getItemStatWithForge(c, itemAttackModeCol)) {
+                    h += " *" + getItemStatWithForge(c, itemProjectileCountCol) + ">" + getItemStatWithForge(c, itemAttackPowerCol);
                 } else {
                     1 < getItemStatWithForge(c, itemProjectileCountCol) && (h += " *" + getItemStatWithForge(c, itemProjectileCountCol));
                     if (99 == getItemStatWithForge(c, itemHitCountStatCol)) {
@@ -1881,7 +1887,7 @@ function drawGameUI() {
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0); 
                                 hidx = getItemForgeMultiplier(c, attackCooldownCol); 
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0); 
-                                hidx = getItemForgeMultiplier(c, Td);
+                                hidx = getItemForgeMultiplier(c, itemStatACol);
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
                             }
                         }
@@ -2279,13 +2285,13 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                 0 == attackType ? y = max(y - heroMeleeDefensesFlatArray[x], 1) : 6 == attackType ? y = max(y - heroProjDefenseFlatArray[x], 1) : 1 <= attackType && (y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1));
                 randFloat(100) < heroDodgeChanceArray[x] && (y = 0, J = 16744576, $h[x] = 0);
                 1 == attackType && heroHasAccessoryEffect(x,
-                    Qe) && (y = max(y - countAccessoryLvlBonuses(x, Qe), 1));
-                if (2 == attackType) ch[x] = 120, hi[x] = auxValue, heroHasAccessoryEffect(x, Re) && (hi[x] = max(floor(hi[x] * (100 - countAccessoryLvlBonuses(x, Re)) / 100), 0));
-                else if (3 == attackType) heroHasAccessoryEffect(x, Se) && randFloat(100) < countAccessoryLvlBonuses(x, Se) && (y = 0, J = 16744576, $h[x] = 0);
+                    accessoryMagicDamageReductionCol) && (y = max(y - countAccessoryLvlBonuses(x, accessoryMagicDamageReductionCol), 1));
+                if (2 == attackType) ch[x] = 120, hi[x] = auxValue, heroHasAccessoryEffect(x, accessoryStunChanceReductionCol) && (hi[x] = max(floor(hi[x] * (100 - countAccessoryLvlBonuses(x, accessoryStunChanceReductionCol)) / 100), 0));
+                else if (3 == attackType) heroHasAccessoryEffect(x, accessoryDamageNegationChanceCol) && randFloat(100) < countAccessoryLvlBonuses(x, accessoryDamageNegationChanceCol) && (y = 0, J = 16744576, $h[x] = 0);
                 else if (4 == attackType) {
                     dh[x] = auxValue;
                     ii[x] = y;
-                    heroHasAccessoryEffect(x, Te) && (dh[x] = max(dh[x] - 60 * countAccessoryLvlBonuses(x, Te), 0));
+                    heroHasAccessoryEffect(x, accessoryDebuffDurationReductionCol) && (dh[x] = max(dh[x] - 60 * countAccessoryLvlBonuses(x, accessoryDebuffDurationReductionCol), 0));
                     y = x;
                     continue
                 } else 5 == attackType && (bh[x] = floor(auxValue / 10));
@@ -2359,8 +2365,8 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         Fa = getModifiedStatVal(heroIdx, selectedItemIdx, projectileAuxStatCol),
         Ga = selectedItem[projectileCollisionModeCol],
         Ca = getModifiedStatVal(heroIdx, selectedItemIdx, attackCooldownCol);
-    if (heroHasAccessoryEffect(heroIdx, qe) && (4 == selectedItem[itemAppearanceCol] || 5 == selectedItem[itemAppearanceCol])) {
-        Ca += sumAccessorySecondaryValues(heroIdx, qe);
+    if (heroHasAccessoryEffect(heroIdx, accessoryEffectRangeAndCountCol) && (4 == selectedItem[itemAppearanceCol] || 5 == selectedItem[itemAppearanceCol])) {
+        Ca += sumAccessorySecondaryValues(heroIdx, accessoryEffectRangeAndCountCol);
     }
     var ua = selectedItem[projectileAuxParamCol],
         fb = selectedItem[itemProjectileMaxTargetsCol];
@@ -2374,44 +2380,44 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         Rb = getModifiedStatVal(heroIdx, selectedItemIdx, itemHitCountStatCol),
         gb = minAtkArray[4 * itemSlot + heroIdx],
         jb = maxAtkArray[4 * itemSlot + heroIdx];
-    if (heroHasAccessoryEffect(heroIdx, we) && 0 == selectedItem[itemElementTypeCol] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, we)) {
-        gb = floor(gb *  (100 + sumAccessorySecondaryValues(heroIdx, we)) / 100);
-        jb = floor(jb * (100 + sumAccessorySecondaryValues(heroIdx, we)) / 100);
+    if (heroHasAccessoryEffect(heroIdx, accessoryEffectPhysicalProcChanceCol) && 0 == selectedItem[itemElementTypeCol] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, accessoryEffectPhysicalProcChanceCol)) {
+        gb = floor(gb *  (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
+        jb = floor(jb * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
     }
     itemSlot = atkCountArray[4 * itemSlot + heroIdx];
     var La = selectedItem[itemProjectileSpeedCol],
         hc = selectedItem[itemElementTypeCol],
         Ib = getModifiedStatVal(heroIdx, selectedItemIdx, itemIceBonusPercentCol);
-    heroHasAccessoryEffect(heroIdx, xe) && 1 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, xe));
-    heroHasAccessoryEffect(heroIdx, ye) && 2 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, ye));
-    heroHasAccessoryEffect(heroIdx, Ie) && 4 == selectedItem[itemElementTypeCol] && (Ib += 60 * countAccessoryLvlBonuses(heroIdx, Ie));
-    var ic = selectedItem[zd],
-        jc = selectedItem[itemAtkCountCol],
-        kc = selectedItem[Bd],
-        lc = selectedItem[Gd],
-        mc = selectedItem[Hd],
-        nc = selectedItem[Id],
-        oc = selectedItem[Jd],
-        pc = selectedItem[Kd],
-        qc = selectedItem[Ld],
-        rc = selectedItem[Md],
-        sc = selectedItem[Nd],
-        tc = selectedItem[Od],
-        uc = selectedItem[Pd],
-        vc = selectedItem[Sd],
-        wc = getModifiedStatVal(heroIdx, selectedItemIdx, Td),
-        xc = selectedItem[Ud],
-        yc = selectedItem[Vd],
-        zc = selectedItem[Wd],
-        Qd = selectedItem[Xd],
-        Qf = selectedItem[Yd],
-        Rf = selectedItem[Zd],
-        Sf = selectedItem[Cd];
+    heroHasAccessoryEffect(heroIdx, accessoryEffectFireStatBonusCol) && 1 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectFireStatBonusCol));
+    heroHasAccessoryEffect(heroIdx, accessoryEffectIceStatBonusCol) && 2 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectIceStatBonusCol));
+    heroHasAccessoryEffect(heroIdx, accessoryEffectPoisonStatBonusCol) && 4 == selectedItem[itemElementTypeCol] && (Ib += 60 * countAccessoryLvlBonuses(heroIdx, accessoryEffectPoisonStatBonusCol));
+    var ic = selectedItem[itemProjectileParam1Col],
+        jc = selectedItem[itemAttackModeCol],
+        kc = selectedItem[itemProjectileParam2Col],
+        lc = selectedItem[itemProjectileAux1Col],
+        mc = selectedItem[itemProjectileAux2Col],
+        nc = selectedItem[itemAuxValueACol],
+        oc = selectedItem[itemAuxValueBCol],
+        pc = selectedItem[itemAuxValueCCol],
+        qc = selectedItem[itemDisplayStatACol],
+        rc = selectedItem[itemAuxValueDCol],
+        sc = selectedItem[itemProjectileFlagCol],
+        tc = selectedItem[itemProjectileParamTimeCol],
+        uc = selectedItem[itemHitCountCol],
+        vc = selectedItem[itemProjectileEffectModeCol],
+        wc = getModifiedStatVal(heroIdx, selectedItemIdx, itemStatACol),
+        xc = selectedItem[itemExtraStatCol1],
+        yc = selectedItem[itemExtraStatCol2],
+        zc = selectedItem[itemSpawnTargetRangeCol],
+        Qd = selectedItem[itemExtraParamACol],
+        Qf = selectedItem[itemExtraParamBCol],
+        Rf = selectedItem[itemExtraParamCCol],
+        Sf = selectedItem[itemProjectileParam3Col];
 
-    selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, Ed);
-    heroHasAccessoryEffect(heroIdx, Ae) && 3 == selectedItem[itemElementTypeCol] && 20 == selectedItem[itemAtkCountCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, Ae));
+    selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, itemAttackPowerCol);
+    heroHasAccessoryEffect(heroIdx, accessoryEffectLightningElemBonusCol) && 3 == selectedItem[itemElementTypeCol] && 20 == selectedItem[itemAttackModeCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, accessoryEffectLightningElemBonusCol));
     
-    selectedItem = selectedItem[Fd];
+    selectedItem = selectedItem[itemProjectileTemplateCol];
     let Ac = Q[targetEnemyIdx][yi].x;
     let Rg = Q[targetEnemyIdx][yi].y;
 
@@ -2444,7 +2450,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
     } else if (3 == l) {
         Vec2Set(projDir, Ac - originX, Rg - originY);
         var We = 0 < n ? n - 1 : 16;
-        heroHasAccessoryEffect(heroIdx, Je) && (We = floor(We / countAccessoryLvlBonuses(heroIdx, Je)));
+        heroHasAccessoryEffect(heroIdx, accessoryMultiShotSpreadDivisorCol) && (We = floor(We / countAccessoryLvlBonuses(heroIdx, accessoryMultiShotSpreadDivisorCol)));
         Ac = floor(512 * Vec2Angle(projDir) / TAU);
         Ac -= floor((itemSlot - 1) * We / 2);
         for (l = 0; l < itemSlot; l++) {
@@ -2591,7 +2597,7 @@ function updatePlayerParty() {
                     stepWithVerticalBias(O[a][9], Mh[a][9], .3, .99),
                     stepWithVerticalBias(O[a][10], Mh[a][10], .3, .99);
             else
-                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, Pe) ? stepWithVerticalBias(O[a][b], Mh[a][b], .05 / countAccessoryLvlBonuses(a, Pe), .99) : stepWithVerticalBias(O[a][b], Mh[a][b], .05, .99);
+                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, accessoryJointStepDividerCol) ? stepWithVerticalBias(O[a][b], Mh[a][b], .05 / countAccessoryLvlBonuses(a, accessoryJointStepDividerCol), .99) : stepWithVerticalBias(O[a][b], Mh[a][b], .05, .99);
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
             if (0 == d && Wh[a] != areUpperJointsDisabled)
                 for (Wh[a] = areUpperJointsDisabled, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
@@ -2609,7 +2615,7 @@ function updatePlayerParty() {
                     Zh[a] = heroAgiValues[a] + randIntRange(-1, 1);
                     partyBodyDrawOptions[a][2] = d < Q[c][yi].x ? 1 : 0;
                     k = 0; - 1 == heroEmitValues[a] ? (heroEmitCurrent[a] =
-                        0, fi[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), fi[a] = 0, heroHasAccessoryEffect(a, re) && 100 * rand() < countAccessoryLvlBonuses(a, re) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, se) && 100 * rand() < countAccessoryLvlBonuses(a, se) && (heroEmitCurrent[a] = heroEmitValues[a]));
+                        0, fi[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), fi[a] = 0, heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol) && (heroEmitCurrent[a] = heroEmitValues[a]));
                     if (0 != b)
                         if (3 == b) Vec2Sub(g, Q[c][yi], O[a][5]), Vec2Sub(h, Q[c][yi], O[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), O[a][5].add(g), O[a][4].sub(g), f.set(O[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), O[a][6].add(h), O[a][3].sub(h), f.set(O[a][6]), k = 1540, ei[a] = 1), Uh[a].set(Q[c][yi]), Vh[a] = 5;
                         else if (4 == b) {

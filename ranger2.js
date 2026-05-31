@@ -172,48 +172,48 @@ var inventoryItemLists = [
     []
 ];
 iterIdxTemp_1 = 0;
-const itemNameCol = iterIdxTemp_1++,
-    itemDropIconCol = iterIdxTemp_1++,
-    itemHeadwearType = iterIdxTemp_1++,
-    itemAppearanceCol = iterIdxTemp_1++,
-    itemRangeTypeCol = iterIdxTemp_1++, // Oc
-    itemSpriteLocXCol = iterIdxTemp_1++,
-    itemLimbSelectionCol = iterIdxTemp_1++, // Qc
-    Rc = iterIdxTemp_1++, // Rc
-    Sc = iterIdxTemp_1++, // Sc
-    Tc = iterIdxTemp_1++, // Tc
-    Uc = iterIdxTemp_1++, // Uc
-    Vc = iterIdxTemp_1++, // Vc
-    Wc = iterIdxTemp_1++, // Wc
-    Xc = iterIdxTemp_1++, // Xc
-    Yc = iterIdxTemp_1++, // Yc
-    Zc = iterIdxTemp_1++, // Zc
-    $c = iterIdxTemp_1++, // $c
-    ad = iterIdxTemp_1++, // ad
-    bd = iterIdxTemp_1++, // bd
-    cd = iterIdxTemp_1++, // cd
-    dd = iterIdxTemp_1++, // dd
-    ed = iterIdxTemp_1++, // ed
-    fd = iterIdxTemp_1++, // fd
-    gd = iterIdxTemp_1++, // gd
-    hd = iterIdxTemp_1++, // hd
-    id = iterIdxTemp_1++, // id
-    jd = iterIdxTemp_1++, // jd
-    kd = iterIdxTemp_1++, // kd
-    ld = iterIdxTemp_1++, // ld 
-    md = iterIdxTemp_1++, // md
-    nd = iterIdxTemp_1++, // nd
-    od = iterIdxTemp_1++, // od
-    pd = iterIdxTemp_1++, // pd 
-    qd = iterIdxTemp_1++, // qd
-    rd = iterIdxTemp_1++, // rd
-    sd = iterIdxTemp_1++, // sd
-    td = iterIdxTemp_1++, // td
-    ud = iterIdxTemp_1++, // ud
-    vd = iterIdxTemp_1++, // vd
-    wd = iterIdxTemp_1++, // wd
-    xd = iterIdxTemp_1++, // xd
-    itemStatModifingCol = iterIdxTemp_1++;
+const itemNameCol = iterIdxTemp_1++, // item display name shown in inventory/equipment UI.
+    itemDropIconCol = iterIdxTemp_1++, // item icon/category used by accessory bonus checks.
+    itemHeadwearType = iterIdxTemp_1++, // encoded sprite tile used for the item icon.
+    itemAppearanceCol = iterIdxTemp_1++, // item appearance/class flag used by the UI.
+    itemRangeTypeCol = iterIdxTemp_1++, // Oc, weapon range bucket: short, middle, or long.
+    itemSpriteSourceXCol = iterIdxTemp_1++, // sprite sheet source X for the item icon.
+    itemLimbSelectionCol = iterIdxTemp_1++, // Qc, limb selection code used to remap the stored limb descriptor.
+    itemProjectileDrawWidthCol = iterIdxTemp_1++, // Rc, projectile sprite draw width.
+    itemProjectileDrawHeightCol = iterIdxTemp_1++, // Sc, projectile sprite draw height.
+    itemProjectileShapeModeCol = iterIdxTemp_1++, // Tc, projectile shape/collision mode used when spawning and resolving hits.
+    itemHitCountStatCol = iterIdxTemp_1++, // Uc, number of hits the projectile can apply; the UI shows all or N hit.
+    itemAtkMinCol = iterIdxTemp_1++, // Vc, lower attack value shown in the item’s AT min-max range.
+    itemAtkMaxCol = iterIdxTemp_1++, // Wc, upper attack value shown in the item’s AT min-max range.
+    itemProjectileCountCol = iterIdxTemp_1++, // Xc, per-attack projectile count; feeds atkCountArray and the *N attack UI.
+    itemProjectileSpeedCol = iterIdxTemp_1++, // Yc, projectile launch speed; scales shot velocity before each spawnProjectile() call.
+    itemAgilityCol = iterIdxTemp_1++, // Zc, hero agility stat; copied into heroAgiValues and shown as AGI.
+    itemRangeCol = iterIdxTemp_1++, // $c, hero range stat; copied into heroRangeValues and shown as RANGE.
+    projectileEffectWidthCol = iterIdxTemp_1++, // ad, projectile effect hitbox width.
+    projectileEffectHeightCol = iterIdxTemp_1++, // bd, projectile effect hitbox height.
+    projectileDelayRangeCol = iterIdxTemp_1++, // cd, random projectile spawn delay range.
+    projectileNoDamageFramesCol = iterIdxTemp_1++, // dd, frames a projectile can’t deal damage after spawn.
+    projectileStartAnimFrameCol = iterIdxTemp_1++, // ed, projectile's initial animation frame.
+    projectileLifetimeCol = iterIdxTemp_1++, // fd, projectile lifetime (frames) used for lifespan and alpha fade.
+    projectileTargetIndexCol = iterIdxTemp_1++, // gd, projectile target/mode index: 0=default, -1=special, >0 = index into entity limb/slot for homing/anchoring.
+    projectileAccelerationCol = iterIdxTemp_1++, // hd, projectile acceleration / gravity magnitude (from item stat), used to influence projectile velocity each frame.
+    projectileSpeedScaleCol = iterIdxTemp_1++, // id, projectile velocity scale / speed multiplier (percent-like), applied each frame as .01 * value to scale projectile velocity.
+    projectileAuxStatCol = iterIdxTemp_1++, // jd, auxiliary projectile stat passed into spawnProjectile; current code does not read the matching projectile slot later.
+    projectileCollisionModeCol = iterIdxTemp_1++, // kd, projectile wall-collision mode: 0 stop, 2 slide, 3 bounce, 4 clamp.
+    attackCooldownCol = iterIdxTemp_1++, // ld, cooldown in frames before the next attack or passive emit can fire.
+    projectileAuxParamCol = iterIdxTemp_1++, // md, auxiliary projectile parameter stored on spawn; current projectile logic does not read it.
+    itemProjectileMaxTargetsCol = iterIdxTemp_1++, // nd, projectile max-target count; 2 falls back to the upper byte of itemProjectileDamageMinCol.
+    itemProjectileDamageMinCol = iterIdxTemp_1++, // od, projectile minimum damage; its upper byte is reused by itemProjectileMaxTargetsCol when needed.
+    itemProjectileDamageMaxCol = iterIdxTemp_1++, // pd, projectile maximum damage.
+    itemProjectileEffectTypeCol = iterIdxTemp_1++, // qd, projectile effect/damage mode.
+    projectileEffectTypeCol = iterIdxTemp_1++, // rd, effect type used by projectile hit logic; controls whether a hit applies direct damage or a status effect.
+    projectileEffectDurationCol = iterIdxTemp_1++, // sd, effect duration in frames used by projectile hit logic.
+    itemElementTypeCol = iterIdxTemp_1++, // td, item element code; the UI renders it as physical, fire, ice, lightning, or poison.
+    itemIceBonusPercentCol = iterIdxTemp_1++, // ud, ice-specific percent bonus shown for ice-element gear.
+    itemChargeEmitValueCol = iterIdxTemp_1++, // vd, shared charge/emit stat shown as CHARGE for arms and EMIT for emit gear.
+    itemForgeMaxLevelCol = iterIdxTemp_1++, // wd, highest forge level the item can reach.
+    itemForgeCostPerLevelCol = iterIdxTemp_1++, // xd, gold cost per forge level used by the upgrade panel.
+    itemStatModifyingBaseCol = iterIdxTemp_1++; // base column for item stat modifier pairs.
 iterIdxTemp_1++;
 iterIdxTemp_1++;
 iterIdxTemp_1++;
@@ -306,7 +306,7 @@ mainWindow.fff = getItemModifierAmount;
 
 function getItemModifierAmount(itemIdx, columnIdx) { // Ue
     for (var c = 0; 6 > c; c += 2)
-        if (itemList[itemIdx][itemStatModifingCol + c] == columnIdx) return itemList[itemIdx][itemStatModifingCol + c + 1];
+        if (itemList[itemIdx][itemStatModifyingBaseCol + c] == columnIdx) return itemList[itemIdx][itemStatModifyingBaseCol + c + 1];
     return 0
 }
 mainWindow.fff = getItemStatWithForge;
@@ -315,11 +315,11 @@ function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
     var c = 0;
     0 == _columnIdx
         ? c = 0
-        : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 0]
-            ? c = itemList[_itemIdx][itemStatModifingCol + 1]
-            : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 2]
-                ? c = itemList[_itemIdx][itemStatModifingCol + 3]
-                : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 4] && (c = itemList[_itemIdx][itemStatModifingCol + 5]);
+        : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 0]
+            ? c = itemList[_itemIdx][itemStatModifyingBaseCol + 1]
+            : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 2]
+                ? c = itemList[_itemIdx][itemStatModifyingBaseCol + 3]
+                : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 4] && (c = itemList[_itemIdx][itemStatModifyingBaseCol + 5]);
     if (0 != c) {
         var d = itemForgeLvls[_itemIdx] - 1;
         _itemIdx == forgePreviewItemIdx && d++;
@@ -331,7 +331,7 @@ mainWindow.fff = getItemForgeMultiplier;
 
 function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     var c = 0;
-    0 == _columnIdx ? c = 0 : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 0] ? c = itemList[_itemIdx][itemStatModifingCol + 1] : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 2] ? c = itemList[_itemIdx][itemStatModifingCol + 3] : _columnIdx == itemList[_itemIdx][itemStatModifingCol + 4] && (c = itemList[_itemIdx][itemStatModifingCol + 5]);
+    0 == _columnIdx ? c = 0 : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 0] ? c = itemList[_itemIdx][itemStatModifyingBaseCol + 1] : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 2] ? c = itemList[_itemIdx][itemStatModifyingBaseCol + 3] : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 4] && (c = itemList[_itemIdx][itemStatModifyingBaseCol + 5]);
     if (0 != c) {
         var d = itemForgeLvls[_itemIdx] - 1;
         _itemIdx == forgePreviewItemIdx && d++;
@@ -349,12 +349,12 @@ function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
     //          *      *      *        | d
     if (columnIdx == 0) {
         d = 0;
-    } else if (columnIdx == itemList[itemIdx][itemStatModifingCol + 0]) {
-        d = itemList[itemIdx][itemStatModifingCol + 1];
-    } else if (columnIdx == itemList[itemIdx][itemStatModifingCol + 2]) {
-        d = itemList[itemIdx][itemStatModifingCol + 3];
-    } else if (columnIdx == itemList[itemIdx][itemStatModifingCol + 4]) {
-        d = itemList[itemIdx][itemStatModifingCol + 5];
+    } else if (columnIdx == itemList[itemIdx][itemStatModifyingBaseCol + 0]) {
+        d = itemList[itemIdx][itemStatModifyingBaseCol + 1];
+    } else if (columnIdx == itemList[itemIdx][itemStatModifyingBaseCol + 2]) {
+        d = itemList[itemIdx][itemStatModifyingBaseCol + 3];
+    } else if (columnIdx == itemList[itemIdx][itemStatModifyingBaseCol + 4]) {
+        d = itemList[itemIdx][itemStatModifyingBaseCol + 5];
     }
 
     if (0 != d) {
@@ -404,92 +404,92 @@ itemList[0] = ["NONE", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 itemList[1] = ["NG", 0, 1, 0, 0, 8947848, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[2] = ["gold", 1, 0, 0, 0, 16777215, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[3] = ["onigiri", 2, 0, 0, 0, 16777215, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-itemList[4] = ["Glove", 3, 2, 1, 0, 6711039, 1, 1, 0, 0, 0, 2, 3, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 11, 5, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[5] = ["Power glove", 3, 2, 1, 0, 16737894, 1, 1, 0, 0, 0, 6, 8, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[6] = ["Light glove", 3, 2, 1, 0, 13421772, 1, 1, 0, 0, 0, 2, 3, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 3, 500, Zc, -10, 0, 0, 0, 0, 0, 0];
-itemList[49] = ["Knuckle", 3, 3, 1, 0, 6710886, 1, 1, 0, 0, 0, 6, 8, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 2, 7, 150, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[50] = ["Light knuckle", 3, 3, 1, 0, 15658734, 1, 1, 0, 0, 0, 2, 3, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 2, 4, 1E3, Zc, -10, 0, 0, 0, 0, 0, 0];
-itemList[89] = ["Thunder knuckle", 3, 3, 1, 0, 15658598, 1, 1, 0, 0, 0, 1, 4, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 3, 0, 2, 4, 1E3, Zc, -10, 0, 0, 0, 0, 0, 0];
-itemList[121] = ["Claw", 3, 4, 1, 0, 12298905, 1, 1, 0, 0, 0, 6, 8, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 9, 200, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[126] = ["Cat claw", 3, 4, 1, 0, 13421772, 1, 1, 0, 0, 0, 2, 3, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 4, 1500, Zc, -10, 0, 0, 0, 0, 0, 0];
-itemList[7] = ["Bash", 4, 2, 1, 0, 16737894, 1, 1, 0, 0, 0, 20, 30, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 50, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[8] = ["Range attack", 4, 2, 1, 0, 13421772, 1, 1, 0, 0, 99, 10, 15, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 50, hd, 100, id, 50, 0, 0, 0, 0];
-itemList[23] = ["Sand blaster", 4, 2, 1, 0, 13408563, 2, 1, 0, 0, 0, 8, 12, 1, 1, 5, 12, 0, 0, 4294967295, 1, 0, 0, 0, 16, 16, 0, 7, 10, 10, 0, 0, 100, 0, 0, 0, 0, 0, 20, 5, 80, vd, 5, Ed, 50, 0, 0, 1, 4, 50, 1, 10, 10, 1, 8, 2160892211, 2, 16, 24, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 3];
-itemList[34] = ["Fire cracker", 4, 2, 1, 0, 16750899, 3, 5, 8, 0, 0, 4, 8, 1, 90, 5, 12, 0, 0, 4294940979, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, -1, 90, 100, 0, 0, 0, 1, 5, 10, 5, 80, ld, 50, 0, 0, 0, 0, 0, 0];
-itemList[47] = ["Range burst", 4, 2, 1, 0, 16764057, 1, 1, 0, 0, 99, 15, 20, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 15, 5, 80, hd, 50, id, 25, Ed, 20, 0, 2, 0, 1, 5, 5, 1, 59, 3439316121, 2, 20, 20, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 1];
-itemList[55] = ["Deadly blow", 4, 3, 1, 0, 6689041, 1, 1, 0, 0, 0, 30, 45, 1, 0, 5, 12, 0, 0, 4288221457, 2, 256, 8, 0, 32, 16, 0, 0, 15, 5, 0, 0, 100, 0, 0, 0, 0, 0, 15, 7, 100, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[93] = ["Flame cracker", 4, 3, 1, 0, 16750899, 3, 5, 16, 0, 0, 4, 8, 1, 90, 5, 12, 0, 0, 4294940979, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, -1, 90, 100, 0, 0, 0, 1, 5, 10, 17, 160, ld, 50, 0, 0, 0, 0, 0, 0];
-itemList[98] = ["Spiral breaker", 4, 3, 1, 0, 8974062, 2, 1, 0, 0, 0, 8, 10, 10, 1, 5, 12, 1, 28, 4280435780, 2, 12, 12, 0, 16, 16, 180, 0, 30, 20, 0, 0, 100, 0, 0, 0, 0, 0, 15, 11, 160, Xc, 10, 0, 0, 0, 0, 0, 0];
-itemList[103] = ["Range gale", 4, 3, 1, 0, 10079487, 1, 1, 0, 0, 99, 20, 25, 1, 0, 5, 12, 0, 28, 4284914175, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 800, vd, -10, 0, 0, 0, 0, 0, 0];
-itemList[108] = ["Spark", 4, 3, 1, 0, 16737843, 0, 6, 0, 0, 0, 2, 3, 3, 10, 5, 12, 0, 53, 4294927923, 2, 16, 16, 0, 8, 8, 0, 0, 120, 20, 0, 0, 92, 0, 0, 0, 1, 5, 10, 17, 160, ld, 50, 0, 0, 0, 0, 0, 0];
-itemList[131] = ["Death scratch", 4, 4, 1, 0, 10031411, 1, 5, 4, 0, 0, 20, 30, 3, 0, 5, 12, 0, 0, 4288221491, 2, 256, 4, 0, 32, 16, 0, 4, 15, 5, 0, 0, 100, 0, 0, 0, 0, 0, 18, 7, 600, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[9] = ["Sword", 3, 6, 2, 0, 8947848, 1, 1, 0, 12, 0, 3, 4, 1, 1, 20, 24, 1, 0, 872402124, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[17] = ["Fire sword", 3, 6, 2, 0, 16737843, 1, 1, 0, 12, 0, 2, 3, 1, 1, 20, 24, 1, 0, 872388881, 2, 0, 0, 1, 0, 24, 0, 10, 10, 0, 0, 0, 100, 0, 0, 0, 1, 1, 1, 5, 60, Vc, 50, Wc, 50, 0, 0, 1, 10, 0, 0, 20, 1, 1, 29, 2583664913, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
-itemList[42] = ["Iron sword", 3, 6, 2, 0, 11184810, 1, 1, 0, 12, 2, 8, 9, 1, 1, 20, 24, 1, 0, 872402124, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 5, 50, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[51] = ["Ice sword", 3, 6, 2, 0, 11184895, 1, 1, 0, 12, 0, 5, 6, 1, 1, 20, 24, 1, 0, 869059839, 2, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 2, 25, 2, 5, 100, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[90] = ["Poison sword", 3, 6, 2, 0, 10079232, 1, 1, 0, 12, 99, 2, 3, 1, 1, 20, 24, 1, 0, 869072844, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 4, 120, 2, 5, 600, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[122] = ["Sabel", 3, 7, 2, 0, 12303291, 1, 1, 0, 12, 3, 10, 12, 1, 1, 20, 24, 1, 0, 872402124, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 3, 5, 200, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[127] = ["Fire sabel", 3, 7, 2, 0, 16737843, 1, 1, 0, 12, 0, 2, 3, 1, 1, 20, 24, 1, 0, 872388881, 2, 0, 0, 1, 0, 24, 0, 10, 10, 0, 0, 0, 100, 0, 0, 0, 1, 1, 3, 5, 300, Vc, 50, Wc, 50, 0, 0, 1, 10, 0, 0, 50, 1, 1, 29, 1728026897, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
-itemList[12] = ["Slash", 4, 6, 2, 0, 6710886, 1, 1, 0, 12, 2, 15, 25, 1, 1, 20, 24, 1, 0, 1721307409, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 60, Vc, 50, Wc, 50, Uc, 25, 0, 0];
-itemList[18] = ["Flame slayer", 4, 6, 2, 0, 16737843, 1, 1, 0, 12, 0, 3, 4, 1, 1, 20, 24, 1, 0, 1728026897, 2, 0, 0, 1, 0, 24, 0, 60, 20, 0, 0, 0, 100, 0, 0, 0, 1, 2, 15, 5, 80, Vc, 50, Wc, 50, ld, 20, 1, 11, 3, 0, 60, 1, 1, 29, 2583664913, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
-itemList[35] = ["Soul blade", 4, 6, 2, 0, 12303308, 0, 5, 20, 0, 0, 4, 8, 1, 10, 20, 0, 0, 0, 4290493439, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, 1, 10, 100, 0, 2, 0, 0, 0, -1, 5, 90, Vc, 25, Wc, 25, Ed, 25, 1, 13, 1, 1, 4, 20, 1, 25, 4294945297, 2, 16, 16, 0, 16, 16, 0, 10, 120, 10, 0, 0, 100, 0, 0];
-itemList[44] = ["Flame saber", 4, 6, 2, 0, 16746547, 1, 1, 0, 8, 0, 3, 4, 3, 1, 20, 24, 1, 29, 1728026897, 2, 12, 32, 1, 0, 32, 0, 0, 180, 10, 0, 0, 95, 0, 0, 0, 1, 3, 15, 5, 80, Vc, 25, Wc, 25, ld, 50, 0, 0];
-itemList[56] = ["Power slash", 4, 8, 2, 0, 6710886, 1, 1, 0, 12, 3, 20, 30, 1, 1, 20, 24, 1, 0, 1721307409, 2, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 120, Vc, 50, Wc, 50, Uc, 25, 0, 0];
-itemList[94] = ["Ice blade", 4, 8, 2, 0, 12303359, 1, 1, 0, 8, 0, 5, 5, 1, 1, 20, 24, 1, 0, 867941375, 2, 0, 0, 1, 0, 24, 0, 120, 120, 0, 0, 0, 100, 0, 0, 0, 2, 50, 15, 6, 500, ud, 2, 0, 0, 0, 0, 1, 10, 0, 1, 60, 1, 1, 36, 2579217407, 2, 24, 24, 1, 0, 24, 0, 30, 300, 10, 0, 0, 100, 0, 0];
+itemList[4] = ["Glove", 3, 2, 1, 0, 6711039, 1, 1, 0, 0, 0, 2, 3, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 11, 5, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[5] = ["Power glove", 3, 2, 1, 0, 16737894, 1, 1, 0, 0, 0, 6, 8, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[6] = ["Light glove", 3, 2, 1, 0, 13421772, 1, 1, 0, 0, 0, 2, 3, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 3, 500, itemAgilityCol, -10, 0, 0, 0, 0, 0, 0];
+itemList[49] = ["Knuckle", 3, 3, 1, 0, 6710886, 1, 1, 0, 0, 0, 6, 8, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 2, 7, 150, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[50] = ["Light knuckle", 3, 3, 1, 0, 15658734, 1, 1, 0, 0, 0, 2, 3, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 2, 4, 1E3, itemAgilityCol, -10, 0, 0, 0, 0, 0, 0];
+itemList[89] = ["Thunder knuckle", 3, 3, 1, 0, 15658598, 1, 1, 0, 0, 0, 1, 4, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 3, 0, 2, 4, 1E3, itemAgilityCol, -10, 0, 0, 0, 0, 0, 0];
+itemList[121] = ["Claw", 3, 4, 1, 0, 12298905, 1, 1, 0, 0, 0, 6, 8, 1, 0, 15, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 9, 200, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[126] = ["Cat claw", 3, 4, 1, 0, 13421772, 1, 1, 0, 0, 0, 2, 3, 1, 0, 10, 12, 0, 0, 4294967295, 1, 0, 0, 0, 10, 10, 0, 0, 15, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 4, 1500, itemAgilityCol, -10, 0, 0, 0, 0, 0, 0];
+itemList[7] = ["Bash", 4, 2, 1, 0, 16737894, 1, 1, 0, 0, 0, 20, 30, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[8] = ["Range attack", 4, 2, 1, 0, 13421772, 1, 1, 0, 0, 99, 10, 15, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 50, projectileAccelerationCol, 100, projectileSpeedScaleCol, 50, 0, 0, 0, 0];
+itemList[23] = ["Sand blaster", 4, 2, 1, 0, 13408563, 2, 1, 0, 0, 0, 8, 12, 1, 1, 5, 12, 0, 0, 4294967295, 1, 0, 0, 0, 16, 16, 0, 7, 10, 10, 0, 0, 100, 0, 0, 0, 0, 0, 20, 5, 80, itemChargeEmitValueCol, 5, Ed, 50, 0, 0, 1, 4, 50, 1, 10, 10, 1, 8, 2160892211, 2, 16, 24, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 3];
+itemList[34] = ["Fire cracker", 4, 2, 1, 0, 16750899, 3, 5, 8, 0, 0, 4, 8, 1, 90, 5, 12, 0, 0, 4294940979, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, -1, 90, 100, 0, 0, 0, 1, 5, 10, 5, 80, attackCooldownCol, 50, 0, 0, 0, 0, 0, 0];
+itemList[47] = ["Range burst", 4, 2, 1, 0, 16764057, 1, 1, 0, 0, 99, 15, 20, 1, 0, 5, 12, 0, 0, 4294967295, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 15, 5, 80, projectileAccelerationCol, 50, projectileSpeedScaleCol, 25, Ed, 20, 0, 2, 0, 1, 5, 5, 1, 59, 3439316121, 2, 20, 20, 0, 16, 16, 0, 30, 60, 10, 0, 0, 90, 0, 1];
+itemList[55] = ["Deadly blow", 4, 3, 1, 0, 6689041, 1, 1, 0, 0, 0, 30, 45, 1, 0, 5, 12, 0, 0, 4288221457, 2, 256, 8, 0, 32, 16, 0, 0, 15, 5, 0, 0, 100, 0, 0, 0, 0, 0, 15, 7, 100, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[93] = ["Flame cracker", 4, 3, 1, 0, 16750899, 3, 5, 16, 0, 0, 4, 8, 1, 90, 5, 12, 0, 0, 4294940979, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, -1, 90, 100, 0, 0, 0, 1, 5, 10, 17, 160, attackCooldownCol, 50, 0, 0, 0, 0, 0, 0];
+itemList[98] = ["Spiral breaker", 4, 3, 1, 0, 8974062, 2, 1, 0, 0, 0, 8, 10, 10, 1, 5, 12, 1, 28, 4280435780, 2, 12, 12, 0, 16, 16, 180, 0, 30, 20, 0, 0, 100, 0, 0, 0, 0, 0, 15, 11, 160, itemProjectileCountCol, 10, 0, 0, 0, 0, 0, 0];
+itemList[103] = ["Range gale", 4, 3, 1, 0, 10079487, 1, 1, 0, 0, 99, 20, 25, 1, 0, 5, 12, 0, 28, 4284914175, 1, 32, 32, 0, 16, 16, 0, 0, 15, 20, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 800, itemChargeEmitValueCol, -10, 0, 0, 0, 0, 0, 0];
+itemList[108] = ["Spark", 4, 3, 1, 0, 16737843, 0, 6, 0, 0, 0, 2, 3, 3, 10, 5, 12, 0, 53, 4294927923, 2, 16, 16, 0, 8, 8, 0, 0, 120, 20, 0, 0, 92, 0, 0, 0, 1, 5, 10, 17, 160, attackCooldownCol, 50, 0, 0, 0, 0, 0, 0];
+itemList[131] = ["Death scratch", 4, 4, 1, 0, 10031411, 1, 5, 4, 0, 0, 20, 30, 3, 0, 5, 12, 0, 0, 4288221491, 2, 256, 4, 0, 32, 16, 0, 4, 15, 5, 0, 0, 100, 0, 0, 0, 0, 0, 18, 7, 600, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[9] = ["Sword", 3, 6, 2, 0, 8947848, 1, 1, 0, 12, 0, 3, 4, 1, 1, 20, 24, 1, 0, 872402124, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[17] = ["Fire sword", 3, 6, 2, 0, 16737843, 1, 1, 0, 12, 0, 2, 3, 1, 1, 20, 24, 1, 0, 872388881, 2, 0, 0, 1, 0, 24, 0, 10, 10, 0, 0, 0, 100, 0, 0, 0, 1, 1, 1, 5, 60, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 10, 0, 0, 20, 1, 1, 29, 2583664913, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
+itemList[42] = ["Iron sword", 3, 6, 2, 0, 11184810, 1, 1, 0, 12, 2, 8, 9, 1, 1, 20, 24, 1, 0, 872402124, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[51] = ["Ice sword", 3, 6, 2, 0, 11184895, 1, 1, 0, 12, 0, 5, 6, 1, 1, 20, 24, 1, 0, 869059839, 2, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 2, 25, 2, 5, 100, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[90] = ["Poison sword", 3, 6, 2, 0, 10079232, 1, 1, 0, 12, 99, 2, 3, 1, 1, 20, 24, 1, 0, 869072844, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 4, 120, 2, 5, 600, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[122] = ["Sabel", 3, 7, 2, 0, 12303291, 1, 1, 0, 12, 3, 10, 12, 1, 1, 20, 24, 1, 0, 872402124, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 3, 5, 200, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[127] = ["Fire sabel", 3, 7, 2, 0, 16737843, 1, 1, 0, 12, 0, 2, 3, 1, 1, 20, 24, 1, 0, 872388881, 2, 0, 0, 1, 0, 24, 0, 10, 10, 0, 0, 0, 100, 0, 0, 0, 1, 1, 3, 5, 300, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 10, 0, 0, 50, 1, 1, 29, 1728026897, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
+itemList[12] = ["Slash", 4, 6, 2, 0, 6710886, 1, 1, 0, 12, 2, 15, 25, 1, 1, 20, 24, 1, 0, 1721307409, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 60, itemAtkMinCol, 50, itemAtkMaxCol, 50, itemHitCountStatCol, 25, 0, 0];
+itemList[18] = ["Flame slayer", 4, 6, 2, 0, 16737843, 1, 1, 0, 12, 0, 3, 4, 1, 1, 20, 24, 1, 0, 1728026897, 2, 0, 0, 1, 0, 24, 0, 60, 20, 0, 0, 0, 100, 0, 0, 0, 1, 2, 15, 5, 80, itemAtkMinCol, 50, itemAtkMaxCol, 50, attackCooldownCol, 20, 1, 11, 3, 0, 60, 1, 1, 29, 2583664913, 2, 12, 24, 1, 0, 24, 0, 0, 60, 10, 0, 0, 99, 0, 1];
+itemList[35] = ["Soul blade", 4, 6, 2, 0, 12303308, 0, 5, 20, 0, 0, 4, 8, 1, 10, 20, 0, 0, 0, 4290493439, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, 1, 10, 100, 0, 2, 0, 0, 0, -1, 5, 90, itemAtkMinCol, 25, itemAtkMaxCol, 25, Ed, 25, 1, 13, 1, 1, 4, 20, 1, 25, 4294945297, 2, 16, 16, 0, 16, 16, 0, 10, 120, 10, 0, 0, 100, 0, 0];
+itemList[44] = ["Flame saber", 4, 6, 2, 0, 16746547, 1, 1, 0, 8, 0, 3, 4, 3, 1, 20, 24, 1, 29, 1728026897, 2, 12, 32, 1, 0, 32, 0, 0, 180, 10, 0, 0, 95, 0, 0, 0, 1, 3, 15, 5, 80, itemAtkMinCol, 25, itemAtkMaxCol, 25, attackCooldownCol, 50, 0, 0];
+itemList[56] = ["Power slash", 4, 8, 2, 0, 6710886, 1, 1, 0, 12, 3, 20, 30, 1, 1, 20, 24, 1, 0, 1721307409, 2, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 120, itemAtkMinCol, 50, itemAtkMaxCol, 50, itemHitCountStatCol, 25, 0, 0];
+itemList[94] = ["Ice blade", 4, 8, 2, 0, 12303359, 1, 1, 0, 8, 0, 5, 5, 1, 1, 20, 24, 1, 0, 867941375, 2, 0, 0, 1, 0, 24, 0, 120, 120, 0, 0, 0, 100, 0, 0, 0, 2, 50, 15, 6, 500, itemIceBonusPercentCol, 2, 0, 0, 0, 0, 1, 10, 0, 1, 60, 1, 1, 36, 2579217407, 2, 24, 24, 1, 0, 24, 0, 30, 300, 10, 0, 0, 100, 0, 0];
 itemList[99] = ["Salamander", 4, 8, 2, 0, 16724753, 0, 5, 20, 0, 0, 3, 4, 1, 10, 20, 0, 0, 0, 4294949819, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, 1, 10, 100, 0, 2, 0, 1, 1, -1, 3, 8E3, Ed, 100, 0, 0, 0, 0, 1, 13, 20, 0, 1, 1, 1, 12, 4294914833, 2, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 96, 0, 0];
-itemList[104] = ["Gale slash", 4, 8, 2, 0, 3381708, 0, 2, 0, 0, 0, 3, 4, 1, 10, 20, 24, 1, 59, 859019724, 2, 24, 24, 0, 0, 0, 0, 1E3, 100, 10, 0, 0, 100, 0, 0, 0, 0, 0, 15, 11, 300, ld, 50, 0, 0, 0, 0, 0, 10, 0, 1, 60, 1, 1, 59, 859019724, 2, 24, 24, 0, 20, 20, 0, 0, 1, 12, 0, 0, 100, 0, 0];
-itemList[109] = ["Quick slash", 4, 8, 2, 0, 3394713, 1, 1, 0, 12, 3, 15, 25, 1, 1, 20, 24, 1, 0, 1714670745, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 8, 5, 500, Vc, 50, Wc, 50, Uc, 25, 0, 0];
-itemList[132] = ["Lightning saber", 4, 7, 2, 0, 16776960, 1, 1, 0, 0, 0, 1, 22, 1, 1, 20, 24, 1, 36, 872414976, 2, 0, 0, 1, 0, 24, 0, 60, 60, 0, 0, 0, 100, 0, 0, 0, 3, 0, 15, 5, 3E3, 0, 0, Wc, 50, 0, 0, 0, 15, 45, 0, 60, 5, 1, 36, 4294967040, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
-itemList[10] = ["Spear", 3, 10, 3, 1, 10066329, 0, 3, 0, 24, 0, 1, 9, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, 0, 0, Wc, 50, 0, 0, 0, 0];
-itemList[19] = ["Lightning spear", 3, 10, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 1, 3, 50, Xc, 100, 0, 0, 0, 0, 0, 20, 45, 0, 1, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
+itemList[104] = ["Gale slash", 4, 8, 2, 0, 3381708, 0, 2, 0, 0, 0, 3, 4, 1, 10, 20, 24, 1, 59, 859019724, 2, 24, 24, 0, 0, 0, 0, 1E3, 100, 10, 0, 0, 100, 0, 0, 0, 0, 0, 15, 11, 300, attackCooldownCol, 50, 0, 0, 0, 0, 0, 10, 0, 1, 60, 1, 1, 59, 859019724, 2, 24, 24, 0, 20, 20, 0, 0, 1, 12, 0, 0, 100, 0, 0];
+itemList[109] = ["Quick slash", 4, 8, 2, 0, 3394713, 1, 1, 0, 12, 3, 15, 25, 1, 1, 20, 24, 1, 0, 1714670745, 1, 0, 0, 1, 0, 24, 0, 0, 30, 0, 0, 0, 100, 0, 0, 0, 0, 0, 8, 5, 500, itemAtkMinCol, 50, itemAtkMaxCol, 50, itemHitCountStatCol, 25, 0, 0];
+itemList[132] = ["Lightning saber", 4, 7, 2, 0, 16776960, 1, 1, 0, 0, 0, 1, 22, 1, 1, 20, 24, 1, 36, 872414976, 2, 0, 0, 1, 0, 24, 0, 60, 60, 0, 0, 0, 100, 0, 0, 0, 3, 0, 15, 5, 3E3, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 15, 45, 0, 60, 5, 1, 36, 4294967040, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
+itemList[10] = ["Spear", 3, 10, 3, 1, 10066329, 0, 3, 0, 24, 0, 1, 9, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[19] = ["Lightning spear", 3, 10, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 1, 3, 50, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 20, 45, 0, 1, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
 itemList[43] = ["Barrage spear", 3, 10, 3, 1, 12303291, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 5, 50, Ed, 34, 0, 0, 0, 0, 1, 4, 50, 1, 3, 1, 1, 5, 2578085649, 1, 16, 24, 0, 16, 16, 20, 5, 20, 5, 0, 0, 90, 0, 0];
-itemList[52] = ["Thunder halberd", 3, 11, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 2, 3, 500, Xc, 100, 0, 0, 0, 0, 0, 20, 45, 0, 2, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
-itemList[91] = ["Steel halberd", 3, 11, 3, 1, 13421772, 0, 3, 0, 24, 3, 1, 9, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 11, 100, 0, 0, Wc, 20, 0, 0, 0, 0];
-itemList[123] = ["Thunder trident", 3, 12, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 3, 3, 1E3, Xc, 100, 0, 0, 0, 0, 0, 20, 45, 0, 3, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
-itemList[128] = ["Silver trident", 3, 12, 3, 1, 14540253, 0, 3, 0, 24, 0, 1, 9, 3, 1, 20, 48, 1, 36, 4294967295, 1, 16, 80, 1, 0, 48, 0, 3, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 3, 11, 300, 0, 0, Wc, 20, 0, 0, 0, 0];
-itemList[13] = ["Lancer", 4, 10, 3, 1, 3368550, 0, 3, 0, 24, 3, 1, 33, 1, 1, 20, 48, 1, 59, 2164260863, 1, 12, 48, 1, 0, 48, 0, 0, 10, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 60, 0, 0, Wc, 50, Uc, 34, 0, 0];
-itemList[20] = ["Lightning lance", 4, 10, 3, 1, 11193344, 0, 3, 1, 32, 3, 1, 22, 3, 1, 20, 48, 1, 35, 4292738867, 2, 16, 64, 1, 0, 64, 20, 10, 20, 10, 0, 0, 100, 0, 0, 0, 3, 0, 15, 5, 60, 0, 0, Wc, 50, Uc, 34, 0, 0];
-itemList[39] = ["Star lance", 4, 10, 3, 1, 16763904, 0, 3, 0, 0, 0, 1, 7, 1, 30, 20, 48, 1, 58, 4294954035, 2, 16, 16, 0, 0, 0, 0, 360, 120, 10, 0, 0, 100, 0, 3, 0, 3, 0, 10, 5, 80, ld, 25, 0, 0, 0, 0, 1, 12, 0, 1, 20, 1, 1, 5, 4294954035, 2, 16, 8, 0, 16, 16, 0, 10, 20, 5, 0, 0, 100, 0, 0];
-itemList[57] = ["Laser lance", 4, 11, 3, 1, 16763904, 0, 2, 20, 10, 3, 1, 33, 3, 20, 20, 48, 1, 35, 4293831219, 2, 8, 64, 1, 0, 64, 20, 10, 20, 10, 0, 0, 100, 0, 2, 0, 3, 0, 20, 7, 120, Xc, 34, 0, 0, jd, 25, 0, 0];
-itemList[95] = ["Shock lancer", 4, 11, 3, 1, 6723993, 0, 3, 0, 24, 1, 1, 44, 1, 10, 20, 48, 1, 59, 2583691263, 1, 10, 32, 1, 0, 32, 0, 0, 20, 10, 0, 0, 100, 0, 2, 0, 0, 0, 10, 5, 900, 0, 0, Wc, 50, 0, 0, 0, 20, 45, 0, 1, 5, 1, 59, 2583691263, 1, 10, 32, 1, 0, 32, 0, 2, 30, 10, 0, 0, 100, 0, 2];
-itemList[100] = ["Power lancer", 4, 11, 3, 1, 8917265, 0, 3, 0, 40, 3, 1, 100, 1, 1, 20, 48, 1, 36, 4289335569, 1, 32, 80, 1, 0, 80, 0, 0, 10, 30, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 900, 0, 0, Wc, 50, 0, 0, 0, 0];
-itemList[105] = ["Thunder lance", 4, 11, 3, 1, 13382451, 0, 3, 0, 24, 0, 1, 33, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 10, 3, 3E3, Xc, 100, 0, 0, 0, 0, 0, 20, 45, 0, 3, 5, 1, 36, 4294914867, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
-itemList[110] = ["Fan laser lance", 4, 11, 3, 1, 13434726, 0, 3, 8, 6, 3, 1, 33, 10, 20, 20, 48, 1, 36, 4291624806, 2, 16, 48, 1, 0, 48, 30, 10, 20, 10, 0, 0, 100, 0, 2, 0, 3, 0, 20, 9, 240, Xc, 10, 0, 0, 0, 0, 0, 0];
-itemList[133] = ["Flame laser", 4, 12, 3, 1, 16724787, 0, 3, 0, 32, 99, 3, 4, 1, 1, 20, 48, 1, 35, 4291559424, 2, 8, 64, 1, 0, 64, 0, 0, 120, 10, 0, 0, 100, 0, 2, 0, 1, 10, 20, 11, 300, Vc, 10, Wc, 10, ld, 10, 0, 0];
-itemList[11] = ["Bow", 3, 16, 4, 2, 16764006, 0, 4, 0, 0, 0, 3, 4, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, Vc, 50, Wc, 50, 0, 0, 0, 0];
-itemList[21] = ["Fire bow", 3, 16, 4, 2, 16729105, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 1, 5, 60, Vc, 50, Wc, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 31, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
-itemList[26] = ["Poison bow", 3, 16, 4, 2, 10079232, 0, 4, 0, 0, 0, 5, 5, 1, 10, 30, 120, 1, 6, 4284913920, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 1, 5, 50, Vc, 50, Wc, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 9, 4282672640, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
-itemList[38] = ["Light bow", 3, 16, 4, 2, 16768409, 0, 4, 0, 0, 0, 2, 3, 1, 10, 25, 120, 1, 6, 4294958489, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 6, 80, Zc, -4, 0, 0, 0, 0, 0, 0];
-itemList[53] = ["Flame bow", 3, 16, 4, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 2, 5, 60, Vc, 25, Wc, 25, Td, 100, 1, 4, 3, 1, 1, 0, 1, 6, 4294927889, 2, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 3];
-itemList[124] = ["High poison bow", 3, 16, 4, 2, 10040268, 0, 4, 0, 0, 0, 10, 10, 1, 10, 30, 120, 1, 6, 4288230348, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 2, 7, 100, Vc, 50, Wc, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 9, 4284874905, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
-itemList[129] = ["Wind bow", 3, 16, 4, 2, 10092543, 0, 4, 0, 0, 0, 2, 3, 1, 10, 25, 120, 1, 6, 4288282623, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 6, 240, Zc, -4, 0, 0, 0, 0, 0, 0];
-itemList[14] = ["Triple arrow", 4, 16, 4, 2, 13395456, 0, 4, 30, 0, 0, 8, 9, 3, 10, 30, 120, 1, 6, 4291585536, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 7, 50, Xc, 34, 0, 0, 0, 0, 0, 0];
-itemList[22] = ["Flame arrow", 4, 16, 4, 2, 16737809, 0, 4, 45, 0, 0, 2, 3, 4, 10, 30, 120, 1, 6, 4294923537, 1, 16, 16, 0, 8, 8, 0, 60, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 15, 5, 60, Xc, 25, 0, 0, 0, 0, 1, 3, 0, 1, 1, 0, 0, 31, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
-itemList[25] = ["Poison arrow", 4, 16, 4, 2, 52224, 0, 4, 0, 0, 0, 10, 10, 1, 10, 30, 120, 1, 6, 4278229248, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 10, 11, 60, Vc, 50, Wc, 50, 0, 0, 1, 3, 0, 1, 5, 1, 0, 9, 4278216192, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
-itemList[46] = ["Multiple arrow", 4, 16, 4, 2, 10053120, 0, 4, 30, 0, 0, 4, 5, 8, 10, 30, 120, 1, 6, 3432605184, 1, 16, 16, 0, 8, 8, 0, 0, 300, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 7, 80, Xc, 50, 0, 0, 0, 0, 0, 0];
-itemList[58] = ["PoisonMist shot", 4, 18, 4, 2, 6736896, 0, 3, 0, 0, 0, 10, 10, 1, 20, 30, 120, 1, 6, 4284926976, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 4, 120, 20, 11, 120, Vc, 50, Wc, 50, 0, 0, 1, 12, 0, 1, 20, 2, 0, 9, 3425920512, 1, 16, 16, 0, 12, 12, 0, 10, 60, 20, 0, 0, 100, 0, 1];
-itemList[96] = ["Explosive arrow", 4, 16, 4, 2, 16729105, 0, 4, 45, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294923537, 1, 16, 16, 0, 8, 8, 0, 60, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 20, 5, 800, Vc, 50, Wc, 50, 0, 0, 1, 3, 0, 1, 30, 12, 1, 13, 3439289873, 2, 24, 24, 0, 20, 20, 0, 0, 120, 20, 0, 0, 80, 0, 3];
+itemList[52] = ["Thunder halberd", 3, 11, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 2, 3, 500, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 20, 45, 0, 2, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
+itemList[91] = ["Steel halberd", 3, 11, 3, 1, 13421772, 0, 3, 0, 24, 3, 1, 9, 1, 1, 20, 48, 1, 35, 4294967295, 1, 0, 48, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 2, 11, 100, 0, 0, itemAtkMaxCol, 20, 0, 0, 0, 0];
+itemList[123] = ["Thunder trident", 3, 12, 3, 1, 13421568, 0, 3, 0, 24, 0, 1, 7, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 3, 3, 1E3, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 20, 45, 0, 3, 5, 1, 36, 4294967091, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
+itemList[128] = ["Silver trident", 3, 12, 3, 1, 14540253, 0, 3, 0, 24, 0, 1, 9, 3, 1, 20, 48, 1, 36, 4294967295, 1, 16, 80, 1, 0, 48, 0, 3, 10, 0, 0, 0, 100, 0, 0, 0, 0, 0, 3, 11, 300, 0, 0, itemAtkMaxCol, 20, 0, 0, 0, 0];
+itemList[13] = ["Lancer", 4, 10, 3, 1, 3368550, 0, 3, 0, 24, 3, 1, 33, 1, 1, 20, 48, 1, 59, 2164260863, 1, 12, 48, 1, 0, 48, 0, 0, 10, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 60, 0, 0, itemAtkMaxCol, 50, itemHitCountStatCol, 34, 0, 0];
+itemList[20] = ["Lightning lance", 4, 10, 3, 1, 11193344, 0, 3, 1, 32, 3, 1, 22, 3, 1, 20, 48, 1, 35, 4292738867, 2, 16, 64, 1, 0, 64, 20, 10, 20, 10, 0, 0, 100, 0, 0, 0, 3, 0, 15, 5, 60, 0, 0, itemAtkMaxCol, 50, itemHitCountStatCol, 34, 0, 0];
+itemList[39] = ["Star lance", 4, 10, 3, 1, 16763904, 0, 3, 0, 0, 0, 1, 7, 1, 30, 20, 48, 1, 58, 4294954035, 2, 16, 16, 0, 0, 0, 0, 360, 120, 10, 0, 0, 100, 0, 3, 0, 3, 0, 10, 5, 80, attackCooldownCol, 25, 0, 0, 0, 0, 1, 12, 0, 1, 20, 1, 1, 5, 4294954035, 2, 16, 8, 0, 16, 16, 0, 10, 20, 5, 0, 0, 100, 0, 0];
+itemList[57] = ["Laser lance", 4, 11, 3, 1, 16763904, 0, 2, 20, 10, 3, 1, 33, 3, 20, 20, 48, 1, 35, 4293831219, 2, 8, 64, 1, 0, 64, 20, 10, 20, 10, 0, 0, 100, 0, 2, 0, 3, 0, 20, 7, 120, itemProjectileCountCol, 34, 0, 0, projectileAuxStatCol, 25, 0, 0];
+itemList[95] = ["Shock lancer", 4, 11, 3, 1, 6723993, 0, 3, 0, 24, 1, 1, 44, 1, 10, 20, 48, 1, 59, 2583691263, 1, 10, 32, 1, 0, 32, 0, 0, 20, 10, 0, 0, 100, 0, 2, 0, 0, 0, 10, 5, 900, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 20, 45, 0, 1, 5, 1, 59, 2583691263, 1, 10, 32, 1, 0, 32, 0, 2, 30, 10, 0, 0, 100, 0, 2];
+itemList[100] = ["Power lancer", 4, 11, 3, 1, 8917265, 0, 3, 0, 40, 3, 1, 100, 1, 1, 20, 48, 1, 36, 4289335569, 1, 32, 80, 1, 0, 80, 0, 0, 10, 30, 0, 0, 100, 0, 0, 0, 0, 0, 10, 5, 900, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[105] = ["Thunder lance", 4, 11, 3, 1, 13382451, 0, 3, 0, 24, 0, 1, 33, 1, 1, 20, 48, 1, 0, 4294967295, 1, 0, 0, 1, 0, 48, 0, 0, 10, 0, 0, 0, 100, 0, 0, 0, 3, 0, 10, 3, 3E3, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 20, 45, 0, 3, 5, 1, 36, 4294914867, 2, 16, 24, 1, 0, 24, 0, 7, 20, 10, 0, 0, 100, 0, 0];
+itemList[110] = ["Fan laser lance", 4, 11, 3, 1, 13434726, 0, 3, 8, 6, 3, 1, 33, 10, 20, 20, 48, 1, 36, 4291624806, 2, 16, 48, 1, 0, 48, 30, 10, 20, 10, 0, 0, 100, 0, 2, 0, 3, 0, 20, 9, 240, itemProjectileCountCol, 10, 0, 0, 0, 0, 0, 0];
+itemList[133] = ["Flame laser", 4, 12, 3, 1, 16724787, 0, 3, 0, 32, 99, 3, 4, 1, 1, 20, 48, 1, 35, 4291559424, 2, 8, 64, 1, 0, 64, 0, 0, 120, 10, 0, 0, 100, 0, 2, 0, 1, 10, 20, 11, 300, itemAtkMinCol, 10, itemAtkMaxCol, 10, attackCooldownCol, 10, 0, 0];
+itemList[11] = ["Bow", 3, 16, 4, 2, 16764006, 0, 4, 0, 0, 0, 3, 4, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[21] = ["Fire bow", 3, 16, 4, 2, 16729105, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 1, 5, 60, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 31, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
+itemList[26] = ["Poison bow", 3, 16, 4, 2, 10079232, 0, 4, 0, 0, 0, 5, 5, 1, 10, 30, 120, 1, 6, 4284913920, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 1, 5, 50, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 9, 4282672640, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
+itemList[38] = ["Light bow", 3, 16, 4, 2, 16768409, 0, 4, 0, 0, 0, 2, 3, 1, 10, 25, 120, 1, 6, 4294958489, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 1, 6, 80, itemAgilityCol, -4, 0, 0, 0, 0, 0, 0];
+itemList[53] = ["Flame bow", 3, 16, 4, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294954086, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 2, 5, 60, itemAtkMinCol, 25, itemAtkMaxCol, 25, Td, 100, 1, 4, 3, 1, 1, 0, 1, 6, 4294927889, 2, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 3];
+itemList[124] = ["High poison bow", 3, 16, 4, 2, 10040268, 0, 4, 0, 0, 0, 10, 10, 1, 10, 30, 120, 1, 6, 4288230348, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 2, 7, 100, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 1, 0, 0, 9, 4284874905, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
+itemList[129] = ["Wind bow", 3, 16, 4, 2, 10092543, 0, 4, 0, 0, 0, 2, 3, 1, 10, 25, 120, 1, 6, 4288282623, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 3, 6, 240, itemAgilityCol, -4, 0, 0, 0, 0, 0, 0];
+itemList[14] = ["Triple arrow", 4, 16, 4, 2, 13395456, 0, 4, 30, 0, 0, 8, 9, 3, 10, 30, 120, 1, 6, 4291585536, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 7, 50, itemProjectileCountCol, 34, 0, 0, 0, 0, 0, 0];
+itemList[22] = ["Flame arrow", 4, 16, 4, 2, 16737809, 0, 4, 45, 0, 0, 2, 3, 4, 10, 30, 120, 1, 6, 4294923537, 1, 16, 16, 0, 8, 8, 0, 60, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 15, 5, 60, itemProjectileCountCol, 25, 0, 0, 0, 0, 1, 3, 0, 1, 1, 0, 0, 31, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
+itemList[25] = ["Poison arrow", 4, 16, 4, 2, 52224, 0, 4, 0, 0, 0, 10, 10, 1, 10, 30, 120, 1, 6, 4278229248, 1, 16, 16, 0, 8, 8, 0, 0, 200, 10, 0, 0, 100, 0, 0, 0, 4, 120, 10, 11, 60, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 5, 1, 0, 9, 4278216192, 1, 16, 16, 0, 16, 16, 0, 20, 120, 60, 0, 0, 94, 0, 1];
+itemList[46] = ["Multiple arrow", 4, 16, 4, 2, 10053120, 0, 4, 30, 0, 0, 4, 5, 8, 10, 30, 120, 1, 6, 3432605184, 1, 16, 16, 0, 8, 8, 0, 0, 300, 10, 0, 0, 100, 0, 0, 0, 0, 0, 10, 7, 80, itemProjectileCountCol, 50, 0, 0, 0, 0, 0, 0];
+itemList[58] = ["PoisonMist shot", 4, 18, 4, 2, 6736896, 0, 3, 0, 0, 0, 10, 10, 1, 20, 30, 120, 1, 6, 4284926976, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 4, 120, 20, 11, 120, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 12, 0, 1, 20, 2, 0, 9, 3425920512, 1, 16, 16, 0, 12, 12, 0, 10, 60, 20, 0, 0, 100, 0, 1];
+itemList[96] = ["Explosive arrow", 4, 16, 4, 2, 16729105, 0, 4, 45, 0, 0, 2, 3, 1, 10, 30, 120, 1, 6, 4294923537, 1, 16, 16, 0, 8, 8, 0, 60, 200, 10, 0, 0, 100, 0, 0, 0, 1, 2, 20, 5, 800, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 3, 0, 1, 30, 12, 1, 13, 3439289873, 2, 24, 24, 0, 20, 20, 0, 0, 120, 20, 0, 0, 80, 0, 3];
 itemList[101] = ["Soul arrow", 4, 16, 4, 2, 12320767, 5, 5, 15, 0, 0, 5, 6, 1, 10, 0, 0, 0, 0, 4290510847, 2, 24, 24, 0, 0, 0, 0, 300, 300, 60, -1, 10, 100, 0, 2, 0, 0, 0, -1, 3, 3E3, Ed, 100, 0, 0, 0, 0, 1, 14, 6, 1, 1, 20, 1, 6, 4280435780, 1, 16, 16, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 0];
-itemList[106] = ["Flame shot", 4, 18, 4, 2, 16737809, 0, 3, 0, 0, 0, 2, 3, 1, 20, 30, 120, 1, 6, 4294927889, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 1, 2, 20, 5, 800, Vc, 50, Wc, 50, 0, 0, 1, 12, 0, 1, 30, 2, 1, 13, 4294927889, 2, 12, 12, 0, 16, 16, 0, 0, 120, 10, 0, 0, 97, 0, 1];
-itemList[111] = ["Multiple shot", 4, 18, 4, 2, 6697728, 0, 3, 5, 0, 0, 5, 6, 8, 20, 30, 120, 1, 6, 4284887808, 1, 16, 16, 0, 8, 8, 0, 0, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 10, 9, 240, Xc, 50, 0, 0, 0, 0, 0, 0];
-itemList[134] = ["Ice shot", 4, 18, 4, 2, 10066431, 0, 3, 0, 0, 0, 5, 5, 1, 20, 30, 120, 1, 6, 4287138047, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 2, 30, 20, 9, 600, Vc, 50, Wc, 50, 0, 0, 1, 12, 0, 1, 30, 15, 1, 10, 4287151103, 2, 16, 16, 0, 12, 12, 0, 10, 120, 20, 0, 0, 90, 0, 1];
-itemList[15] = ["Lightning ball", 3, 30, 5, 2, 16776960, 0, 3, 0, 0, 0, 1, 9, 1, 10, 30, 90, 0, 1, 4294967091, 2, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 0, 50, 3, 0, 1, 5, 50, Xc, 100, Wc, -11, 0, 0, 0, 0];
-itemList[24] = ["Ice ball", 3, 30, 5, 2, 8947967, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 0, 0, 4284901068, 2, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 2, 20, 1, 3, 100, ud, 25, 0, 0, 0, 0, 0, 0];
-itemList[41] = ["Lightning shot", 3, 30, 5, 2, 16777062, 0, 3, 90, 0, 0, 1, 9, 2, 20, 30, 90, 1, 36, 4294967091, 2, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 3, 0, 3, 0, 2, 6, 50, Wc, 25, Xc, 10, 0, 0, 0, 0];
-itemList[54] = ["Fire ball", 3, 30, 5, 2, 16733457, 0, 3, 0, 0, 0, 4, 6, 1, 8, 30, 90, 0, 3, 4294923537, 2, 16, 16, 0, 8, 8, 0, 0, 150, 10, 0, 5, 100, 0, 3, 0, 1, 3, 2, 5, 100, Vc, 25, Wc, 25, ld, 30, 0, 0];
-itemList[92] = ["Poison shot", 3, 30, 5, 2, 6736896, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 0, 1, 4284913920, 1, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 4, 120, 2, 13, 100, Xc, 100, 0, 0, 0, 0, 0, 0];
-itemList[125] = ["LightningBullet", 3, 29, 5, 2, 16776960, 0, 3, 0, 0, 0, 1, 9, 1, 10, 30, 90, 1, 15, 4294967091, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 3, 0, 3, 21, 50, Vc, 0, Wc, 50, 0, 0, 0, 0];
-itemList[130] = ["Ice bullet", 3, 29, 5, 2, 8947967, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 1, 15, 4284901068, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 2, 25, 3, 4, 200, ud, 20, 0, 0, 0, 0, 0, 0];
-itemList[16] = ["Fire bomb", 4, 30, 5, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 90, 0, 3, 4294927889, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 0, 0, 1, 2, 10, 5, 80, Vc, 34, Wc, 34, Ed, 20, 1, 2, 0, 1, 5, 2, 0, 30, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
+itemList[106] = ["Flame shot", 4, 18, 4, 2, 16737809, 0, 3, 0, 0, 0, 2, 3, 1, 20, 30, 120, 1, 6, 4294927889, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 1, 2, 20, 5, 800, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 12, 0, 1, 30, 2, 1, 13, 4294927889, 2, 12, 12, 0, 16, 16, 0, 0, 120, 10, 0, 0, 97, 0, 1];
+itemList[111] = ["Multiple shot", 4, 18, 4, 2, 6697728, 0, 3, 5, 0, 0, 5, 6, 8, 20, 30, 120, 1, 6, 4284887808, 1, 16, 16, 0, 8, 8, 0, 0, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 10, 9, 240, itemProjectileCountCol, 50, 0, 0, 0, 0, 0, 0];
+itemList[134] = ["Ice shot", 4, 18, 4, 2, 10066431, 0, 3, 0, 0, 0, 5, 5, 1, 20, 30, 120, 1, 6, 4287138047, 1, 16, 16, 0, 0, 0, 0, 180, 180, 10, 0, 0, 100, 0, 3, 0, 2, 30, 20, 9, 600, itemAtkMinCol, 50, itemAtkMaxCol, 50, 0, 0, 1, 12, 0, 1, 30, 15, 1, 10, 4287151103, 2, 16, 16, 0, 12, 12, 0, 10, 120, 20, 0, 0, 90, 0, 1];
+itemList[15] = ["Lightning ball", 3, 30, 5, 2, 16776960, 0, 3, 0, 0, 0, 1, 9, 1, 10, 30, 90, 0, 1, 4294967091, 2, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 0, 50, 3, 0, 1, 5, 50, itemProjectileCountCol, 100, itemAtkMaxCol, -11, 0, 0, 0, 0];
+itemList[24] = ["Ice ball", 3, 30, 5, 2, 8947967, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 0, 0, 4284901068, 2, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 2, 20, 1, 3, 100, itemIceBonusPercentCol, 25, 0, 0, 0, 0, 0, 0];
+itemList[41] = ["Lightning shot", 3, 30, 5, 2, 16777062, 0, 3, 90, 0, 0, 1, 9, 2, 20, 30, 90, 1, 36, 4294967091, 2, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 3, 0, 3, 0, 2, 6, 50, itemAtkMaxCol, 25, itemProjectileCountCol, 10, 0, 0, 0, 0];
+itemList[54] = ["Fire ball", 3, 30, 5, 2, 16733457, 0, 3, 0, 0, 0, 4, 6, 1, 8, 30, 90, 0, 3, 4294923537, 2, 16, 16, 0, 8, 8, 0, 0, 150, 10, 0, 5, 100, 0, 3, 0, 1, 3, 2, 5, 100, itemAtkMinCol, 25, itemAtkMaxCol, 25, attackCooldownCol, 30, 0, 0];
+itemList[92] = ["Poison shot", 3, 30, 5, 2, 6736896, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 0, 1, 4284913920, 1, 16, 16, 0, 4, 4, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 4, 120, 2, 13, 100, itemProjectileCountCol, 100, 0, 0, 0, 0, 0, 0];
+itemList[125] = ["LightningBullet", 3, 29, 5, 2, 16776960, 0, 3, 0, 0, 0, 1, 9, 1, 10, 30, 90, 1, 15, 4294967091, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 3, 0, 3, 21, 50, itemAtkMinCol, 0, itemAtkMaxCol, 50, 0, 0, 0, 0];
+itemList[130] = ["Ice bullet", 3, 29, 5, 2, 8947967, 0, 3, 0, 0, 0, 4, 6, 1, 10, 30, 90, 1, 15, 4284901068, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 100, 0, 0, 0, 2, 25, 3, 4, 200, itemIceBonusPercentCol, 20, 0, 0, 0, 0, 0, 0];
+itemList[16] = ["Fire bomb", 4, 30, 5, 2, 16737809, 0, 4, 0, 0, 0, 2, 3, 1, 10, 30, 90, 0, 3, 4294927889, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 0, 0, 1, 2, 10, 5, 80, itemAtkMinCol, 34, itemAtkMaxCol, 34, Ed, 20, 1, 2, 0, 1, 5, 2, 0, 30, 4294940945, 2, 16, 24, 0, 16, 24, 0, 0, 120, 10, 0, 5, 92, 0, 1];
 itemList[27] = ["Lightning orb", 4, 30, 5, 2, 16763921, 0, 4, 0, 0, 0, 1, 9, 1, 8, 30, 90, 0, 0, 4294954001, 2, 32, 32, 0, 8, 8, 0, 180, 180, 10, 0, 0, 100, 0, 0, 0, 3, 0, 10, 5, 80, Ed, 50, 0, 0, 0, 0, 1, 12, 10, 1, 10, 20, 1, 36, 4294945297, 2, 16, 24, 0, 16, 16, 0, 0, 120, 10, 0, 0, 100, 0, 0];
-itemList[40] = ["Ice bomb", 4, 30, 5, 2, 10066431, 0, 4, 0, 0, 0, 4, 5, 1, 20, 30, 90, 0, 0, 4287138047, 2, 16, 16, 0, 8, 8, 0, 180, 180, 10, 0, 0, 100, 0, 0, 0, 2, 50, 20, 6, 50, vd, -10, 0, 0, 0, 0, 1, 2, 0, 0, 15, 5, 1, 5, 4287138047, 2, 20, 32, 1, 0, 32, 0, 20, 60, 60, 0, 0, 90, 0, 1];
-itemList[48] = ["Explosion", 4, 30, 5, 2, 16729105, 0, 6, 30, 0, 0, 2, 3, 8, -5, 30, 90, 0, 3, 4294919185, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 50, 5, 150, Vc, 34, Wc, 34, Ed, 13, 2, 3, 0, 1, 8, 1, 1, 29, 4294927889, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 95, 0, 0];
-itemList[59] = ["Lightning bolt", 4, 30, 5, 2, 16772625, 0, 4, 0, 0, 0, 1, 9, 1, 20, 30, 90, 0, 0, 4294945297, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 3, 0, 50, 5, 150, 0, 0, Wc, 40, Ed, 20, 1, 4, 10, 1, 50, 1, 1, 36, 4294940945, 2, 16, 32, 1, 0, 32, 100, 30, 60, 20, 0, 0, 99, 0, 3];
-itemList[97] = ["Ice trail", 4, 30, 5, 2, 6711039, 0, 3, 0, 0, 0, 5, 10, 1, 20, 30, 90, 0, 0, 4288256511, 2, 16, 16, 0, 8, 8, 0, 1800, 180, 10, 0, 0, 100, 0, 3, 0, 2, 30, 20, 5, 800, ld, 50, 0, 0, 0, 0, 1, 12, 0, 1, 30, 2, 0, 53, 4288256511, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 99, 0, 0];
-itemList[102] = ["Fire wave", 4, 31, 5, 2, 16724753, 0, 3, 4, 0, 0, 4, 5, 30, 15, 30, 90, 0, 0, 4294919185, 2, 24, 24, 0, 8, 8, 0, 0, 300, 20, 0, 0, 99, 0, 3, 0, 1, 3, 40, 12, 250, Vc, 25, Wc, 20, 0, 0, 0, 0];
-itemList[107] = ["Lightning burst", 4, 31, 5, 2, 16776977, 0, 6, 30, 0, 0, 1, 150, 8, -25, 30, 90, 1, 36, 4294967057, 2, 32, 32, 0, 16, 16, 0, 25, 26, 10, 0, 0, 100, 0, 2, 0, 3, 0, 10, 5, 800, 0, 0, Wc, 50, 0, 0, 0, 0];
+itemList[40] = ["Ice bomb", 4, 30, 5, 2, 10066431, 0, 4, 0, 0, 0, 4, 5, 1, 20, 30, 90, 0, 0, 4287138047, 2, 16, 16, 0, 8, 8, 0, 180, 180, 10, 0, 0, 100, 0, 0, 0, 2, 50, 20, 6, 50, itemChargeEmitValueCol, -10, 0, 0, 0, 0, 1, 2, 0, 0, 15, 5, 1, 5, 4287138047, 2, 20, 32, 1, 0, 32, 0, 20, 60, 60, 0, 0, 90, 0, 1];
+itemList[48] = ["Explosion", 4, 30, 5, 2, 16729105, 0, 6, 30, 0, 0, 2, 3, 8, -5, 30, 90, 0, 3, 4294919185, 2, 16, 16, 0, 8, 8, 0, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 50, 5, 150, itemAtkMinCol, 34, itemAtkMaxCol, 34, Ed, 13, 2, 3, 0, 1, 8, 1, 1, 29, 4294927889, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 95, 0, 0];
+itemList[59] = ["Lightning bolt", 4, 30, 5, 2, 16772625, 0, 4, 0, 0, 0, 1, 9, 1, 20, 30, 90, 0, 0, 4294945297, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 3, 0, 50, 5, 150, 0, 0, itemAtkMaxCol, 40, Ed, 20, 1, 4, 10, 1, 50, 1, 1, 36, 4294940945, 2, 16, 32, 1, 0, 32, 100, 30, 60, 20, 0, 0, 99, 0, 3];
+itemList[97] = ["Ice trail", 4, 30, 5, 2, 6711039, 0, 3, 0, 0, 0, 5, 10, 1, 20, 30, 90, 0, 0, 4288256511, 2, 16, 16, 0, 8, 8, 0, 1800, 180, 10, 0, 0, 100, 0, 3, 0, 2, 30, 20, 5, 800, attackCooldownCol, 50, 0, 0, 0, 0, 1, 12, 0, 1, 30, 2, 0, 53, 4288256511, 2, 16, 16, 0, 8, 8, 0, 0, 120, 10, 0, 0, 99, 0, 0];
+itemList[102] = ["Fire wave", 4, 31, 5, 2, 16724753, 0, 3, 4, 0, 0, 4, 5, 30, 15, 30, 90, 0, 0, 4294919185, 2, 24, 24, 0, 8, 8, 0, 0, 300, 20, 0, 0, 99, 0, 3, 0, 1, 3, 40, 12, 250, itemAtkMinCol, 25, itemAtkMaxCol, 20, 0, 0, 0, 0];
+itemList[107] = ["Lightning burst", 4, 31, 5, 2, 16776977, 0, 6, 30, 0, 0, 1, 150, 8, -25, 30, 90, 1, 36, 4294967057, 2, 32, 32, 0, 16, 16, 0, 25, 26, 10, 0, 0, 100, 0, 2, 0, 3, 0, 10, 5, 800, 0, 0, itemAtkMaxCol, 50, 0, 0, 0, 0];
 itemList[112] = ["Ice wide", 4, 31, 5, 2, 10066431, 0, 3, 0, 0, 0, 5, 10, 5, 20, 30, 90, 0, 0, 4287138047, 2, 16, 16, 0, 8, 8, 0, 10, 120, 10, 0, 0, 100, 0, 0, 0, 2, 30, 20, 6, 500, Ed, 20, 0, 0, 0, 0, 1, 3, 0, 0, 5, 5, 1, 36, 4287138047, 2, 16, 24, 1, 0, 24, 0, 30, 60, 10, 0, 0, 99, 0, 3];
-itemList[135] = ["Solar flare", 4, 29, 5, 2, 16720435, 0, 6, 60, 0, 0, 3, 5, 8, -5, 30, 90, 0, 3, 4294910515, 2, 16, 16, 0, 8, 8, 120, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 60, 3, 6E3, Vc, 50, Wc, 50, Ed, 25, 2, 3, 0, 1, 8, 1, 1, 12, 2298421811, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 94, 0, 0];
+itemList[135] = ["Solar flare", 4, 29, 5, 2, 16720435, 0, 6, 60, 0, 0, 3, 5, 8, -5, 30, 90, 0, 3, 4294910515, 2, 16, 16, 0, 8, 8, 120, 120, 120, 10, 0, 0, 100, 0, 2, 0, 1, 3, 60, 3, 6E3, itemAtkMinCol, 50, itemAtkMaxCol, 50, Ed, 25, 2, 3, 0, 1, 8, 1, 1, 12, 2298421811, 2, 20, 20, 0, 16, 16, 8, 0, 120, 10, 0, 0, 94, 0, 0];
 itemList[28] = ["Headband", 6, 64, 10, 0, 13369344, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 10, heroHealthModifierCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[29] = ["Bandana", 6, 65, 10, 0, 6724044, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 100, heroDodgeModifierCol, 50, 0, 0, 0, 0, 0, 0];
 itemList[30] = ["Knit", 6, 66, 10, 0, 16737792, 10040064, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 20, heroHealthModifierCol, 20, 0, 0, 0, 0, 0, 0];
@@ -1436,11 +1436,11 @@ function updatePartyStats() {
 
         partyLP[hidx] = clamp(partyLP[hidx], 0, partyMaxLP[hidx]);
 
-        heroChargeValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], vd);
+        heroChargeValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], itemChargeEmitValueCol);
         if (heroHasAccessoryEffect(hidx, Ne) && 0 < heroChargeValues[hidx])
             heroChargeValues[hidx] = max(heroChargeValues[hidx] + countAccessoryLvlBonuses(hidx, Ne), 1);
 
-        heroEmitValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], vd);
+        heroEmitValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], itemChargeEmitValueCol);
         if (heroHasAccessoryEffect(hidx, te) && 0 < heroEmitValues[hidx])
             heroEmitValues[hidx] = max(heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, te), 1);
 
@@ -1453,10 +1453,10 @@ function updatePartyStats() {
             let itemIdx = partyEquipmentTable[hidx][heroItem];
             if (0 != itemIdx) {
                 let f = getModifiedStatVal(hidx, itemIdx, itemRangeTypeCol);
-                let g = getModifiedStatVal(hidx, itemIdx, td);
+                let g = getModifiedStatVal(hidx, itemIdx, itemElementTypeCol);
                 let c = 4 * heroItem + hidx;
-                minAtkArray[c] = getModifiedStatVal(hidx, itemIdx, Vc);
-                maxAtkArray[c] = getModifiedStatVal(hidx, itemIdx, Wc);
+                minAtkArray[c] = getModifiedStatVal(hidx, itemIdx, itemAtkMinCol);
+                maxAtkArray[c] = getModifiedStatVal(hidx, itemIdx, itemAtkMaxCol);
                 minAtkArray[c] = floor(minAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
                 maxAtkArray[c] = floor(maxAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
                 minAtkArray[c] = floor(minAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
@@ -1483,14 +1483,14 @@ function updatePartyStats() {
                     maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, Be)) / 100);
                 }
 
-                atkCountArray[c] = getModifiedStatVal(hidx, itemIdx, Xc);
+                atkCountArray[c] = getModifiedStatVal(hidx, itemIdx, itemProjectileCountCol);
                 if (heroHasAccessoryEffect(hidx, ue) && 1 < atkCountArray[c])
                     atkCountArray[c] += countAccessoryLvlBonuses(hidx, ue);
 
                 heroItem || (
-                    heroAgiValues[hidx] = getModifiedStatVal(hidx, itemIdx, Zc),
+                    heroAgiValues[hidx] = getModifiedStatVal(hidx, itemIdx, itemAgilityCol),
                     heroHasAccessoryEffect(hidx, pe) && (heroAgiValues[hidx] -= countAccessoryLvlBonuses(hidx, pe)),
-                    heroRangeValues[hidx] = getModifiedStatVal(hidx, itemIdx, $c),
+                    heroRangeValues[hidx] = getModifiedStatVal(hidx, itemIdx, itemRangeCol),
                     !heroHasAccessoryEffect(hidx, qe) || 4 != itemList[itemIdx][itemAppearanceCol] && 5 != itemList[itemIdx][itemAppearanceCol] || (heroRangeValues[hidx] += countAccessoryLvlBonuses(hidx, qe))
                 )
             }
@@ -1620,7 +1620,7 @@ function drawGameUI() {
             k = f + hidx * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             drawRect(k, n, 16, 16, 0);
-            0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0);
+            0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]), fh = 0);
             handleInventoryButton(k, n, 16, 16, c, b);
             buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (selectingHero = hidx)
         }
@@ -1749,10 +1749,10 @@ function drawGameUI() {
 
                     if (itemList[_equipmentIdx][itemAtkCountCol] === 10 || 
                         itemList[_equipmentIdx][itemAtkCountCol] === 11) {
-                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, _equipmentIdx, ld) * getModifiedStatVal(selectingHero, _equipmentIdx, Ed) / 60);
+                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, _equipmentIdx, attackCooldownCol) * getModifiedStatVal(selectingHero, _equipmentIdx, Ed) / 60);
                     } else if (0 != itemList[_equipmentIdx][itemAtkCountCol]) {
                         let b = getModifiedStatVal(selectingHero, _equipmentIdx, Ed);
-                        if (heroHasAccessoryEffect(selectingHero, Ae) && 3 == itemList[_equipmentIdx][td] && 20 == itemList[_equipmentIdx][itemAtkCountCol]) {
+                        if (heroHasAccessoryEffect(selectingHero, Ae) && 3 == itemList[_equipmentIdx][itemElementTypeCol] && 20 == itemList[_equipmentIdx][itemAtkCountCol]) {
                             b += countAccessoryLvlBonuses(selectingHero, Ae);
                         }
                         atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + b;
@@ -1760,10 +1760,10 @@ function drawGameUI() {
                         if (1 < atkCountArray[4 * _slotIdx + selectingHero]) {
                             atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero]
                         }
-                        if (99 == getModifiedStatVal(selectingHero, _equipmentIdx, Uc)) {
+                        if (99 == getModifiedStatVal(selectingHero, _equipmentIdx, itemHitCountStatCol)) {
                             atkRangeTxt += " all";
-                        } else if (1 < getModifiedStatVal(selectingHero, _equipmentIdx, Uc)) {
-                            atkRangeTxt += " " + getModifiedStatVal(selectingHero, _equipmentIdx, Uc) + "hit";
+                        } else if (1 < getModifiedStatVal(selectingHero, _equipmentIdx, itemHitCountStatCol)) {
+                            atkRangeTxt += " " + getModifiedStatVal(selectingHero, _equipmentIdx, itemHitCountStatCol) + "hit";
                         }
                         drawText(gameFontMed, f + 96 * _slotIdx, g + 12, atkRangeTxt, 16777215, 0);
                         if (!_slotIdx) {
@@ -1783,15 +1783,15 @@ function drawGameUI() {
                                 1 == itemList[_equipmentIdx][itemRangeTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    middle", 16764057, 0);
                                 2 == itemList[_equipmentIdx][itemRangeTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    long", 16764057, 0);
                                 drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "ATR", 16777215, 0);
-                                0 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    physical", 10066329, 0);
-                                1 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
-                                if (2 == itemList[_equipmentIdx][td]) {
-                                    let iceVal = getModifiedStatVal(selectingHero, _equipmentIdx, ud);
+                                0 == itemList[_equipmentIdx][itemElementTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    physical", 10066329, 0);
+                                1 == itemList[_equipmentIdx][itemElementTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
+                                if (2 == itemList[_equipmentIdx][itemElementTypeCol]) {
+                                    let iceVal = getModifiedStatVal(selectingHero, _equipmentIdx, itemIceBonusPercentCol);
                                     heroHasAccessoryEffect(selectingHero, ye) && (iceVal += countAccessoryLvlBonuses(selectingHero, ye));
                                     drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    ice " + iceVal + "%", 10070783, 0)
                                 }
-                                3 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    lightning", 15658496, 0);
-                                4 == itemList[_equipmentIdx][td] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    poison", 52224, 0)
+                                3 == itemList[_equipmentIdx][itemElementTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    lightning", 15658496, 0);
+                                4 == itemList[_equipmentIdx][itemElementTypeCol] && drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    poison", 52224, 0)
                         }
                     }
                 } else {
@@ -1809,7 +1809,7 @@ function drawGameUI() {
             drawRect(b, d, 24, 24, 0);
             fh = 2;
             h = itemList[c][itemHeadwearType];
-            drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]);
+            drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]);
             fh = 0;
             drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), handleInventoryButton(b, d, 24, 24, c, hidx)
         }
@@ -1823,12 +1823,12 @@ function drawGameUI() {
 
         if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= inventoryTabIdx) { // item upgrade panel
             drawTextCentered(gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
-            hidx = getItemStatWithForge(c, wd);
+            hidx = getItemStatWithForge(c, itemForgeMaxLevelCol);
             if (0 == hidx) 
                  drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "---");
             else if (itemForgeLvls[c] < hidx) {
                 forgePreviewItemIdx = -1;
-                h = getItemStatWithForge(c, xd) * itemForgeLvls[c];
+                h = getItemStatWithForge(c, itemForgeCostPerLevelCol) * itemForgeLvls[c];
                 if (drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "G " + h) && h <= partyGold) {
                     forgePreviewItemIdx = c;
                     if (isMouseClicked) {
@@ -1846,40 +1846,40 @@ function drawGameUI() {
             if (10 > itemList[c][itemAppearanceCol]) {
                 gameFontMed.a = 4;
                 drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0);
-                h = "AT " + getItemStatWithForge(c, Vc) + "-" + getItemStatWithForge(c, Wc);
+                h = "AT " + getItemStatWithForge(c, itemAtkMinCol) + "-" + getItemStatWithForge(c, itemAtkMaxCol);
                 if (10 <= getItemStatWithForge(c, itemAtkCountCol) && 11 >= getItemStatWithForge(c, itemAtkCountCol)) {
-                    h += " *" + getItemStatWithForge(c, Xc) + ">" + ~~(getItemStatWithForge(c, ld) * getItemStatWithForge(c, Ed) / 60);
+                    h += " *" + getItemStatWithForge(c, itemProjectileCountCol) + ">" + ~~(getItemStatWithForge(c, attackCooldownCol) * getItemStatWithForge(c, Ed) / 60);
                 } else if (0 != getItemStatWithForge(c, itemAtkCountCol)) {
-                    h += " *" + getItemStatWithForge(c, Xc) + ">" + getItemStatWithForge(c, Ed);
+                    h += " *" + getItemStatWithForge(c, itemProjectileCountCol) + ">" + getItemStatWithForge(c, Ed);
                 } else {
-                    1 < getItemStatWithForge(c, Xc) && (h += " *" + getItemStatWithForge(c, Xc));
-                    if (99 == getItemStatWithForge(c, Uc)) {
+                    1 < getItemStatWithForge(c, itemProjectileCountCol) && (h += " *" + getItemStatWithForge(c, itemProjectileCountCol));
+                    if (99 == getItemStatWithForge(c, itemHitCountStatCol)) {
                         h += " all";
                     } else {
-                        1 < getItemStatWithForge(c, Uc) && (h += " " + getItemStatWithForge(c, Uc) + "hit"); 
+                        1 < getItemStatWithForge(c, itemHitCountStatCol) && (h += " " + getItemStatWithForge(c, itemHitCountStatCol) + "hit"); 
                         drawText(gameFontMed, _ox, _oy + 12, h, 16777215, 0); 
-                        0 == inventoryTabIdx && drawText(gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, Zc), 16777215, 0); 
-                        0 == inventoryTabIdx && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, $c), 16777215, 0); 
+                        0 == inventoryTabIdx && drawText(gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, itemAgilityCol), 16777215, 0); 
+                        0 == inventoryTabIdx && drawText(gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, itemRangeCol), 16777215, 0); 
                         if (0 == inventoryTabIdx) {
-                            drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + getItemStatWithForge(c, vd), 16777215, 0);
+                            drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + getItemStatWithForge(c, itemChargeEmitValueCol), 16777215, 0);
                         } else {
-                            if (-1 == getItemStatWithForge(c, vd)) {
+                            if (-1 == getItemStatWithForge(c, itemChargeEmitValueCol)) {
                                 drawText(gameFontMed, _ox, _oy + 48, "EMIT passive", 16777215, 0);
                             } else {
-                                drawText(gameFontMed, _ox, _oy + 48, "EMIT " + getItemStatWithForge(c, vd), 16777215, 0); 
+                                drawText(gameFontMed, _ox, _oy + 48, "EMIT " + getItemStatWithForge(c, itemChargeEmitValueCol), 16777215, 0); 
                                 drawText(gameFontMed, _ox, _oy + 60, "SML", 16777215, 0); 
                                 0 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0); 
                                 1 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0); 
                                 2 == itemList[c][itemRangeTypeCol] && drawText(gameFontMed, _ox, _oy + 60, "    long", 16764057, 0); 
                                 drawText(gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0); 
-                                0 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0); 
-                                1 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0); 
-                                2 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    ice " + getItemStatWithForge(c, ud) + "%", 10070783, 0); 
-                                3 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0); 
-                                4 == itemList[c][td] && drawText(gameFontMed, _ox, _oy + 72, "    poison", 52224, 0); 
-                                hidx = getItemForgeMultiplier(c, hd); 
+                                0 == itemList[c][itemElementTypeCol] && drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0); 
+                                1 == itemList[c][itemElementTypeCol] && drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0); 
+                                2 == itemList[c][itemElementTypeCol] && drawText(gameFontMed, _ox, _oy + 72, "    ice " + getItemStatWithForge(c, itemIceBonusPercentCol) + "%", 10070783, 0); 
+                                3 == itemList[c][itemElementTypeCol] && drawText(gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0); 
+                                4 == itemList[c][itemElementTypeCol] && drawText(gameFontMed, _ox, _oy + 72, "    poison", 52224, 0); 
+                                hidx = getItemForgeMultiplier(c, projectileAccelerationCol); 
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0); 
-                                hidx = getItemForgeMultiplier(c, ld); 
+                                hidx = getItemForgeMultiplier(c, attackCooldownCol); 
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0); 
                                 hidx = getItemForgeMultiplier(c, Td);
                                 -1 != hidx && drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
@@ -1890,7 +1890,7 @@ function drawGameUI() {
                 
             } else {
                 if (20 > itemList[c][itemAppearanceCol]) {
-                    if (gameFontMed.a = 4, 0 == itemList[c][wd]){
+                    if (gameFontMed.a = 4, 0 == itemList[c][itemForgeMaxLevelCol]){
                         drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol], -1, 0);
                     } else {
                         drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0); 
@@ -1917,7 +1917,7 @@ function drawGameUI() {
         k = inventoryTabIdx;
         drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (inventoryUIVisible = false);
         for (hidx = 0; 28 > hidx; hidx++) c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
-            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == inventoryTabIdx ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol], true) : 3 == inventoryTabIdx || 4 == inventoryTabIdx ? drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteLocXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteLocXCol]), fh = 0), hidx == inventorySlotIdx  && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), inventorySlotIdx  != hidx ? isMouseReleased && (inventorySlotIdx  = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == inventoryTabIdx ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true) : 3 == inventoryTabIdx || 4 == inventoryTabIdx ? drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]), fh = 0), hidx == inventorySlotIdx  && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), inventorySlotIdx  != hidx ? isMouseReleased && (inventorySlotIdx  = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (itemIsNew[c] = 0)), 0 < itemIsNew[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
@@ -1984,7 +1984,7 @@ function drawGameUI() {
                                 16, 16, 
                                 16 * (h & 15), 16 * (h >> 4), 
                                 16, 16, 
-                                itemList[hidx][itemSpriteLocXCol], 
+                                itemList[hidx][itemSpriteSourceXCol], 
                                 itemList[hidx][itemSpriteLocYCol], 
                                 true
                             ) 
@@ -1993,14 +1993,14 @@ function drawGameUI() {
                                drawItemSpriteTinted(
                                 f + 80, g + 12 + 20 * d, 
                                 16 * (h & 15), 16 * (h >> 4), 
-                                itemList[hidx][itemSpriteLocXCol], 
+                                itemList[hidx][itemSpriteSourceXCol], 
                                 itemList[hidx][itemSpriteLocYCol]
                             );
                             } else {
                                 drawSpriteSheetPart(
                                     itemsSpriteSheet, 
                                     f + 80, g + 12 + 20 * d, 
-                                    16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteLocXCol]);
+                                    16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteSourceXCol]);
                                 fh = 0;
                                 gameFontMed.a = 4; 
                                 drawText(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][itemNameCol], -1, 0); 
@@ -2344,47 +2344,47 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             t = 257
             break;
     }
-    var l = selectedItem[Rc],
-        n = selectedItem[Sc],
-        w = selectedItem[Tc],
-        B = selectedItem[ad],
-        M = selectedItem[bd],
-        J = selectedItem[cd],
-        y = selectedItem[dd],
-        x = selectedItem[ed],
-        K = selectedItem[fd],
-        ba = selectedItem[gd],
-        U = getModifiedStatVal(heroIdx, selectedItemIdx, hd),
-        na = getModifiedStatVal(heroIdx, selectedItemIdx, id),
-        Fa = getModifiedStatVal(heroIdx, selectedItemIdx, jd),
-        Ga = selectedItem[kd],
-        Ca = getModifiedStatVal(heroIdx, selectedItemIdx, ld);
+    var l = selectedItem[itemProjectileDrawWidthCol],
+        n = selectedItem[itemProjectileDrawHeightCol],
+        w = selectedItem[itemProjectileShapeModeCol],
+        B = selectedItem[projectileEffectWidthCol],
+        M = selectedItem[projectileEffectHeightCol],
+        J = selectedItem[projectileDelayRangeCol],
+        y = selectedItem[projectileNoDamageFramesCol],
+        x = selectedItem[projectileStartAnimFrameCol],
+        K = selectedItem[projectileLifetimeCol],
+        ba = selectedItem[projectileTargetIndexCol],
+        U = getModifiedStatVal(heroIdx, selectedItemIdx, projectileAccelerationCol),
+        na = getModifiedStatVal(heroIdx, selectedItemIdx, projectileSpeedScaleCol),
+        Fa = getModifiedStatVal(heroIdx, selectedItemIdx, projectileAuxStatCol),
+        Ga = selectedItem[projectileCollisionModeCol],
+        Ca = getModifiedStatVal(heroIdx, selectedItemIdx, attackCooldownCol);
     if (heroHasAccessoryEffect(heroIdx, qe) && (4 == selectedItem[itemAppearanceCol] || 5 == selectedItem[itemAppearanceCol])) {
         Ca += sumAccessorySecondaryValues(heroIdx, qe);
     }
-    var ua = selectedItem[md],
-        fb = selectedItem[nd];
+    var ua = selectedItem[projectileAuxParamCol],
+        fb = selectedItem[itemProjectileMaxTargetsCol];
     2 == fb && (fb = limbDesc >> 8);
-    limbDesc = selectedItem[od];
+    limbDesc = selectedItem[itemProjectileDamageMinCol];
 
-    var ob = selectedItem[pd],
-        Bb = selectedItem[qd],
-        gc = selectedItem[rd],
-        Qb = selectedItem[sd],
-        Rb = getModifiedStatVal(heroIdx, selectedItemIdx, Uc),
+    var ob = selectedItem[itemProjectileDamageMaxCol],
+        Bb = selectedItem[itemProjectileEffectTypeCol],
+        gc = selectedItem[projectileEffectTypeCol],
+        Qb = selectedItem[projectileEffectDurationCol],
+        Rb = getModifiedStatVal(heroIdx, selectedItemIdx, itemHitCountStatCol),
         gb = minAtkArray[4 * itemSlot + heroIdx],
         jb = maxAtkArray[4 * itemSlot + heroIdx];
-    if (heroHasAccessoryEffect(heroIdx, we) && 0 == selectedItem[td] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, we)) {
+    if (heroHasAccessoryEffect(heroIdx, we) && 0 == selectedItem[itemElementTypeCol] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, we)) {
         gb = floor(gb *  (100 + sumAccessorySecondaryValues(heroIdx, we)) / 100);
         jb = floor(jb * (100 + sumAccessorySecondaryValues(heroIdx, we)) / 100);
     }
     itemSlot = atkCountArray[4 * itemSlot + heroIdx];
-    var La = selectedItem[Yc],
-        hc = selectedItem[td],
-        Ib = getModifiedStatVal(heroIdx, selectedItemIdx, ud);
-    heroHasAccessoryEffect(heroIdx, xe) && 1 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(heroIdx, xe));
-    heroHasAccessoryEffect(heroIdx, ye) && 2 == selectedItem[td] && (Ib += countAccessoryLvlBonuses(heroIdx, ye));
-    heroHasAccessoryEffect(heroIdx, Ie) && 4 == selectedItem[td] && (Ib += 60 * countAccessoryLvlBonuses(heroIdx, Ie));
+    var La = selectedItem[itemProjectileSpeedCol],
+        hc = selectedItem[itemElementTypeCol],
+        Ib = getModifiedStatVal(heroIdx, selectedItemIdx, itemIceBonusPercentCol);
+    heroHasAccessoryEffect(heroIdx, xe) && 1 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, xe));
+    heroHasAccessoryEffect(heroIdx, ye) && 2 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, ye));
+    heroHasAccessoryEffect(heroIdx, Ie) && 4 == selectedItem[itemElementTypeCol] && (Ib += 60 * countAccessoryLvlBonuses(heroIdx, Ie));
     var ic = selectedItem[zd],
         jc = selectedItem[itemAtkCountCol],
         kc = selectedItem[Bd],
@@ -2409,7 +2409,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         Sf = selectedItem[Cd];
 
     selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, Ed);
-    heroHasAccessoryEffect(heroIdx, Ae) && 3 == selectedItem[td] && 20 == selectedItem[itemAtkCountCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, Ae));
+    heroHasAccessoryEffect(heroIdx, Ae) && 3 == selectedItem[itemElementTypeCol] && 20 == selectedItem[itemAtkCountCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, Ae));
     
     selectedItem = selectedItem[Fd];
     let Ac = Q[targetEnemyIdx][yi].x;
@@ -2603,7 +2603,7 @@ function updatePlayerParty() {
                 c = heroRangeValues[a];
                 d = O[a][1].x;
                 var k = O[a][1].y;
-                c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < heroEmitCooldown[a] && heroEmitCooldown[a]--, 0 == heroEmitCooldown[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, O[a][6].x, O[a][6].y, k), heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][ld])));
+                c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < heroEmitCooldown[a] && heroEmitCooldown[a]--, 0 == heroEmitCooldown[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, O[a][6].x, O[a][6].y, k), heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][attackCooldownCol])));
                 if (0 < Zh[a]) Zh[a]--;
                 else if (bi != a && 0 != b && -1 != c) {
                     Zh[a] = heroAgiValues[a] + randIntRange(-1, 1);
@@ -2675,10 +2675,10 @@ function drawPlayerParty() {
         drawHero(a, O[a], partyBodyDrawOptions[a][0], partyBodyDrawOptions[a][1], d, f, Wh[a]);
         if (0 < Sh[a]) {
             b = partyEquipmentTable[a][fi[a]];
-            c = itemList[b][id];
-            d = itemList[b][cd];
+            c = itemList[b][projectileSpeedScaleCol];
+            d = itemList[b][projectileDelayRangeCol];
             f = d >> 24 & 255;
-            var p = itemList[b][dd];
+            var p = itemList[b][projectileNoDamageFramesCol];
             d &= 16777215;
             for (b = 0; 10 > b; b++) {
                 var t, l, n;
@@ -2817,7 +2817,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 16, 16,
                 16 * (headwearType & 15) + 0, 16 * (headwearType >> 4),
                 16, 16,
-                itemList[partyEquipmentTable[heroIdx][2]][itemSpriteLocXCol], itemList[partyEquipmentTable[heroIdx][2]][itemSpriteLocYCol],
+                itemList[partyEquipmentTable[heroIdx][2]][itemSpriteSourceXCol], itemList[partyEquipmentTable[heroIdx][2]][itemSpriteLocYCol],
                 false
             );
         else
@@ -2827,7 +2827,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 16, 16,
                 16 * (headwearType & 15) + 16, 16 * (headwearType >> 4),
                 -16, 16,
-                itemList[partyEquipmentTable[heroIdx][2]][itemSpriteLocXCol], itemList[partyEquipmentTable[heroIdx][2]][itemSpriteLocYCol],
+                itemList[partyEquipmentTable[heroIdx][2]][itemSpriteSourceXCol], itemList[partyEquipmentTable[heroIdx][2]][itemSpriteLocYCol],
                 false
             );
     }
@@ -2837,7 +2837,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     for (let toolIdx = 0; toolIdx < 2; toolIdx++) {
         let p = partyEquipmentTable[heroIdx][toolIdx ? d : c];
         let appearanceType = itemList[p][itemAppearanceCol];
-        p = itemList[p][itemSpriteLocXCol];
+        p = itemList[p][itemSpriteSourceXCol];
         let t = joints[5 + toolIdx];
         let l = joints[3 + toolIdx];
 
@@ -5198,7 +5198,7 @@ function drawDrops() { // Dg
                 12, 12,
                 12 * itemList[dropType[a]][itemDropIconCol], 0,
                 12, 12,
-                itemList[dropType[a]][itemSpriteLocXCol]
+                itemList[dropType[a]][itemSpriteSourceXCol]
             );
     fh = 0
 }

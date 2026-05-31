@@ -149,7 +149,7 @@ function resetGameProgress() { // bc
     for (a = 0; a < stageCount; a++) isStageReachedArray[a] = 0;
     for (a = 0; a < enemyTypeCount; a++) bestiaryEntryState[a] = 0;
     for (a = 0; a < badgeCount; a++) badgeCounterArray[a] = 0;
-    for (a = 0; a < Ec; a++) shrineRewardClaimed[a] = 0;
+    for (a = 0; a < shrineRewardClaimSlotCount; a++) shrineRewardClaimed[a] = 0;
     for (a = 0; 4 > a; a++) autoMoveEnabled[a] = 0;
     cliffStopEnabled = 0
 }
@@ -646,7 +646,7 @@ badgeList[69] = ["Sunflower hunt 50", "", 17, 9, 50];
 badgeList[70] = ["Stage clear", "within 150 sec", 18, 0, 1];
 badgeList[71] = ["Defeat all fish", "without diving", 18, 12, 1];
 badgeList[72] = ["Defeat all fish", "without landing", 18, 12, 1];
-var ef = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139];
+var stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139]; // ef, stage-indexed reward item table used when all five badges for a stage are cleared.
 mainWindow.fff = isBadgeIncompleteForCurrentStage;
 
 function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
@@ -662,12 +662,12 @@ function IncrementBadgeCount(badgeIndex) {
         var b = 0;
         badgeIndex = badgeList[badgeIndex][2];
         for (var c = 0; c < badgeList.length; c++) badgeList[c] && badgeIndex == badgeList[c][2] && badgeCounterArray[c] == badgeList[c][4] && b++;
-        5 == b && (itemForgeLvls[ef[badgeIndex]] = 1, itemIsNew[ef[badgeIndex]] = 1)
+        5 == b && (itemForgeLvls[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1, itemIsNew[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1)
     }
 }
-var Ec = 10,
-    shrineRewardClaimed = Array(Ec);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < Ec; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
+var shrineRewardClaimSlotCount = 10, // Ec
+    shrineRewardClaimed = Array(shrineRewardClaimSlotCount);
+for (iterIdxTemp_1 = 0; iterIdxTemp_1 < shrineRewardClaimSlotCount; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
 var shrineRewardOptions = [
     ["Gold Shower", 15],
     ["Clear Status", 30],
@@ -679,7 +679,7 @@ var shrineRewardOptions = [
     gameLoadStatusCode = 0,
     statusDuration = 0,
     gameSaveBuffer = new Int32Array(5E3),
-    lf = new Int32Array(5E3);
+    saveLoadCodecScratchBuffer = new Int32Array(5E3); // lf, scratch buffer used while encoding and decoding save strings
 mainWindow.fff = saveGame;
 
 function saveGame() {
@@ -752,9 +752,9 @@ function saveGame() {
     gameSaveBuffer[a++] = badgeCount >> 6 & 63;
     gameSaveBuffer[a++] = badgeCount >> 0 & 63;
     for (b = 0; b < badgeCount; b++) gameSaveBuffer[a++] = badgeCounterArray[b];
-    gameSaveBuffer[a++] = Ec >> 6 & 63;
-    gameSaveBuffer[a++] = Ec >> 0 & 63;
-    for (b = 0; b < Ec; b++) gameSaveBuffer[a++] = shrineRewardClaimed[b];
+    gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 6 & 63;
+    gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 0 & 63;
+    for (b = 0; b < shrineRewardClaimSlotCount; b++) gameSaveBuffer[a++] = shrineRewardClaimed[b];
     f = 4;
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
@@ -766,17 +766,17 @@ function saveGame() {
     gameSaveBuffer[1] = gameSaveHash >> 6 & 63;
     gameSaveBuffer[2] = gameSaveHash >> 0 & 63;
     for (b = gameSaveHash = 0; b < a;)
-        if (c = gameSaveBuffer[b++], lf[gameSaveHash++] = c, 1 >= c) {
+        if (c = gameSaveBuffer[b++], saveLoadCodecScratchBuffer[gameSaveHash++] = c, 1 >= c) {
             for (f = 0; b < a && 63 != f && c == gameSaveBuffer[b]; b++) f++;
-            lf[gameSaveHash++] = f
+            saveLoadCodecScratchBuffer[gameSaveHash++] = f
         }
     a = randInt(64);
     f = randInt(64);
     gameSaveString = "";
     c = a + gameSaveHash & 63;
     for (b = 0; b < gameSaveHash; b++) {
-        gameSaveString += encodingCharTable[lf[b] + c & 63];
-        c = (c * c >> 4) + lf[b] + b + f & 65535;
+        gameSaveString += encodingCharTable[saveLoadCodecScratchBuffer[b] + c & 63];
+        c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
     }
     gameSaveString += encodingCharTable[a];
     gameSaveString += encodingCharTable[f];
@@ -796,13 +796,13 @@ function loadGame(saveString) {
     let b = inverseCodingCharTable[saveString[d + 0]];
     let f = inverseCodingCharTable[saveString[d + 1]];
     let c = b + d & 63;
-    for (b = 0; b < d; b++) lf[b] = inverseCodingCharTable[saveString[b]] - c & 63, c = (c * c >> 4) + lf[b] + b + f & 65535;
+    for (b = 0; b < d; b++) saveLoadCodecScratchBuffer[b] = inverseCodingCharTable[saveString[b]] - c & 63, c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
     if (inverseCodingCharTable[saveString[d + 2]] != (c >> 6 & 63) || inverseCodingCharTable[saveString[d + 3]] != (c >> 0 & 63)) return 4; // load err
 
     let i = 0;
     for (c = 0; i < d;)
-        if (f = lf[i++], gameSaveBuffer[c++] = f, 1 >= f)
-            for (let g = lf[i++], b = 0; b < g; b++) gameSaveBuffer[c++] = f;
+        if (f = saveLoadCodecScratchBuffer[i++], gameSaveBuffer[c++] = f, 1 >= f)
+            for (let g = saveLoadCodecScratchBuffer[i++], b = 0; b < g; b++) gameSaveBuffer[c++] = f;
     d = 0;
     for (b = 3; b < c; b++) d += gameSaveBuffer[b];
     if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4; // load err
@@ -857,11 +857,11 @@ function loadGame(saveString) {
 }
 var partyChecksum = 0,
     basePartyChecksum = 0,
-    vf = 0,
+    tamperCheckScanOffset = 0, // vf, rotating start offset for the chunked tamper-check hash pass
     itemHashTable = [],
     levelHashTable = [],
     itemCatalogHashTable = [],
-    zf = 0;
+    inventoryItemListsChecksum = 0; // zf, checksum of inventoryItemLists used by the tamper-check path
 mainWindow.fff = hashAdjust;
 
 function hashAdjust(a, b) {
@@ -902,7 +902,7 @@ function updatePartyChecksum() {
     for (a = 0; a < stageCount; a++) c = hashAdjust(c, isStageReachedArray[a]);
     for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, bestiaryEntryState[a]);
     for (a = 0; a < badgeCount; a++) c = hashAdjust(c, badgeCounterArray[a]);
-    for (a = 0; a < Ec; a++) c = hashAdjust(c, shrineRewardClaimed[a]);
+    for (a = 0; a < shrineRewardClaimSlotCount; a++) c = hashAdjust(c, shrineRewardClaimed[a]);
     partyChecksum = c ^ 16777215
 }
 
@@ -1039,8 +1039,8 @@ function gameInit(a, b) {
         for (_t0 = 0; _t0 < enemyCatalog.length; _t0++)
             if (itemCatalogHashTable[_t0] = 0, enemyCatalog[_t0])
                 for (_t1 = 0; _t1 < enemyCatalog[_t0].length; _t1++) itemCatalogHashTable[_t0] = hashAdjust(itemCatalogHashTable[_t0], enemyCatalog[_t0][_t1]);
-        for (_t0 = zf = 0; _t0 < inventoryItemLists.length; _t0++)
-            for (_t1 = 0; _t1 < inventoryItemLists[_t0].length; _t1++) zf = hashAdjust(zf, inventoryItemLists[_t0][_t1]);
+        for (_t0 = inventoryItemListsChecksum = 0; _t0 < inventoryItemLists.length; _t0++)
+            for (_t1 = 0; _t1 < inventoryItemLists[_t0].length; _t1++) inventoryItemListsChecksum = hashAdjust(inventoryItemListsChecksum, inventoryItemLists[_t0][_t1]);
 
         // updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
@@ -1127,7 +1127,7 @@ function drawCanvas() {
         //     for (b = 0; b < Jc[a].length; b++) d = hashAdjust(d, Jc[a][b]);
         // d != zf && (frameBufferArray = null);
 
-        vf = vf + 1 & 63;
+        tamperCheckScanOffset = tamperCheckScanOffset + 1 & 63;
         if (!gameScreenState)
             currentStage = 0,
                 partySpawnXs[0] = 20,

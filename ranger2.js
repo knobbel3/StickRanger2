@@ -1303,7 +1303,7 @@ function drawCanvas() {
                     c = floor(partyGold / 10 / partyMemberCount);
                     if (0 < c) {
                         for (a = 0; a < partyMemberCount; a++)
-                            spawnPopup(O[a][0].x, O[a][0].y, 0, -c, 60, 16776960);
+                            spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, -c, 60, 16776960);
                         partyGold = clamp(partyGold - c * partyMemberCount, 0, 9999999)
                     }
                     for (a = 0; a < partyMemberCount; a++)
@@ -1639,7 +1639,7 @@ function drawGameUI() {
         for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
         if (0 < c && 0 < collectedStageFlagsCount) {
             for (hidx = 0; hidx < partyMemberCount; hidx++) {
-                partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+                partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(heroJointPositionsByHero[hidx][0].x, heroJointPositionsByHero[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
                 partyLP[hidx] = partyMaxLP[hidx];
             }
             collectedStageFlagsCount--;
@@ -1667,7 +1667,7 @@ function drawGameUI() {
             drawTextCentered(gameFont, 528, 187, "G " + c, 16777215, 8409120);
             if (0 < c && c <= partyGold && isMouseClicked && !clickInUI) {
                 for (hidx = 0; hidx < partyMemberCount; hidx++) {
-                    partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(O[hidx][0].x, O[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+                    partyLP[hidx] != partyMaxLP[hidx] && spawnPopup(heroJointPositionsByHero[hidx][0].x, heroJointPositionsByHero[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
                     partyLP[hidx] = partyMaxLP[hidx];
                 }
                 collectedStageFlagsCount != stageFlagsSetCount && spawnPopup(436, 380, 0, stageFlagsSetCount - collectedStageFlagsCount, 60, 65280);
@@ -2110,36 +2110,55 @@ function drawGameUI() {
     drawScaledTintedText(gameFontSmall, 476, 421, copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
     drawScaledTintedText(gameFontSmall, 607, 421, "" + currentFPS + fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7)
 }
-var areUpperJointsDisabled = 1,
-    O = Array(4);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) O[iterIdxTemp_1] = Array(21);
-var Mh = Array(4);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Mh[iterIdxTemp_1] = Array(21);
+var areUpperJointsDisabled = 1, // rig mode flag
+    heroJointPositionsByHero = Array(4); // O, current joint positions for each hero.
+
+    for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJointPositionsByHero[iterIdxTemp_1] = Array(21);
+
+var heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions used for collision resolution and drag selection.
+
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJointPrevPositionsByHero[iterIdxTemp_1] = Array(21);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) O[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) heroJointPositionsByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) Mh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
-var Nh = Array(4);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Nh[iterIdxTemp_1] = Array(16);
+    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) heroJointPrevPositionsByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+
+var heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
+
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint5HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Nh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
-var Oh = Array(4);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Oh[iterIdxTemp_1] = Array(16);
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint5HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+
+var heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
+
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint3HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Oh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
-var Ph = Array(4);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Ph[iterIdxTemp_1] = Array(16);
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint3HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+
+var heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
+
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint6HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Ph[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
-var Qh = Array(4);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Qh[iterIdxTemp_1] = Array(16);
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint6HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+
+var heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
+
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint4HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) Qh[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
-var Rh = Array(4),
-    Sh = Array(4),
-    Th = [Nh, Ph, Oh, Qh],
-    Uh = Array(4);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) Uh[iterIdxTemp_1] = new Vec2;
+    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint4HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+
+var heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
+    heroAttackTrailTimerByHero = Array(4), // Sh, hero attack trail timer per hero.
+    heroAttackTrailHistorySets = [
+        heroJoint5HistoryByHero, 
+        heroJoint6HistoryByHero, 
+        heroJoint3HistoryByHero, 
+        heroJoint4HistoryByHero
+    ], // Th, grouped joint-history buffers used for attack-trail drawing.
+    heroAimPosByHero = Array(4); // Uh, stored hero aim position per hero.
+
+for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroAimPosByHero[iterIdxTemp_1] = new Vec2;
+
 var Vh = Array(4),
     Wh = new Int32Array(4),
     Xh = new Int32Array(4),
@@ -2183,18 +2202,18 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     spawnX *= 8;
     spawnY *= 8;
     for (let d = 0; 21 > d; d++) {
-        Vec2Set(O[heroIdx][d], spawnX + randFloat(4), spawnY + randFloat(4));
-        Mh[heroIdx][d].set(O[heroIdx][d]);
+        Vec2Set(heroJointPositionsByHero[heroIdx][d], spawnX + randFloat(4), spawnY + randFloat(4));
+        heroJointPrevPositionsByHero[heroIdx][d].set(heroJointPositionsByHero[heroIdx][d]);
     }
     for (let d = 0; 16 > d; d++) { 
-        Nh[heroIdx][d].set(O[heroIdx][5]);
-        Oh[heroIdx][d].set(O[heroIdx][3]);
-        Ph[heroIdx][d].set(O[heroIdx][6]);
-        Qh[heroIdx][d].set(O[heroIdx][4]);
+        heroJoint5HistoryByHero[heroIdx][d].set(heroJointPositionsByHero[heroIdx][5]);
+        heroJoint3HistoryByHero[heroIdx][d].set(heroJointPositionsByHero[heroIdx][3]);
+        heroJoint6HistoryByHero[heroIdx][d].set(heroJointPositionsByHero[heroIdx][6]);
+        heroJoint4HistoryByHero[heroIdx][d].set(heroJointPositionsByHero[heroIdx][4]);
     }
-    Rh[heroIdx] = 0;
-    Sh[heroIdx] = 0;
-    Vec2Set(Uh[heroIdx], 320, 240);
+    heroPoseTrailWriteIdxByHero[heroIdx] = 0;
+    heroAttackTrailTimerByHero[heroIdx] = 0;
+    Vec2Set(heroAimPosByHero[heroIdx], 320, 240);
     Vh[heroIdx] = 0;
     Wh[heroIdx] = 0;
     Xh[heroIdx] = 0;
@@ -2215,14 +2234,14 @@ mainWindow.fff = moveJointWithCollisions;
 
 function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
     var c = new Vec2;
-    Vec2Sub(c, O[_entityIdx][_jointIdx], Mh[_entityIdx][_jointIdx]);
-    O[_entityIdx][_jointIdx].set(Mh[_entityIdx][_jointIdx]);
+    Vec2Sub(c, heroJointPositionsByHero[_entityIdx][_jointIdx], heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
+    heroJointPositionsByHero[_entityIdx][_jointIdx].set(heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
     var d = (Vec2Mag(c) >> 2) + 1;
     Vec2Scale(c, 1 / d);
     var f, g;
-    g = getStageTileAt(O[_entityIdx][_jointIdx].x, O[_entityIdx][_jointIdx].y);
+    g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, heroJointPositionsByHero[_entityIdx][_jointIdx].y);
     31 == g && (Vec2Scale(c, .95), Yh[_entityIdx] |= 2);
-    for (var h = 0; h < d; h++) f = O[_entityIdx][_jointIdx].y + c.y, g = getStageTileAt(O[_entityIdx][_jointIdx].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != _entityIdx ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : O[_entityIdx][_jointIdx].y = f), f = O[_entityIdx][_jointIdx].x + c.x, g = getStageTileAt(f, O[_entityIdx][_jointIdx].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[_entityIdx] |= 1) : O[_entityIdx][_jointIdx].x = f)
+    for (var h = 0; h < d; h++) f = heroJointPositionsByHero[_entityIdx][_jointIdx].y + c.y, g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != _entityIdx ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].y = f), f = heroJointPositionsByHero[_entityIdx][_jointIdx].x + c.x, g = getStageTileAt(f, heroJointPositionsByHero[_entityIdx][_jointIdx].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].x = f)
 }
 mainWindow.fff = findNearestPartyMemberInRect;
 
@@ -2237,7 +2256,7 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
         B = -1;
     _modelFlag = 0 == _modelFlag ? 29 : 23;
     for (var M = 0; M < partyMemberCount; M++)
-        if (Wh[M] != areUpperJointsDisabled && (k = O[M][2], !(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h))) {
+        if (Wh[M] != areUpperJointsDisabled && (k = heroJointPositionsByHero[M][2], !(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h))) {
             t.x = k.x - _cx;
             t.y = k.y - _cy;
             l = Vec2Mag(t);
@@ -2265,7 +2284,7 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
     _w = _cy + _w + 5;
     _h = _cx + _h + 10;
     for (var n, w = new Vec2, B = new Vec2, M, J, y = -1, x = 0; x < partyMemberCount; x++)
-        if (Wh[x] != areUpperJointsDisabled && (n = O[x][2], !(n.x > _w || n.x < __unused || n.y > _h || n.y < l))) {
+        if (Wh[x] != areUpperJointsDisabled && (n = heroJointPositionsByHero[x][2], !(n.x > _w || n.x < __unused || n.y > _h || n.y < l))) {
             B.x = n.x - _cy;
             B.y = n.y - _cx;
             n = Vec2Mag(B);
@@ -2297,10 +2316,10 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                 } else 5 == attackType && (bh[x] = floor(auxValue / 10));
                 isBadgeIncompleteForCurrentStage(43) && 1 == attackType && 0 < ch[x] && 0 < dh[x] && IncrementBadgeCount(43);
                 partyLP[x] -= y;
-                spawnPopup(O[x][0].x, O[x][0].y, M, y, 60, J);
+                spawnPopup(heroJointPositionsByHero[x][0].x, heroJointPositionsByHero[x][0].y, M, y, 60, J);
                 partyDamageTakenThisStage += y;
                 if (0 > partyLP[x])
-                    for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++) x != n && (partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]), spawnPopup(O[n][0].x, O[n][0].y, M, y, 60, J), partyDamageTakenThisStage += y);
+                    for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++) x != n && (partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]), spawnPopup(heroJointPositionsByHero[n][0].x, heroJointPositionsByHero[n][0].y, M, y, 60, J), partyDamageTakenThisStage += y);
                 y = x;
                 if (0 == stopOnHit) break
             }
@@ -2314,13 +2333,13 @@ function pickHeroJointUnderMouse() { // vi
     if (-1 == bi) {
         if (isMouseClicked && !clickInUI) {
             b = 20;
-            a.x = mouseXCurrent - Mh[selectingHero][0].x;
-            a.y = mouseYCurrent - (Mh[selectingHero][0].y - 8);
+            a.x = mouseXCurrent - heroJointPrevPositionsByHero[selectingHero][0].x;
+            a.y = mouseYCurrent - (heroJointPrevPositionsByHero[selectingHero][0].y - 8);
             c = Vec2Mag(a);
             20 > c && c < b && (b = c, bi = selectingHero, ci = 0);
             for (var d = 0; d < partyMemberCount; d++)
                 if (Wh[d] != areUpperJointsDisabled)
-                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - Mh[d][f].x, a.y = mouseYCurrent - Mh[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, selectingHero = d)
+                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - heroJointPrevPositionsByHero[d][f].x, a.y = mouseYCurrent - heroJointPrevPositionsByHero[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, selectingHero = d)
         }
     } else wasMouseDown || (bi = -1, ci = 0)
 }
@@ -2528,10 +2547,10 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
 mainWindow.fff = updatePartyMemberAI;
 
 function updatePartyMemberAI(memberIdx) { // Di
-    var b = O[memberIdx][2].x,
-        c = O[memberIdx][2].y;
+    var b = heroJointPositionsByHero[memberIdx][2].x,
+        c = heroJointPositionsByHero[memberIdx][2].y;
     if (1 != autoMoveEnabled[memberIdx]) {
-        var d = findEnemyInArea(O[memberIdx][0].x, O[memberIdx][0].y, 200, 50);
+        var d = findEnemyInArea(heroJointPositionsByHero[memberIdx][0].x, heroJointPositionsByHero[memberIdx][0].y, 200, 50);
         if (-1 != d) {
             if (0 != Yh[memberIdx])
                 if (0 < ai[memberIdx]) ai[memberIdx]--;
@@ -2545,7 +2564,7 @@ function updatePartyMemberAI(memberIdx) { // Di
                     h = getStageTileAt(b + 14 * f, c - 3);
                     0 <= h && 26 >= h && (g = 4);
                     var k;
-                    1 == f ? (k = O[memberIdx][9].x < O[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 1) : (k = O[memberIdx][9].x > O[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 0);
+                    1 == f ? (k = heroJointPositionsByHero[memberIdx][9].x < heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 1) : (k = heroJointPositionsByHero[memberIdx][9].x > heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 0);
                     if (!cliffStopEnabled) {
                         h = getStageTileAt(b + 20 * f, c + 8 + 0);
                         var p = getStageTileAt(b + 20 * f, c + 8 + 8),
@@ -2553,10 +2572,10 @@ function updatePartyMemberAI(memberIdx) { // Di
                             l = getStageTileAt(b + 20 * f, c + 8 + 24);
                         30 <= h && 30 <= p && 30 <= t && 30 <= l && (k = (k = 7, 8), f *= -1)
                     }
-                    O[memberIdx][k].x += 4 * f;
-                    O[memberIdx][k].y -=
+                    heroJointPositionsByHero[memberIdx][k].x += 4 * f;
+                    heroJointPositionsByHero[memberIdx][k].y -=
                         3 * g
-                } 2 == Yh[memberIdx] && (b < Q[d][yi].x ? (O[memberIdx][0].x += .25, O[memberIdx][1].x += .25, partyBodyDrawOptions[memberIdx][2] = 1) : (O[memberIdx][0].x -= .25, O[memberIdx][1].x -= .25, partyBodyDrawOptions[memberIdx][2] = 0), c < Q[d][yi].y ? (O[memberIdx][0].y += .25, O[memberIdx][1].y += .25) : (O[memberIdx][0].y -= .25, O[memberIdx][1].y -= .25), O[memberIdx][0].x += randFloatRange(-.25, .25), O[memberIdx][0].y += randFloatRange(-.25, .25), O[memberIdx][1].x += randFloatRange(-.25, .25), O[memberIdx][1].y += randFloatRange(-.25, .25))
+                } 2 == Yh[memberIdx] && (b < Q[d][yi].x ? (heroJointPositionsByHero[memberIdx][0].x += .25, heroJointPositionsByHero[memberIdx][1].x += .25, partyBodyDrawOptions[memberIdx][2] = 1) : (heroJointPositionsByHero[memberIdx][0].x -= .25, heroJointPositionsByHero[memberIdx][1].x -= .25, partyBodyDrawOptions[memberIdx][2] = 0), c < Q[d][yi].y ? (heroJointPositionsByHero[memberIdx][0].y += .25, heroJointPositionsByHero[memberIdx][1].y += .25) : (heroJointPositionsByHero[memberIdx][0].y -= .25, heroJointPositionsByHero[memberIdx][1].y -= .25), heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25))
         }
     }
 }
@@ -2572,7 +2591,7 @@ function updatePlayerParty() {
             for (c = 0 == partyBodyDrawOptions[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
                 a != b && (
                     partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]),
-                    spawnPopup(O[b][0].x, O[b][0].y, c, d, 60, 16711680),
+                    spawnPopup(heroJointPositionsByHero[b][0].x, heroJointPositionsByHero[b][0].y, c, d, 60, 16711680),
                     partyDamageTakenThisStage += d
                 );
 
@@ -2581,35 +2600,35 @@ function updatePlayerParty() {
             if (0 < ch[a] && (ch[a]--, randFloat(100) < hi[a])) continue;
             Xh[a]++;
             if (Wh[a] == areUpperJointsDisabled)
-                for (b = 0; 11 > b; b++) stepWithVerticalBias(O[a][b], Mh[a][b], .05, .99);
+                for (b = 0; 11 > b; b++) stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
             else if (2 == Yh[a])
-                for (b = 0; 11 > b; b++) stepWithVerticalBias(O[a][b], Mh[a][b], .01, .99);
+                for (b = 0; 11 > b; b++) stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .01, .99);
             else if (20 > Xh[a])
-                stepWithVerticalBias(O[a][0], Mh[a][0], -.2, .99),
-                    stepWithVerticalBias(O[a][1], Mh[a][1], 0, .99),
-                    stepWithVerticalBias(O[a][2], Mh[a][2], -.1, .99),
-                    stepWithVerticalBias(O[a][3], Mh[a][3], 0, .99),
-                    stepWithVerticalBias(O[a][4], Mh[a][4], 0, .99),
-                    stepWithVerticalBias(O[a][5], Mh[a][5], 0, .99),
-                    stepWithVerticalBias(O[a][6], Mh[a][6], 0, .99),
-                    stepWithVerticalBias(O[a][7], Mh[a][7], 0, .99),
-                    stepWithVerticalBias(O[a][8], Mh[a][8], 0, .99),
-                    stepWithVerticalBias(O[a][9], Mh[a][9], .3, .99),
-                    stepWithVerticalBias(O[a][10], Mh[a][10], .3, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][0], heroJointPrevPositionsByHero[a][0], -.2, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][1], heroJointPrevPositionsByHero[a][1], 0, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][2], heroJointPrevPositionsByHero[a][2], -.1, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][3], heroJointPrevPositionsByHero[a][3], 0, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][4], heroJointPrevPositionsByHero[a][4], 0, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][5], heroJointPrevPositionsByHero[a][5], 0, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][6], heroJointPrevPositionsByHero[a][6], 0, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][7], heroJointPrevPositionsByHero[a][7], 0, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][8], heroJointPrevPositionsByHero[a][8], 0, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][9], heroJointPrevPositionsByHero[a][9], .3, .99),
+                    stepWithVerticalBias(heroJointPositionsByHero[a][10], heroJointPrevPositionsByHero[a][10], .3, .99);
             else
-                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, accessoryJointStepDividerCol) ? stepWithVerticalBias(O[a][b], Mh[a][b], .05 / countAccessoryLvlBonuses(a, accessoryJointStepDividerCol), .99) : stepWithVerticalBias(O[a][b], Mh[a][b], .05, .99);
+                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, accessoryJointStepDividerCol) ? stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05 / countAccessoryLvlBonuses(a, accessoryJointStepDividerCol), .99) : stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
             if (0 == d && Wh[a] != areUpperJointsDisabled)
-                for (Wh[a] = areUpperJointsDisabled, b = Zh[a] = 0; 11 > b; b++) O[a][b].x += randFloatRange(-2, 2), O[a][b].y +=
+                for (Wh[a] = areUpperJointsDisabled, b = Zh[a] = 0; 11 > b; b++) heroJointPositionsByHero[a][b].x += randFloatRange(-2, 2), heroJointPositionsByHero[a][b].y +=
                     randFloatRange(-1, -3);
             if (Wh[a] != areUpperJointsDisabled) {
-                1 == currentStage && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), spawnPopup(O[a][0].x, O[a][0].y, 0, 5, 60, 65280));
-                bi == a && (O[bi][ci].x += .2 * (mouseXCurrent - O[bi][ci].x), O[bi][ci].y += .2 * (mouseYCurrent - O[bi][ci].y));
+                1 == currentStage && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, 5, 60, 65280));
+                bi == a && (heroJointPositionsByHero[bi][ci].x += .2 * (mouseXCurrent - heroJointPositionsByHero[bi][ci].x), heroJointPositionsByHero[bi][ci].y += .2 * (mouseYCurrent - heroJointPositionsByHero[bi][ci].y));
                 b = itemList[partyEquipmentTable[a][0]][itemAppearanceCol];
                 c = heroRangeValues[a];
-                d = O[a][1].x;
-                var k = O[a][1].y;
-                c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < heroEmitCooldown[a] && heroEmitCooldown[a]--, 0 == heroEmitCooldown[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, O[a][6].x, O[a][6].y, k), heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][attackCooldownCol])));
+                d = heroJointPositionsByHero[a][1].x;
+                var k = heroJointPositionsByHero[a][1].y;
+                c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < heroEmitCooldown[a] && heroEmitCooldown[a]--, 0 == heroEmitCooldown[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][6].y, k), heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][attackCooldownCol])));
                 if (0 < Zh[a]) Zh[a]--;
                 else if (bi != a && 0 != b && -1 != c) {
                     Zh[a] = heroAgiValues[a] + randIntRange(-1, 1);
@@ -2617,43 +2636,43 @@ function updatePlayerParty() {
                     k = 0; - 1 == heroEmitValues[a] ? (heroEmitCurrent[a] =
                         0, fi[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), fi[a] = 0, heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol) && (heroEmitCurrent[a] = heroEmitValues[a]));
                     if (0 != b)
-                        if (3 == b) Vec2Sub(g, Q[c][yi], O[a][5]), Vec2Sub(h, Q[c][yi], O[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), O[a][5].add(g), O[a][4].sub(g), f.set(O[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), O[a][6].add(h), O[a][3].sub(h), f.set(O[a][6]), k = 1540, ei[a] = 1), Uh[a].set(Q[c][yi]), Vh[a] = 5;
+                        if (3 == b) Vec2Sub(g, Q[c][yi], heroJointPositionsByHero[a][5]), Vec2Sub(h, Q[c][yi], heroJointPositionsByHero[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), heroJointPositionsByHero[a][5].add(g), heroJointPositionsByHero[a][4].sub(g), f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), heroJointPositionsByHero[a][6].add(h), heroJointPositionsByHero[a][3].sub(h), f.set(heroJointPositionsByHero[a][6]), k = 1540, ei[a] = 1), heroAimPosByHero[a].set(Q[c][yi]), Vh[a] = 5;
                         else if (4 == b) {
                             var k = 5 + fi[a],
                                 p = 3 +
                                     fi[a],
                                 t = 4 - fi[a];
-                            d < Q[c][yi].x ? (O[a][k].x += .5, O[a][p].x += .5, --O[a][t].x) : (O[a][k].x -= .5, O[a][p].x -= .5, O[a][t].x += 1);
-                            f.set(O[a][k]);
+                            d < Q[c][yi].x ? (heroJointPositionsByHero[a][k].x += .5, heroJointPositionsByHero[a][p].x += .5, --heroJointPositionsByHero[a][t].x) : (heroJointPositionsByHero[a][k].x -= .5, heroJointPositionsByHero[a][p].x -= .5, heroJointPositionsByHero[a][t].x += 1);
+                            f.set(heroJointPositionsByHero[a][k]);
                             k = k << 8 | 3;
                             ei[a] = fi[a]
-                        } else 5 == b ? (d < Q[c][yi].x ? (O[a][5].x += 1, O[a][6].x += 1, O[a][1].x -= 2) : (--O[a][5].x, --O[a][6].x, O[a][1].x += 2), O[a][5].y < O[a][6].y ? (f.set(O[a][5]), k = 1283, ei[a] = 0) : (f.set(O[a][6]), k = 1540, ei[a] = 1), applySeparationCorrection(O[a][5], O[a][6], 5, .1, .1)) : d < Q[c][yi].x ? O[a][5].x < O[a][6].x ? (O[a][5].x += 4, O[a][4].x -= 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x += 4, O[a][3].x -= 4, f.set(O[a][6]), k =
-                            1540, ei[a] = 1) : O[a][5].x > O[a][6].x ? (O[a][5].x -= 4, O[a][4].x += 4, f.set(O[a][5]), k = 1283, ei[a] = 0) : (O[a][6].x -= 4, O[a][3].x += 4, f.set(O[a][6]), k = 1540, ei[a] = 1);
-                    2 == b && (Sh[a] = 30);
+                        } else 5 == b ? (d < Q[c][yi].x ? (heroJointPositionsByHero[a][5].x += 1, heroJointPositionsByHero[a][6].x += 1, heroJointPositionsByHero[a][1].x -= 2) : (--heroJointPositionsByHero[a][5].x, --heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][1].x += 2), heroJointPositionsByHero[a][5].y < heroJointPositionsByHero[a][6].y ? (f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (f.set(heroJointPositionsByHero[a][6]), k = 1540, ei[a] = 1), applySeparationCorrection(heroJointPositionsByHero[a][5], heroJointPositionsByHero[a][6], 5, .1, .1)) : d < Q[c][yi].x ? heroJointPositionsByHero[a][5].x < heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x += 4, heroJointPositionsByHero[a][4].x -= 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (heroJointPositionsByHero[a][6].x += 4, heroJointPositionsByHero[a][3].x -= 4, f.set(heroJointPositionsByHero[a][6]), k =
+                            1540, ei[a] = 1) : heroJointPositionsByHero[a][5].x > heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x -= 4, heroJointPositionsByHero[a][4].x += 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (heroJointPositionsByHero[a][6].x -= 4, heroJointPositionsByHero[a][3].x += 4, f.set(heroJointPositionsByHero[a][6]), k = 1540, ei[a] = 1);
+                    2 == b && (heroAttackTrailTimerByHero[a] = 30);
                     partyBodyDrawOptions[a][ei[a]] = fi[a];
                     spawnHeroAttackPattern(a, k, fi[a], f.x, f.y, c)
                 }
                 bi != a && 0 != b && -1 == c && updatePartyMemberAI(a)
             }
-            Wh[a] == areUpperJointsDisabled ? (applySeparationCorrection(O[a][1], O[a][2], 3.6, .5, .5), applySeparationCorrection(O[a][3], O[a][5], 4.8, .5, .5), applySeparationCorrection(O[a][4], O[a][6], 4.8, .5, .5), applySeparationCorrection(O[a][7], O[a][9], 4.8, .5, .5), applySeparationCorrection(O[a][8], O[a][10], 4.8, .5, .5)) : (applySeparationCorrection(O[a][0], O[a][1], 3.6, .5, .5), applySeparationCorrection(O[a][1], O[a][2], 3.6, .5, .5), applySeparationCorrection(O[a][1], O[a][3], 4.8, .5, .5), applySeparationCorrection(O[a][1], O[a][4], 4.8,
-                .5, .5), applySeparationCorrection(O[a][3], O[a][5], 4.8, .5, .5), applySeparationCorrection(O[a][4], O[a][6], 4.8, .5, .5), applySeparationCorrection(O[a][2], O[a][7], 4.8, .5, .5), applySeparationCorrection(O[a][2], O[a][8], 4.8, .5, .5), applySeparationCorrection(O[a][7], O[a][9], 4.8, .5, .5), applySeparationCorrection(O[a][8], O[a][10], 4.8, .5, .5), applySeparationCorrection(O[a][7], O[a][8], 6, .1, .1));
+            Wh[a] == areUpperJointsDisabled ? (applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5)) : (applySeparationCorrection(heroJointPositionsByHero[a][0], heroJointPositionsByHero[a][1], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][3], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][4], 4.8,
+                .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][7], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][8], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][8], 6, .1, .1));
             0 < (Yh[a] & 1) && (Xh[a] = 0);
             for (b = Yh[a] = 0; 11 > b; b++) moveJointWithCollisions(a, b);
-            Rh[a] = Rh[a] + 1 & 15;
-            Nh[a][Rh[a]].set(O[a][5]);
-            Oh[a][Rh[a]].set(O[a][3]);
-            Ph[a][Rh[a]].set(O[a][6]);
-            Qh[a][Rh[a]].set(O[a][4]);
-            0 < Sh[a] && (Sh[a]--, b = itemList[partyEquipmentTable[a][fi[a]]][itemAppearanceCol], 2 != b && (Sh[a] = 0));
-            0 == Zh[a] && (f.set(O[a][1]), f.x += 0 == partyBodyDrawOptions[a][2] ? -50 : 50, Vec2Scale(f, .1),
-                Vec2Scale(Uh[a], .9), Uh[a].add(f));
+            heroPoseTrailWriteIdxByHero[a] = heroPoseTrailWriteIdxByHero[a] + 1 & 15;
+            heroJoint5HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][5]);
+            heroJoint3HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][3]);
+            heroJoint6HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][6]);
+            heroJoint4HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][4]);
+            0 < heroAttackTrailTimerByHero[a] && (heroAttackTrailTimerByHero[a]--, b = itemList[partyEquipmentTable[a][fi[a]]][itemAppearanceCol], 2 != b && (heroAttackTrailTimerByHero[a] = 0));
+            0 == Zh[a] && (f.set(heroJointPositionsByHero[a][1]), f.x += 0 == partyBodyDrawOptions[a][2] ? -50 : 50, Vec2Scale(f, .1),
+                Vec2Scale(heroAimPosByHero[a], .9), heroAimPosByHero[a].add(f));
             0 < Vh[a] && Vh[a]--;
             if (Yh[a] & 2) {
                 if (0 == ji[a])
-                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(O[a][b].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(O[a][b].y, 0, 8 * stageHeight - 1) >> 3, 30 == stageTileData[c][d] && spawnProjectile(a, -1, O[a][b].x, O[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                d = clamp(O[a][0].x, 0, 8 * stageWidth - 1) >> 3;
-                c = clamp(O[a][0].y, 0, 8 * stageHeight - 1) >> 3;
-                31 == stageTileData[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), spawnProjectile(a, -1, O[a][0].x + b, O[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3, 30 == stageTileData[c][d] && spawnProjectile(a, -1, heroJointPositionsByHero[a][b].x, heroJointPositionsByHero[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                d = clamp(heroJointPositionsByHero[a][0].x, 0, 8 * stageWidth - 1) >> 3;
+                c = clamp(heroJointPositionsByHero[a][0].y, 0, 8 * stageHeight - 1) >> 3;
+                31 == stageTileData[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), spawnProjectile(a, -1, heroJointPositionsByHero[a][0].x + b, heroJointPositionsByHero[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
             } else ji[a] = 0;
             5 == currentStage && Yh[a] & 1 && (stageConditionBitmask |= 1);
@@ -2676,10 +2695,10 @@ function drawPlayerParty() {
         0 < bh[a] ? (d = 1989840, f = 5934817) : 0 < ch[a] ? (d = 9840, f = 1989840) : 0 < dh[a] && (d = 3381504, f = 3407616);
         0 < $h[a] && ($h[a]--, f = 16711680);
         fh = isSolidRender = 1;
-        for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(O[a][c].x), floor(O[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
+        for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(heroJointPositionsByHero[a][c].x), floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         isSolidRender = fh = 0;
-        drawHero(a, O[a], partyBodyDrawOptions[a][0], partyBodyDrawOptions[a][1], d, f, Wh[a]);
-        if (0 < Sh[a]) {
+        drawHero(a, heroJointPositionsByHero[a], partyBodyDrawOptions[a][0], partyBodyDrawOptions[a][1], d, f, Wh[a]);
+        if (0 < heroAttackTrailTimerByHero[a]) {
             b = partyEquipmentTable[a][fi[a]];
             c = itemList[b][projectileSpeedScaleCol];
             d = itemList[b][projectileDelayRangeCol];
@@ -2688,10 +2707,10 @@ function drawPlayerParty() {
             d &= 16777215;
             for (b = 0; 10 > b; b++) {
                 var t, l, n;
-                t = Th[0 + ei[a]];
-                g = Th[2 + ei[a]];
-                l = Rh[a] - b - 0 & 15;
-                n = Rh[a] -
+                t = heroAttackTrailHistorySets[0 + ei[a]];
+                g = heroAttackTrailHistorySets[2 + ei[a]];
+                l = heroPoseTrailWriteIdxByHero[a] - b - 0 & 15;
+                n = heroPoseTrailWriteIdxByHero[a] -
                     b - 1 & 15;
                 h.x = t[a][l].x - g[a][l].x;
                 h.y = t[a][l].y - g[a][l].y;
@@ -2750,11 +2769,11 @@ function drawPlayerParty() {
                 isSolidRender = 0
             }
         }
-        0 < Hh && (d = ~~O[a][0].x + 0, f = ~~O[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
+        0 < Hh && (d = ~~heroJointPositionsByHero[a][0].x + 0, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
             drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 15, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 18, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
-        0 < di && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
+        0 < di && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
             2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
-        0 < Zg && (d = ~~O[a][0].x + 0 - 2, f = ~~O[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
+        0 < Zg && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
             2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
     }
     0 < Hh ? Hh-- : 0 < di ? di-- : 0 < Zg && Zg--
@@ -2869,10 +2888,10 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                         drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p)
                     }
                 } else {
-                    Vec2Sub(baseDrawPos, Uh[heroIdx], t);
+                    Vec2Sub(baseDrawPos, heroAimPosByHero[heroIdx], t);
                     Vec2Norm(baseDrawPos);
                     if (0 < Vh[heroIdx] && ei[heroIdx] == toolIdx) {
-                        drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, Uh[heroIdx].x, Uh[heroIdx].y, p);
+                        drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, heroAimPosByHero[heroIdx].x, heroAimPosByHero[heroIdx].y, p);
                     } else {
                         drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, t.x + 20 * baseDrawPos.x, t.y + 20 * baseDrawPos.y, p)
                     }
@@ -3167,8 +3186,8 @@ function updateStageEdgeSpawns() { // wg
     if (12 == gameScreenState)
         for (a = 0; a < partyMemberCount; a++)
             if (Wh[a] != areUpperJointsDisabled) {
-                var b = O[a][1].x,
-                    c = O[a][1].y;
+                var b = heroJointPositionsByHero[a][1].x,
+                    c = heroJointPositionsByHero[a][1].y;
                 if (4 > b && 0 < stageListArray[currentStage][stageAttr6]) {
                     lastStageIdx = stageListArray[currentStage][stageAttr6];
                     for (var d = 0; 4 > d; d++) partySpawnXs[d] = 77, partySpawnYs[d] = c >> 3
@@ -3237,7 +3256,7 @@ function drawGameStage() {
     else if (17 == currentStage) 70 == globalFrameCounter % 360 && spawnProjectile(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     else if (18 == currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
-            for (h = 0; h < partyMemberCount && !(b = clamp(O[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(O[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
+            for (h = 0; h < partyMemberCount && !(b = clamp(heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
             h == partyMemberCount || globalFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         }
@@ -3287,14 +3306,14 @@ function updateStageTick() { // xg
         t = 59,
         l = 0;
     globalFrameCounter++; - 1 != bi && (
-        b = clamp(O[bi][2].x, 0, 8 * stageWidth - 1) >> 3,
-        f = clamp(O[bi][2].y, 0, 8 * stageHeight - 1) >> 3
+        b = clamp(heroJointPositionsByHero[bi][2].x, 0, 8 * stageWidth - 1) >> 3,
+        f = clamp(heroJointPositionsByHero[bi][2].y, 0, 8 * stageHeight - 1) >> 3
     );
-    g = clamp(O[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
-    h = clamp(O[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
+    g = clamp(heroJointPositionsByHero[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
+    h = clamp(heroJointPositionsByHero[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
     for (a = 0; a < partyMemberCount; a++)
-        c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3,
-            d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3,
+        c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3,
+            d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3,
             k > c && (k = c),
             p < c && (p = c),
             t > d && (t = d),
@@ -3336,7 +3355,7 @@ function updateStageTick() { // xg
             0 == totalSpawnedByGroup[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f && (spawnEnemy(14, 41, 15, 2), spawnEnemy(16, 41, 15, 2), spawnEnemy(18, 41, 15, 2), activeSpawnCounts[2] = 3, totalSpawnedByGroup[2] = 3);
             1 == stageEventFlags[1] ? fillStageTilesRect(16, 41, 16, 41, 63) : 32 == stageTileData[41][16] ? 0 == activeSpawnCounts[2] && 0 != totalSpawnedByGroup[2] && fillStageTilesRect(16, 41, 16, 41, 55) : 55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (fillStageTilesRect(16, 41, 16, 41, 63), spawnDrop(132, 332, 3, 1, 0));
             if (isBadgeIncompleteForCurrentStage(7)) {
-                for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
+                for (a = b = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
                 3 == b && IncrementBadgeCount(7)
             }
             0 != totalSpawnedByGroup[2] && consecutiveConditionFrames++
@@ -3354,7 +3373,7 @@ function updateStageTick() { // xg
         } else if (5 == currentStage) {
             if (3 == partyMemberCount && 0 == activeSpawnCounts[0] && 0 == activeSpawnCounts[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCounts[0] || 0 != activeSpawnCounts[1] || stageConditionBitmask & 2 || IncrementBadgeCount(16),
                 !isBadgeIncompleteForCurrentStage(17) || 0 != activeSpawnCounts[0] || 0 != activeSpawnCounts[1] || stageConditionBitmask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
-                for (a = b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
+                for (a = b = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
                 4 == b && IncrementBadgeCount(19)
             }
         } else if (6 == currentStage) 12 == gameScreenState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (lastStageIdx = 1, partySpawnXs[0] = 18, partySpawnYs[0] = 24, partySpawnXs[1] = 20, partySpawnYs[1] = 24, partySpawnXs[2] = 29, partySpawnYs[2] = 24, partySpawnXs[3] = 31, partySpawnYs[3] = 24);
@@ -3377,7 +3396,7 @@ function updateStageTick() { // xg
         } else if (8 == currentStage) {
             30 > totalSpawnedByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > randFloat(60) && (a = [5, 18, 3, 20], g = [18, 16, 21, 22], b = randInt(4), spawnEnemy(a[b], g[b], 32, 3), activeSpawnCounts[3]++, totalSpawnedByGroup[3]++);
             if (isBadgeIncompleteForCurrentStage(27)) {
-                for (a = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (stageConditionBitmask = 1);
+                for (a = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (stageConditionBitmask = 1);
                 0 != activeSpawnCounts[4] || stageConditionBitmask || IncrementBadgeCount(27)
             }
             if (isBadgeIncompleteForCurrentStage(28)) {
@@ -3394,7 +3413,7 @@ function updateStageTick() { // xg
             isBadgeIncompleteForCurrentStage(32) && 100 <= enemyCount && IncrementBadgeCount(32);
             if (isBadgeIncompleteForCurrentStage(33)) {
                 for (a =
-                    b = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 26 == stageTileData[d][c] && b++;
+                    b = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 26 == stageTileData[d][c] && b++;
                 4 == b && IncrementBadgeCount(33)
             }
             isBadgeIncompleteForCurrentStage(34) && 10 == lastStageIdx && 1 >= g && 41 <= h && IncrementBadgeCount(34)
@@ -3441,7 +3460,7 @@ function updateStageTick() { // xg
                 !stageFlagUsesCount && IncrementBadgeCount(61);
             !isBadgeIncompleteForCurrentStage(62) || 0 != activeSpawnCounts[10] || stageConditionBitmask & 1 || IncrementBadgeCount(62);
             if (isBadgeIncompleteForCurrentStage(63)) {
-                for (a = 0; a < partyMemberCount; a++) c = clamp(O[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(O[a][2].y, 0, 8 * stageHeight - 1) >> 3, 58 <= c && 76 >= c && 36 <= d && 42 >= d && (stagePresenceOrEncounterCounter = 1);
+                for (a = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 58 <= c && 76 >= c && 36 <= d && 42 >= d && (stagePresenceOrEncounterCounter = 1);
                 0 != activeSpawnCounts[9] || stagePresenceOrEncounterCounter || IncrementBadgeCount(63)
             }
             isBadgeIncompleteForCurrentStage(64) && 0 == p && 0 < f && 0 < k && 100 == activeSpawnCounts[11] && IncrementBadgeCount(64)
@@ -3998,12 +4017,12 @@ function spawnEnemyLoot(a, b, c, d) { // bl
             if (!p) spawnProjectile(b, k, 0, 0, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (1 == p) spawnProjectile(b, k, c, d, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (2 == p)
-                for (gb = c, jb = d, La = gb < O[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) spawnProjectile(b, k, gb, jb, La, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+                for (gb = c, jb = d, La = gb < heroJointPositionsByHero[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) spawnProjectile(b, k, gb, jb, La, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (3 == p || 6 == p)
-                for (3 == p ? Vec2Set(itemPos, O[zc][2].x - Q[a][yi].x, O[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
+                for (3 == p ? Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - Q[a][yi].x, heroJointPositionsByHero[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
                     vc, wc, xc, yc, selectedItem), a += itemIdx;
             else if (4 == p)
-                for (p = 0; p < Qb; p++) Vec2Set(itemPos, O[zc][2].x - Q[a][0].x, O[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+                for (p = 0; p < Qb; p++) Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - Q[a][0].x, heroJointPositionsByHero[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (5 == p)
                 for (p = 0; p < Qb; p++) gb = c + randFloatRange(-La, La), jb = d + randFloatRange(-La, 0), spawnProjectile(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
                     hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
@@ -4113,8 +4132,8 @@ function enemyBoxSnakeBehavior(enemyIdx) {
         stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
         stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
         stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
-        var d = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != d && (Q[enemyIdx][0].x += O[d][2].x < Q[enemyIdx][0].x ? -.001 : .001);
-        0 < (Dk[enemyIdx] & 2) && (b = 0, -1 != d ? b = O[d][2].x < Q[enemyIdx][0].x ? -1 : 1 : b = randSelect(-1, 1), 10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(.4, .6) * b, Q[enemyIdx][0].y += randFloatRange(-1.5, -2)));
+        var d = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != d && (Q[enemyIdx][0].x += heroJointPositionsByHero[d][2].x < Q[enemyIdx][0].x ? -.001 : .001);
+        0 < (Dk[enemyIdx] & 2) && (b = 0, -1 != d ? b = heroJointPositionsByHero[d][2].x < Q[enemyIdx][0].x ? -1 : 1 : b = randSelect(-1, 1), 10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(.4, .6) * b, Q[enemyIdx][0].y += randFloatRange(-1.5, -2)));
         applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
         applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 0, 0, .01);
         d =
@@ -4170,7 +4189,7 @@ function enemyBatBehavior(enemyIdx) {
         stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99);
         Vec2Set(c, 0, 0);
         var d = findNearestPartyMemberInRect(Q[enemyIdx][0].x,
-            Q[enemyIdx][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, O[d][2], Q[enemyIdx][0]), d = Vec2Norm(c), d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr36] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
+            Q[enemyIdx][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, heroJointPositionsByHero[d][2], Q[enemyIdx][0]), d = Vec2Norm(c), d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr36] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
         Q[enemyIdx][0].add(c);
         10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(-1, 1), Q[enemyIdx][0].y += randFloatRange(-1, 1));
         Q[enemyIdx][2].x += randFloatRange(0, -.1);
@@ -4264,7 +4283,7 @@ function enemyStickmanBehavior(enemyIdx) {
         enemyUpdateFuncIdxArray[enemyIdx] == tk ? (stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.2, .99), stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], -.1, .99), stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), stepWithVerticalBias(Q[enemyIdx][4], Z[enemyIdx][4], 0, .99), stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), stepWithVerticalBias(Q[enemyIdx][9], Z[enemyIdx][9], .3, .99), stepWithVerticalBias(Q[enemyIdx][10], Z[enemyIdx][10], .3, .99)) : enemyUpdateFuncIdxArray[enemyIdx] == Ak && (stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.02, .99), stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], -.01, .99), stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), stepWithVerticalBias(Q[enemyIdx][4],
             Z[enemyIdx][4], 0, .99), stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), stepWithVerticalBias(Q[enemyIdx][9], Z[enemyIdx][9], .1, .99), stepWithVerticalBias(Q[enemyIdx][10], Z[enemyIdx][10], .1, .99));
         if (50 > randFloat(100) && 0 < (Dk[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != c ? Y[enemyIdx] = O[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
+            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != c ? Y[enemyIdx] = heroJointPositionsByHero[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
             var d = c = 1,
                 f = 0;
             enemyUpdateFuncIdxArray[enemyIdx] == Ak && (c = .25, d = .3, f = .25);
@@ -4356,9 +4375,9 @@ function enemyHangingTreeBehavior(enemyIdx) {
         stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
         stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
         stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
-        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != b && (Q[enemyIdx][0].x += O[b][2].x < Q[enemyIdx][0].x ? -.001 : .001);
+        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != b && (Q[enemyIdx][0].x += heroJointPositionsByHero[b][2].x < Q[enemyIdx][0].x ? -.001 : .001);
         if (0 < (Dk[enemyIdx] & 2)) {
-            var c = 0; - 1 != b ? c = O[b][2].x < Q[enemyIdx][0].x ? -1 : 1 : c = randSelect(-1, 1);
+            var c = 0; - 1 != b ? c = heroJointPositionsByHero[b][2].x < Q[enemyIdx][0].x ? -1 : 1 : c = randSelect(-1, 1);
             10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(.4, .6) * c, Q[enemyIdx][0].y += randFloatRange(-1.5, -2))
         }
         applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
@@ -4482,7 +4501,7 @@ function enemyUpdateFunc8(enemyIdx) {
         stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], -.1, .99);
         stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], .8, .99);
         if (50 > randFloat(100) && 0 < (Dk[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 500, 25, 0); - 1 != c ? Y[enemyIdx] = O[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
+            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 500, 25, 0); - 1 != c ? Y[enemyIdx] = heroJointPositionsByHero[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
             1 == Y[enemyIdx] ? (Q[enemyIdx][2].x < Q[enemyIdx][6].x ? (Q[enemyIdx][6].x += randFloat(-1), Q[enemyIdx][6].y += randFloatRange(-1, -1)) : (Q[enemyIdx][2].x += randFloat(-1), Q[enemyIdx][2].y += randFloatRange(-1, -1)), Q[enemyIdx][4].x < Q[enemyIdx][8].x ? (Q[enemyIdx][8].x += randFloat(-1), Q[enemyIdx][8].y += randFloatRange(-1, -1)) : (Q[enemyIdx][4].x += randFloat(-1), Q[enemyIdx][4].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (--Q[enemyIdx][0].x, Q[enemyIdx][0].y -= 3)) : (Q[enemyIdx][2].x < Q[enemyIdx][6].x ?
                 (Q[enemyIdx][2].x += randFloat(1), Q[enemyIdx][2].y += randFloatRange(-1, -1)) : (Q[enemyIdx][6].x += randFloat(1), Q[enemyIdx][6].y += randFloatRange(-1, -1)), Q[enemyIdx][4].x < Q[enemyIdx][8].x ? (Q[enemyIdx][4].x += randFloat(1), Q[enemyIdx][4].y += randFloatRange(-1, -1)) : (Q[enemyIdx][8].x += randFloat(1), Q[enemyIdx][8].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (Q[enemyIdx][0].x += 1, Q[enemyIdx][0].y -= 3))
         }
@@ -4540,7 +4559,7 @@ function enemyUpdateFunc9(enemyIdx) {
         stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
         for (b = 1; 5 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 0, .9);
         Vec2Set(c, 0, 0);
-        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, O[b][2], Q[enemyIdx][0]), b = Vec2Norm(c), b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr36] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
+        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, heroJointPositionsByHero[b][2], Q[enemyIdx][0]), b = Vec2Norm(c), b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyAttr36] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
         b = getStageTileAt(Q[enemyIdx][0].x, Q[enemyIdx][0].y);
         31 != b && (c.y += .03);
         b = getStageTileAt(Q[enemyIdx][0].x - 8, Q[enemyIdx][0].y);
@@ -4868,13 +4887,13 @@ function updateProjectiles() { // Bg
         else if (0 < vl[a]) vl[a]--;
         else if (1 == ll[a]) xl[a]++, xl[a] >= yl[a] && deleteProjectile(a--);
         else {
-            0 < El[a] && (b = El[a], b = 0 <= hl[a] ? findEnemyInArea(jl[a].x, jl[a].y, b, b) : findNearestPartyMemberInRect(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, O[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + randFloatRange(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
+            0 < El[a] && (b = El[a], b = 0 <= hl[a] ? findEnemyInArea(jl[a].x, jl[a].y, b, b) : findNearestPartyMemberInRect(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, heroJointPositionsByHero[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + randFloatRange(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
             0 == zl[a] ? kl[a].y += .01 * Al[a] : (-1 == zl[a] ?
-                d.set(jl[a]) : (c = hl[a], l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, Vec2Sub(d, jl[a], l[c][zl[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -Al[a]), kl[a].add(d));
+                d.set(jl[a]) : (c = hl[a], l = 0 <= c ? heroJointPositionsByHero : Q, c = 0 <= c ? c : -c - 1, Vec2Sub(d, jl[a], l[c][zl[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -Al[a]), kl[a].add(d));
             Vec2Scale(kl[a], .01 * Bl[a]);
             b = 0;
             0 > il[a] ? b = moveProjectileWithCollision(a, d) : jl[a].add(kl[a]);
-            0 > il[a] ? (h.set(jl[a]), k.set(kl[a])) : (c = hl[a], p = il[a] >> 8, t = il[a] & 255, l = 0 <= c ? O : Q, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], jl[a]), k.set(kl[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * jl[a].x + g.x * jl[a].y + l[c][p].x, h.y = f.y * jl[a].x + g.y * jl[a].y + l[c][p].y, k.x = f.x * kl[a].x + g.x * kl[a].y, k.y = f.y * kl[a].x + g.y * kl[a].y));
+            0 > il[a] ? (h.set(jl[a]), k.set(kl[a])) : (c = hl[a], p = il[a] >> 8, t = il[a] & 255, l = 0 <= c ? heroJointPositionsByHero : Q, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], jl[a]), k.set(kl[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * jl[a].x + g.x * jl[a].y + l[c][p].x, h.y = f.y * jl[a].x + g.y * jl[a].y + l[c][p].y, k.x = f.x * kl[a].x + g.x * kl[a].y, k.y = f.y * kl[a].x + g.y * kl[a].y));
             p = 1;
             1 == Jl[a] && 0 == Ml[a] &&
                 Kl[a] <= randFloat(60) && (p = 0);
@@ -4931,7 +4950,7 @@ function drawProjectiles() { // Eg
             0 < wl[a] && (d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215);
             isSolidRender = pl[a];
             fh = 1;
-            0 > il[a] ? (p.set(jl[a]), t.set(kl[a])) : (l = hl[a], n = il[a] >> 8, w = il[a] & 255, B = 0 <= l ? O : Q, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], jl[a]), t.set(kl[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * jl[a].x + g.x * jl[a].y + B[l][n].x, p.y =
+            0 > il[a] ? (p.set(jl[a]), t.set(kl[a])) : (l = hl[a], n = il[a] >> 8, w = il[a] & 255, B = 0 <= l ? heroJointPositionsByHero : Q, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], jl[a]), t.set(kl[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * jl[a].x + g.x * jl[a].y + B[l][n].x, p.y =
                 f.y * jl[a].x + g.y * jl[a].y + B[l][n].y, t.x = f.x * kl[a].x + g.x * kl[a].y, t.y = f.y * kl[a].x + g.y * kl[a].y));
             if (0 == ml[a]) drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, ql[a], rl[a], b, c, 16, 16, d);
             else if (1 == ml[a]) {

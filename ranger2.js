@@ -3111,17 +3111,17 @@ function loadLevelData(a) {
 }
 mainWindow.fff = getStageTileAt;
 
-function getStageTileAt(x, y) { // ri
-    x = clamp(x, 0, 8 * stageWidth - 1) >> 3; // divide by 8
-    y = clamp(y, 0, 8 * stageHeight - 1) >> 3;
-    return stageTileData[y][x]
+function getStageTileAt(a, b) { // ri
+    a = clamp(a, 0, 8 * stageWidth - 1) >> 3;
+    b = clamp(b, 0, 8 * stageHeight - 1) >> 3;
+    return stageTileData[b][a]
 }
 mainWindow.fff = fillStageTilesRect;
 
-function fillStageTilesRect(tileX0, tileY0, tileX1, tileX1, tileId) { // dj
-    let _row;
-    for (_row = tileY0; _row <= tileX1; _row++)
-        for (tileY0 = tileX0; tileY0 <= tileX1; tileY0++) stageTileData[_row][tileY0] = tileId
+function fillStageTilesRect(a, b, c, d, f) { // dj
+    var g;
+    for (g = b; g <= d; g++)
+        for (b = a; b <= c; b++) stageTileData[g][b] = f
 }
 mainWindow.fff = updateStageEdgeSpawns;
 
@@ -5436,7 +5436,7 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
             255, x = (((replaceColAlt >> 16 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((replaceColAlt >> 8 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] & 255, y = (((replaceColAlt & 255) - y) * blendAmount >> 8) + y), frameBufferArray[B] = x << 16 | K << 8 | y))
 }
 
-function gh(a, b, c, d, f, g) { // gh
+function gh(a, b, c, d, f, g) { // fl
     var h = 16,
         k = 16,
         p, t, l = itemsSpriteSheet.g,

@@ -158,7 +158,7 @@ mainWindow.fff = resetUIStates;
 function resetUIStates() {
     screenStateTimer = 0;
     memberUIVisibleBackup = inventoryUIVisibleBackup = bestiaryUIVisibleBackup = badgesUIVisibleBackup = optionsUIVisibleBackup = shrineUIVisibleBackup = clickInUI = memberUIVisible = inventoryUIVisible = bestiaryUIVisible = badgesUIVisible = optionsUIVisible = shrineUIVisible = false;
-    comboMultBonus = Hc = Ic = selectingHero = selectedStatIndex = inventoryTabIdx = inventoryPageIdx = inventorySlotIdx  = 0
+    comboMultBonus = comboCount = comboWindowTimer = selectingHero = selectedStatIndex = inventoryTabIdx = inventoryPageIdx = inventorySlotIdx  = 0
 }
 
 var inventoryItemLists = [
@@ -1299,7 +1299,7 @@ function drawCanvas() {
                 if (0 == b) {
                     screenStateTimer = 0;
                     gameScreenState = 30;
-                    comboMultBonus = Hc = Ic = 0;
+                    comboMultBonus = comboCount = comboWindowTimer = 0;
                     c = floor(partyGold / 10 / partyMemberCount);
                     if (0 < c) {
                         for (a = 0; a < partyMemberCount; a++)
@@ -1502,13 +1502,13 @@ function updatePartyStats() {
             }
         }
     partyEnemyHpBonusPercent = partyDropChanceBonusPercent = partyRewardValueBonusPercent = 0;
-    Vg = 180;
+    comboWindowMaxFrames = 180;
     for (let hidx = 0; 4 > hidx; hidx++)
         heroHasAccessoryEffect(hidx, accessoryRewardValueBonusCol) && (partyRewardValueBonusPercent += countAccessoryLvlBonuses(hidx, accessoryRewardValueBonusCol)),
             heroHasAccessoryEffect(hidx, accessoryDropChanceBonusCol) && (partyDropChanceBonusPercent += countAccessoryLvlBonuses(hidx, accessoryDropChanceBonusCol)),
             heroHasAccessoryEffect(hidx, accessoryEnemyHpBonusCol) && (partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, accessoryEnemyHpBonusCol)),
-            heroHasAccessoryEffect(hidx, accessoryComboMaxIncreaseCol) && (Vg += 60 * countAccessoryLvlBonuses(hidx, accessoryComboMaxIncreaseCol));
-    Ic = clamp(Ic, 0, Vg);
+            heroHasAccessoryEffect(hidx, accessoryComboMaxIncreaseCol) && (comboWindowMaxFrames += 60 * countAccessoryLvlBonuses(hidx, accessoryComboMaxIncreaseCol));
+    comboWindowTimer = clamp(comboWindowTimer, 0, comboWindowMaxFrames);
     for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
 }
 mainWindow.fff = handleInventoryButton;
@@ -1563,30 +1563,30 @@ function drawGameUI() {
     drawText(gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
 
     drawRect(f + 264, g, 90, 11, 2236962); // combo bar bg
-    drawRect(f + 264, g, floor(90 * Ic / Vg), 11, 12281344); // combo bar fg
-    p = 10 + floor(Hc / 10);
-    h = "CB " + Hc;
+    drawRect(f + 264, g, floor(90 * comboWindowTimer / comboWindowMaxFrames), 11, 12281344); // combo bar fg
+    p = 10 + floor(comboCount / 10);
+    h = "CB " + comboCount;
     gameFontMed.a = 4;
     drawText(gameFontMed, f + 265, g + 2, h, 12281344, 0); // combo count 
     //10 <= Hc && (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
-    if (Hc >= 10) {
+    if (comboCount >= 10) {
         gameFontMed.a = 4;
         drawText(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0);
     }
     // 0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + partyMemberCount - 1) / partyMemberCount), partyGold = clamp(partyGold + $g * partyMemberCount, 0, 9999999), A(1) && 100 <= Hc && IncrementBadgeCount(1), A(26) && 300 <= Hc && IncrementBadgeCount(26), A(36) && 500 <= Hc && IncrementBadgeCount(36), A(56) && 600 <= Hc && IncrementBadgeCount(56)), Hc = 0));
-    if (Ic > 0) {
-        Ic--;
-        if (Ic == 0) {
-            if (Hc >= 4) {
-                Zg = 60;
-                $g = floor((Hc * p / 10 + partyMemberCount - 1) / partyMemberCount);
-                partyGold = clamp(partyGold + $g * partyMemberCount, 0, 9999999);
-                isBadgeIncompleteForCurrentStage(1) && 100 <= Hc && IncrementBadgeCount(1);
-                isBadgeIncompleteForCurrentStage(26) && 300 <= Hc && IncrementBadgeCount(26);
-                isBadgeIncompleteForCurrentStage(36) && 500 <= Hc && IncrementBadgeCount(36);
-                isBadgeIncompleteForCurrentStage(56) && 600 <= Hc && IncrementBadgeCount(56);
+    if (comboWindowTimer > 0) {
+        comboWindowTimer--;
+        if (comboWindowTimer == 0) {
+            if (comboCount >= 4) {
+                comboPopupTimer = 60;
+                comboGoldPayoutPerHero = floor((comboCount * p / 10 + partyMemberCount - 1) / partyMemberCount);
+                partyGold = clamp(partyGold + comboGoldPayoutPerHero * partyMemberCount, 0, 9999999);
+                isBadgeIncompleteForCurrentStage(1) && 100 <= comboCount && IncrementBadgeCount(1);
+                isBadgeIncompleteForCurrentStage(26) && 300 <= comboCount && IncrementBadgeCount(26);
+                isBadgeIncompleteForCurrentStage(36) && 500 <= comboCount && IncrementBadgeCount(36);
+                isBadgeIncompleteForCurrentStage(56) && 600 <= comboCount && IncrementBadgeCount(56);
             }
-            Hc = 0;
+            comboCount = 0;
         }
     }
     p = 100 + comboMultBonus;
@@ -1611,7 +1611,7 @@ function drawGameUI() {
                 l[b].y = g + t[b];
 
         c = 16777215;
-        0 < bh[hidx] ? c = 5934817 : 0 < ch[hidx] ? c = 1989840 : 0 < dh[hidx] && (c = 3407616);
+        0 < heroStatusTintTimer[hidx] ? c = 5934817 : 0 < heroSkipTimer[hidx] ? c = 1989840 : 0 < heroTimedDamageTimer[hidx] && (c = 3407616);
         drawHero(hidx, l, 0, 1, 15908203, c, 2);
 
         drawText(gameFontSmall, f + hidx * d + 28, g, "P" + (hidx + 1), 3355443, -1);
@@ -2074,7 +2074,7 @@ function drawGameUI() {
         buttonCheck(f + 0, g + 64 - 2, 192, 12) && (drawText(gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16711680, 0), isMouseClicked && (cliffStopEnabled = 1 - cliffStopEnabled));
         1 == currentStage ? drawTextCentered(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : drawTextCentered(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
-        h = stageListArray[currentStage][stageAttr3];
+        h = stageListArray[currentStage][stageReturnCost];
         drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == currentStage ? gameScreenState = 0 : (ug = 0, gameScreenState = 10, currentStage = 1, partySpawnXs[0] = 20, partySpawnXs[1] = 28, partySpawnXs[2] = 36, partySpawnXs[3] = 44, partySpawnYs[0] = 40, partySpawnYs[1] = 40, partySpawnYs[2] = 40, partySpawnYs[3] = 40), saveGame(), optionsUIVisible = false)
     }
     if (shrineUIVisible) {
@@ -2103,7 +2103,7 @@ function drawGameUI() {
                     partyEXPAccum = LevelExpThresholds[partyLevel];
                     partyLevel++;
                     for (b = 0; 4 > b; b++) partySP[b] += 2;
-                    Hh = 60
+                    levelUpPopupTimer = 60
                 }
     }
     gameFontSmall.a = 2;
@@ -2159,42 +2159,42 @@ var heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index p
 
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroAimPosByHero[iterIdxTemp_1] = new Vec2;
 
-var Vh = Array(4),
-    Wh = new Int32Array(4),
-    Xh = new Int32Array(4),
-    Yh = new Int32Array(4),
-    Zh = new Int32Array(4),
-    $h = new Int32Array(4),
-    ai = new Int32Array(4),
-    bi = -1,
-    ci = 0,
-    Hh = 0,
-    di = 0,
-    Zg = 0,
-    Ic = 0,
-    Vg = 0,
-    Hc = 0,
-    $g = 0,
-    comboMultBonus = 0,
-    ei = new Int32Array(4),
-    fi = new Int32Array(4),
-    partyBodyDrawOptions = [
+var heroAttackLineTimer = Array(4),
+    heroUpperJointMode = new Int32Array(4), // Wh, per-hero rig mode flag that switches between normal and upper-joint-disabled updates.
+    heroPoseAgeFrames = new Int32Array(4), // Xh, per-hero pose age counter used while the rig settles after movement or impact.
+    heroTileContactFlags = new Int32Array(4), // Yh, per-hero tile-contact flags set while joint movement hits stage geometry.
+    heroAttackCooldownFrames = new Int32Array(4), // Zh, per-hero attack cooldown timer that gates target tracking and attack cadence.
+    heroHitFlashTimer = new Int32Array(4), // $h, per-hero hit flash timer used to tint the hero when damage lands.
+    heroEnemySeekTimer = new Int32Array(4), // ai, per-hero AI move timer that spaces out enemy-approach adjustments.
+    draggedHeroIndex = -1, // bi, dragged hero index for mouse joint selection.
+    draggedJointIndex = 0, // ci, dragged joint index for mouse joint selection.
+    levelUpPopupTimer = 0, // Hh, level-up popup timer.
+    stageClearPopupTimer = 0, // di, stage-clear popup timer.
+    comboPopupTimer = 0, // Zg, combo popup timer.
+    comboWindowTimer = 0, // Ic, combo window timer that counts down after each hit.
+    comboWindowMaxFrames = 0, // Vg, maximum combo window length in frames.
+    comboCount = 0, // Hc, combo count shown in the UI and used for payout checks.
+    comboGoldPayoutPerHero = 0, // $g, per-hero combo gold payout after a combo ends.
+    comboMultBonus = 0, // comboMultBonus, extra percent added to combo payout.
+    attackTrailSideIdx = new Int32Array(4), // ei, per-hero active attack-side index used for trail and weapon selection.
+    attackWeaponSlotIdx = new Int32Array(4), // fi, per-hero active weapon slot index used by the current attack sequence.
+    heroBodyDrawStateByHero = [ // partyBodyDrawOptions, per-hero body draw state: two attack-side slots plus facing.
         [0, 1, 0],
         [0, 1, 0],
         [0, 1, 0],
         [0, 1, 0]
     ],
-    ch = new Int32Array(4),
-    hi = new Int32Array(4),
-    dh = new Int32Array(4),
-    ii = new Int32Array(4),
-    bh = new Int32Array(4),
-    ji = new Int32Array(4);
+    heroSkipTimer = new Int32Array(4), // ch, per-hero skip timer that can block updates entirely.
+    heroSkipChancePercent = new Int32Array(4), // hi, per-hero skip chance used with ch during attackType 2 effects.
+    heroTimedDamageTimer = new Int32Array(4), // dh, per-hero damage-over-time timer.
+    heroTimedDamageAmount = new Int32Array(4), // ii, per-hero damage-over-time amount used to drain LP each tick.
+    heroStatusTintTimer = new Int32Array(4), // bh, per-hero status tint timer used for the buff-colored hero draw.
+    heroTileEffectLatch = new Int32Array(4); // ji, per-hero tile-effect latch used to fire one-off stage tile projectiles.
 mainWindow.fff = resetDragSelection;
 
 function resetDragSelection() { // ki
-    bi = -1;
-    ci = 0
+    draggedHeroIndex = -1;
+    draggedJointIndex = 0
 }
 mainWindow.fff = resetHeroPose;
 
@@ -2214,21 +2214,21 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     heroPoseTrailWriteIdxByHero[heroIdx] = 0;
     heroAttackTrailTimerByHero[heroIdx] = 0;
     Vec2Set(heroAimPosByHero[heroIdx], 320, 240);
-    Vh[heroIdx] = 0;
-    Wh[heroIdx] = 0;
-    Xh[heroIdx] = 0;
-    Yh[heroIdx] = 0;
-    Zh[heroIdx] = 0;
-    $h[heroIdx] = 0;
-    ai[heroIdx] = 0;
-    ei[heroIdx] = 0;
-    fi[heroIdx] = 0;
-    ch[heroIdx] = 0;
-    hi[heroIdx] = 0;
-    dh[heroIdx] = 0;
-    ii[heroIdx] = 0;
-    bh[heroIdx] = 0;
-    ji[heroIdx] = 0
+    heroAttackLineTimer[heroIdx] = 0;
+    heroUpperJointMode[heroIdx] = 0;
+    heroPoseAgeFrames[heroIdx] = 0;
+    heroTileContactFlags[heroIdx] = 0;
+    heroAttackCooldownFrames[heroIdx] = 0;
+    heroHitFlashTimer[heroIdx] = 0;
+    heroEnemySeekTimer[heroIdx] = 0;
+    attackTrailSideIdx[heroIdx] = 0;
+    attackWeaponSlotIdx[heroIdx] = 0;
+    heroSkipTimer[heroIdx] = 0;
+    heroSkipChancePercent[heroIdx] = 0;
+    heroTimedDamageTimer[heroIdx] = 0;
+    heroTimedDamageAmount[heroIdx] = 0;
+    heroStatusTintTimer[heroIdx] = 0;
+    heroTileEffectLatch[heroIdx] = 0
 }
 mainWindow.fff = moveJointWithCollisions;
 
@@ -2240,8 +2240,8 @@ function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
     Vec2Scale(c, 1 / d);
     var f, g;
     g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, heroJointPositionsByHero[_entityIdx][_jointIdx].y);
-    31 == g && (Vec2Scale(c, .95), Yh[_entityIdx] |= 2);
-    for (var h = 0; h < d; h++) f = heroJointPositionsByHero[_entityIdx][_jointIdx].y + c.y, g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : 24 <= g && 26 >= g && 0 < c.y && bi != _entityIdx ? (c.x *= .5, c.y = -c.y, Yh[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].y = f), f = heroJointPositionsByHero[_entityIdx][_jointIdx].x + c.x, g = getStageTileAt(f, heroJointPositionsByHero[_entityIdx][_jointIdx].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, Yh[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].x = f)
+    31 == g && (Vec2Scale(c, .95), heroTileContactFlags[_entityIdx] |= 2);
+    for (var h = 0; h < d; h++) f = heroJointPositionsByHero[_entityIdx][_jointIdx].y + c.y, g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, heroTileContactFlags[_entityIdx] |= 1) : 24 <= g && 26 >= g && 0 < c.y && draggedHeroIndex != _entityIdx ? (c.x *= .5, c.y = -c.y, heroTileContactFlags[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].y = f), f = heroJointPositionsByHero[_entityIdx][_jointIdx].x + c.x, g = getStageTileAt(f, heroJointPositionsByHero[_entityIdx][_jointIdx].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, heroTileContactFlags[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].x = f)
 }
 mainWindow.fff = findNearestPartyMemberInRect;
 
@@ -2256,7 +2256,7 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
         B = -1;
     _modelFlag = 0 == _modelFlag ? 29 : 23;
     for (var M = 0; M < partyMemberCount; M++)
-        if (Wh[M] != areUpperJointsDisabled && (k = heroJointPositionsByHero[M][2], !(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h))) {
+        if (heroUpperJointMode[M] != areUpperJointsDisabled && (k = heroJointPositionsByHero[M][2], !(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h))) {
             t.x = k.x - _cx;
             t.y = k.y - _cy;
             l = Vec2Mag(t);
@@ -2284,7 +2284,7 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
     _w = _cy + _w + 5;
     _h = _cx + _h + 10;
     for (var n, w = new Vec2, B = new Vec2, M, J, y = -1, x = 0; x < partyMemberCount; x++)
-        if (Wh[x] != areUpperJointsDisabled && (n = heroJointPositionsByHero[x][2], !(n.x > _w || n.x < __unused || n.y > _h || n.y < l))) {
+        if (heroUpperJointMode[x] != areUpperJointsDisabled && (n = heroJointPositionsByHero[x][2], !(n.x > _w || n.x < __unused || n.y > _h || n.y < l))) {
             B.x = n.x - _cy;
             B.y = n.y - _cx;
             n = Vec2Mag(B);
@@ -2298,23 +2298,23 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
             }
             if (!(n <= M)) {
                 y = dmgMin + floor(randFloat(dmgMax - dmgMin + 1));
-                M = 0 == partyBodyDrawOptions[x][2] ? 1 : -1;
+                M = 0 == heroBodyDrawStateByHero[x][2] ? 1 : -1;
                 J = 16711680;
-                $h[x] = 2;
+                heroHitFlashTimer[x] = 2;
                 0 == attackType ? y = max(y - heroMeleeDefensesFlatArray[x], 1) : 6 == attackType ? y = max(y - heroProjDefenseFlatArray[x], 1) : 1 <= attackType && (y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1));
-                randFloat(100) < heroDodgeChanceArray[x] && (y = 0, J = 16744576, $h[x] = 0);
+                randFloat(100) < heroDodgeChanceArray[x] && (y = 0, J = 16744576, heroHitFlashTimer[x] = 0);
                 1 == attackType && heroHasAccessoryEffect(x,
                     accessoryMagicDamageReductionCol) && (y = max(y - countAccessoryLvlBonuses(x, accessoryMagicDamageReductionCol), 1));
-                if (2 == attackType) ch[x] = 120, hi[x] = auxValue, heroHasAccessoryEffect(x, accessoryStunChanceReductionCol) && (hi[x] = max(floor(hi[x] * (100 - countAccessoryLvlBonuses(x, accessoryStunChanceReductionCol)) / 100), 0));
-                else if (3 == attackType) heroHasAccessoryEffect(x, accessoryDamageNegationChanceCol) && randFloat(100) < countAccessoryLvlBonuses(x, accessoryDamageNegationChanceCol) && (y = 0, J = 16744576, $h[x] = 0);
+                if (2 == attackType) heroSkipTimer[x] = 120, heroSkipChancePercent[x] = auxValue, heroHasAccessoryEffect(x, accessoryStunChanceReductionCol) && (heroSkipChancePercent[x] = max(floor(heroSkipChancePercent[x] * (100 - countAccessoryLvlBonuses(x, accessoryStunChanceReductionCol)) / 100), 0));
+                else if (3 == attackType) heroHasAccessoryEffect(x, accessoryDamageNegationChanceCol) && randFloat(100) < countAccessoryLvlBonuses(x, accessoryDamageNegationChanceCol) && (y = 0, J = 16744576, heroHitFlashTimer[x] = 0);
                 else if (4 == attackType) {
-                    dh[x] = auxValue;
-                    ii[x] = y;
-                    heroHasAccessoryEffect(x, accessoryDebuffDurationReductionCol) && (dh[x] = max(dh[x] - 60 * countAccessoryLvlBonuses(x, accessoryDebuffDurationReductionCol), 0));
+                    heroTimedDamageTimer[x] = auxValue;
+                    heroTimedDamageAmount[x] = y;
+                    heroHasAccessoryEffect(x, accessoryDebuffDurationReductionCol) && (heroTimedDamageTimer[x] = max(heroTimedDamageTimer[x] - 60 * countAccessoryLvlBonuses(x, accessoryDebuffDurationReductionCol), 0));
                     y = x;
                     continue
-                } else 5 == attackType && (bh[x] = floor(auxValue / 10));
-                isBadgeIncompleteForCurrentStage(43) && 1 == attackType && 0 < ch[x] && 0 < dh[x] && IncrementBadgeCount(43);
+                } else 5 == attackType && (heroStatusTintTimer[x] = floor(auxValue / 10));
+                isBadgeIncompleteForCurrentStage(43) && 1 == attackType && 0 < heroSkipTimer[x] && 0 < heroTimedDamageTimer[x] && IncrementBadgeCount(43);
                 partyLP[x] -= y;
                 spawnPopup(heroJointPositionsByHero[x][0].x, heroJointPositionsByHero[x][0].y, M, y, 60, J);
                 partyDamageTakenThisStage += y;
@@ -2330,18 +2330,18 @@ mainWindow.fff = pickHeroJointUnderMouse;
 function pickHeroJointUnderMouse() { // vi
     var a = new Vec2,
         b, c;
-    if (-1 == bi) {
+    if (-1 == draggedHeroIndex) {
         if (isMouseClicked && !clickInUI) {
             b = 20;
             a.x = mouseXCurrent - heroJointPrevPositionsByHero[selectingHero][0].x;
             a.y = mouseYCurrent - (heroJointPrevPositionsByHero[selectingHero][0].y - 8);
             c = Vec2Mag(a);
-            20 > c && c < b && (b = c, bi = selectingHero, ci = 0);
+            20 > c && c < b && (b = c, draggedHeroIndex = selectingHero, draggedJointIndex = 0);
             for (var d = 0; d < partyMemberCount; d++)
-                if (Wh[d] != areUpperJointsDisabled)
-                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - heroJointPrevPositionsByHero[d][f].x, a.y = mouseYCurrent - heroJointPrevPositionsByHero[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, bi = d, ci = f, selectingHero = d)
+                if (heroUpperJointMode[d] != areUpperJointsDisabled)
+                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - heroJointPrevPositionsByHero[d][f].x, a.y = mouseYCurrent - heroJointPrevPositionsByHero[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, draggedHeroIndex = d, draggedJointIndex = f, selectingHero = d)
         }
-    } else wasMouseDown || (bi = -1, ci = 0)
+    } else wasMouseDown || (draggedHeroIndex = -1, draggedJointIndex = 0)
 }
 mainWindow.fff = spawnHeroAttackPattern;
 
@@ -2509,7 +2509,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
                 );
         }
     } else if (5 == l) {
-        Ac = 256 + 256 * partyBodyDrawOptions[heroIdx][2]; 
+        Ac = 256 + 256 * heroBodyDrawStateByHero[heroIdx][2]; 
         We = floor(512 / itemSlot);
         for (l = 0; l < itemSlot; l++) {
             projDir.x = rotationLUT[Ac & 511][0];
@@ -2552,10 +2552,10 @@ function updatePartyMemberAI(memberIdx) { // Di
     if (1 != autoMoveEnabled[memberIdx]) {
         var d = findEnemyInArea(heroJointPositionsByHero[memberIdx][0].x, heroJointPositionsByHero[memberIdx][0].y, 200, 50);
         if (-1 != d) {
-            if (0 != Yh[memberIdx])
-                if (0 < ai[memberIdx]) ai[memberIdx]--;
+            if (0 != heroTileContactFlags[memberIdx])
+                if (0 < heroEnemySeekTimer[memberIdx]) heroEnemySeekTimer[memberIdx]--;
                 else {
-                    ai[memberIdx] = 15;
+                    heroEnemySeekTimer[memberIdx] = 15;
                     var f = b > Q[d][yi].x ? -1 : 1,
                         g = .6,
                         h;
@@ -2564,7 +2564,7 @@ function updatePartyMemberAI(memberIdx) { // Di
                     h = getStageTileAt(b + 14 * f, c - 3);
                     0 <= h && 26 >= h && (g = 4);
                     var k;
-                    1 == f ? (k = heroJointPositionsByHero[memberIdx][9].x < heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 1) : (k = heroJointPositionsByHero[memberIdx][9].x > heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, partyBodyDrawOptions[memberIdx][2] = 0);
+                    1 == f ? (k = heroJointPositionsByHero[memberIdx][9].x < heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, heroBodyDrawStateByHero[memberIdx][2] = 1) : (k = heroJointPositionsByHero[memberIdx][9].x > heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, heroBodyDrawStateByHero[memberIdx][2] = 0);
                     if (!cliffStopEnabled) {
                         h = getStageTileAt(b + 20 * f, c + 8 + 0);
                         var p = getStageTileAt(b + 20 * f, c + 8 + 8),
@@ -2575,7 +2575,7 @@ function updatePartyMemberAI(memberIdx) { // Di
                     heroJointPositionsByHero[memberIdx][k].x += 4 * f;
                     heroJointPositionsByHero[memberIdx][k].y -=
                         3 * g
-                } 2 == Yh[memberIdx] && (b < Q[d][yi].x ? (heroJointPositionsByHero[memberIdx][0].x += .25, heroJointPositionsByHero[memberIdx][1].x += .25, partyBodyDrawOptions[memberIdx][2] = 1) : (heroJointPositionsByHero[memberIdx][0].x -= .25, heroJointPositionsByHero[memberIdx][1].x -= .25, partyBodyDrawOptions[memberIdx][2] = 0), c < Q[d][yi].y ? (heroJointPositionsByHero[memberIdx][0].y += .25, heroJointPositionsByHero[memberIdx][1].y += .25) : (heroJointPositionsByHero[memberIdx][0].y -= .25, heroJointPositionsByHero[memberIdx][1].y -= .25), heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25))
+                } 2 == heroTileContactFlags[memberIdx] && (b < Q[d][yi].x ? (heroJointPositionsByHero[memberIdx][0].x += .25, heroJointPositionsByHero[memberIdx][1].x += .25, heroBodyDrawStateByHero[memberIdx][2] = 1) : (heroJointPositionsByHero[memberIdx][0].x -= .25, heroJointPositionsByHero[memberIdx][1].x -= .25, heroBodyDrawStateByHero[memberIdx][2] = 0), c < Q[d][yi].y ? (heroJointPositionsByHero[memberIdx][0].y += .25, heroJointPositionsByHero[memberIdx][1].y += .25) : (heroJointPositionsByHero[memberIdx][0].y -= .25, heroJointPositionsByHero[memberIdx][1].y -= .25), heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25))
         }
     }
 }
@@ -2587,23 +2587,23 @@ function updatePlayerParty() {
         h = new Vec2;
     pickHeroJointUnderMouse();
     for (a = 0; a < partyMemberCount; a++) {
-        if (0 < dh[a] && (dh[a]--, d = floor(ii[a] / 60), b = ii[a] - 60 * d, randFloat(60) < b && (d += 1), partyLP[a] -= d, partyDamageTakenThisStage += d, 0 > partyLP[a]))
-            for (c = 0 == partyBodyDrawOptions[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
+        if (0 < heroTimedDamageTimer[a] && (heroTimedDamageTimer[a]--, d = floor(heroTimedDamageAmount[a] / 60), b = heroTimedDamageAmount[a] - 60 * d, randFloat(60) < b && (d += 1), partyLP[a] -= d, partyDamageTakenThisStage += d, 0 > partyLP[a]))
+            for (c = 0 == heroBodyDrawStateByHero[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
                 a != b && (
                     partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]),
                     spawnPopup(heroJointPositionsByHero[b][0].x, heroJointPositionsByHero[b][0].y, c, d, 60, 16711680),
                     partyDamageTakenThisStage += d
                 );
 
-        if (0 < bh[a]) bh[a]--;
+        if (0 < heroStatusTintTimer[a]) heroStatusTintTimer[a]--;
         else {
-            if (0 < ch[a] && (ch[a]--, randFloat(100) < hi[a])) continue;
-            Xh[a]++;
-            if (Wh[a] == areUpperJointsDisabled)
+            if (0 < heroSkipTimer[a] && (heroSkipTimer[a]--, randFloat(100) < heroSkipChancePercent[a])) continue;
+            heroPoseAgeFrames[a]++;
+            if (heroUpperJointMode[a] == areUpperJointsDisabled)
                 for (b = 0; 11 > b; b++) stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
-            else if (2 == Yh[a])
+            else if (2 == heroTileContactFlags[a])
                 for (b = 0; 11 > b; b++) stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .01, .99);
-            else if (20 > Xh[a])
+            else if (20 > heroPoseAgeFrames[a])
                 stepWithVerticalBias(heroJointPositionsByHero[a][0], heroJointPrevPositionsByHero[a][0], -.2, .99),
                     stepWithVerticalBias(heroJointPositionsByHero[a][1], heroJointPrevPositionsByHero[a][1], 0, .99),
                     stepWithVerticalBias(heroJointPositionsByHero[a][2], heroJointPrevPositionsByHero[a][2], -.1, .99),
@@ -2618,69 +2618,69 @@ function updatePlayerParty() {
             else
                 for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, accessoryJointStepDividerCol) ? stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05 / countAccessoryLvlBonuses(a, accessoryJointStepDividerCol), .99) : stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
-            if (0 == d && Wh[a] != areUpperJointsDisabled)
-                for (Wh[a] = areUpperJointsDisabled, b = Zh[a] = 0; 11 > b; b++) heroJointPositionsByHero[a][b].x += randFloatRange(-2, 2), heroJointPositionsByHero[a][b].y +=
+            if (0 == d && heroUpperJointMode[a] != areUpperJointsDisabled)
+                for (heroUpperJointMode[a] = areUpperJointsDisabled, b = heroAttackCooldownFrames[a] = 0; 11 > b; b++) heroJointPositionsByHero[a][b].x += randFloatRange(-2, 2), heroJointPositionsByHero[a][b].y +=
                     randFloatRange(-1, -3);
-            if (Wh[a] != areUpperJointsDisabled) {
+            if (heroUpperJointMode[a] != areUpperJointsDisabled) {
                 1 == currentStage && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, 5, 60, 65280));
-                bi == a && (heroJointPositionsByHero[bi][ci].x += .2 * (mouseXCurrent - heroJointPositionsByHero[bi][ci].x), heroJointPositionsByHero[bi][ci].y += .2 * (mouseYCurrent - heroJointPositionsByHero[bi][ci].y));
+                draggedHeroIndex == a && (heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x += .2 * (mouseXCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x), heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y += .2 * (mouseYCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y));
                 b = itemList[partyEquipmentTable[a][0]][itemAppearanceCol];
                 c = heroRangeValues[a];
                 d = heroJointPositionsByHero[a][1].x;
                 var k = heroJointPositionsByHero[a][1].y;
                 c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < heroEmitCooldown[a] && heroEmitCooldown[a]--, 0 == heroEmitCooldown[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][6].y, k), heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][attackCooldownCol])));
-                if (0 < Zh[a]) Zh[a]--;
-                else if (bi != a && 0 != b && -1 != c) {
-                    Zh[a] = heroAgiValues[a] + randIntRange(-1, 1);
-                    partyBodyDrawOptions[a][2] = d < Q[c][yi].x ? 1 : 0;
+                if (0 < heroAttackCooldownFrames[a]) heroAttackCooldownFrames[a]--;
+                else if (draggedHeroIndex != a && 0 != b && -1 != c) {
+                    heroAttackCooldownFrames[a] = heroAgiValues[a] + randIntRange(-1, 1);
+                    heroBodyDrawStateByHero[a][2] = d < Q[c][yi].x ? 1 : 0;
                     k = 0; - 1 == heroEmitValues[a] ? (heroEmitCurrent[a] =
-                        0, fi[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), fi[a] = 0, heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, fi[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol) && (heroEmitCurrent[a] = heroEmitValues[a]));
+                        0, attackWeaponSlotIdx[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), attackWeaponSlotIdx[a] = 0, heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, attackWeaponSlotIdx[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol) && (heroEmitCurrent[a] = heroEmitValues[a]));
                     if (0 != b)
-                        if (3 == b) Vec2Sub(g, Q[c][yi], heroJointPositionsByHero[a][5]), Vec2Sub(h, Q[c][yi], heroJointPositionsByHero[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), heroJointPositionsByHero[a][5].add(g), heroJointPositionsByHero[a][4].sub(g), f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), heroJointPositionsByHero[a][6].add(h), heroJointPositionsByHero[a][3].sub(h), f.set(heroJointPositionsByHero[a][6]), k = 1540, ei[a] = 1), heroAimPosByHero[a].set(Q[c][yi]), Vh[a] = 5;
+                        if (3 == b) Vec2Sub(g, Q[c][yi], heroJointPositionsByHero[a][5]), Vec2Sub(h, Q[c][yi], heroJointPositionsByHero[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), heroJointPositionsByHero[a][5].add(g), heroJointPositionsByHero[a][4].sub(g), f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), heroJointPositionsByHero[a][6].add(h), heroJointPositionsByHero[a][3].sub(h), f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), heroAimPosByHero[a].set(Q[c][yi]), heroAttackLineTimer[a] = 5;
                         else if (4 == b) {
-                            var k = 5 + fi[a],
+                            var k = 5 + attackWeaponSlotIdx[a],
                                 p = 3 +
-                                    fi[a],
-                                t = 4 - fi[a];
+                                    attackWeaponSlotIdx[a],
+                                t = 4 - attackWeaponSlotIdx[a];
                             d < Q[c][yi].x ? (heroJointPositionsByHero[a][k].x += .5, heroJointPositionsByHero[a][p].x += .5, --heroJointPositionsByHero[a][t].x) : (heroJointPositionsByHero[a][k].x -= .5, heroJointPositionsByHero[a][p].x -= .5, heroJointPositionsByHero[a][t].x += 1);
                             f.set(heroJointPositionsByHero[a][k]);
                             k = k << 8 | 3;
-                            ei[a] = fi[a]
-                        } else 5 == b ? (d < Q[c][yi].x ? (heroJointPositionsByHero[a][5].x += 1, heroJointPositionsByHero[a][6].x += 1, heroJointPositionsByHero[a][1].x -= 2) : (--heroJointPositionsByHero[a][5].x, --heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][1].x += 2), heroJointPositionsByHero[a][5].y < heroJointPositionsByHero[a][6].y ? (f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (f.set(heroJointPositionsByHero[a][6]), k = 1540, ei[a] = 1), applySeparationCorrection(heroJointPositionsByHero[a][5], heroJointPositionsByHero[a][6], 5, .1, .1)) : d < Q[c][yi].x ? heroJointPositionsByHero[a][5].x < heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x += 4, heroJointPositionsByHero[a][4].x -= 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (heroJointPositionsByHero[a][6].x += 4, heroJointPositionsByHero[a][3].x -= 4, f.set(heroJointPositionsByHero[a][6]), k =
-                            1540, ei[a] = 1) : heroJointPositionsByHero[a][5].x > heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x -= 4, heroJointPositionsByHero[a][4].x += 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, ei[a] = 0) : (heroJointPositionsByHero[a][6].x -= 4, heroJointPositionsByHero[a][3].x += 4, f.set(heroJointPositionsByHero[a][6]), k = 1540, ei[a] = 1);
+                            attackTrailSideIdx[a] = attackWeaponSlotIdx[a]
+                        } else 5 == b ? (d < Q[c][yi].x ? (heroJointPositionsByHero[a][5].x += 1, heroJointPositionsByHero[a][6].x += 1, heroJointPositionsByHero[a][1].x -= 2) : (--heroJointPositionsByHero[a][5].x, --heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][1].x += 2), heroJointPositionsByHero[a][5].y < heroJointPositionsByHero[a][6].y ? (f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), applySeparationCorrection(heroJointPositionsByHero[a][5], heroJointPositionsByHero[a][6], 5, .1, .1)) : d < Q[c][yi].x ? heroJointPositionsByHero[a][5].x < heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x += 4, heroJointPositionsByHero[a][4].x -= 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (heroJointPositionsByHero[a][6].x += 4, heroJointPositionsByHero[a][3].x -= 4, f.set(heroJointPositionsByHero[a][6]), k =
+                            1540, attackTrailSideIdx[a] = 1) : heroJointPositionsByHero[a][5].x > heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x -= 4, heroJointPositionsByHero[a][4].x += 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (heroJointPositionsByHero[a][6].x -= 4, heroJointPositionsByHero[a][3].x += 4, f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1);
                     2 == b && (heroAttackTrailTimerByHero[a] = 30);
-                    partyBodyDrawOptions[a][ei[a]] = fi[a];
-                    spawnHeroAttackPattern(a, k, fi[a], f.x, f.y, c)
+                    heroBodyDrawStateByHero[a][attackTrailSideIdx[a]] = attackWeaponSlotIdx[a];
+                    spawnHeroAttackPattern(a, k, attackWeaponSlotIdx[a], f.x, f.y, c)
                 }
-                bi != a && 0 != b && -1 == c && updatePartyMemberAI(a)
+                draggedHeroIndex != a && 0 != b && -1 == c && updatePartyMemberAI(a)
             }
-            Wh[a] == areUpperJointsDisabled ? (applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5)) : (applySeparationCorrection(heroJointPositionsByHero[a][0], heroJointPositionsByHero[a][1], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][3], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][4], 4.8,
+            heroUpperJointMode[a] == areUpperJointsDisabled ? (applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5)) : (applySeparationCorrection(heroJointPositionsByHero[a][0], heroJointPositionsByHero[a][1], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][3], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][4], 4.8,
                 .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][7], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][8], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][8], 6, .1, .1));
-            0 < (Yh[a] & 1) && (Xh[a] = 0);
-            for (b = Yh[a] = 0; 11 > b; b++) moveJointWithCollisions(a, b);
+            0 < (heroTileContactFlags[a] & 1) && (heroPoseAgeFrames[a] = 0);
+            for (b = heroTileContactFlags[a] = 0; 11 > b; b++) moveJointWithCollisions(a, b);
             heroPoseTrailWriteIdxByHero[a] = heroPoseTrailWriteIdxByHero[a] + 1 & 15;
             heroJoint5HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][5]);
             heroJoint3HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][3]);
             heroJoint6HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][6]);
             heroJoint4HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][4]);
-            0 < heroAttackTrailTimerByHero[a] && (heroAttackTrailTimerByHero[a]--, b = itemList[partyEquipmentTable[a][fi[a]]][itemAppearanceCol], 2 != b && (heroAttackTrailTimerByHero[a] = 0));
-            0 == Zh[a] && (f.set(heroJointPositionsByHero[a][1]), f.x += 0 == partyBodyDrawOptions[a][2] ? -50 : 50, Vec2Scale(f, .1),
+            0 < heroAttackTrailTimerByHero[a] && (heroAttackTrailTimerByHero[a]--, b = itemList[partyEquipmentTable[a][attackWeaponSlotIdx[a]]][itemAppearanceCol], 2 != b && (heroAttackTrailTimerByHero[a] = 0));
+            0 == heroAttackCooldownFrames[a] && (f.set(heroJointPositionsByHero[a][1]), f.x += 0 == heroBodyDrawStateByHero[a][2] ? -50 : 50, Vec2Scale(f, .1),
                 Vec2Scale(heroAimPosByHero[a], .9), heroAimPosByHero[a].add(f));
-            0 < Vh[a] && Vh[a]--;
-            if (Yh[a] & 2) {
-                if (0 == ji[a])
-                    for (ji[a] = 1, b = 0; 11 > b; b++) d = clamp(heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3, 30 == stageTileData[c][d] && spawnProjectile(a, -1, heroJointPositionsByHero[a][b].x, heroJointPositionsByHero[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            0 < heroAttackLineTimer[a] && heroAttackLineTimer[a]--;
+            if (heroTileContactFlags[a] & 2) {
+                if (0 == heroTileEffectLatch[a])
+                    for (heroTileEffectLatch[a] = 1, b = 0; 11 > b; b++) d = clamp(heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3, 30 == stageTileData[c][d] && spawnProjectile(a, -1, heroJointPositionsByHero[a][b].x, heroJointPositionsByHero[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 d = clamp(heroJointPositionsByHero[a][0].x, 0, 8 * stageWidth - 1) >> 3;
                 c = clamp(heroJointPositionsByHero[a][0].y, 0, 8 * stageHeight - 1) >> 3;
                 31 == stageTileData[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), spawnProjectile(a, -1, heroJointPositionsByHero[a][0].x + b, heroJointPositionsByHero[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-            } else ji[a] = 0;
-            5 == currentStage && Yh[a] & 1 && (stageConditionBitmask |= 1);
-            5 == currentStage && Yh[a] & 2 && (stageConditionBitmask |= 2);
-            16 == currentStage && Yh[a] & 1 && (stageConditionBitmask |= 1);
-            16 == currentStage && Yh[a] & 2 && (stageConditionBitmask |= 2);
-            18 == currentStage && Yh[a] & 1 && (stageConditionBitmask |= 1);
-            18 == currentStage && Yh[a] & 2 && (stageConditionBitmask |= 2)
+            } else heroTileEffectLatch[a] = 0;
+            5 == currentStage && heroTileContactFlags[a] & 1 && (stageConditionBitmask |= 1);
+            5 == currentStage && heroTileContactFlags[a] & 2 && (stageConditionBitmask |= 2);
+            16 == currentStage && heroTileContactFlags[a] & 1 && (stageConditionBitmask |= 1);
+            16 == currentStage && heroTileContactFlags[a] & 2 && (stageConditionBitmask |= 2);
+            18 == currentStage && heroTileContactFlags[a] & 1 && (stageConditionBitmask |= 1);
+            18 == currentStage && heroTileContactFlags[a] & 2 && (stageConditionBitmask |= 2)
         }
     }
 }
@@ -2692,14 +2692,14 @@ function drawPlayerParty() {
     for (a = 0; a < partyMemberCount; a++) {
         d = 15908203;
         f = 16777215;
-        0 < bh[a] ? (d = 1989840, f = 5934817) : 0 < ch[a] ? (d = 9840, f = 1989840) : 0 < dh[a] && (d = 3381504, f = 3407616);
-        0 < $h[a] && ($h[a]--, f = 16711680);
+        0 < heroStatusTintTimer[a] ? (d = 1989840, f = 5934817) : 0 < heroSkipTimer[a] ? (d = 9840, f = 1989840) : 0 < heroTimedDamageTimer[a] && (d = 3381504, f = 3407616);
+        0 < heroHitFlashTimer[a] && (heroHitFlashTimer[a]--, f = 16711680);
         fh = isSolidRender = 1;
         for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(heroJointPositionsByHero[a][c].x), floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         isSolidRender = fh = 0;
-        drawHero(a, heroJointPositionsByHero[a], partyBodyDrawOptions[a][0], partyBodyDrawOptions[a][1], d, f, Wh[a]);
+        drawHero(a, heroJointPositionsByHero[a], heroBodyDrawStateByHero[a][0], heroBodyDrawStateByHero[a][1], d, f, heroUpperJointMode[a]);
         if (0 < heroAttackTrailTimerByHero[a]) {
-            b = partyEquipmentTable[a][fi[a]];
+            b = partyEquipmentTable[a][attackWeaponSlotIdx[a]];
             c = itemList[b][projectileSpeedScaleCol];
             d = itemList[b][projectileDelayRangeCol];
             f = d >> 24 & 255;
@@ -2707,8 +2707,8 @@ function drawPlayerParty() {
             d &= 16777215;
             for (b = 0; 10 > b; b++) {
                 var t, l, n;
-                t = heroAttackTrailHistorySets[0 + ei[a]];
-                g = heroAttackTrailHistorySets[2 + ei[a]];
+                t = heroAttackTrailHistorySets[0 + attackTrailSideIdx[a]];
+                g = heroAttackTrailHistorySets[2 + attackTrailSideIdx[a]];
                 l = heroPoseTrailWriteIdxByHero[a] - b - 0 & 15;
                 n = heroPoseTrailWriteIdxByHero[a] -
                     b - 1 & 15;
@@ -2769,14 +2769,14 @@ function drawPlayerParty() {
                 isSolidRender = 0
             }
         }
-        0 < Hh && (d = ~~heroJointPositionsByHero[a][0].x + 0, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > Hh ? g = floor(255 * Hh / 5) : g = 255, c = min(60 - Hh - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 12, 4), 0 < c &&
-            drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 15, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - Hh - 18, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
-        0 < di && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > di ? g = floor(255 * di / 5) : g = 255, c = min(60 - di - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
-            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - di - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
-        0 < Zg && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > Zg ? g = floor(255 * Zg / 5) : g = 255, c = min(60 - Zg - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
-            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - Zg - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + $g, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
+        0 < levelUpPopupTimer && (d = ~~heroJointPositionsByHero[a][0].x + 0, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > levelUpPopupTimer ? g = floor(255 * levelUpPopupTimer / 5) : g = 255, c = min(60 - levelUpPopupTimer - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 12, 4), 0 < c &&
+            drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 15, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 18, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
+        0 < stageClearPopupTimer && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > stageClearPopupTimer ? g = floor(255 * stageClearPopupTimer / 5) : g = 255, c = min(60 - stageClearPopupTimer - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
+            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + Mi, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
+        0 < comboPopupTimer && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > comboPopupTimer ? g = floor(255 * comboPopupTimer / 5) : g = 255, c = min(60 - comboPopupTimer - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
+            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + comboGoldPayoutPerHero, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
     }
-    0 < Hh ? Hh-- : 0 < di ? di-- : 0 < Zg && Zg--
+    0 < levelUpPopupTimer ? levelUpPopupTimer-- : 0 < stageClearPopupTimer ? stageClearPopupTimer-- : 0 < comboPopupTimer && comboPopupTimer--
 }
 mainWindow.fff = drawHero;
 
@@ -2835,7 +2835,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     // draw items/accessories
     let headwearType = itemList[partyEquipmentTable[heroIdx][2]][itemHeadwearType]; // headwear type
     if (headwearType != 0) {
-        if (partyBodyDrawOptions[heroIdx][2] == 0)
+        if (heroBodyDrawStateByHero[heroIdx][2] == 0)
             drawSpriteSheetPartTintedScaled(
                 itemsSpriteSheet,
                 ~~joints[0].x - 8, ~~joints[0].y - 8,
@@ -2890,7 +2890,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 } else {
                     Vec2Sub(baseDrawPos, heroAimPosByHero[heroIdx], t);
                     Vec2Norm(baseDrawPos);
-                    if (0 < Vh[heroIdx] && ei[heroIdx] == toolIdx) {
+                    if (0 < heroAttackLineTimer[heroIdx] && attackTrailSideIdx[heroIdx] == toolIdx) {
                         drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, heroAimPosByHero[heroIdx].x, heroAimPosByHero[heroIdx].y, p);
                     } else {
                         drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, t.x + 20 * baseDrawPos.x, t.y + 20 * baseDrawPos.y, p)
@@ -2924,13 +2924,13 @@ iterIdxTemp_1 = 0;
 const stageNameCol = iterIdxTemp_1++,
     stageTilesetIdxCol = iterIdxTemp_1++,
     stageUIBgColorCol = iterIdxTemp_1++,
-    stageAttr3 = iterIdxTemp_1++,
-    stageAttr4 = iterIdxTemp_1++,
-    stageAttr5 = iterIdxTemp_1++,
-    stageAttr6 = iterIdxTemp_1++,
-    stageAttr7 = iterIdxTemp_1++,
-    stageAttr8 = iterIdxTemp_1++,
-    stageAttr9 = iterIdxTemp_1++;
+    stageReturnCost = iterIdxTemp_1++, // stageAttr3, gold cost to return/warp to the village
+    stageExitTopIdx = iterIdxTemp_1++, // stageAttr4, stage index to go to when exiting off the top edge
+    stageExitBottomIdx = iterIdxTemp_1++, // stageAttr5, stage index to go to when exiting off the bottom edge
+    stageExitLeftIdx = iterIdxTemp_1++, // stageAttr6, stage index to go to when exiting off the left edge
+    stageExitRightIdx = iterIdxTemp_1++, // stageAttr7, stage index to go to when exiting off the right edge
+    stageSpawnChance = iterIdxTemp_1++, // stageAttr8, stage spawn chance/intensity (higher -> more frequent ambient spawns)
+    stageSpawnGroupsStartIdx = iterIdxTemp_1++; // stageAttr9, index where this row's spawn-group definitions begin (groups of 7 values)
 stageListArray[0] = ["", 0, 13407305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 stageListArray[1] = ["Village", 0, 13407305, 0, 0, 0, 0, 2, 10, 0, 0, 0, 0, 0, 0, 0];
 stageListArray[2] = ["Cave 1", 0, 13407305, 1, 0, 0, 1, 3, 10, 0, 5, 10, 11, 40, 63, 41, 0, 5, 10, 5, 34, 45, 34, 1, 2, 0, 5, 34, 45, 34, 1, 8, 30, 8, 26, 46, 26, 2, 3, 5, 50, 22, 60, 22, 2, 5, 10, 32, 8, 74, 9, 3, 1, 1, 4, 13, 11, 13, 5, 15, 30, 50, 25, 62, 28];
@@ -3140,7 +3140,7 @@ function loadLevelData(a) {
     }
     Mi = 0;
     clearEnemies();
-    for (let a = stageAttr9; a < stageListArray[currentStage].length; a += 7) {
+    for (let a = stageSpawnGroupsStartIdx; a < stageListArray[currentStage].length; a += 7) {
         let c = stageListArray[currentStage][a + 0];
         let d = stageListArray[currentStage][a + 1];
         let k = stageListArray[currentStage][a + 3];
@@ -3152,9 +3152,9 @@ function loadLevelData(a) {
             let g = randIntRange(f, t + 1);
 
             if (stageTileData[g][h] > 25) {
-                spawnEnemy(h, g, c, (a - stageAttr9) / 7);
-                activeSpawnCounts[(a - stageAttr9) / 7]++;
-                totalSpawnedByGroup[(a - stageAttr9) / 7]++;
+                spawnEnemy(h, g, c, (a - stageSpawnGroupsStartIdx) / 7);
+                activeSpawnCounts[(a - stageSpawnGroupsStartIdx) / 7]++;
+                totalSpawnedByGroup[(a - stageSpawnGroupsStartIdx) / 7]++;
             };
         }
         let b = enemyCatalog[c][enemyAttr0];
@@ -3185,21 +3185,21 @@ function updateStageEdgeSpawns() { // wg
     var a;
     if (12 == gameScreenState)
         for (a = 0; a < partyMemberCount; a++)
-            if (Wh[a] != areUpperJointsDisabled) {
+            if (heroUpperJointMode[a] != areUpperJointsDisabled) {
                 var b = heroJointPositionsByHero[a][1].x,
                     c = heroJointPositionsByHero[a][1].y;
-                if (4 > b && 0 < stageListArray[currentStage][stageAttr6]) {
-                    lastStageIdx = stageListArray[currentStage][stageAttr6];
+                if (4 > b && 0 < stageListArray[currentStage][stageExitLeftIdx]) {
+                    lastStageIdx = stageListArray[currentStage][stageExitLeftIdx];
                     for (var d = 0; 4 > d; d++) partySpawnXs[d] = 77, partySpawnYs[d] = c >> 3
-                } else if (636 <= b && 0 < stageListArray[currentStage][stageAttr7])
-                    for (lastStageIdx = stageListArray[currentStage][stageAttr7], d = 0; 4 > d; d++) partySpawnXs[d] = 2, partySpawnYs[d] = c >> 3;
-                if (4 > c && 0 < stageListArray[currentStage][stageAttr4])
-                    for (lastStageIdx = stageListArray[currentStage][stageAttr4], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 42;
-                else if (356 <= c && 0 < stageListArray[currentStage][stageAttr5])
-                    for (lastStageIdx = stageListArray[currentStage][stageAttr5], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 2
+                } else if (636 <= b && 0 < stageListArray[currentStage][stageExitRightIdx])
+                    for (lastStageIdx = stageListArray[currentStage][stageExitRightIdx], d = 0; 4 > d; d++) partySpawnXs[d] = 2, partySpawnYs[d] = c >> 3;
+                if (4 > c && 0 < stageListArray[currentStage][stageExitTopIdx])
+                    for (lastStageIdx = stageListArray[currentStage][stageExitTopIdx], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 42;
+                else if (356 <= c && 0 < stageListArray[currentStage][stageExitBottomIdx])
+                    for (lastStageIdx = stageListArray[currentStage][stageExitBottomIdx], d = 0; 4 > d; d++) partySpawnXs[d] = b >> 3, partySpawnYs[d] = 2
             } for (a = 0; 20 > a; a++) activeSpawnCounts[a] = 0;
     for (a = 0; a < enemyCount; a++) activeSpawnCounts[fj[a]]++;
-    for (b = stageAttr9; b < stageListArray[currentStage].length; b += 7) {
+    for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
         a = stageListArray[currentStage][b + 0];
         var f = stageListArray[currentStage][b + 1],
             c = stageListArray[currentStage][b + 2],
@@ -3207,24 +3207,24 @@ function updateStageEdgeSpawns() { // wg
             d = stageListArray[currentStage][b + 4],
             h = stageListArray[currentStage][b + 5],
             k = stageListArray[currentStage][b + 6];
-        !(c <= totalSpawnedByGroup[(b - stageAttr9) / 7]) && activeSpawnCounts[(b - stageAttr9) / 7] < f && 1E3 * rand() < stageListArray[currentStage][stageAttr8] && (
+        !(c <= totalSpawnedByGroup[(b - stageSpawnGroupsStartIdx) / 7]) && activeSpawnCounts[(b - stageSpawnGroupsStartIdx) / 7] < f && 1E3 * rand() < stageListArray[currentStage][stageSpawnChance] && (
             c = randIntRange(g, h + 1),
             d = randIntRange(d, k + 1),
             25 >= stageTileData[d][c] || (
-                spawnEnemy(c, d, a, (b - stageAttr9) / 7),
-                activeSpawnCounts[(b - stageAttr9) / 7]++,
-                totalSpawnedByGroup[(b - stageAttr9) / 7]++
+                spawnEnemy(c, d, a, (b - stageSpawnGroupsStartIdx) / 7),
+                activeSpawnCounts[(b - stageSpawnGroupsStartIdx) / 7]++,
+                totalSpawnedByGroup[(b - stageSpawnGroupsStartIdx) / 7]++
             )
         )
     }
     a = d = 0;
-    for (b = stageAttr9; b < stageListArray[currentStage].length; b += 7) a = (b - stageAttr9) / 7, c = stageListArray[currentStage][b + 2], (0 != activeSpawnCounts[a] || totalSpawnedByGroup[a] < c) && d++;
+    for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) a = (b - stageSpawnGroupsStartIdx) / 7, c = stageListArray[currentStage][b + 2], (0 != activeSpawnCounts[a] || totalSpawnedByGroup[a] < c) && d++;
     for (; 20 > a; a++) 0 != activeSpawnCounts[a] && d++;
     if (!d && 0 == Mi) {
         for (a = 0; 20 > a; a++) Mi += totalSpawnedByGroup[a];
         Mi = floor((Mi + partyMemberCount - 1) / partyMemberCount);
-        0 < Mi && (b = 100 + comboMultBonus, comboMultBonus += Mi, Mi = floor(Mi * b / 100), di = 60, partyGold = clamp(partyGold + Mi * partyMemberCount, 0, 9999999), isBadgeIncompleteForCurrentStage(0) && IncrementBadgeCount(0), isBadgeIncompleteForCurrentStage(10) && 3600 > globalFrameCounter && IncrementBadgeCount(10), isBadgeIncompleteForCurrentStage(15) && !stageFlagUsesCount && IncrementBadgeCount(15), isBadgeIncompleteForCurrentStage(20) && 87 <= Hc && IncrementBadgeCount(20), isBadgeIncompleteForCurrentStage(25) && 100 <=
-            comboMultBonus && IncrementBadgeCount(25), isBadgeIncompleteForCurrentStage(30) && 111 <= Hc && IncrementBadgeCount(30), isBadgeIncompleteForCurrentStage(35) && !stageFlagUsesCount && IncrementBadgeCount(35), isBadgeIncompleteForCurrentStage(40) && 3600 > globalFrameCounter && IncrementBadgeCount(40), isBadgeIncompleteForCurrentStage(45) && 7200 > globalFrameCounter && IncrementBadgeCount(45), isBadgeIncompleteForCurrentStage(50) && !stageFlagUsesCount && IncrementBadgeCount(50), isBadgeIncompleteForCurrentStage(55) && 227 <= Hc && IncrementBadgeCount(55), isBadgeIncompleteForCurrentStage(60) && IncrementBadgeCount(60), isBadgeIncompleteForCurrentStage(65) && !stageFlagUsesCount && IncrementBadgeCount(65), isBadgeIncompleteForCurrentStage(70) && 9E3 > globalFrameCounter && IncrementBadgeCount(70), 19 == currentStage && 0 == stageEventFlags[1] && (stageEventFlags[1] = 1), spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215), spawnPopup(320, 223, 0, 3600 > globalFrameCounter ? floor(globalFrameCounter / 60) + "." + globalFrameCounter % 60 : floor(globalFrameCounter / 3600) + ":" + floor(globalFrameCounter % 3600 / 60) + "." + globalFrameCounter % 60, 300, 16777215))
+        0 < Mi && (b = 100 + comboMultBonus, comboMultBonus += Mi, Mi = floor(Mi * b / 100), stageClearPopupTimer = 60, partyGold = clamp(partyGold + Mi * partyMemberCount, 0, 9999999), isBadgeIncompleteForCurrentStage(0) && IncrementBadgeCount(0), isBadgeIncompleteForCurrentStage(10) && 3600 > globalFrameCounter && IncrementBadgeCount(10), isBadgeIncompleteForCurrentStage(15) && !stageFlagUsesCount && IncrementBadgeCount(15), isBadgeIncompleteForCurrentStage(20) && 87 <= comboCount && IncrementBadgeCount(20), isBadgeIncompleteForCurrentStage(25) && 100 <=
+            comboMultBonus && IncrementBadgeCount(25), isBadgeIncompleteForCurrentStage(30) && 111 <= comboCount && IncrementBadgeCount(30), isBadgeIncompleteForCurrentStage(35) && !stageFlagUsesCount && IncrementBadgeCount(35), isBadgeIncompleteForCurrentStage(40) && 3600 > globalFrameCounter && IncrementBadgeCount(40), isBadgeIncompleteForCurrentStage(45) && 7200 > globalFrameCounter && IncrementBadgeCount(45), isBadgeIncompleteForCurrentStage(50) && !stageFlagUsesCount && IncrementBadgeCount(50), isBadgeIncompleteForCurrentStage(55) && 227 <= comboCount && IncrementBadgeCount(55), isBadgeIncompleteForCurrentStage(60) && IncrementBadgeCount(60), isBadgeIncompleteForCurrentStage(65) && !stageFlagUsesCount && IncrementBadgeCount(65), isBadgeIncompleteForCurrentStage(70) && 9E3 > globalFrameCounter && IncrementBadgeCount(70), 19 == currentStage && 0 == stageEventFlags[1] && (stageEventFlags[1] = 1), spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215), spawnPopup(320, 223, 0, 3600 > globalFrameCounter ? floor(globalFrameCounter / 60) + "." + globalFrameCounter % 60 : floor(globalFrameCounter / 3600) + ":" + floor(globalFrameCounter % 3600 / 60) + "." + globalFrameCounter % 60, 300, 16777215))
     }
 }
 mainWindow.fff = drawGameStage;
@@ -3305,9 +3305,9 @@ function updateStageTick() { // xg
         p = 0,
         t = 59,
         l = 0;
-    globalFrameCounter++; - 1 != bi && (
-        b = clamp(heroJointPositionsByHero[bi][2].x, 0, 8 * stageWidth - 1) >> 3,
-        f = clamp(heroJointPositionsByHero[bi][2].y, 0, 8 * stageHeight - 1) >> 3
+    globalFrameCounter++; - 1 != draggedHeroIndex && (
+        b = clamp(heroJointPositionsByHero[draggedHeroIndex][2].x, 0, 8 * stageWidth - 1) >> 3,
+        f = clamp(heroJointPositionsByHero[draggedHeroIndex][2].y, 0, 8 * stageHeight - 1) >> 3
     );
     g = clamp(heroJointPositionsByHero[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
     h = clamp(heroJointPositionsByHero[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
@@ -3390,7 +3390,7 @@ function updateStageTick() { // xg
                 for (a = 0; 15 > a; a++) spawnEnemy(randIntRange(61, 76), 21, 28, 9), activeSpawnCounts[9]++, totalSpawnedByGroup[9]++;
             isBadgeIncompleteForCurrentStage(21) && 0 == activeSpawnCounts[2] && 0 == partyDamageTakenThisStage && IncrementBadgeCount(21);
             if (isBadgeIncompleteForCurrentStage(23)) {
-                for (a = b = 0; a < partyMemberCount; a++) 0 < ch[a] && b++;
+                for (a = b = 0; a < partyMemberCount; a++) 0 < heroSkipTimer[a] && b++;
                 4 == b && IncrementBadgeCount(23)
             }
         } else if (8 == currentStage) {
@@ -3400,7 +3400,7 @@ function updateStageTick() { // xg
                 0 != activeSpawnCounts[4] || stageConditionBitmask || IncrementBadgeCount(27)
             }
             if (isBadgeIncompleteForCurrentStage(28)) {
-                for (a = 0; a < partyMemberCount && 0 == Yh[a]; a++);
+                for (a = 0; a < partyMemberCount && 0 == heroTileContactFlags[a]; a++);
                 a == partyMemberCount ? consecutiveConditionFrames++ : consecutiveConditionFrames = 0;
                 300 <= consecutiveConditionFrames && IncrementBadgeCount(28)
             }
@@ -3424,7 +3424,7 @@ function updateStageTick() { // xg
             isBadgeIncompleteForCurrentStage(37) && 0 == activeSpawnCounts[1] && activeSpawnCounts[0] == totalSpawnedByGroup[0] && IncrementBadgeCount(37);
             isBadgeIncompleteForCurrentStage(38) && 0 == activeSpawnCounts[3] && 0 == partyDamageTakenThisStage && IncrementBadgeCount(38);
             if (isBadgeIncompleteForCurrentStage(39)) {
-                for (a = b = 0; a < partyMemberCount; a++) 0 < dh[a] && b++;
+                for (a = b = 0; a < partyMemberCount; a++) 0 < heroTimedDamageTimer[a] && b++;
                 4 == b && IncrementBadgeCount(39)
             }
         } else if (11 == currentStage) isBadgeIncompleteForCurrentStage(41) &&
@@ -3432,7 +3432,7 @@ function updateStageTick() { // xg
         else if (13 == currentStage) 1 == stageEventFlags[0] && fillStageTilesRect(77, 20, 77, 24, 31), isBadgeIncompleteForCurrentStage(46) && 0 == activeSpawnCounts[1] && 45 == totalSpawnedByGroup[1] && 0 == activeSpawnCounts[6] && 45 == totalSpawnedByGroup[6] && IncrementBadgeCount(46), isBadgeIncompleteForCurrentStage(48) && 0 == activeSpawnCounts[5] && 0 == partyDamageTakenThisStage && IncrementBadgeCount(48);
         else if (14 == currentStage) {
             if (isBadgeIncompleteForCurrentStage(53)) {
-                for (a = 0; a < partyMemberCount && 2 == Yh[a]; a++);
+                for (a = 0; a < partyMemberCount && 2 == heroTileContactFlags[a]; a++);
                 a == partyMemberCount ? consecutiveConditionFrames++ : consecutiveConditionFrames = 0;
                 1800 <= consecutiveConditionFrames && IncrementBadgeCount(53)
             }
@@ -3465,7 +3465,7 @@ function updateStageTick() { // xg
             }
             isBadgeIncompleteForCurrentStage(64) && 0 == p && 0 < f && 0 < k && 100 == activeSpawnCounts[11] && IncrementBadgeCount(64)
         } else if (17 == currentStage) {
-            for (a = 0; a < partyMemberCount; a++) 0 < dh[a] && (stageConditionBitmask = 1);
+            for (a = 0; a < partyMemberCount; a++) 0 < heroTimedDamageTimer[a] && (stageConditionBitmask = 1);
             isBadgeIncompleteForCurrentStage(66) && 0 == activeSpawnCounts[0] && !stageConditionBitmask && IncrementBadgeCount(66);
             isBadgeIncompleteForCurrentStage(68) && 0 == activeSpawnCounts[6] && 5 == activeSpawnCounts[5] && IncrementBadgeCount(68)
         } else 18 == currentStage ? (6 > totalSpawnedByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = randInt(3), spawnEnemy(a[b], 42, 83, 9), activeSpawnCounts[9]++, totalSpawnedByGroup[9]++), 9 > totalSpawnedByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60) && (c = randIntRange(8, 23), spawnEnemy(c, 10, 83, 10), activeSpawnCounts[10]++,
@@ -3941,7 +3941,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                             enemyFreezeTimerArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyAttr44] / 100)
                     ), 
                     Ek[height] = 120, 
-                    30 != gameScreenState && (Ic = Vg), 
+                    30 != gameScreenState && (comboWindowTimer = comboWindowMaxFrames), 
                     isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && stageConditionBitmask++, 
                     isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && stageConditionBitmask++
                 );
@@ -4041,7 +4041,7 @@ function onEnemyDeath(_enemyIdx) { // cl
     if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
         partyLevel++;
         for (b = 0; 4 > b; b++) partySP[b] += 2;
-        Hh = 60
+        levelUpPopupTimer = 60
     }
     for (b = enemyAttr67; b < enemyAttr67 + 8; b += 2)
         if (c = enemyCatalog[enemyTypeArray[_enemyIdx]][b], 0 != c) {
@@ -4049,7 +4049,7 @@ function onEnemyDeath(_enemyIdx) { // cl
             2 == c ? (c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, c, 1, 0)
         } c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyAttr65] * (100 + partyRewardValueBonusPercent) / 100);
     1 > 3 * rand() && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0);
-    30 != gameScreenState && Hc++;
+    30 != gameScreenState && comboCount++;
     isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx] &&
         IncrementBadgeCount(2);
     isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(5);

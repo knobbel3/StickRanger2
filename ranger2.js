@@ -3155,10 +3155,10 @@ function getStageTileAt(x, y) { // ri
 }
 mainWindow.fff = fillStageTilesRect;
 
-function fillStageTilesRect(tileX0, tileY0, tileX1, tileX1, tileId) { // dj
+function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
     let _row;
-    for (_row = tileY0; _row <= tileX1; _row++)
-        for (tileY0 = tileX0; tileY0 <= tileX1; tileY0++) stageTileData[_row][tileY0] = tileId
+    for (_row = _ty0; _row <= _ty1; _row++)
+        for (_ty0 = _tx0; _ty0 <= _tx1; _ty0++) stageTileData[_row][_ty0] = _tid
 }
 mainWindow.fff = updateStageEdgeSpawns;
 

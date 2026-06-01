@@ -2900,26 +2900,36 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
         h = _cy - _halfH - 10;
     _halfW = _cx + _halfW + 5;
     _halfH = _cy + _halfH + 10;
-    var k, p = new Vec2,
-        t = new Vec2,
+    var k, p = new Vec2(),
+        t = new Vec2(),
         l, n, w = 1E3,
         B = -1;
     _modelFlag = 0 == _modelFlag ? 29 : 23;
-    for (var M = 0; M < partyMemberCount; M++)
-        if (heroUpperJointMode[M] != areUpperJointsDisabled && (k = heroJointPositionsByHero[M][2], !(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h))) {
-            t.x = k.x - _cx;
-            t.y = k.y - _cy;
-            l = Vec2Mag(t);
-            k = (l >> 3) + 1;
-            Vec2Scale(t, 1 / k);
-            Vec2Set(p, _cx, _cy);
-            for (var J = 0; J <= k; J++) {
-                n = getStageTileAt(p.x, p.y);
-                if (0 <= n && n <= _modelFlag) break;
-                p.add(t)
+    for (var M = 0; M < partyMemberCount; M++) {
+        if (heroUpperJointMode[M] != areUpperJointsDisabled) {
+            k = heroJointPositionsByHero[M][2];
+            if (!(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h)) {
+                t.x = k.x - _cx;
+                t.y = k.y - _cy;
+                l = Vec2Mag(t);
+                k = (l >> 3) + 1;
+                Vec2Scale(t, 1 / k);
+                Vec2Set(p, _cx, _cy);
+                for (var J = 0; J <= k; J++) {
+                    n = getStageTileAt(p.x, p.y);
+                    if (0 <= n && n <= _modelFlag) break;
+                    p.add(t);
+                }
+                if (J > k) {
+                    if (l < w) {
+                        w = l;
+                        B = M;
+                    }
+                }
             }
-            J > k && l < w && (w = l, B = M)
-        } return B
+        } 
+    }
+    return B;
 }
 mainWindow.fff = damagePartyMemberInArea;
 

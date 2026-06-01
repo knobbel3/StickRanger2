@@ -1183,19 +1183,22 @@ function drawCanvas() {
         // d != zf && (frameBufferArray = null);
 
         tamperCheckScanOffset = tamperCheckScanOffset + 1 & 63;
-        if (!gameScreenState)
-            currentStage = 0,
-                partySpawnXByHero[0] = 20,
-                partySpawnXByHero[1] = 28,
-                partySpawnXByHero[2] = 36,
-                partySpawnXByHero[3] = 44,
-                partySpawnYByHero[0] = 45,
-                partySpawnYByHero[1] = 45,
-                partySpawnYByHero[2] = 45,
-                partySpawnYByHero[3] = 45,
+        if (!gameScreenState) {
+            currentStage = 0;
+            partySpawnXByHero[0] = 20;
+            partySpawnXByHero[1] = 28;
+            partySpawnXByHero[2] = 36;
+            partySpawnXByHero[3] = 44;
+            partySpawnYByHero[0] = 45;
+            partySpawnYByHero[1] = 45;
+            partySpawnYByHero[2] = 45;
+            partySpawnYByHero[3] = 45;
+            gameScreenState++;
+        } else if (1 == gameScreenState) {
+            if (loadLevelData(0)) {
                 gameScreenState++;
-        else if (1 == gameScreenState) loadLevelData(0) && gameScreenState++;
-        else if (2 == gameScreenState || 3 == gameScreenState) { // title menu
+            }
+        } else if (2 == gameScreenState || 3 == gameScreenState) { // title menu
             clickInUI = false;
             updatePlayerParty();
             drawGameStage();
@@ -1206,119 +1209,142 @@ function drawCanvas() {
             var f = 125,
                 g, h = isMinimalTitleMode ? 0 : 125,
                 k, p, t = titleSprite.g,
-                l, n, w, B,  M;
+                l, n, w, B, M;
             k = ~~(89600 / d);
             p = ~~(32E3 / f);
             g = 0;
             h <<= 8;
-            0 > a && (g += ~~(k * -a));
-            0 > b && (h += ~~(p * -b));
+            if (0 > a) {
+                g += ~~(k * -a);
+            }
+            if (0 > b) {
+                h += ~~(p * -b);
+            }
             d = 640 < a + d ? 640 : ~~(a + d);
             f = 432 < b + f ? 432 : ~~(b + f);
-            
+
             a = 0 > a ? 0 : ~~a;
             b = 0 > b ? 0 : ~~b;
             n = 640 * b + a;
             for (w = 640 - (d - a); b < f; b++, n += w, h += p)
-                for (B = ((h >> 8) * titleSprite.h << 8) + g, l = a; l < d; l++, n++, B += k)
-                    M = t[B >> 8],
-                        -1 != M && (frameBufferArray[n] = M);
+                for (B = ((h >> 8) * titleSprite.h << 8) + g, l = a; l < d; l++, n++, B += k) {
+                    M = t[B >> 8];
+                    if (-1 != M) {
+                        frameBufferArray[n] = M;
+                    }
+                }
+            if (2 == gameScreenState) {
 
-            2 == gameScreenState
-                ? (
-                    drawTextCentered(gameFont, 320, 220, "NEW GAME", 16777215, 10053171),
-                    buttonCheckCentered(320, 220, 128, 24) &&
-                    (isMouseClicked &&
-                        (gameScreenState = (0 == gameLoadStatusCode) ? 3 : 4),
-                        drawLine(256, 228, 384, 228, 11141120)
-                    ),
-                    0 == gameLoadStatusCode && (
-                        drawTextCentered(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171),
-                        buttonCheckCentered(320, 260, 128, 24) && (
-                            isMouseClicked && (gameScreenState = 5),
-                            drawLine(256, 268, 384, 268, 11141120)
-                        )
-                    )
-                )
-                : 3 == gameScreenState && (
-                    drawTextCentered(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171),
-                    buttonCheckCentered(320, 220, 128, 24) && (
-                        isMouseClicked && (gameScreenState = 4),
-                        drawLine(192, 228, 448, 228, 11141120)
-                    ),
-                    drawTextCentered(gameFont, 320, 260, "CANCEL", 16777215, 10053171),
-                    buttonCheckCentered(320, 260, 128, 24) && (
-                        isMouseClicked && (gameScreenState = 2),
-                        drawLine(256, 268, 384, 268, 11141120)
-                    )
-                );
+                drawTextCentered(gameFont, 320, 220, "NEW GAME", 16777215, 10053171);
+                if (buttonCheckCentered(320, 220, 128, 24)) {
+                    if (isMouseClicked) {
+                        gameScreenState = 0 == gameLoadStatusCode ? 3 : 4;
+                    }
+                    drawLine(256, 228, 384, 228, 11141120);
+                }
+                if (0 == gameLoadStatusCode) {
+                    drawTextCentered(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171);
+                    if (
+                        buttonCheckCentered(320, 260, 128, 24)) {
+                        if (isMouseClicked) {
+                            gameScreenState = 5;
+                        }
+                        drawLine(256, 268, 384, 268, 11141120);
+                    }
+                }
+            } else {
+                if (3 == gameScreenState) {
+                    drawTextCentered(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171);
+                    if (
+                        buttonCheckCentered(320, 220, 128, 24)) {
+                        if (isMouseClicked) {
+                            gameScreenState = 4;
+                        }
+                        drawLine(192, 228, 448, 228, 11141120);
+                    }
 
-            drawIconButton(608, 312, 8, "IMPORT", 16777215) && (
-                8 != userSaveCode.length
-                    ? drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158)
-                    : isMouseClicked && (
-                        a = promptInput("Import Game Data", "")) && (
-                        gameLoadStatusCode = loadGame(a),
-                        statusDuration = 100
-                    )
-            );
-
-            drawIconButton(608, 352, 9, "EXPORT", 16777215) && (
-                8 != userSaveCode.length
-                    ? drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158)
-                    : isMouseClicked && promptInput("Export Game Data", gameSaveString)
-            );
+                    drawTextCentered(gameFont, 320, 260, "CANCEL", 16777215, 10053171);
+                    if (buttonCheckCentered(320, 260, 128, 24)) {
+                        if (isMouseClicked) {
+                            gameScreenState = 2;
+                        }
+                        drawLine(256, 268, 384, 268, 11141120);
+                    }
+                }
+            }
+            if (drawIconButton(608, 312, 8, "IMPORT", 16777215)) {
+                if (8 != userSaveCode.length) {
+                    drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
+                } else {
+                    if (isMouseClicked) {
+                        if (a = promptInput("Import Game Data", "")) {
+                            gameLoadStatusCode = loadGame(a);
+                            statusDuration = 100;
+                        }
+                    }
+                }
+            }
+            if (drawIconButton(608, 352, 9, "EXPORT", 16777215)) {
+                if (8 != userSaveCode.length) {
+                    drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
+                } else {
+                    if (isMouseClicked) {
+                        promptInput("Export Game Data", gameSaveString);
+                    }
+                }
+            }
             drawRect(0, 408, 640, 16, 0);
-            drawTextCentered(gameFont, 320, 417, copyrightText2, -1, 6697728)
+            drawTextCentered(gameFont, 320, 417, copyrightText2, -1, 6697728);
 
-        } else if (4 == gameScreenState || 5 == gameScreenState)
-            4 == gameScreenState
-                ? (
-                    resetGameProgress(),
-                    partyEquipmentTable[0][0] = 4,
-                    currentStage = itemForgeLvls[4] = 1,
-                    partySpawnXByHero[0] = 20,
-                    partySpawnXByHero[1] = 28,
-                    partySpawnXByHero[2] = 36,
-                    partySpawnXByHero[3] = 44,
-                    partySpawnYByHero[0] = 40,
-                    partySpawnYByHero[1] = 40,
-                    partySpawnYByHero[2] = 40,
-                    partySpawnYByHero[3] = 40,
-                    updatePartyStats()
-                )
-                : 5 == gameScreenState && (
-                    resetUIStates(),
-                    currentStage = 1,
-                    partySpawnXByHero[0] = 20,
-                    partySpawnXByHero[1] = 28,
-                    partySpawnXByHero[2] = 36,
-                    partySpawnXByHero[3] = 44,
-                    partySpawnYByHero[0] = 40,
-                    partySpawnYByHero[1] = 40,
-                    partySpawnYByHero[2] = 40,
-                    partySpawnYByHero[3] = 40
-                ),
-                screenFadeFactor = 0,
-                gameScreenState = 10;
-
-        else if (10 == gameScreenState)
-            loadLevelData(currentStage) && (
-                1 == currentStage && (comboMultBonus >>= 1),
-                screenStateTimer = 0,
-                gameScreenState++
-            );
-        else if (11 == gameScreenState || 12 == gameScreenState || 13 == gameScreenState || 30 == gameScreenState)
+        } else if (4 == gameScreenState || 5 == gameScreenState) {
+            if (4 == gameScreenState) {
+                resetGameProgress();
+                partyEquipmentTable[0][0] = 4;
+                currentStage = itemForgeLvls[4] = 1;
+                partySpawnXByHero[0] = 20;
+                partySpawnXByHero[1] = 28;
+                partySpawnXByHero[2] = 36;
+                partySpawnXByHero[3] = 44;
+                partySpawnYByHero[0] = 40;
+                partySpawnYByHero[1] = 40;
+                partySpawnYByHero[2] = 40;
+                partySpawnYByHero[3] = 40;
+                updatePartyStats();
+            } else {
+                if (5 == gameScreenState) {
+                    resetUIStates();
+                    currentStage = 1;
+                    partySpawnXByHero[0] = 20;
+                    partySpawnXByHero[1] = 28;
+                    partySpawnXByHero[2] = 36;
+                    partySpawnXByHero[3] = 44;
+                    partySpawnYByHero[0] = 40;
+                    partySpawnYByHero[1] = 40;
+                    partySpawnYByHero[2] = 40;
+                    partySpawnYByHero[3] = 40;
+                }
+            }
+            screenFadeFactor = 0;
+            gameScreenState = 10;
+        } else if (10 == gameScreenState) {
+            if (loadLevelData(currentStage)) {
+                if (1 == currentStage) {
+                    comboMultBonus >>= 1;
+                }
+                screenStateTimer = 0;
+                gameScreenState++;
+            }
+        } else if (11 == gameScreenState || 12 == gameScreenState || 13 == gameScreenState || 30 == gameScreenState) {
             if (isMouseClicked && (
-                clickInUI = false,
-                360 <= mouseYCurrent && (clickInUI = true),
-                memberUIVisible && buttonCheck(8, 8, 204, 196) && (clickInUI = true),
-                inventoryUIVisible && buttonCheck(218, 8, 204, 260) && (clickInUI = true),
-                bestiaryUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
-                badgesUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
-                optionsUIVisible && buttonCheck(428, 196, 204, 148) && (clickInUI = true),
-                shrineUIVisible && buttonCheck(218, 8, 204, 180) && (clickInUI = true)
-            ),
+                    clickInUI = false,
+                    360 <= mouseYCurrent && (clickInUI = true),
+                    memberUIVisible && buttonCheck(8, 8, 204, 196) && (clickInUI = true),
+                    inventoryUIVisible && buttonCheck(218, 8, 204, 260) && (clickInUI = true),
+                    bestiaryUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
+                    badgesUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
+                    optionsUIVisible && buttonCheck(428, 196, 204, 148) && (clickInUI = true),
+                    shrineUIVisible && buttonCheck(218, 8, 204, 180) && (clickInUI = true)),
+
                 updatePartyStats(), updateStageEdgeSpawns(), updateStageTick(),
                 drawGameStage(), updatePlayerParty(),
                 updateEnemies(), updateDrops(), updatePopups(), updateProjectiles(), drawEnemies(), drawDrops(),
@@ -1330,25 +1356,25 @@ function drawCanvas() {
                 drawRect(4, 4, 8 * stageListArray[currentStage][stageNameCol].length + 8, 20, 2151694400), // background
                 isSolidRender = 0,
                 drawText(gameFont, 8, 8, stageListArray[currentStage][stageNameCol], 16777215, 0),
-                drawGameUI(),
-                11 == gameScreenState
-            )
-                c = 255,
-                    50 < screenStateTimer && (c = 255 - floor(255 * (screenStateTimer - 50) / 20)),
-                    drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24),
-                    a = -1E3 + floor(500 * screenStateTimer / 20),
-                    drawLine(a, 164, a + 1E3, 164, 8421504),
-                    a = 640 - floor(500 * screenStateTimer / 20),
-                    drawLine(a, 193, a + 1E3, 193, 8421504),
-                    screenStateTimer++,
-                    screenFadeFactor = clamp(screenStateTimer / 30, 0, 1),
-                    70 <= screenStateTimer && (
-                        screenFadeFactor = 1,
-                        screenStateTimer = 0,
-                        gameScreenState++
-                    );
-
-            else if (12 == gameScreenState) {
+                drawGameUI(), 11 == gameScreenState
+            ) {
+                c = 255;
+                if (50 < screenStateTimer) {
+                    c = 255 - floor(255 * (screenStateTimer - 50) / 20);
+                }
+                drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
+                a = -1E3 + floor(500 * screenStateTimer / 20);
+                drawLine(a, 164, a + 1E3, 164, 8421504);
+                a = 640 - floor(500 * screenStateTimer / 20);
+                drawLine(a, 193, a + 1E3, 193, 8421504);
+                screenStateTimer++;
+                screenFadeFactor = clamp(screenStateTimer / 30, 0, 1);
+                if (70 <= screenStateTimer) {
+                    screenFadeFactor = 1;
+                    screenStateTimer = 0;
+                    gameScreenState++;
+                }
+        } else if (12 == gameScreenState) {
                 for (a = b = 0; a < partyMemberCount; a++)
                     b += partyLP[a];
                 if (0 == b) {
@@ -1359,78 +1385,112 @@ function drawCanvas() {
                     if (0 < c) {
                         for (a = 0; a < partyMemberCount; a++)
                             spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, -c, 60, 16776960);
-                        partyGold = clamp(partyGold - c * partyMemberCount, 0, 9999999)
+                        partyGold = clamp(partyGold - c * partyMemberCount, 0, 9999999);
                     }
-                    for (a = 0; a < partyMemberCount; a++)
-                        partyLP[a] = 1,
-                            heroEmitCurrent[a] = 0;
-
+                    for (a = 0; a < partyMemberCount; a++) {
+                        partyLP[a] = 1;
+                        heroEmitCurrent[a] = 0;
+                    }
                     saveGame();
                     for (a = 0; a < partyMemberCount; a++)
-                        partyLP[a] = 0
-                } else currentStage != lastStageIdx && (
-                    screenStateTimer = 0,
-                    gameScreenState = 13,
-                    isBadgeIncompleteForCurrentStage(6) && (2 == lastClearedStageIdx && 4 == lastStageIdx || 4 == lastClearedStageIdx && 2 == lastStageIdx) &&
-                    0 == stage_partyDamageTaken && 0 == stage_totalDamageDealt && IncrementBadgeCount(6),
-                    isBadgeIncompleteForCurrentStage(51) && (13 == lastClearedStageIdx && 15 == lastStageIdx || 15 == lastClearedStageIdx && 13 == lastStageIdx)
-                    && 0 == stage_partyDamageTaken && 0 == stage_totalDamageDealt && IncrementBadgeCount(51)
-                )
-            } else if (13 == gameScreenState)
-                screenStateTimer++,
-                    screenFadeFactor = clamp(1 - screenStateTimer / 20, 0, 1),
-                    20 == screenStateTimer && (
-                        screenFadeFactor = 0,
-                        gameScreenState = 10,
-                        lastClearedStageIdx = currentStage,
-                        currentStage = lastStageIdx,
-                        saveGame()
-                    );
-            else if (
-                30 == gameScreenState && (
-                    100 > screenStateTimer && screenStateTimer++,
-                    c = floor(255 * screenStateTimer / 100),
-                    drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
-                    100 == screenStateTimer && isMouseClicked
-                )) {
-                for (a = 0; 4 > a; a++) partyLP[a] = 1, heroEmitCurrent[a] = 0;
+                        partyLP[a] = 0;
+                } else if (currentStage != lastStageIdx) {
+                screenStateTimer = 0;
+                gameScreenState = 13;
+                if (isBadgeIncompleteForCurrentStage(6)) {
+                    if (2 == lastClearedStageIdx && 4 == lastStageIdx || 4 == lastClearedStageIdx && 2 == lastStageIdx) {
+                        if (0 == stage_partyDamageTaken) {
+                            if (0 == stage_totalDamageDealt) {
+                                IncrementBadgeCount(6);
+                            }
+                        }
+                    }
+                }
+                if (isBadgeIncompleteForCurrentStage(51)) {
+                    if (13 == lastClearedStageIdx && 15 == lastStageIdx || 15 == lastClearedStageIdx && 13 == lastStageIdx) {
+                        if (0 == stage_partyDamageTaken) {
+                            if (0 == stage_totalDamageDealt) {
+                                IncrementBadgeCount(51);
+                            }
+                        }
+                    }
+                }
+            }
+
+        } else if (13 == gameScreenState) {
+            screenStateTimer++;
+            screenFadeFactor = clamp(1 - screenStateTimer / 20, 0, 1);
+            if (20 == screenStateTimer) {
                 screenFadeFactor = 0;
                 gameScreenState = 10;
-                currentStage = 1;
-                partySpawnXByHero[0] = 20;
-                partySpawnXByHero[1] = 28;
-                partySpawnXByHero[2] = 36;
-                partySpawnXByHero[3] = 44;
-                partySpawnYByHero[0] = 40;
-                partySpawnYByHero[1] = 40;
-                partySpawnYByHero[2] = 40;
-                partySpawnYByHero[3] = 40;
-                saveGame()
+                lastClearedStageIdx = currentStage;
+                currentStage = lastStageIdx;
+                saveGame();
             }
+        } else if (30 == gameScreenState && (
+                100 > screenStateTimer && screenStateTimer++,
+                c = floor(255 * screenStateTimer / 100),
+                drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
+                100 == screenStateTimer && isMouseClicked)) {
+            for (a = 0; 4 > a; a++) {
+                partyLP[a] = 1;
+                heroEmitCurrent[a] = 0;
+            }
+            screenFadeFactor = 0;
+            gameScreenState = 10;
+            currentStage = 1;
+            partySpawnXByHero[0] = 20;
+            partySpawnXByHero[1] = 28;
+            partySpawnXByHero[2] = 36;
+            partySpawnXByHero[3] = 44;
+            partySpawnYByHero[0] = 40;
+            partySpawnYByHero[1] = 40;
+            partySpawnYByHero[2] = 40;
+            partySpawnYByHero[3] = 40;
+            saveGame();
+        }
+    }
         // updatePartyChecksum();
-        0 < badgePopupTimer && (
-            badgePopupTimer--,
-            a = badgeList[lastCompletedBadgeIdx][3],
-            drawSpriteSheetPartTintedScaled(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true),
-            b = 440,
-            a = min(120 - badgePopupTimer - 0, 4),
-            0 < a && drawText(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0),
-            a = min(120 - badgePopupTimer - 2, 4),
-            0 < a && drawText(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0),
-            a = min(120 - badgePopupTimer - 4, 4),
-            0 < a && drawText(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0),
-            b = 438,
-            a = min(120 - badgePopupTimer - 6, 4),
-            0 < a && drawText(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0),
-            a = min(120 - badgePopupTimer - 8, 4),
-            0 < a && drawText(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0),
-            a = min(120 - badgePopupTimer - 10, 4),
-            0 < a && drawText(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0),
-            a = min(120 - badgePopupTimer - 12, 4),
-            0 < a && drawText(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0),
-            a = min(120 - badgePopupTimer - 14, 4),
-            0 < a && drawText(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0)
-        );
+        if (0 < badgePopupTimer) {
+            badgePopupTimer--;
+            a = badgeList[lastCompletedBadgeIdx][3];
+            drawSpriteSheetPartTintedScaled(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true);
+            b = 440;
+            a = min(120 - badgePopupTimer - 0, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0);
+            }
+            a = min(120 - badgePopupTimer - 2, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0);
+            }
+            a = min(120 - badgePopupTimer - 4, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0);
+            }
+            b = 438;
+            a = min(120 - badgePopupTimer - 6, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0);
+            }
+            a = min(120 - badgePopupTimer - 8, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0);
+            }
+            a = min(120 - badgePopupTimer - 10, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0);
+            }
+            a = min(120 - badgePopupTimer - 12, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0);
+            }
+            a = min(120 - badgePopupTimer - 14, 4);
+            if (0 < a) {
+                drawText(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0);
+            }
+        }
+
 
         if (statusDuration > 0) {
             statusDuration--;

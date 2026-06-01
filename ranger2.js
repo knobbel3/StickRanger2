@@ -3661,13 +3661,29 @@ function updatePlayerParty() {
 mainWindow.fff = drawPlayerParty;
 
 function drawPlayerParty() {
-    var a, b, c, d, f, g, h = new Vec2,
-        k = new Vec2;
+    var a, b, c, d, f, g, h = new Vec2(),
+        k = new Vec2();
     for (a = 0; a < partyMemberCount; a++) {
         d = 15908203;
         f = 16777215;
-        0 < heroStatusTintTimer[a] ? (d = 1989840, f = 5934817) : 0 < heroSkipTimer[a] ? (d = 9840, f = 1989840) : 0 < heroTimedDamageTimer[a] && (d = 3381504, f = 3407616);
-        0 < heroHitFlashTimer[a] && (heroHitFlashTimer[a]--, f = 16711680);
+        if (0 < heroStatusTintTimer[a]) {
+            d = 1989840;
+            f = 5934817;
+        } else {
+            if (0 < heroSkipTimer[a]) {
+                d = 9840;
+                f = 1989840;
+            } else {
+                if (0 < heroTimedDamageTimer[a]) {
+                    d = 3381504;
+                    f = 3407616;
+                }
+            }
+        }
+        if (0 < heroHitFlashTimer[a]) {
+            heroHitFlashTimer[a]--;
+            f = 16711680;
+        }
         spriteAltRenderFlag = isSolidRender = 1;
         for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(heroJointPositionsByHero[a][c].x), floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         isSolidRender = spriteAltRenderFlag = 0;
@@ -3715,20 +3731,42 @@ function drawPlayerParty() {
                     ba = ba << 16;
                 U = 28311552;
                 n = 0;
-                U > B && (U = B);
-                U > J && (U = J);
-                U > x && (U = x);
-                U > ba && (U = ba);
-                n < B && (n = B);
-                n < J && (n = J);
-                n < x && (n = x);
-                n < ba &&
-                    (n = ba);
+                if (U > B) {
+                    U = B;
+                }
+                if (U > J) {
+                    U = J;
+                }
+                if (U > x) {
+                    U = x;
+                }
+                if (U > ba) {
+                    U = ba;
+                }
+                if (n < B) {
+                    n = B;
+                }
+                if (n < J) {
+                    n = J;
+                }
+                if (n < x) {
+                    n = x;
+                }
+                if (n < ba) {
+                    n = ba;
+                }
                 U >>= 16;
                 n >>= 16;
-                0 > U && (U = 0);
-                432 <= n && (n = 431);
-                for (l = U; l <= n; l++) scanlineMinX[l] = 640, scanlineMaxX[l] = -1;
+                if (0 > U) {
+                    U = 0;
+                }
+                if (432 <= n) {
+                    n = 431;
+                }
+                for (l = U; l <= n; l++) {
+                    scanlineMinX[l] = 640;
+                    scanlineMaxX[l] = -1;
+                }
                 updateScanlineBoundsFromLine(w, B, M, J);
                 updateScanlineBoundsFromLine(M, J, y, x);
                 updateScanlineBoundsFromLine(K, ba, y, x);
@@ -3738,19 +3776,160 @@ function drawPlayerParty() {
                 M = t >> 8 & 255;
                 J = t & 255;
                 for (l = U; l < n; l++)
-                    for (0 > scanlineMinX[l] && (scanlineMinX[l] = 0), 640 <= scanlineMaxX[l] && (scanlineMaxX[l] = 639), U = 640 * l + scanlineMinX[l], y = U + (scanlineMaxX[l] - scanlineMinX[l]), x = 640 * l + scanlineMinX[l + 1], K = x + (scanlineMaxX[l + 1] - scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = min(y - 1, K)); U <= y; U++) 0 == isSolidRender ? frameBufferArray[U] = t : 1 == isSolidRender ? (x = frameBufferArray[U] >> 16 & 255, x = ((B - x) * w >> 8) + x, K = frameBufferArray[U] >> 8 & 255, K = ((M - K) * w >> 8) + K, ba = frameBufferArray[U] & 255, ba = ((J - ba) * w >> 8) + ba, frameBufferArray[U] = x << 16 | K << 8 | ba) : 2 == isSolidRender && (x = (frameBufferArray[U] >>
-                        16 & 255) + (B * w >> 8), 255 < x && (x = 255), K = (frameBufferArray[U] >> 8 & 255) + (M * w >> 8), 255 < K && (K = 255), ba = (frameBufferArray[U] & 255) + (J * w >> 8), 255 < ba && (ba = 255), frameBufferArray[U] = x << 16 | K << 8 | ba);
-                isSolidRender = 0
+                    for (0 > scanlineMinX[l] && (scanlineMinX[l] = 0), 640 <= scanlineMaxX[l] && (scanlineMaxX[l] = 639), U = 640 * l + scanlineMinX[l], y = U + (scanlineMaxX[l] - scanlineMinX[l]), x = 640 * l + scanlineMinX[l + 1], K = x + (scanlineMaxX[l + 1] - scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = min(y - 1, K)); U <= y; U++)
+                        if (0 == isSolidRender) {
+                            frameBufferArray[U] = t;
+                        } else {
+                            if (1 == isSolidRender) {
+                                x = frameBufferArray[U] >> 16 & 255;
+                                x = ((B - x) * w >> 8) + x;
+                                K = frameBufferArray[U] >> 8 & 255;
+                                K = ((M - K) * w >> 8) + K;
+                                ba = frameBufferArray[U] & 255;
+                                ba = ((J - ba) * w >> 8) + ba;
+                                frameBufferArray[U] = x << 16 | K << 8 | ba;
+                            } else {
+                                if (2 == isSolidRender) {
+                                    x = (frameBufferArray[U] >>
+                                        16 & 255) + (B * w >> 8);
+                                    if (255 < x) {
+                                        x = 255;
+                                    }
+                                    K = (frameBufferArray[U] >> 8 & 255) + (M * w >> 8);
+                                    if (255 < K) {
+                                        K = 255;
+                                    }
+                                    ba = (frameBufferArray[U] & 255) + (J * w >> 8);
+                                    if (255 < ba) {
+                                        ba = 255;
+                                    }
+                                    frameBufferArray[U] = x << 16 | K << 8 | ba;
+                                }
+                            }
+                        }
+                isSolidRender = 0;
             }
         }
-        0 < levelUpPopupTimer && (d = ~~heroJointPositionsByHero[a][0].x + 0, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > levelUpPopupTimer ? g = floor(255 * levelUpPopupTimer / 5) : g = 255, c = min(60 - levelUpPopupTimer - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 12, 4), 0 < c &&
-            drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 15, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7), c = min(60 - levelUpPopupTimer - 18, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7));
-        0 < stageClearPopupTimer && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > stageClearPopupTimer ? g = floor(255 * stageClearPopupTimer / 5) : g = 255, c = min(60 - stageClearPopupTimer - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
-            2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7), c = min(60 - stageClearPopupTimer - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + stageClearBaseGoldPerHero, 255, 255, 255, g, 34, 34, 34, g, 5, 7)));
-        0 < comboPopupTimer && (d = ~~heroJointPositionsByHero[a][0].x + 0 - 2, f = ~~heroJointPositionsByHero[a][0].y - 7, 5 > comboPopupTimer ? g = floor(255 * comboPopupTimer / 5) : g = 255, c = min(60 - comboPopupTimer - 0, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 3, 4), 0 < c && drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 6, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 9, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 4, f -
-            2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 12, 4), 0 < c && drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7), c = min(60 - comboPopupTimer - 15, 4), 0 < c && (gameFontSmall.b = -1, drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + comboGoldPayoutPerHero, 255, 128, 0, g, 48, 24, 0, g, 5, 7)))
+        if (0 < levelUpPopupTimer) {
+            d = ~~heroJointPositionsByHero[a][0].x + 0;
+            f = ~~heroJointPositionsByHero[a][0].y - 7;
+            if (5 > levelUpPopupTimer) {
+                g = floor(255 * levelUpPopupTimer / 5);
+            } else {
+                g = 255;
+            }
+            c = min(60 - levelUpPopupTimer - 0, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+            }
+            c = min(60 - levelUpPopupTimer - 3, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+            }
+            c = min(60 - levelUpPopupTimer - 6, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+            }
+            c = min(60 - levelUpPopupTimer - 9, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+            }
+            c = min(60 - levelUpPopupTimer - 12, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+            }
+            c = min(60 - levelUpPopupTimer - 15, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+            }
+            c = min(60 - levelUpPopupTimer - 18, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+            }
+        }
+        if (
+            0 < stageClearPopupTimer) {
+            d = ~~heroJointPositionsByHero[a][0].x + 0 - 2;
+            f = ~~heroJointPositionsByHero[a][0].y - 7;
+            if (5 > stageClearPopupTimer) {
+                g = floor(255 * stageClearPopupTimer / 5);
+            } else {
+                g = 255;
+            }
+            c = min(60 - stageClearPopupTimer - 0, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+            }
+            c = min(60 - stageClearPopupTimer - 3, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+            }
+            c = min(60 - stageClearPopupTimer - 6, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+            }
+            c = min(60 - stageClearPopupTimer - 9, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 4, f -
+                    2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+            }
+            c = min(60 - stageClearPopupTimer - 12, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+            }
+            c = min(60 - stageClearPopupTimer - 15, 4);
+            if (0 < c) {
+                gameFontSmall.b = -1;
+                drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + stageClearBaseGoldPerHero, 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+            }
+        }
+        if (0 < comboPopupTimer) {
+            d = ~~heroJointPositionsByHero[a][0].x + 0 - 2;
+            f = ~~heroJointPositionsByHero[a][0].y - 7;
+            if (5 > comboPopupTimer) {
+                g = floor(255 * comboPopupTimer / 5);
+            } else {
+                g = 255;
+            }
+            c = min(60 - comboPopupTimer - 0, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+            }
+            c = min(60 - comboPopupTimer - 3, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+            }
+            c = min(60 - comboPopupTimer - 6, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+            }
+            c = min(60 - comboPopupTimer - 9, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 4, f -
+                    2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+            }
+            c = min(60 - comboPopupTimer - 12, 4);
+            if (0 < c) {
+                drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+            }
+            c = min(60 - comboPopupTimer - 15, 4);
+            if (0 < c) {
+                gameFontSmall.b = -1;
+                drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + comboGoldPayoutPerHero, 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+            }
+        }
     }
-    0 < levelUpPopupTimer ? levelUpPopupTimer-- : 0 < stageClearPopupTimer ? stageClearPopupTimer-- : 0 < comboPopupTimer && comboPopupTimer--
+    if (0 < levelUpPopupTimer) {
+        levelUpPopupTimer--;
+    } else {
+        if (0 < stageClearPopupTimer) {
+            stageClearPopupTimer--;
+        } else {
+            if (0 < comboPopupTimer) {
+                comboPopupTimer--;
+            }
+        }
+    }
 }
 mainWindow.fff = drawHero;
 

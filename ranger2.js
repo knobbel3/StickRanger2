@@ -1244,7 +1244,7 @@ function drawCanvas() {
                     partySpawnYByHero[2] = 40,
                     partySpawnYByHero[3] = 40
                 ),
-                ug = 0,
+                screenFadeFactor = 0,
                 gameScreenState = 10;
 
         else if (10 == gameScreenState)
@@ -1286,9 +1286,9 @@ function drawCanvas() {
                     a = 640 - floor(500 * screenStateTimer / 20),
                     drawLine(a, 193, a + 1E3, 193, 8421504),
                     screenStateTimer++,
-                    ug = clamp(screenStateTimer / 30, 0, 1),
+                    screenFadeFactor = clamp(screenStateTimer / 30, 0, 1),
                     70 <= screenStateTimer && (
-                        ug = 1,
+                        screenFadeFactor = 1,
                         screenStateTimer = 0,
                         gameScreenState++
                     );
@@ -1323,9 +1323,9 @@ function drawCanvas() {
                 )
             } else if (13 == gameScreenState)
                 screenStateTimer++,
-                    ug = clamp(1 - screenStateTimer / 20, 0, 1),
+                    screenFadeFactor = clamp(1 - screenStateTimer / 20, 0, 1),
                     20 == screenStateTimer && (
-                        ug = 0,
+                        screenFadeFactor = 0,
                         gameScreenState = 10,
                         lastClearedStageIdx = currentStage,
                         currentStage = lastStageIdx,
@@ -1339,7 +1339,7 @@ function drawCanvas() {
                     100 == screenStateTimer && isMouseClicked
                 )) {
                 for (a = 0; 4 > a; a++) partyLP[a] = 1, heroEmitCurrent[a] = 0;
-                ug = 0;
+                screenFadeFactor = 0;
                 gameScreenState = 10;
                 currentStage = 1;
                 partySpawnXByHero[0] = 20;
@@ -1626,7 +1626,7 @@ function drawGameUI() {
             k = f + hidx * d + b % 3 * 20;
             var n = g + 28 + 20 * floor(b / 3);
             drawRect(k, n, 16, 16, 0);
-            0 != c && (fh = 2, h = itemList[c][itemHeadwearType], 2 == b ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]), fh = 0);
+            0 != c && (spriteAltRenderFlag = 2, h = itemList[c][itemHeadwearType], 2 == b ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true) : 3 == b || 4 == b ? drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]), spriteAltRenderFlag = 0);
             handleInventoryButton(k, n, 16, 16, c, b);
             buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c && (selectingHero = hidx)
         }
@@ -1813,10 +1813,10 @@ function drawGameUI() {
             b = f + 28 * hidx;
             d = g;
             drawRect(b, d, 24, 24, 0);
-            fh = 2;
+            spriteAltRenderFlag = 2;
             h = itemList[c][itemHeadwearType];
             drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]);
-            fh = 0;
+            spriteAltRenderFlag = 0;
             drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0), handleInventoryButton(b, d, 24, 24, c, hidx)
         }
     }
@@ -1923,7 +1923,7 @@ function drawGameUI() {
         k = inventoryTabIdx;
         drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked && (inventoryUIVisible = false);
         for (hidx = 0; 28 > hidx; hidx++) c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + hidx], b = _ox + hidx % 7 * 28, d = _oy + 84 + 28 * ~~(hidx / 7), drawRect(b, d, 24, 24, 0),
-            0 < itemForgeLvls[c] && (fh = 2, h = itemList[c][itemHeadwearType], 2 == inventoryTabIdx ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true) : 3 == inventoryTabIdx || 4 == inventoryTabIdx ? drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]), fh = 0), hidx == inventorySlotIdx  && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), inventorySlotIdx  != hidx ? isMouseReleased && (inventorySlotIdx  = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+            0 < itemForgeLvls[c] && (spriteAltRenderFlag = 2, h = itemList[c][itemHeadwearType], 2 == inventoryTabIdx ? drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true) : 3 == inventoryTabIdx || 4 == inventoryTabIdx ? drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]) : drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]), spriteAltRenderFlag = 0), hidx == inventorySlotIdx  && drawRectOutline(b, d, 24, 24, 16711680), buttonCheck(b, d, 24, 24) && (fillEmptyPixelsRect(b, d, 24, 24, 6684672), inventorySlotIdx  != hidx ? isMouseReleased && (inventorySlotIdx  = hidx) : (h = -1, partyEquipmentTable[0][k] == c ? h = 0 : partyEquipmentTable[1][k] == c ? h = 1 : partyEquipmentTable[2][k] == c ? h = 2 : partyEquipmentTable[3][k] == c && (h = 3), 0 != itemForgeLvls[c] && (-1 == h ? (drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[selectingHero][k] = c)) : h == selectingHero ? (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                 0), isMouseReleased && (partyEquipmentTable[selectingHero][k] = 0)) : (drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0), drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481), isMouseReleased && (partyEquipmentTable[h][k] = 0, partyEquipmentTable[selectingHero][k] = c)))), isMouseReleased && (itemIsNew[c] = 0)), 0 < itemIsNew[c] && drawText(gameFontSmall, b, d, "NEW", 16776960, -1), 0 != c && (partyEquipmentTable[0][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1) : partyEquipmentTable[1][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1) : partyEquipmentTable[2][k] == c ? drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1) : partyEquipmentTable[3][k] == c && drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1));
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
@@ -1981,7 +1981,7 @@ function drawGameUI() {
                             continue;
                         }
                         drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0);
-                        fh = 2;
+                        spriteAltRenderFlag = 2;
                         h = itemList[hidx][itemHeadwearType];
                         if (10 == itemList[hidx][itemAppearanceCol]){
                             drawSpriteSheetPartTintedScaled(
@@ -2007,7 +2007,7 @@ function drawGameUI() {
                                     itemsSpriteSheet, 
                                     f + 80, g + 12 + 20 * d, 
                                     16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][itemSpriteSourceXCol]);
-                                fh = 0;
+                                spriteAltRenderFlag = 0;
                                 gameFontMed.a = 4; 
                                 drawText(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][itemNameCol], -1, 0); 
                                 if (0 < itemForgeLvls[hidx]) {
@@ -2075,7 +2075,7 @@ function drawGameUI() {
         1 == currentStage ? drawTextCentered(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0) : drawTextCentered(gameFontMed, f + 96, g + 100, "Return to Village",
             -1, 0);
         h = stageListArray[currentStage][stageReturnCost];
-        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == currentStage ? gameScreenState = 0 : (ug = 0, gameScreenState = 10, currentStage = 1, partySpawnXByHero[0] = 20, partySpawnXByHero[1] = 28, partySpawnXByHero[2] = 36, partySpawnXByHero[3] = 44, partySpawnYByHero[0] = 40, partySpawnYByHero[1] = 40, partySpawnYByHero[2] = 40, partySpawnYByHero[3] = 40), saveGame(), optionsUIVisible = false)
+        drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h) && h <= partyGold && isMouseClicked && (partyGold = clamp(partyGold - h, 0, 9999999), 1 == currentStage ? gameScreenState = 0 : (screenFadeFactor = 0, gameScreenState = 10, currentStage = 1, partySpawnXByHero[0] = 20, partySpawnXByHero[1] = 28, partySpawnXByHero[2] = 36, partySpawnXByHero[3] = 44, partySpawnYByHero[0] = 40, partySpawnYByHero[1] = 40, partySpawnYByHero[2] = 40, partySpawnYByHero[3] = 40), saveGame(), optionsUIVisible = false)
     }
     if (shrineUIVisible) {
         f = 224;
@@ -2694,9 +2694,9 @@ function drawPlayerParty() {
         f = 16777215;
         0 < heroStatusTintTimer[a] ? (d = 1989840, f = 5934817) : 0 < heroSkipTimer[a] ? (d = 9840, f = 1989840) : 0 < heroTimedDamageTimer[a] && (d = 3381504, f = 3407616);
         0 < heroHitFlashTimer[a] && (heroHitFlashTimer[a]--, f = 16711680);
-        fh = isSolidRender = 1;
+        spriteAltRenderFlag = isSolidRender = 1;
         for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(heroJointPositionsByHero[a][c].x), floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
-        isSolidRender = fh = 0;
+        isSolidRender = spriteAltRenderFlag = 0;
         drawHero(a, heroJointPositionsByHero[a], heroBodyDrawStateByHero[a][0], heroBodyDrawStateByHero[a][1], d, f, heroUpperJointMode[a]);
         if (0 < heroAttackTrailTimerByHero[a]) {
             b = partyEquipmentTable[a][attackWeaponSlotIdx[a]];
@@ -2754,7 +2754,7 @@ function drawPlayerParty() {
                 n >>= 16;
                 0 > U && (U = 0);
                 432 <= n && (n = 431);
-                for (l = U; l <= n; l++) Ji[l] = 640, Ki[l] = -1;
+                for (l = U; l <= n; l++) scanlineMinX[l] = 640, scanlineMaxX[l] = -1;
                 updateScanlineBoundsFromLine(w, B, M, J);
                 updateScanlineBoundsFromLine(M, J, y, x);
                 updateScanlineBoundsFromLine(K, ba, y, x);
@@ -2764,7 +2764,7 @@ function drawPlayerParty() {
                 M = t >> 8 & 255;
                 J = t & 255;
                 for (l = U; l < n; l++)
-                    for (0 > Ji[l] && (Ji[l] = 0), 640 <= Ki[l] && (Ki[l] = 639), U = 640 * l + Ji[l], y = U + (Ki[l] - Ji[l]), x = 640 * l + Ji[l + 1], K = x + (Ki[l + 1] - Ji[l + 1]), U < x && (U = x), y >= K && (y = min(y - 1, K)); U <= y; U++) 0 == isSolidRender ? frameBufferArray[U] = t : 1 == isSolidRender ? (x = frameBufferArray[U] >> 16 & 255, x = ((B - x) * w >> 8) + x, K = frameBufferArray[U] >> 8 & 255, K = ((M - K) * w >> 8) + K, ba = frameBufferArray[U] & 255, ba = ((J - ba) * w >> 8) + ba, frameBufferArray[U] = x << 16 | K << 8 | ba) : 2 == isSolidRender && (x = (frameBufferArray[U] >>
+                    for (0 > scanlineMinX[l] && (scanlineMinX[l] = 0), 640 <= scanlineMaxX[l] && (scanlineMaxX[l] = 639), U = 640 * l + scanlineMinX[l], y = U + (scanlineMaxX[l] - scanlineMinX[l]), x = 640 * l + scanlineMinX[l + 1], K = x + (scanlineMaxX[l + 1] - scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = min(y - 1, K)); U <= y; U++) 0 == isSolidRender ? frameBufferArray[U] = t : 1 == isSolidRender ? (x = frameBufferArray[U] >> 16 & 255, x = ((B - x) * w >> 8) + x, K = frameBufferArray[U] >> 8 & 255, K = ((M - K) * w >> 8) + K, ba = frameBufferArray[U] & 255, ba = ((J - ba) * w >> 8) + ba, frameBufferArray[U] = x << 16 | K << 8 | ba) : 2 == isSolidRender && (x = (frameBufferArray[U] >>
                         16 & 255) + (B * w >> 8), 255 < x && (x = 255), K = (frameBufferArray[U] >> 8 & 255) + (M * w >> 8), 255 < K && (K = 255), ba = (frameBufferArray[U] & 255) + (J * w >> 8), 255 < ba && (ba = 255), frameBufferArray[U] = x << 16 | K << 8 | ba);
                 isSolidRender = 0
             }
@@ -2910,9 +2910,9 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 break;
             case 5:
                 isSolidRender = 2;
-                fh = 1;
+                spriteAltRenderFlag = 1;
                 drawSpriteSheetPartCentered(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p);
-                isSolidRender = fh = 0;
+                isSolidRender = spriteAltRenderFlag = 0;
                 break;
 
         }
@@ -4938,7 +4938,7 @@ function drawProjectiles() { // Eg
             1 == projectileImpactState[a] ? d = floor((projectileTintColor[a] >> 24 & 255) * (projectileImpactLifetime[a] - projectileImpactAge[a]) / projectileImpactLifetime[a]) << 24 | projectileTintColor[a] & 16777215 : d = projectileTintColor[a];
             0 < projectileHitCooldownFrames[a] && (d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215);
             isSolidRender = projectileSolidRenderMode[a];
-            fh = 1;
+            spriteAltRenderFlag = 1;
             0 > projectileJointPair[a] ? (p.set(projectilePosition[a]), t.set(projectileVelocity[a])) : (l = projectileOwnerIdx[a], n = projectileJointPair[a] >> 8, w = projectileJointPair[a] & 255, B = 0 <= l ? heroJointPositionsByHero : enemyJointPosArray, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], projectilePosition[a]), t.set(projectileVelocity[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + B[l][n].x, p.y =
                 f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + B[l][n].y, t.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y, t.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y));
             if (0 == projectileDrawMode[a]) drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
@@ -5000,7 +5000,7 @@ function drawProjectiles() { // Eg
                 c >>= 16;
                 0 > n && (n = 0);
                 432 <= c && (c = 431);
-                for (b = n; b <= c; b++) Ji[b] = 640, Ki[b] = -1;
+                for (b = n; b <= c; b++) scanlineMinX[b] = 640, scanlineMaxX[b] = -1;
                 rasterizeLineToScanlineBounds(w, B, M, J, y, x, K, ba);
                 rasterizeLineToScanlineBounds(y, x, K, ba, U, na, Fa, Ga);
                 rasterizeLineToScanlineBounds(U, na, Fa, Ga, Ca, ua, fb, ob);
@@ -5012,11 +5012,11 @@ function drawProjectiles() { // Eg
                 y = l >> 8 & 255;
                 x = l & 255;
                 for (b = n; b <= c; b++)
-                    for (l = Ki[b] - Ji[b] + 1, n = floor((nm[b] - om[b]) / l), Fa = floor((pm[b] - qm[b]) / l), U = om[b], na = qm[b], 0 > Ji[b] && (U += n * -Ji[b], na += Fa * -Ji[b], Ji[b] =
-                        0), 640 <= Ki[b] && (Ki[b] = 639), K = 640 * b + Ji[b], ba = K + (Ki[b] - Ji[b]); K <= ba; K++, U += n, na += Fa) l = w[(na >> 16) * B + (U >> 16)], 0 != l && (l = (l & 255) * M >> 8, 1 == isSolidRender ? (Ga = frameBufferArray[K] >> 16 & 255, Ga = ((J - Ga) * l >> 8) + Ga, Ca = frameBufferArray[K] >> 8 & 255, Ca = ((y - Ca) * l >> 8) + Ca, ua = frameBufferArray[K] & 255, ua = ((x - ua) * l >> 8) + ua, frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 2 == isSolidRender ? (Ga = (frameBufferArray[K] >> 16 & 255) + (J * l >> 8), 255 < Ga && (Ga = 255), Ca = (frameBufferArray[K] >> 8 & 255) + (y * l >> 8), 255 < Ca && (Ca = 255), ua = (frameBufferArray[K] & 255) + (x * l >> 8), 255 < ua && (ua = 255), frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 3 == isSolidRender && (Ga = (frameBufferArray[K] >> 16 & 255) - (J * l >> 8), 0 > Ga && (Ga = 0), Ca = (frameBufferArray[K] >> 8 & 255) - (y * l >> 8), 0 > Ca && (Ca = 0),
+                    for (l = scanlineMaxX[b] - scanlineMinX[b] + 1, n = floor((scanlineTexUEnd[b] - scanlineTexUStart[b]) / l), Fa = floor((scanlineTexVEnd[b] - scanlineTexVStart[b]) / l), U = scanlineTexUStart[b], na = scanlineTexVStart[b], 0 > scanlineMinX[b] && (U += n * -scanlineMinX[b], na += Fa * -scanlineMinX[b], scanlineMinX[b] =
+                        0), 640 <= scanlineMaxX[b] && (scanlineMaxX[b] = 639), K = 640 * b + scanlineMinX[b], ba = K + (scanlineMaxX[b] - scanlineMinX[b]); K <= ba; K++, U += n, na += Fa) l = w[(na >> 16) * B + (U >> 16)], 0 != l && (l = (l & 255) * M >> 8, 1 == isSolidRender ? (Ga = frameBufferArray[K] >> 16 & 255, Ga = ((J - Ga) * l >> 8) + Ga, Ca = frameBufferArray[K] >> 8 & 255, Ca = ((y - Ca) * l >> 8) + Ca, ua = frameBufferArray[K] & 255, ua = ((x - ua) * l >> 8) + ua, frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 2 == isSolidRender ? (Ga = (frameBufferArray[K] >> 16 & 255) + (J * l >> 8), 255 < Ga && (Ga = 255), Ca = (frameBufferArray[K] >> 8 & 255) + (y * l >> 8), 255 < Ca && (Ca = 255), ua = (frameBufferArray[K] & 255) + (x * l >> 8), 255 < ua && (ua = 255), frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 3 == isSolidRender && (Ga = (frameBufferArray[K] >> 16 & 255) - (J * l >> 8), 0 > Ga && (Ga = 0), Ca = (frameBufferArray[K] >> 8 & 255) - (y * l >> 8), 0 > Ca && (Ca = 0),
                             ua = (frameBufferArray[K] & 255) - (x * l >> 8), 0 > ua && (ua = 0), frameBufferArray[K] = Ga << 16 | Ca << 8 | ua))
             } else if (2 == projectileDrawMode[a]) {
-                fh = 0;
+                spriteAltRenderFlag = 0;
                 l = -projectileOwnerIdx[a] - 1;
                 n = enemyCatalog[enemyTypeArray[l]][enemyBehaviorIdxCol];
                 w = enemyCatalog[enemyTypeArray[l]][enemySpriteIndexCol];
@@ -5025,7 +5025,7 @@ function drawProjectiles() { // Eg
                 if (n == enemySlimeBehaviorIdx || n == enemyBoxSnakeBehaviorIdx) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
                 drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d)
             }
-            fh = isSolidRender = 0
+            spriteAltRenderFlag = isSolidRender = 0
         }
 }
 var popupCount = 0, // aj
@@ -5204,7 +5204,7 @@ mainWindow.fff = drawDrops;
 
 function drawDrops() { // Dg
     let a;
-    fh = 2;
+    spriteAltRenderFlag = 2;
     for (a = 0; a < dropCount; a++)
         (100 == dropState[a] || dropState[a] & 6) &&
             drawSpriteSheetPart(droppedItemSpriteSheet,
@@ -5214,7 +5214,7 @@ function drawDrops() { // Dg
                 12, 12,
                 itemList[dropType[a]][itemSpriteSourceXCol]
             );
-    fh = 0
+    spriteAltRenderFlag = 0
 }
 var domDocument = document,
     canvasElement = domDocument.getElementById("cv"),
@@ -5254,28 +5254,34 @@ for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) inverseCodingCharTa
 var hostnameCheckIdx = 0,
     targetHostname = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
     frameBufferArray = new Int32Array(276480),
-    Ji = new Int32Array(432),
-    Ki = new Int32Array(432),
-    om = new Float32Array(432),
-    nm = new Float32Array(432),
-    qm = new Float32Array(432),
-    pm = new Float32Array(432);
+
+    // per-scanline X ranges (16.16 fixed-point) used for rasterization
+    scanlineMinX = new Int32Array(432),         // Ji,
+    scanlineMaxX = new Int32Array(432),         // Ki,
+
+    // per-scanline start texture U ranges (16.16 fixed-point) for sampling during rasterization.
+    scanlineTexUStart = new Float32Array(432),  // om, 
+    scanlineTexUEnd = new Float32Array(432),    // nm, 
+
+    // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
+    scanlineTexVStart = new Float32Array(432),  // qm, 
+    scanlineTexVEnd = new Float32Array(432);    // pm, 
 
 function setupAnimRequest() {
     if (requestAnim) {
         requestAnim(setupAnimRequest);
-        Vm++;
+        requestAnimCallCount++;
         timestampAnim = Date.now();
         var a = floor(60 * (timestampAnim - lastTimestamp) / 1E3 + .5);
-        if (0 > a || 60 <= a) Vm = 0, currentFPS = frameCountThisSecond, frameCountThisSecond = 0, lastTimestamp = timestampAnim, a = 0;
-        else if (a == Zm) return;
+        if (0 > a || 60 <= a) requestAnimCallCount = 0, currentFPS = frameCountThisSecond, frameCountThisSecond = 0, lastTimestamp = timestampAnim, a = 0;
+        else if (a == lastAnimFrameBucket) return;
         frameCountThisSecond++;
-        Zm = a;
+        lastAnimFrameBucket = a;
         totalFrames++
     }
     isMouseClicked = 0 == wasMouseDown && 1 == isMouseDown;
     isMouseReleased = 1 == wasMouseDown && 0 == isMouseDown;
-    (wasMouseDown = isMouseDown) ? bn++ : bn = 0;
+    (wasMouseDown = isMouseDown) ? mouseHoldFrames++ : mouseHoldFrames = 0;
     mouseXCurrent = mouseXRel;
     mouseYCurrent = mouseYRel;
     for (a = 0; 256 > a; a++) keyJustPressed[a] = keyPressPending[a], keyPressPending[a] = false;
@@ -5284,10 +5290,10 @@ function setupAnimRequest() {
     drawCanvas();
 
     var canvasBufferLength = targetHostname.length == hostnameCheckIdx ? CANVAS_WIDTH * CANVAS_HEIGHT : 0;
-    if (1 <= ug)
+    if (1 <= screenFadeFactor)
         for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) << 16 | frameBufferArray[a] & 65280 | frameBufferArray[a] >> 16 & 255;
     else
-        for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) * ug << 16 | (frameBufferArray[a] >> 8 & 255) * ug << 8 | (frameBufferArray[a] >> 16 & 255) * ug << 0;
+        for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) * screenFadeFactor << 16 | (frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | (frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
     canvasDrawImage(canvasImage, 0, 0);
     requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay())
 }
@@ -5301,8 +5307,8 @@ function hostnameCheck() {
     return false
 }
 var requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
-    Vm = 0,
-    Zm = 0,
+    requestAnimCallCount = 0, // Vm, counts active requestAnimationFrame callbacks (incremented each anim callback; reset on timing jumps).
+    lastAnimFrameBucket = 0,  // Zm, last rounded animation-frame bucket (stores previous a to detect/skip duplicate callbacks).
     frameCountThisSecond = 0, // Ym
     currentFPS = 0,
     frameInteval = 20, // en, in milliseconds
@@ -5364,7 +5370,7 @@ function drawSprite(sprite) {
         uncheckedSpriteCount--;
         var imgWidth = sprite.a.width,
             imgHeight = sprite.a.height;
-        if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", hn;
+        if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", "ERROR";
         var d = domDocument.createElement(canvasTag);
         d.width = imgWidth;
         d.height = imgHeight;
@@ -5487,9 +5493,9 @@ function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, 
     x -= text.length * (glyphWidth + font.b) >> 1;
     drawScaledTintedText(font, x, y - (glyphHeight >> 1), text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight)
 }
-var ug = 1,
+var screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
     isSolidRender = 0,
-    fh = 0;
+    spriteAltRenderFlag = 0; // fh, auxiliary sprite render-mode flag used for temporary tint/alt-draw modes.
 
 function drawLine(x1, y1, x2, y2, color) {
     x2 -= x1;
@@ -5588,15 +5594,15 @@ function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX
         ba = tintColor >> 16 & 255,
         U = tintColor >> 8 & 255,
         na = tintColor & 255;
-    if (!fh)
+    if (!spriteAltRenderFlag)
         for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight)
             for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) tintColor = l[M >> 8], -1 != tintColor && (J = ba * (tintColor >> 16 & 255) >> 8, y = U * (tintColor >> 8 & 255) >> 8, x = na * (tintColor & 255) >> 8, 0 == isSolidRender ? frameBufferArray[w] = J << 16 | y << 8 | x : 1 == isSolidRender ? (tintColor = frameBufferArray[w] >> 16 & 255, J = ((J - tintColor) * K >> 8) + tintColor, tintColor = frameBufferArray[w] >> 8 & 255, y =
                 ((y - tintColor) * K >> 8) + tintColor, tintColor = frameBufferArray[w] & 255, x = ((x - tintColor) * K >> 8) + tintColor, frameBufferArray[w] = J << 16 | y << 8 | x) : 2 == isSolidRender && (J = (frameBufferArray[w] >> 16 & 255) + (J * K >> 8), 255 < J && (J = 255), y = (frameBufferArray[w] >> 8 & 255) + (y * K >> 8), 255 < y && (y = 255), x = (frameBufferArray[w] & 255) + (x * K >> 8), 255 < x && (x = 255), frameBufferArray[w] = J << 16 | y << 8 | x));
-    else if (1 == fh)
+    else if (1 == spriteAltRenderFlag)
         for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight)
             for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) tintColor = l[M >> 8], 0 != tintColor && (tintColor = (tintColor & 255) * K >> 8, 1 == isSolidRender ? (J = frameBufferArray[w] >> 16 & 255, J = ((ba - J) * tintColor >> 8) + J, y = frameBufferArray[w] >> 8 & 255, y = ((U - y) * tintColor >> 8) + y, x = frameBufferArray[w] & 255, x = ((na - x) * tintColor >> 8) + x, frameBufferArray[w] = J << 16 | y << 8 | x) : 2 == isSolidRender ? (J = (frameBufferArray[w] >> 16 & 255) + (ba * tintColor >> 8), 255 < J && (J = 255), y = (frameBufferArray[w] >> 8 &
                 255) + (U * tintColor >> 8), 255 < y && (y = 255), x = (frameBufferArray[w] & 255) + (na * tintColor >> 8), 255 < x && (x = 255), frameBufferArray[w] = J << 16 | y << 8 | x) : 3 == isSolidRender && (J = (frameBufferArray[w] >> 16 & 255) - (ba * tintColor >> 8), 0 > J && (J = 0), y = (frameBufferArray[w] >> 8 & 255) - (U * tintColor >> 8), 0 > y && (y = 0), x = (frameBufferArray[w] & 255) - (na * tintColor >> 8), 0 > x && (x = 0), frameBufferArray[w] = J << 16 | y << 8 | x));
-    else if (2 == fh)
+    else if (2 == spriteAltRenderFlag)
         for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight)
             for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) tintColor = l[M >> 8], 0 >= tintColor || (J = tintColor >> 16 & 255, y = tintColor >> 8 & 255, x = tintColor & 255, frameBufferArray[w] = J == y && y == x ? ba * J >> 8 << 16 | U * y >> 8 << 8 | na * x >> 8 : tintColor)
 }
@@ -5686,9 +5692,9 @@ function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
 function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
     var f, g, h;
     if (abs(_x1 - _x0) >= abs(_y1 - _y0))
-        for (_x0 >>= 16, _x1 >>= 16, f = abs(_x1 - _x0), _x1 = _x0 <= _x1 ? 1 : -1, h = floor((_y1 - _y0) / max(f, 1)); 0 <= f; f--, _x0 += _x1, _y0 += h) 0 == f && (_y0 = _y1), g = _y0 >> 16, 0 > g || 432 <= g || (Ji[g] > _x0 && (Ji[g] = _x0), Ki[g] < _x0 && (Ki[g] = _x0));
+        for (_x0 >>= 16, _x1 >>= 16, f = abs(_x1 - _x0), _x1 = _x0 <= _x1 ? 1 : -1, h = floor((_y1 - _y0) / max(f, 1)); 0 <= f; f--, _x0 += _x1, _y0 += h) 0 == f && (_y0 = _y1), g = _y0 >> 16, 0 > g || 432 <= g || (scanlineMinX[g] > _x0 && (scanlineMinX[g] = _x0), scanlineMaxX[g] < _x0 && (scanlineMaxX[g] = _x0));
     else
-        for (_y0 >>= 16, _y1 >>= 16, f = abs(_y1 - _y0), h = floor((_x1 - _x0) / max(f, 1)), _y1 = _y0 <= _y1 ? 1 : -1; 0 <= f; f--, _x0 += h, _y0 += _y1) 0 == f && (_x0 = _x1), g = _x0 >> 16, 0 > _y0 || 432 <= _y0 || (Ji[_y0] > g && (Ji[_y0] = g), Ki[_y0] < g && (Ki[_y0] = g))
+        for (_y0 >>= 16, _y1 >>= 16, f = abs(_y1 - _y0), h = floor((_x1 - _x0) / max(f, 1)), _y1 = _y0 <= _y1 ? 1 : -1; 0 <= f; f--, _x0 += h, _y0 += _y1) 0 == f && (_x0 = _x1), g = _x0 >> 16, 0 > _y0 || 432 <= _y0 || (scanlineMinX[_y0] > g && (scanlineMinX[_y0] = g), scanlineMaxX[_y0] < g && (scanlineMaxX[_y0] = g))
 }
 
 function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay1) { // mm
@@ -5697,27 +5703,27 @@ function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay
     _y1 = floor((_y1 - _y0) / p);
     _ax1 = floor((_ax1 - _ax0) / p);
     _ay1 = floor((_ay1 - _ay0) / p);
-    for (var t, l, n = 0; n < p; n++, _x0 += _x1, _y0 += _y1, _ax0 += _ax1, _ay0 += _ay1) t = _x0 >> 16, l = _y0 >> 16, 0 > l || 432 <= l || (Ji[l] > t && (Ji[l] = t, om[l] = _ax0, qm[l] = _ay0), Ki[l] < t && (Ki[l] = t, nm[l] = _ax0, pm[l] = _ay0))
+    for (var t, l, n = 0; n < p; n++, _x0 += _x1, _y0 += _y1, _ax0 += _ax1, _ay0 += _ay1) t = _x0 >> 16, l = _y0 >> 16, 0 > l || 432 <= l || (scanlineMinX[l] > t && (scanlineMinX[l] = t, scanlineTexUStart[l] = _ax0, scanlineTexVStart[l] = _ay0), scanlineMaxX[l] < t && (scanlineMaxX[l] = t, scanlineTexUEnd[l] = _ax0, scanlineTexVEnd[l] = _ay0))
 }
-var nn = new Vec2;
+var scratchVec2 = new Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
 
 function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { // T
-    Vec2Sub(nn, _a, _b);
-    _targetDist -= Vec2Norm(nn);
+    Vec2Sub(scratchVec2, _a, _b);
+    _targetDist -= Vec2Norm(scratchVec2);
     _weightA *= _targetDist;
     _weightB *= _targetDist;
-    _a.x += nn.x * _weightA;
-    _a.y += nn.y * _weightA;
-    _b.x -= nn.x * _weightB;
-    _b.y -= nn.y * _weightB
+    _a.x += scratchVec2.x * _weightA;
+    _a.y += scratchVec2.y * _weightA;
+    _b.x -= scratchVec2.x * _weightB;
+    _b.y -= scratchVec2.y * _weightB
 }
 
 function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
-    Vec2Sub(nn, _a, _b);
+    Vec2Sub(scratchVec2, _a, _b);
     _b.set(_a);
-    nn.y += _yBias;
-    Vec2Scale(nn, _scale);
-    _a.add(nn)
+    scratchVec2.y += _yBias;
+    Vec2Scale(scratchVec2, _scale);
+    _a.add(scratchVec2)
 }
 mainWindow.full_screen = toggleFullscreen;
 
@@ -5728,7 +5734,7 @@ var isMouseClicked = false,
     isMouseReleased = false,
     wasMouseDown = false,
     isMouseDown = false,
-    bn = 0,
+    mouseHoldFrames = 0, // bn, frames mouse has been continuously held down (hold-duration counter).
     mouseXCurrent = 0,
     mouseYCurrent = 0,
     mouseXRel = 0,
@@ -5869,7 +5875,6 @@ function promptInput(message, _default) {
 "&j=";// fromCharCode(38, 106, 61);
 "&k=";// fromCharCode(38, 107, 61);
 "ok";// fromCharCode(111, 107);
-var hn = "ERROR";// fromCharCode(69, 82, 82, 79, 82);
 "=";// fromCharCode(61);
 "\n";// fromCharCode(10);
 "Content-Type";// fromCharCode(67, 111, 110, 116, 101, 110, 116, 45, 84, 121, 112, 101);

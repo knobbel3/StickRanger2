@@ -3828,31 +3828,33 @@ mainWindow.fff = applyEffectToEnemies;
  */
 function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
     let n = -1,
-        w, B, M, J, y, x, K = new Vec2,
-        ba = new Vec2,
+        w, B, M, J, y, x, K = new Vec2(),
+        ba = new Vec2(),
         U, na;
     width *= .5;
     height *= .5;
-    (0 == shapeMode) 
-        ? (
-            w = centerPos.x - width, 
-            B = centerPos.y - height, 
-            M = centerPos.x + width, 
-            J = centerPos.y + height
-        ) : 1 == shapeMode && (
-            Vec2Norm(directionVec), 
-            Vec2Scale(directionVec, height), 
-            w = min(centerPos.x - directionVec.x, centerPos.x + directionVec.x), 
-            B = min(centerPos.y - directionVec.y, centerPos.y + directionVec.y), 
-            M = max(centerPos.x - directionVec.x, centerPos.x + directionVec.x), 
-            J = max(centerPos.y - directionVec.y, centerPos.y + directionVec.y)
-    );
+    if (0 == shapeMode) {
+        w = centerPos.x - width;
+        B = centerPos.y - height;
+        M = centerPos.x + width;
+        J = centerPos.y + height;
+    } else {
+        if (1 == shapeMode) {
+            Vec2Norm(directionVec);
+            Vec2Scale(directionVec, height);
+            w = min(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+            B = min(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
+            M = max(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+            J = max(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
+        }
+    }
+
     for (height = 0; height < enemyCount; height++)
         if (0 != enemyHealthArray[height]) {
             x = enemyJointPosArray[height][enemyTargetJointIdx];
             y = enemyHitboxHalfWidthByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
             width = enemyHitboxHalfHeightByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
-            if (enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorRightIdx) 
+            if (enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorRightIdx)
                 width = 3 * enemyPoseTrailWriteIdxArray[height] + 5 * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
             if (!(x.x - y > M || x.x + y < w || x.y - width > J || x.y + width < B)) {
                 if (0 == shapeMode) {
@@ -3865,9 +3867,9 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                     for (var Fa = 0; Fa <= U; Fa++) {
                         na = getStageTileAt(K.x, K.y);
                         if (0 <= na && 29 >= na) break;
-                        K.add(ba)
+                        K.add(ba);
                     }
-                    if (Fa <= U) continue
+                    if (Fa <= U) continue;
                 } else if (1 == shapeMode) {
                     ba.x = 2 * directionVec.x;
                     ba.y = 2 * directionVec.y;
@@ -3880,57 +3882,60 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                         if (0 <= na && 29 >= na) break;
                         if (x.x - y < K.x && x.x + y > K.x && x.y - width < K.y && x.y + width > K.y) {
                             Fa = U + 2;
-                            break
+                            break;
                         }
-                        K.add(ba)
+                        K.add(ba);
                     }
-                    if (Fa < U + 2) continue
+                    if (Fa < U + 2) continue;
                 }
-                (0 == applyFlag) && (
-                    n = damageMin + floor(randFloat(damageMax - damageMin + 1)), 
-                    (4 == effectType) 
-                        ? (
-                            enemyDmgPerFrameArray[height] = max(
-                                enemyDmgPerFrameArray[height], 
-                                max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100))
-                            ), 
-                            enemyDmgDurationLeftArray[height] = max(
-                                enemyDmgDurationLeftArray[height], 
-                                effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100)
-                            )
-                        ) 
-                        : (
-                            (0 == effectType) 
-                                ? n = max(1, n - enemyCatalog[enemyTypeArray[height]][enemyPhysResistPctCol]) 
-                                : (1 == effectType) 
-                                    ? n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyFireResistPctCol] / 100)) 
-                                    : (2 == effectType) 
-                                        ? n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100)) 
-                                        : 3 == effectType && (
-                                            n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100))
-                                ), 
-                            enemyHealthArray[height] = max(enemyHealthArray[height] - n, 0), 
-                            spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256), 
-                            stage_totalDamageDealt += n
-                        ), 
-                    (2 == effectType) 
-                        ? (
-                            enemySkipDurationLeftArray[height] = 120 - floor(120 * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100), 
-                            enemyUpdateSkipProbArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100)
-                        ) 
-                        : 5 == effectType && (
-                            enemyFreezeTimerArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyFreezeResistPctCol] / 100)
-                    ), 
-                    enemyAuxStateArray[height] = 120, 
-                    30 != gameScreenState && (comboWindowTimer = comboWindowMaxFrames), 
-                    isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && stageConditionMask++, 
-                    isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && stageConditionMask++
-                );
+                if (0 == applyFlag) {
+                    n = damageMin + floor(randFloat(damageMax - damageMin + 1));
+                    if (4 == effectType) {
+                        enemyDmgPerFrameArray[height] = max(
+                            enemyDmgPerFrameArray[height],
+                            max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100))
+                        );
+                        enemyDmgDurationLeftArray[height] = max(
+                            enemyDmgDurationLeftArray[height],
+                            effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100)
+                        );
+                    } else {
+                        if (0 == effectType) {
+                            n = max(1, n - enemyCatalog[enemyTypeArray[height]][enemyPhysResistPctCol]);
+                        } else {
+                            if (1 == effectType) {
+                                n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyFireResistPctCol] / 100));
+                            } else {
+                                if (2 == effectType) {
+                                    n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100));
+                                } else {
+                                    3 == effectType && (n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100)));
+                                }
+                            }
+                        }
+
+                        enemyHealthArray[height] = max(enemyHealthArray[height] - n, 0);
+                        spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
+                        stage_totalDamageDealt += n;
+                    }
+                    if (2 == effectType) {
+                        enemySkipDurationLeftArray[height] = 120 - floor(120 * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
+                        enemyUpdateSkipProbArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
+                    } else {
+                        5 == effectType && (enemyFreezeTimerArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyFreezeResistPctCol] / 100));
+                    }
+
+                    enemyAuxStateArray[height] = 120;
+                    30 != gameScreenState && (comboWindowTimer = comboWindowMaxFrames);
+                    isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && stageConditionMask++;
+                    isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && stageConditionMask++;
+                }
+
                 n = height;
                 maxTargets--;
-                if (0 >= maxTargets) break
+                if (0 >= maxTargets) break;
             }
-        } return n // index of a hit enemy (last one hit), or -1 if none.
+        } return n; // index of a hit enemy (last one hit), or -1 if none.
 }
 mainWindow.fff = spawnEnemyLoot;
 

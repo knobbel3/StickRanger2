@@ -969,12 +969,18 @@ function gameInit(a, b) {
         for (_t0 = 0; 512 > _t0; _t0++) {
             var _t1 = TAU * _t0 / 512; // 360 * c / 512 * PI / 180;
             rotationLUT[_t0][0] = Math.cos(_t1);
-            rotationLUT[_t0][1] = Math.sin(_t1)
+            rotationLUT[_t0][1] = Math.sin(_t1);
         }
         // at c = 512
         rotationLUT[_t0][0] = rotationLUT[0][0];
         rotationLUT[_t0][1] = rotationLUT[0][1];
-        for (_t0 = 0; 256 > _t0; _t0++) keyJustPressed[_t0] = false, keyPressPending[_t0] = false, keyHeld[_t0] = false, keyMapNoShift[_t0] = 0, keyMapShift[_t0] = 0;
+        for (_t0 = 0; 256 > _t0; _t0++) {
+            keyJustPressed[_t0] = false;
+            keyPressPending[_t0] = false;
+            keyHeld[_t0] = false;
+            keyMapNoShift[_t0] = 0;
+            keyMapShift[_t0] = 0;
+        }
         for (_t0 = 0; 10 > _t0; _t0++) keyMapNoShift[48 + _t0] = 48 + _t0;
         for (_t0 = 0; 9 > _t0; _t0++) keyMapShift[49 + _t0] = 33 + _t0;
         for (_t0 = 0; 4 > _t0; _t0++) keyMapNoShift[37 + _t0] = 37 + _t0;
@@ -1020,11 +1026,12 @@ function gameInit(a, b) {
         keyMapShift[160] = 126;
         let _t2;
         for (_t0 = 0; 1024 > _t0; _t0++) randLUT[_t0] = _t0 / 1024;
-        for (_t0 = 0; 1024 > _t0; _t0++)
-            _t1 = floor(1024 * rand()),
-            _t2 = randLUT[_t0],
-            randLUT[_t0] = randLUT[_t1],
+        for (_t0 = 0; 1024 > _t0; _t0++) {
+            _t1 = floor(1024 * rand());
+            _t2 = randLUT[_t0];
+            randLUT[_t0] = randLUT[_t1];
             randLUT[_t1] = _t2;
+        }
         randSeed = floor(1024 * rand()) & 1023;
         randSeedStep = floor(512 * rand()) | 1;
         // clear frame buffer
@@ -1041,8 +1048,11 @@ function gameInit(a, b) {
         itemsSpriteSheet.f("item.png");
         effectSpriteSheet.f("ef.png");
         medalSpriteSheet.f("medal.png");
-
-        hostnameCheck() ? gameInitStage-- : gameInitStage++
+        if (hostnameCheck()) {
+            gameInitStage--;
+        } else {
+            gameInitStage++;
+        }
     }
     if (1 == gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
         drawSprite(gameFont.i);
@@ -1056,14 +1066,17 @@ function gameInit(a, b) {
         drawSprite(itemsSpriteSheet);
         drawSprite(effectSpriteSheet);
         drawSprite(medalSpriteSheet);
-        uncheckedSpriteCount > 0 ? _setTimeout(gameInit, computeFrameDelay()) : gameInitStage++
+        if (uncheckedSpriteCount > 0) {
+            _setTimeout(gameInit, computeFrameDelay());
+        } else {
+            gameInitStage++;
+        }
     }
     if (2 == gameInitStage) {
-        if (currentStorage){
+        if (currentStorage) {
             _t0 = currentStorage.getItem("ranger2");
-            gameSaveString = null == _t0 ? "" : _t0
-        }
-        else {
+            gameSaveString = null == _t0 ? "" : _t0;
+        } else {
             gameSaveString = "";
         }
         gameLoadStatusCode = loadGame(gameSaveString);
@@ -1086,7 +1099,7 @@ function gameInit(a, b) {
 
         // updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
-        setupAnimRequest()
+        setupAnimRequest();
     }
 }
 mainWindow.fff = drawCanvas;

@@ -4346,13 +4346,25 @@ function updateStageEdgeSpawns() { // wg
                     c = heroJointPositionsByHero[a][1].y;
                 if (4 > b && 0 < stageListArray[currentStage][stageExitLeftIdx]) {
                     lastStageIdx = stageListArray[currentStage][stageExitLeftIdx];
-                    for (var d = 0; 4 > d; d++) partySpawnXByHero[d] = 77, partySpawnYByHero[d] = c >> 3
+                    for (var d = 0; 4 > d; d++) {
+                        partySpawnXByHero[d] = 77;
+                        partySpawnYByHero[d] = c >> 3;
+                    }
                 } else if (636 <= b && 0 < stageListArray[currentStage][stageExitRightIdx])
-                    for (lastStageIdx = stageListArray[currentStage][stageExitRightIdx], d = 0; 4 > d; d++) partySpawnXByHero[d] = 2, partySpawnYByHero[d] = c >> 3;
+                    for (lastStageIdx = stageListArray[currentStage][stageExitRightIdx], d = 0; 4 > d; d++) {
+                        partySpawnXByHero[d] = 2;
+                        partySpawnYByHero[d] = c >> 3;
+                    }
                 if (4 > c && 0 < stageListArray[currentStage][stageExitTopIdx])
-                    for (lastStageIdx = stageListArray[currentStage][stageExitTopIdx], d = 0; 4 > d; d++) partySpawnXByHero[d] = b >> 3, partySpawnYByHero[d] = 42;
-                else if (356 <= c && 0 < stageListArray[currentStage][stageExitBottomIdx])
-                    for (lastStageIdx = stageListArray[currentStage][stageExitBottomIdx], d = 0; 4 > d; d++) partySpawnXByHero[d] = b >> 3, partySpawnYByHero[d] = 2
+                    for (lastStageIdx = stageListArray[currentStage][stageExitTopIdx], d = 0; 4 > d; d++) {
+                        partySpawnXByHero[d] = b >> 3;
+                        partySpawnYByHero[d] = 42;
+                    } else
+                if (356 <= c && 0 < stageListArray[currentStage][stageExitBottomIdx])
+                    for (lastStageIdx = stageListArray[currentStage][stageExitBottomIdx], d = 0; 4 > d; d++) {
+                        partySpawnXByHero[d] = b >> 3;
+                        partySpawnYByHero[d] = 2;
+                    }
             } for (a = 0; 20 > a; a++) activeSpawnCountByGroup[a] = 0;
     for (a = 0; a < enemyCount; a++) activeSpawnCountByGroup[enemySpawnGroupIdxArray[a]]++;
     for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
@@ -4363,24 +4375,121 @@ function updateStageEdgeSpawns() { // wg
             d = stageListArray[currentStage][b + 4],
             h = stageListArray[currentStage][b + 5],
             k = stageListArray[currentStage][b + 6];
-        !(c <= totalSpawnedCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]) && activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7] < f && 1E3 * rand() < stageListArray[currentStage][stageSpawnChance] && (
-            c = randIntRange(g, h + 1),
-            d = randIntRange(d, k + 1),
-            25 >= stageTileData[d][c] || (
-                spawnEnemy(c, d, a, (b - stageSpawnGroupsStartIdx) / 7),
-                activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]++,
-                totalSpawnedCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]++
-            )
-        )
+        if (!(c <= totalSpawnedCountByGroup[(b - stageSpawnGroupsStartIdx) / 7])) {
+            if (activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7] < f) {
+                if (1E3 * rand() < stageListArray[currentStage][stageSpawnChance]) {
+                    c = randIntRange(g, h + 1);
+                    d = randIntRange(d, k + 1);
+                    if (!25 >= stageTileData[d][c]) {
+                        spawnEnemy(c, d, a, (b - stageSpawnGroupsStartIdx) / 7);
+                        activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]++;
+                        totalSpawnedCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]++;
+                    }
+                }
+            }
+        }
+
+
     }
     a = d = 0;
-    for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) a = (b - stageSpawnGroupsStartIdx) / 7, c = stageListArray[currentStage][b + 2], (0 != activeSpawnCountByGroup[a] || totalSpawnedCountByGroup[a] < c) && d++;
-    for (; 20 > a; a++) 0 != activeSpawnCountByGroup[a] && d++;
+    for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
+        a = (b - stageSpawnGroupsStartIdx) / 7;
+        c = stageListArray[currentStage][b + 2];
+        if (0 != activeSpawnCountByGroup[a] || totalSpawnedCountByGroup[a] < c) {
+            d++;
+        }
+    }
+    for (; 20 > a; a++)
+        if (0 != activeSpawnCountByGroup[a]) {
+            d++;
+        }
     if (!d && 0 == stageClearBaseGoldPerHero) {
         for (a = 0; 20 > a; a++) stageClearBaseGoldPerHero += totalSpawnedCountByGroup[a];
         stageClearBaseGoldPerHero = floor((stageClearBaseGoldPerHero + partyMemberCount - 1) / partyMemberCount);
-        0 < stageClearBaseGoldPerHero && (b = 100 + comboMultBonus, comboMultBonus += stageClearBaseGoldPerHero, stageClearBaseGoldPerHero = floor(stageClearBaseGoldPerHero * b / 100), stageClearPopupTimer = 60, partyGold = clamp(partyGold + stageClearBaseGoldPerHero * partyMemberCount, 0, 9999999), isBadgeIncompleteForCurrentStage(0) && IncrementBadgeCount(0), isBadgeIncompleteForCurrentStage(10) && 3600 > gameFrameCounter && IncrementBadgeCount(10), isBadgeIncompleteForCurrentStage(15) && !stageFlagUseCount && IncrementBadgeCount(15), isBadgeIncompleteForCurrentStage(20) && 87 <= comboCount && IncrementBadgeCount(20), isBadgeIncompleteForCurrentStage(25) && 100 <=
-            comboMultBonus && IncrementBadgeCount(25), isBadgeIncompleteForCurrentStage(30) && 111 <= comboCount && IncrementBadgeCount(30), isBadgeIncompleteForCurrentStage(35) && !stageFlagUseCount && IncrementBadgeCount(35), isBadgeIncompleteForCurrentStage(40) && 3600 > gameFrameCounter && IncrementBadgeCount(40), isBadgeIncompleteForCurrentStage(45) && 7200 > gameFrameCounter && IncrementBadgeCount(45), isBadgeIncompleteForCurrentStage(50) && !stageFlagUseCount && IncrementBadgeCount(50), isBadgeIncompleteForCurrentStage(55) && 227 <= comboCount && IncrementBadgeCount(55), isBadgeIncompleteForCurrentStage(60) && IncrementBadgeCount(60), isBadgeIncompleteForCurrentStage(65) && !stageFlagUseCount && IncrementBadgeCount(65), isBadgeIncompleteForCurrentStage(70) && 9E3 > gameFrameCounter && IncrementBadgeCount(70), 19 == currentStage && 0 == stageEventFlagArray[1] && (stageEventFlagArray[1] = 1), spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215), spawnPopup(320, 223, 0, 3600 > gameFrameCounter ? floor(gameFrameCounter / 60) + "." + gameFrameCounter % 60 : floor(gameFrameCounter / 3600) + ":" + floor(gameFrameCounter % 3600 / 60) + "." + gameFrameCounter % 60, 300, 16777215))
+        if (0 < stageClearBaseGoldPerHero) {
+            b = 100 + comboMultBonus;
+            comboMultBonus += stageClearBaseGoldPerHero;
+            stageClearBaseGoldPerHero = floor(stageClearBaseGoldPerHero * b / 100);
+            stageClearPopupTimer = 60;
+            partyGold = clamp(partyGold + stageClearBaseGoldPerHero * partyMemberCount, 0, 9999999);
+            if (isBadgeIncompleteForCurrentStage(0)) {
+                IncrementBadgeCount(0);
+            }
+            if (isBadgeIncompleteForCurrentStage(10)) {
+                if (3600 > gameFrameCounter) {
+                    IncrementBadgeCount(10);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(15)) {
+                if (!stageFlagUseCount) {
+                    IncrementBadgeCount(15);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(20)) {
+                if (87 <= comboCount) {
+                    IncrementBadgeCount(20);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(25)) {
+                if (100 <= comboMultBonus) {
+                    IncrementBadgeCount(25);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(30)) {
+                if (111 <= comboCount) {
+                    IncrementBadgeCount(30);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(35)) {
+                if (!stageFlagUseCount) {
+                    IncrementBadgeCount(35);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(40)) {
+                if (3600 > gameFrameCounter) {
+                    IncrementBadgeCount(40);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(45)) {
+                if (7200 > gameFrameCounter) {
+                    IncrementBadgeCount(45);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(50)) {
+                if (!stageFlagUseCount) {
+                    IncrementBadgeCount(50);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(55)) {
+                if (227 <= comboCount) {
+                    IncrementBadgeCount(55);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(60)) {
+                IncrementBadgeCount(60);
+            }
+            if (isBadgeIncompleteForCurrentStage(65)) {
+                if (!stageFlagUseCount) {
+                    IncrementBadgeCount(65);
+                }
+            }
+            if (isBadgeIncompleteForCurrentStage(70)) {
+                if (9E3 > gameFrameCounter) {
+                    IncrementBadgeCount(70);
+                }
+            }
+            if (19 == currentStage) {
+                if (0 == stageEventFlagArray[1]) {
+                    stageEventFlagArray[1] = 1;
+                }
+            }
+            spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215);
+            let popupText = floor(gameFrameCounter / 3600) + ":" + floor(gameFrameCounter % 3600 / 60) + "." + gameFrameCounter % 60;
+            if (3600 > gameFrameCounter) {
+                popupText = floor(gameFrameCounter / 60) + "." + gameFrameCounter % 60;
+            }
+            spawnPopup(320, 223, 0, popupText, 300, 16777215);
+        }
     }
 }
 mainWindow.fff = drawGameStage;

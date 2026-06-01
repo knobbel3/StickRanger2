@@ -1335,29 +1335,51 @@ function drawCanvas() {
                 gameScreenState++;
             }
         } else if (11 == gameScreenState || 12 == gameScreenState || 13 == gameScreenState || 30 == gameScreenState) {
-            if (isMouseClicked && (
-                    clickInUI = false,
-                    360 <= mouseYCurrent && (clickInUI = true),
-                    memberUIVisible && buttonCheck(8, 8, 204, 196) && (clickInUI = true),
-                    inventoryUIVisible && buttonCheck(218, 8, 204, 260) && (clickInUI = true),
-                    bestiaryUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
-                    badgesUIVisible && buttonCheck(428, 8, 204, 180) && (clickInUI = true),
-                    optionsUIVisible && buttonCheck(428, 196, 204, 148) && (clickInUI = true),
-                    shrineUIVisible && buttonCheck(218, 8, 204, 180) && (clickInUI = true)),
+            if (isMouseClicked) {
+                clickInUI = false;
+                if (360 <= mouseYCurrent) clickInUI = true;
 
-                updatePartyStats(), updateStageEdgeSpawns(), updateStageTick(),
-                drawGameStage(), updatePlayerParty(),
-                updateEnemies(), updateDrops(), updatePopups(), updateProjectiles(), drawEnemies(), drawDrops(),
-                drawPlayerParty(),
-                drawProjectiles(), drawPopups(),
+                if (memberUIVisible)
+                    if (buttonCheck(8, 8, 204, 196)) clickInUI = true;
 
-                // display current stage name
-                isSolidRender = 1,
-                drawRect(4, 4, 8 * stageListArray[currentStage][stageNameCol].length + 8, 20, 2151694400), // background
-                isSolidRender = 0,
-                drawText(gameFont, 8, 8, stageListArray[currentStage][stageNameCol], 16777215, 0),
-                drawGameUI(), 11 == gameScreenState
-            ) {
+                if (inventoryUIVisible)
+                    if (buttonCheck(218, 8, 204, 260)) clickInUI = true;
+                    
+                if (bestiaryUIVisible) 
+                    if (buttonCheck(428, 8, 204, 180)) clickInUI = true;
+                
+                if (badgesUIVisible) 
+                    if (buttonCheck(428, 8, 204, 180)) clickInUI = true;
+                    
+                if (optionsUIVisible) 
+                    if (buttonCheck(428, 196, 204, 148)) clickInUI = true;
+                    
+                if (shrineUIVisible) 
+                    if (buttonCheck(218, 8, 204, 180)) clickInUI = true;
+            }
+
+            updatePartyStats();
+            updateStageEdgeSpawns();
+            updateStageTick();
+            drawGameStage();
+            updatePlayerParty();
+            updateEnemies();
+            updateDrops();
+            updatePopups();
+            updateProjectiles();
+            drawEnemies();
+            drawDrops();
+            drawPlayerParty();
+            drawProjectiles();
+            drawPopups();
+
+            // display current stage name
+            isSolidRender = 1;
+            drawRect(4, 4, 8 * stageListArray[currentStage][stageNameCol].length + 8, 20, 2151694400); // background
+            isSolidRender = 0;
+            drawText(gameFont, 8, 8, stageListArray[currentStage][stageNameCol], 16777215, 0);
+            drawGameUI();
+            if (11 == gameScreenState) {
                 c = 255;
                 if (50 < screenStateTimer) {
                     c = 255 - floor(255 * (screenStateTimer - 50) / 20);
@@ -1374,7 +1396,7 @@ function drawCanvas() {
                     screenStateTimer = 0;
                     gameScreenState++;
                 }
-        } else if (12 == gameScreenState) {
+            } else if (12 == gameScreenState) {
                 for (a = b = 0; a < partyMemberCount; a++)
                     b += partyLP[a];
                 if (0 == b) {
@@ -1417,7 +1439,7 @@ function drawCanvas() {
                 }
             }
 
-        } else if (13 == gameScreenState) {
+            } else if (13 == gameScreenState) {
             screenStateTimer++;
             screenFadeFactor = clamp(1 - screenStateTimer / 20, 0, 1);
             if (20 == screenStateTimer) {
@@ -1427,11 +1449,11 @@ function drawCanvas() {
                 currentStage = lastStageIdx;
                 saveGame();
             }
-        } else if (30 == gameScreenState && (
+            } else if (30 == gameScreenState && (
                 100 > screenStateTimer && screenStateTimer++,
                 c = floor(255 * screenStateTimer / 100),
                 drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
-                100 == screenStateTimer && isMouseClicked)) {
+                    100 == screenStateTimer && isMouseClicked)) {
             for (a = 0; 4 > a; a++) {
                 partyLP[a] = 1;
                 heroEmitCurrent[a] = 0;
@@ -1448,8 +1470,8 @@ function drawCanvas() {
             partySpawnYByHero[2] = 40;
             partySpawnYByHero[3] = 40;
             saveGame();
+            }
         }
-    }
         // updatePartyChecksum();
         if (0 < badgePopupTimer) {
             badgePopupTimer--;

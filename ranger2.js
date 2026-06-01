@@ -3999,6 +3999,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 false
             );
         else
+
             drawSpriteSheetPartTintedScaled(
                 itemsSpriteSheet,
                 ~~joints[0].x - 8, ~~joints[0].y - 8,
@@ -4010,7 +4011,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
             );
     }
 
-    var baseDrawPos = new Vec2;
+    var baseDrawPos = new Vec2();
 
     for (let toolIdx = 0; toolIdx < 2; toolIdx++) {
         let p = partyEquipmentTable[heroIdx][toolIdx ? d : c];
@@ -4031,14 +4032,16 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 } else {
                     drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 10 * baseDrawPos.x, l.y + 10 * baseDrawPos.y, p);
                 }
-                Vec2Rotate(baseDrawPos), drawLine(t.x - 2 * baseDrawPos.x, t.y - 2 * baseDrawPos.y, t.x + 2 * baseDrawPos.x, t.y + 2 * baseDrawPos.y, p);
+                Vec2Rotate(baseDrawPos);
+                drawLine(t.x - 2 * baseDrawPos.x, t.y - 2 * baseDrawPos.y, t.x + 2 * baseDrawPos.x, t.y + 2 * baseDrawPos.y, p);
+                
                 break;
             case 3:
                 if (noUpperJoints == 2) {
                     if (toolIdx) {
-                        drawLine(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p)
+                        drawLine(t.x - 3, t.y + 3, t.x + 9, t.y - 9, p);
                     } else {
-                        drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p)
+                        drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p);
                     }
                 } else {
                     Vec2Sub(baseDrawPos, heroAimPosByHero[heroIdx], t);
@@ -4046,7 +4049,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                     if (0 < heroAttackLineTimer[heroIdx] && attackTrailSideIdx[heroIdx] == toolIdx) {
                         drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, heroAimPosByHero[heroIdx].x, heroAimPosByHero[heroIdx].y, p);
                     } else {
-                        drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, t.x + 20 * baseDrawPos.x, t.y + 20 * baseDrawPos.y, p)
+                        drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, t.x + 20 * baseDrawPos.x, t.y + 20 * baseDrawPos.y, p);
                     }
                 }
                 break;
@@ -4054,7 +4057,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 Vec2Sub(baseDrawPos, t, l);
                 Vec2Norm(baseDrawPos);
                 if (2 == noUpperJoints) {
-                    drawLine(l.x, l.y, l.x + 4 * baseDrawPos.x, l.y + 4 * baseDrawPos.y, p)
+                    drawLine(l.x, l.y, l.x + 4 * baseDrawPos.x, l.y + 4 * baseDrawPos.y, p);
                 } else {
                     drawLine(l.x, l.y, l.x + 8 * baseDrawPos.x, l.y + 8 * baseDrawPos.y, p);
                 }

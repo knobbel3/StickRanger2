@@ -343,13 +343,25 @@ mainWindow.fff = getItemForgeMultiplier;
 
 function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     var c = 0;
-    0 == _columnIdx ? c = 0 : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 0] ? c = itemList[_itemIdx][itemStatModifyingBaseCol + 1] : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 2] ? c = itemList[_itemIdx][itemStatModifyingBaseCol + 3] : _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 4] && (c = itemList[_itemIdx][itemStatModifyingBaseCol + 5]);
+    if (0 == _columnIdx) {
+        c = 0;
+    } else {
+        if (_columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 0]) {
+            c = itemList[_itemIdx][itemStatModifyingBaseCol + 1];
+        } else {
+            if (_columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 2]) {
+                c = itemList[_itemIdx][itemStatModifyingBaseCol + 3];
+            } else {
+                _columnIdx == itemList[_itemIdx][itemStatModifyingBaseCol + 4] && (c = itemList[_itemIdx][itemStatModifyingBaseCol + 5]);
+            }
+        }
+    }
     if (0 != c) {
         var d = itemForgeLvls[_itemIdx] - 1;
         _itemIdx == forgePreviewItemIdx && d++;
-        return d * c
+        return d * c;
     }
-    return -1
+    return -1;
 }
 mainWindow.fff = getModifiedStatVal;
 

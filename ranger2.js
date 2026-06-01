@@ -2851,15 +2851,47 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
 mainWindow.fff = moveJointWithCollisions;
 
 function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
-    var c = new Vec2;
+    var c = new Vec2();
     Vec2Sub(c, heroJointPositionsByHero[_entityIdx][_jointIdx], heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
     heroJointPositionsByHero[_entityIdx][_jointIdx].set(heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
     var d = (Vec2Mag(c) >> 2) + 1;
     Vec2Scale(c, 1 / d);
     var f, g;
     g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, heroJointPositionsByHero[_entityIdx][_jointIdx].y);
-    31 == g && (Vec2Scale(c, .95), heroTileContactFlags[_entityIdx] |= 2);
-    for (var h = 0; h < d; h++) f = heroJointPositionsByHero[_entityIdx][_jointIdx].y + c.y, g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, f), 0 > f || 8 * stageHeight <= f || (0 <= g && 23 >= g ? (c.x *= .5, c.y = -c.y, heroTileContactFlags[_entityIdx] |= 1) : 24 <= g && 26 >= g && 0 < c.y && draggedHeroIndex != _entityIdx ? (c.x *= .5, c.y = -c.y, heroTileContactFlags[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].y = f), f = heroJointPositionsByHero[_entityIdx][_jointIdx].x + c.x, g = getStageTileAt(f, heroJointPositionsByHero[_entityIdx][_jointIdx].y), 0 > f || 640 <= f || (0 <= g && 23 >= g ? (c.y *= .5, c.x = -c.x, heroTileContactFlags[_entityIdx] |= 1) : heroJointPositionsByHero[_entityIdx][_jointIdx].x = f)
+    if (31 == g) {
+        Vec2Scale(c, .95);
+        heroTileContactFlags[_entityIdx] |= 2;
+    }
+    for (var h = 0; h < d; h++) {
+        f = heroJointPositionsByHero[_entityIdx][_jointIdx].y + c.y;
+        g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, f);
+        if (!(0 > f || 8 * stageHeight <= f)) {
+            if (0 <= g && 23 >= g) {
+                c.x *= .5;
+                c.y = -c.y;
+                heroTileContactFlags[_entityIdx] |= 1;
+            } else {
+                if (24 <= g && 26 >= g && 0 < c.y && draggedHeroIndex != _entityIdx) {
+                    c.x *= .5;
+                    c.y = -c.y;
+                    heroTileContactFlags[_entityIdx] |= 1;
+                } else {
+                    heroJointPositionsByHero[_entityIdx][_jointIdx].y = f;
+                }
+            }
+        }
+        f = heroJointPositionsByHero[_entityIdx][_jointIdx].x + c.x;
+        g = getStageTileAt(f, heroJointPositionsByHero[_entityIdx][_jointIdx].y);
+        if (!(0 > f || 640 <= f)) {
+            if (0 <= g && 23 >= g) {
+                c.y *= .5;
+                c.x = -c.x;
+                heroTileContactFlags[_entityIdx] |= 1;
+            } else {
+                heroJointPositionsByHero[_entityIdx][_jointIdx].x = f;
+            }
+        }
+    }
 }
 mainWindow.fff = findNearestPartyMemberInRect;
 

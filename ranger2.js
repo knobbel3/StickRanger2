@@ -2437,8 +2437,8 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
     heroHasAccessoryEffect(heroIdx, accessoryEffectLightningElemBonusCol) && 3 == selectedItem[itemElementTypeCol] && 20 == selectedItem[itemAttackModeCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, accessoryEffectLightningElemBonusCol));
     
     selectedItem = selectedItem[itemProjectileTemplateCol];
-    let Ac = Q[targetEnemyIdx][yi].x;
-    let Rg = Q[targetEnemyIdx][yi].y;
+    let Ac = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].x;
+    let Rg = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].y;
 
     if (l == 0) return;
     if (1 == l) {
@@ -2556,7 +2556,7 @@ function updatePartyMemberAI(memberIdx) { // Di
                 if (0 < heroEnemySeekTimer[memberIdx]) heroEnemySeekTimer[memberIdx]--;
                 else {
                     heroEnemySeekTimer[memberIdx] = 15;
-                    var f = b > Q[d][yi].x ? -1 : 1,
+                    var f = b > enemyJointPosArray[d][enemyTargetJointIdx].x ? -1 : 1,
                         g = .6,
                         h;
                     h = getStageTileAt(b + 14 * f, c + 4);
@@ -2575,7 +2575,7 @@ function updatePartyMemberAI(memberIdx) { // Di
                     heroJointPositionsByHero[memberIdx][k].x += 4 * f;
                     heroJointPositionsByHero[memberIdx][k].y -=
                         3 * g
-                } 2 == heroTileContactFlags[memberIdx] && (b < Q[d][yi].x ? (heroJointPositionsByHero[memberIdx][0].x += .25, heroJointPositionsByHero[memberIdx][1].x += .25, heroBodyDrawStateByHero[memberIdx][2] = 1) : (heroJointPositionsByHero[memberIdx][0].x -= .25, heroJointPositionsByHero[memberIdx][1].x -= .25, heroBodyDrawStateByHero[memberIdx][2] = 0), c < Q[d][yi].y ? (heroJointPositionsByHero[memberIdx][0].y += .25, heroJointPositionsByHero[memberIdx][1].y += .25) : (heroJointPositionsByHero[memberIdx][0].y -= .25, heroJointPositionsByHero[memberIdx][1].y -= .25), heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25))
+                } 2 == heroTileContactFlags[memberIdx] && (b < enemyJointPosArray[d][enemyTargetJointIdx].x ? (heroJointPositionsByHero[memberIdx][0].x += .25, heroJointPositionsByHero[memberIdx][1].x += .25, heroBodyDrawStateByHero[memberIdx][2] = 1) : (heroJointPositionsByHero[memberIdx][0].x -= .25, heroJointPositionsByHero[memberIdx][1].x -= .25, heroBodyDrawStateByHero[memberIdx][2] = 0), c < enemyJointPosArray[d][enemyTargetJointIdx].y ? (heroJointPositionsByHero[memberIdx][0].y += .25, heroJointPositionsByHero[memberIdx][1].y += .25) : (heroJointPositionsByHero[memberIdx][0].y -= .25, heroJointPositionsByHero[memberIdx][1].y -= .25), heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25))
         }
     }
 }
@@ -2632,21 +2632,21 @@ function updatePlayerParty() {
                 if (0 < heroAttackCooldownFrames[a]) heroAttackCooldownFrames[a]--;
                 else if (draggedHeroIndex != a && 0 != b && -1 != c) {
                     heroAttackCooldownFrames[a] = heroAgiValues[a] + randIntRange(-1, 1);
-                    heroBodyDrawStateByHero[a][2] = d < Q[c][yi].x ? 1 : 0;
+                    heroBodyDrawStateByHero[a][2] = d < enemyJointPosArray[c][enemyTargetJointIdx].x ? 1 : 0;
                     k = 0; - 1 == heroEmitValues[a] ? (heroEmitCurrent[a] =
                         0, attackWeaponSlotIdx[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), attackWeaponSlotIdx[a] = 0, heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, attackWeaponSlotIdx[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol) && (heroEmitCurrent[a] = heroEmitValues[a]));
                     if (0 != b)
-                        if (3 == b) Vec2Sub(g, Q[c][yi], heroJointPositionsByHero[a][5]), Vec2Sub(h, Q[c][yi], heroJointPositionsByHero[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), heroJointPositionsByHero[a][5].add(g), heroJointPositionsByHero[a][4].sub(g), f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), heroJointPositionsByHero[a][6].add(h), heroJointPositionsByHero[a][3].sub(h), f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), heroAimPosByHero[a].set(Q[c][yi]), heroAttackLineTimer[a] = 5;
+                        if (3 == b) Vec2Sub(g, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][5]), Vec2Sub(h, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), heroJointPositionsByHero[a][5].add(g), heroJointPositionsByHero[a][4].sub(g), f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), heroJointPositionsByHero[a][6].add(h), heroJointPositionsByHero[a][3].sub(h), f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), heroAimPosByHero[a].set(enemyJointPosArray[c][enemyTargetJointIdx]), heroAttackLineTimer[a] = 5;
                         else if (4 == b) {
                             var k = 5 + attackWeaponSlotIdx[a],
                                 p = 3 +
                                     attackWeaponSlotIdx[a],
                                 t = 4 - attackWeaponSlotIdx[a];
-                            d < Q[c][yi].x ? (heroJointPositionsByHero[a][k].x += .5, heroJointPositionsByHero[a][p].x += .5, --heroJointPositionsByHero[a][t].x) : (heroJointPositionsByHero[a][k].x -= .5, heroJointPositionsByHero[a][p].x -= .5, heroJointPositionsByHero[a][t].x += 1);
+                            d < enemyJointPosArray[c][enemyTargetJointIdx].x ? (heroJointPositionsByHero[a][k].x += .5, heroJointPositionsByHero[a][p].x += .5, --heroJointPositionsByHero[a][t].x) : (heroJointPositionsByHero[a][k].x -= .5, heroJointPositionsByHero[a][p].x -= .5, heroJointPositionsByHero[a][t].x += 1);
                             f.set(heroJointPositionsByHero[a][k]);
                             k = k << 8 | 3;
                             attackTrailSideIdx[a] = attackWeaponSlotIdx[a]
-                        } else 5 == b ? (d < Q[c][yi].x ? (heroJointPositionsByHero[a][5].x += 1, heroJointPositionsByHero[a][6].x += 1, heroJointPositionsByHero[a][1].x -= 2) : (--heroJointPositionsByHero[a][5].x, --heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][1].x += 2), heroJointPositionsByHero[a][5].y < heroJointPositionsByHero[a][6].y ? (f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), applySeparationCorrection(heroJointPositionsByHero[a][5], heroJointPositionsByHero[a][6], 5, .1, .1)) : d < Q[c][yi].x ? heroJointPositionsByHero[a][5].x < heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x += 4, heroJointPositionsByHero[a][4].x -= 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (heroJointPositionsByHero[a][6].x += 4, heroJointPositionsByHero[a][3].x -= 4, f.set(heroJointPositionsByHero[a][6]), k =
+                        } else 5 == b ? (d < enemyJointPosArray[c][enemyTargetJointIdx].x ? (heroJointPositionsByHero[a][5].x += 1, heroJointPositionsByHero[a][6].x += 1, heroJointPositionsByHero[a][1].x -= 2) : (--heroJointPositionsByHero[a][5].x, --heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][1].x += 2), heroJointPositionsByHero[a][5].y < heroJointPositionsByHero[a][6].y ? (f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), applySeparationCorrection(heroJointPositionsByHero[a][5], heroJointPositionsByHero[a][6], 5, .1, .1)) : d < enemyJointPosArray[c][enemyTargetJointIdx].x ? heroJointPositionsByHero[a][5].x < heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x += 4, heroJointPositionsByHero[a][4].x -= 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (heroJointPositionsByHero[a][6].x += 4, heroJointPositionsByHero[a][3].x -= 4, f.set(heroJointPositionsByHero[a][6]), k =
                             1540, attackTrailSideIdx[a] = 1) : heroJointPositionsByHero[a][5].x > heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x -= 4, heroJointPositionsByHero[a][4].x += 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (heroJointPositionsByHero[a][6].x -= 4, heroJointPositionsByHero[a][3].x += 4, f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1);
                     2 == b && (heroAttackTrailTimerByHero[a] = 30);
                     heroBodyDrawStateByHero[a][attackTrailSideIdx[a]] = attackWeaponSlotIdx[a];
@@ -3158,7 +3158,7 @@ function loadLevelData(a) {
             };
         }
         let b = enemyCatalog[c][enemyLevelCol];
-        if ($i < b) $i = b;
+        if (stageMaxEnemyLevel < b) stageMaxEnemyLevel = b;
     }
     popupCount = projectileCount = 0;
     clearDrops();
@@ -3198,7 +3198,7 @@ function updateStageEdgeSpawns() { // wg
                 else if (356 <= c && 0 < stageListArray[currentStage][stageExitBottomIdx])
                     for (lastStageIdx = stageListArray[currentStage][stageExitBottomIdx], d = 0; 4 > d; d++) partySpawnXByHero[d] = b >> 3, partySpawnYByHero[d] = 2
             } for (a = 0; 20 > a; a++) activeSpawnCountByGroup[a] = 0;
-    for (a = 0; a < enemyCount; a++) activeSpawnCountByGroup[fj[a]]++;
+    for (a = 0; a < enemyCount; a++) activeSpawnCountByGroup[enemySpawnGroupIdxArray[a]]++;
     for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
         a = stageListArray[currentStage][b + 0];
         var f = stageListArray[currentStage][b + 1],
@@ -3407,8 +3407,8 @@ function updateStageTick() { // xg
         } else if (9 == currentStage) {
             b = -1;
             for (a = 0; a < enemyCount; a++) 36 == enemyTypeArray[a] && 0 != enemyHealthArray[a] && (b = a);
-            if (-1 != b && 10 < Y[b] && 500 > enemyHealthArray[b])
-                for (enemyHealthArray[b] += 1500, Y[b]--, c = 2 * (19 - Y[b] + 1), a = 0; a < c; a++) spawnEnemy(randIntRange(25, 57), randIntRange(25, 39), 35, 1), activeSpawnCountByGroup[1]++, totalSpawnedCountByGroup[1]++;
+            if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && 500 > enemyHealthArray[b])
+                for (enemyHealthArray[b] += 1500, enemyPoseTrailWriteIdxArray[b]--, c = 2 * (19 - enemyPoseTrailWriteIdxArray[b] + 1), a = 0; a < c; a++) spawnEnemy(randIntRange(25, 57), randIntRange(25, 39), 35, 1), activeSpawnCountByGroup[1]++, totalSpawnedCountByGroup[1]++;
             isBadgeIncompleteForCurrentStage(31) && 0 == activeSpawnCountByGroup[3] && 2 == totalSpawnedCountByGroup[1] && IncrementBadgeCount(31);
             isBadgeIncompleteForCurrentStage(32) && 100 <= enemyCount && IncrementBadgeCount(32);
             if (isBadgeIncompleteForCurrentStage(33)) {
@@ -3452,8 +3452,8 @@ function updateStageTick() { // xg
                 34 <= h && 41 >= h && (c = randIntRange(5, 70), d = randIntRange(42, 43), 25 < stageTileData[d][c] && (spawnEnemy(c, d, 68, 12), activeSpawnCountByGroup[12]++, totalSpawnedCountByGroup[12]++));
             b = -1;
             for (a = 0; a < enemyCount; a++) 70 == enemyTypeArray[a] && 0 != enemyHealthArray[a] && (b = a);
-            if (-1 != b && 10 < Y[b] && enemyHealthArray[b] < 1E4 * (Y[b] - 10) - 5E3)
-                for (Y[b]--, t = min(256, 1 << 20 - Y[b]), a = 0; a < t; a++) g = Q[b][Y[b]].x, h = Q[b][Y[b]].y, c = .5 * rotationLUT[512 * a / t][0], d = .5 * -rotationLUT[512 * a / t][1], spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && enemyHealthArray[b] < 1E4 * (enemyPoseTrailWriteIdxArray[b] - 10) - 5E3)
+                for (enemyPoseTrailWriteIdxArray[b]--, t = min(256, 1 << 20 - enemyPoseTrailWriteIdxArray[b]), a = 0; a < t; a++) g = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].x, h = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].y, c = .5 * rotationLUT[512 * a / t][0], d = .5 * -rotationLUT[512 * a / t][1], spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             0 == stageEventFlagArray[0] && 0 == activeSpawnCountByGroup[10] && (stageEventFlagArray[0] = 1);
             1 == stageEventFlagArray[0] && fillStageTilesRect(2, 20, 2, 24, 31);
             isBadgeIncompleteForCurrentStage(61) && 0 == activeSpawnCountByGroup[10] &&
@@ -3627,39 +3627,39 @@ const // Dispatch-table indices
     enemyUpdateFunc10Idx = 10, // zk, 
     enemyStickmanBehaviorAltIdx = 11; // Ak, 
 
-var Q = Array(999),
-    Z = Array(999);
-for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) Z[iterIdxTemp_1] = Array(21);
-for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) Q[iterIdxTemp_1] = Array(21);
+var enemyJointPosArray = Array(999), // Q, 
+    enemyPrevJointPosArray = Array(999); // Z, 
+for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) enemyPrevJointPosArray[iterIdxTemp_1] = Array(21);
+for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) enemyJointPosArray[iterIdxTemp_1] = Array(21);
 
 for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        Q[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+        enemyJointPosArray[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
 for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        Z[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+        enemyPrevJointPosArray[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
-var enemyTypeArray = new Int32Array(999),
+var enemyTypeArray = new Int32Array(999), // 
     enemyUpdateFuncIdxArray = new Int32Array(999),
-    Y = new Int32Array(999),
-    Ck = new Int32Array(999),
-    Dk = new Int32Array(999),
-    fj = new Int32Array(999),
+    enemyPoseTrailWriteIdxArray  = new Int32Array(999), // Y , 
+    enemyDeathTimerArray = new Int32Array(999), // Ck, 
+    enemyTileContactFlagsArray = new Int32Array(999), // Dk, 
+    enemySpawnGroupIdxArray = new Int32Array(999), // fj, 
     enemyHealthArray = new Int32Array(999),
-    Ek = new Int32Array(999),
-    Fk = new Int32Array(999),
+    enemyAuxStateArray = new Int32Array(999), // Ek
+    enemyActionCooldownTimerArray = new Int32Array(999), // Fk
     enemySkipDurationLeftArray = new Int32Array(999),
     enemyUpdateSkipProbArray = new Int32Array(999),
     enemyDmgDurationLeftArray = new Int32Array(999),
     enemyDmgPerFrameArray = new Int32Array(999),
     enemyFreezeTimerArray = new Int32Array(999),
     enemyCount = 0,
-    yi = 20,
-    $i = 0,
-    Lk = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10],
-    Mk = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10],
-    Nk = [4, 4, 5, 4, 4, 4, 5, 5, 4, 3, 5, 5, 5, 5, 6, 7, 3, 0, 2, 2, 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    enemyTargetJointIdx = 20, // yi, default enemy joint index used as the target/aim/spawn point for projectiles and AI
+    stageMaxEnemyLevel = 0,  // $i, maximum enemy level among spawned enemies (used for reward/EXP scaling)
+    enemyHitboxHalfWidthByBehavior = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10], // Lk
+    enemyHitboxHalfHeightByBehavior = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10], // Mk
+    enemySpriteAnchorYBySpriteIndex = [4, 4, 5, 4, 4, 4, 5, 5, 4, 3, 5, 5, 5, 5, 6, 7, 3, 0, 2, 2, 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Nk
     enemyDispatchTable = [
         enemySlimeBehavior,
         enemyBoxSnakeBehavior,
@@ -3677,7 +3677,7 @@ var enemyTypeArray = new Int32Array(999),
 mainWindow.fff = clearEnemies;
 
 function clearEnemies() {
-    $i = enemyCount = 0
+    stageMaxEnemyLevel = enemyCount = 0
 }
 mainWindow.fff = spawnEnemy;
 
@@ -3687,18 +3687,18 @@ function spawnEnemy(gridX, gridY, enemyType, d) {
         gridX *= 8;
         gridY *= 8;
         for (var f = 0; 21 > f; f++)
-            Vec2Set(Q[enemyCount][f], gridX + randFloat(1), gridY + randFloat(1)),
-                Z[enemyCount][f].set(Q[enemyCount][f]);
+            Vec2Set(enemyJointPosArray[enemyCount][f], gridX + randFloat(1), gridY + randFloat(1)),
+                enemyPrevJointPosArray[enemyCount][f].set(enemyJointPosArray[enemyCount][f]);
 
         enemyTypeArray[enemyCount] = enemyType;
         enemyUpdateFuncIdxArray[enemyCount] = enemyCatalog[enemyType][enemyBehaviorIdxCol];
-        Y[enemyCount] = 0;
-        Ck[enemyCount] = 0;
-        Dk[enemyCount] = 0;
-        fj[enemyCount] = d;
+        enemyPoseTrailWriteIdxArray[enemyCount] = 0;
+        enemyDeathTimerArray[enemyCount] = 0;
+        enemyTileContactFlagsArray[enemyCount] = 0;
+        enemySpawnGroupIdxArray[enemyCount] = d;
         enemyHealthArray[enemyCount] = enemyCatalog[enemyType][enemyHealthCol];
-        Ek[enemyCount] = 0;
-        Fk[enemyCount] = enemyCatalog[enemyType][enemyPArg22Col];
+        enemyAuxStateArray[enemyCount] = 0;
+        enemyActionCooldownTimerArray[enemyCount] = enemyCatalog[enemyType][enemyPArg22Col];
         enemySkipDurationLeftArray[enemyCount] = 0;
         enemyUpdateSkipProbArray[enemyCount] = 0;
         enemyDmgDurationLeftArray[enemyCount] = 0;
@@ -3713,17 +3713,17 @@ mainWindow.fff = deleteEnemy;
 // and decrements the enemyCount variable to invalidate it
 function deleteEnemy(enemyIdx) {
     for (var b = 0; 21 > b; b++)
-        Q[enemyIdx][b].set(Q[enemyCount - 1][b]),
-            Z[enemyIdx][b].set(Z[enemyCount - 1][b]);
+        enemyJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyCount - 1][b]),
+            enemyPrevJointPosArray[enemyIdx][b].set(enemyPrevJointPosArray[enemyCount - 1][b]);
     enemyTypeArray[enemyIdx] = enemyTypeArray[enemyCount - 1];
     enemyUpdateFuncIdxArray[enemyIdx] = enemyUpdateFuncIdxArray[enemyCount - 1];
-    Y[enemyIdx] = Y[enemyCount - 1];
-    Ck[enemyIdx] = Ck[enemyCount - 1];
-    Dk[enemyIdx] = Dk[enemyCount - 1];
-    fj[enemyIdx] = fj[enemyCount - 1];
+    enemyPoseTrailWriteIdxArray[enemyIdx] = enemyPoseTrailWriteIdxArray[enemyCount - 1];
+    enemyDeathTimerArray[enemyIdx] = enemyDeathTimerArray[enemyCount - 1];
+    enemyTileContactFlagsArray[enemyIdx] = enemyTileContactFlagsArray[enemyCount - 1];
+    enemySpawnGroupIdxArray[enemyIdx] = enemySpawnGroupIdxArray[enemyCount - 1];
     enemyHealthArray[enemyIdx] = enemyHealthArray[enemyCount - 1];
-    Ek[enemyIdx] = Ek[enemyCount - 1];
-    Fk[enemyIdx] = Fk[enemyCount - 1];
+    enemyAuxStateArray[enemyIdx] = enemyAuxStateArray[enemyCount - 1];
+    enemyActionCooldownTimerArray[enemyIdx] = enemyActionCooldownTimerArray[enemyCount - 1];
     enemySkipDurationLeftArray[enemyIdx] = enemySkipDurationLeftArray[enemyCount - 1];
     enemyUpdateSkipProbArray[enemyIdx] = enemyUpdateSkipProbArray[enemyCount - 1];
     enemyDmgDurationLeftArray[enemyIdx] = enemyDmgDurationLeftArray[enemyCount - 1];
@@ -3735,29 +3735,29 @@ mainWindow.fff = moveEnemyJointWithTileCollision;
 
 function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
     let d = new Vec2;
-    Vec2Sub(d, Q[enemyIdx][jointIdx], Z[enemyIdx][jointIdx]);
-    Q[enemyIdx][jointIdx].set(Z[enemyIdx][jointIdx]);
+    Vec2Sub(d, enemyJointPosArray[enemyIdx][jointIdx], enemyPrevJointPosArray[enemyIdx][jointIdx]);
+    enemyJointPosArray[enemyIdx][jointIdx].set(enemyPrevJointPosArray[enemyIdx][jointIdx]);
     let f = (Vec2Mag(d) >> 2) + 1;
     Vec2Scale(d, 1 / f);
     for (let g, h, k = 0; k < f; k++) 
-        g = Q[enemyIdx][jointIdx].y + d.y, 
-        h = getStageTileAt(Q[enemyIdx][jointIdx].x, g), 
+        g = enemyJointPosArray[enemyIdx][jointIdx].y + d.y, 
+        h = getStageTileAt(enemyJointPosArray[enemyIdx][jointIdx].x, g), 
         (0 > g || 8 * stageHeight <= g) 
-            ? Dk[enemyIdx] |= 2 
+            ? enemyTileContactFlagsArray[enemyIdx] |= 2 
             : (0 <= h && 25 >= h) 
-                ? (0 < d.y && (Dk[enemyIdx] |= 2), d.x *= bounceScale, d.y = -d.y) 
+                ? (0 < d.y && (enemyTileContactFlagsArray[enemyIdx] |= 2), d.x *= bounceScale, d.y = -d.y) 
                 : (26 <= h && 26 >= h && 0 < d.y) 
-                    ? (Dk[enemyIdx] |= 2, d.x *= bounceScale, d.y = -d.y) 
-                    : Q[enemyIdx][jointIdx].y = g, 
-        g = Q[enemyIdx][jointIdx].x + d.x, 
-        h = getStageTileAt(g, Q[enemyIdx][jointIdx].y), 
+                    ? (enemyTileContactFlagsArray[enemyIdx] |= 2, d.x *= bounceScale, d.y = -d.y) 
+                    : enemyJointPosArray[enemyIdx][jointIdx].y = g, 
+        g = enemyJointPosArray[enemyIdx][jointIdx].x + d.x, 
+        h = getStageTileAt(g, enemyJointPosArray[enemyIdx][jointIdx].y), 
         (0 > g || 640 <= g) 
-            ? Dk[enemyIdx] |= 1 
+            ? enemyTileContactFlagsArray[enemyIdx] |= 1 
             : (0 <= h && 25 >= h) 
-                ? (d.y *= bounceScale, d.x = -d.x, Dk[enemyIdx] |= 1) 
+                ? (d.y *= bounceScale, d.x = -d.x, enemyTileContactFlagsArray[enemyIdx] |= 1) 
                 : (27 <= h && 29 >= h) 
-                    ? (d.y *= bounceScale, d.x = -d.x, Dk[enemyIdx] |= 1) 
-                    : Q[enemyIdx][jointIdx].x = g
+                    ? (d.y *= bounceScale, d.x = -d.x, enemyTileContactFlagsArray[enemyIdx] |= 1) 
+                    : enemyJointPosArray[enemyIdx][jointIdx].x = g
 }
 mainWindow.fff = findEnemyInArea;
 
@@ -3771,11 +3771,11 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
     ry = cy + ry;
     for (var h, k, p, t = new Vec2, l = new Vec2, n = 1E3, w = -1, B = 0; B < enemyCount; B++)
         if (0 != enemyHealthArray[B]) {
-            h = Lk[enemyCatalog[enemyTypeArray[B]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
-            k = Mk[enemyCatalog[enemyTypeArray[B]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
+            h = enemyHitboxHalfWidthByBehavior[enemyCatalog[enemyTypeArray[B]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
+            k = enemyHitboxHalfHeightByBehavior[enemyCatalog[enemyTypeArray[B]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
             if (enemyUpdateFuncIdxArray[B] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[B] == enemyTreeBehaviorRightIdx) 
-                k = 3 * Y[B] + 5 * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
-            p = Q[B][yi];
+                k = 3 * enemyPoseTrailWriteIdxArray[B] + 5 * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
+            p = enemyJointPosArray[B][enemyTargetJointIdx];
             if (!(p.x - h > rx || p.x + h < f || p.y - k > ry || p.y + k < g)) {
                 l.x = p.x - cx;
                 l.y = p.y - cy;
@@ -3849,11 +3849,11 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
     );
     for (height = 0; height < enemyCount; height++)
         if (0 != enemyHealthArray[height]) {
-            x = Q[height][yi];
-            y = Lk[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
-            width = Mk[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
+            x = enemyJointPosArray[height][enemyTargetJointIdx];
+            y = enemyHitboxHalfWidthByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
+            width = enemyHitboxHalfHeightByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
             if (enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorRightIdx) 
-                width = 3 * Y[height] + 5 * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
+                width = 3 * enemyPoseTrailWriteIdxArray[height] + 5 * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
             if (!(x.x - y > M || x.x + y < w || x.y - width > J || x.y + width < B)) {
                 if (0 == shapeMode) {
                     ba.x = x.x - centerPos.x;
@@ -3910,7 +3910,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                                             n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100))
                                 ), 
                             enemyHealthArray[height] = max(enemyHealthArray[height] - n, 0), 
-                            spawnPopup(Q[height][yi].x, Q[height][yi].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256), 
+                            spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256), 
                             stage_totalDamageDealt += n
                         ), 
                     (2 == effectType) 
@@ -3921,7 +3921,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                         : 5 == effectType && (
                             enemyFreezeTimerArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyFreezeResistPctCol] / 100)
                     ), 
-                    Ek[height] = 120, 
+                    enemyAuxStateArray[height] = 120, 
                     30 != gameScreenState && (comboWindowTimer = comboWindowMaxFrames), 
                     isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && stageConditionMask++, 
                     isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && stageConditionMask++
@@ -3991,19 +3991,19 @@ function spawnEnemyLoot(a, b, c, d) { // bl
         selectedItem = selectedItem[enemyPArg44Col],
         zc = findNearestPartyMemberInRect(c, d, La, La, 0);
     if (-1 != zc)
-        if (0 < Fk[a]) Fk[a]--;
+        if (0 < enemyActionCooldownTimerArray[a]) enemyActionCooldownTimerArray[a]--;
         else if (!(randFloat(1E3) >= jb)) {
-            Fk[a] = gb;
+            enemyActionCooldownTimerArray[a] = gb;
             var Qd;
             if (!p) spawnProjectile(b, k, 0, 0, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (1 == p) spawnProjectile(b, k, c, d, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (2 == p)
                 for (gb = c, jb = d, La = gb < heroJointPositionsByHero[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) spawnProjectile(b, k, gb, jb, La, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (3 == p || 6 == p)
-                for (3 == p ? Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - Q[a][yi].x, heroJointPositionsByHero[zc][2].y - Q[a][yi].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
+                for (3 == p ? Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - enemyJointPosArray[a][enemyTargetJointIdx].x, heroJointPositionsByHero[zc][2].y - enemyJointPosArray[a][enemyTargetJointIdx].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
                     vc, wc, xc, yc, selectedItem), a += itemIdx;
             else if (4 == p)
-                for (p = 0; p < Qb; p++) Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - Q[a][0].x, heroJointPositionsByHero[zc][2].y - Q[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
+                for (p = 0; p < Qb; p++) Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - enemyJointPosArray[a][0].x, heroJointPositionsByHero[zc][2].y - enemyJointPosArray[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
             else if (5 == p)
                 for (p = 0; p < Qb; p++) gb = c + randFloatRange(-La, La), jb = d + randFloatRange(-La, 0), spawnProjectile(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
                     hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
@@ -4017,7 +4017,7 @@ function onEnemyDeath(_enemyIdx) { // cl
     var b;
     b = abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyLevelCol] - partyLevel);
     var c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyExpRewardCol] * (100 + partyEnemyHpBonusPercent) / 100);
-    $i + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
+    stageMaxEnemyLevel + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
     partyEXPAccum = clamp(partyEXPAccum + c, 0, 9999999);
     if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
         partyLevel++;
@@ -4027,20 +4027,20 @@ function onEnemyDeath(_enemyIdx) { // cl
     for (b = enemyDropTableStartIdxCol; b < enemyDropTableStartIdxCol + 8; b += 2)
         if (c = enemyCatalog[enemyTypeArray[_enemyIdx]][b], 0 != c) {
             var d = floor(100 * (100 + partyDropChanceBonusPercent) / 100);
-            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, c, 1, 0)
+            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, c, 1, 0)
         } c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyGoldRewardCol] * (100 + partyRewardValueBonusPercent) / 100);
-    1 > 3 * rand() && spawnDrop(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 2, c, 0);
+    1 > 3 * rand() && spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, c, 0);
     30 != gameScreenState && comboCount++;
     isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx] &&
         IncrementBadgeCount(2);
     isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(5);
-    3 == currentStage && (8 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(8) && 1800 > gameFrameCounter && IncrementBadgeCount(8), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431)), 15 == enemyTypeArray[_enemyIdx] && (stageEncounterCounter++, 3 == stageEncounterCounter && (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrameCount && IncrementBadgeCount(9), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, "" + floor(consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431))));
-    5 == currentStage && 22 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(18) && 1200 > gameFrameCounter && IncrementBadgeCount(18), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
+    3 == currentStage && (8 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(8) && 1800 > gameFrameCounter && IncrementBadgeCount(8), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431)), 15 == enemyTypeArray[_enemyIdx] && (stageEncounterCounter++, 3 == stageEncounterCounter && (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrameCount && IncrementBadgeCount(9), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + floor(consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431))));
+    5 == currentStage && 22 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(18) && 1200 > gameFrameCounter && IncrementBadgeCount(18), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
     isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(22);
     !isBadgeIncompleteForCurrentStage(47) || 50 != enemyTypeArray[_enemyIdx] && 52 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(47);
-    51 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(49) && 1500 > gameFrameCounter && IncrementBadgeCount(49), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
+    51 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(49) && 1500 > gameFrameCounter && IncrementBadgeCount(49), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
     !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[_enemyIdx] && 57 != enemyTypeArray[_enemyIdx] && 58 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(52);
-    63 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(58) && 3600 > gameFrameCounter && IncrementBadgeCount(58), spawnPopup(Q[_enemyIdx][0].x, Q[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
+    63 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(58) && 3600 > gameFrameCounter && IncrementBadgeCount(58), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
     isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(69)
 }
 mainWindow.fff = updateEnemies;
@@ -4074,28 +4074,28 @@ mainWindow.fff = enemySlimeBehavior;
 function enemySlimeBehavior(enemyIdx) {
 
     var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-    if (0 == Y[enemyIdx]) {
-        Q[enemyIdx][0].x += 4;
-        Q[enemyIdx][0].y += 6;
-        for (b = 0; 1 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
-        Y[enemyIdx] = randSelect(1, 2)
-    } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .03, .99);
-        0 < (Dk[enemyIdx] & 2) && (5 > randFloat(100) && (Q[enemyIdx][0].x += randFloat(1 == Y[enemyIdx] ? -.2 : .2), Q[enemyIdx][0].y -= randFloat(.5)), 1 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2)));
-        var d = Nk[enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol]];
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y - d * c + 1);
-        Dk[enemyIdx] = 0;
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        enemyJointPosArray[enemyIdx][0].x += 4;
+        enemyJointPosArray[enemyIdx][0].y += 6;
+        for (b = 0; 1 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2)
+    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .03, .99);
+        0 < (enemyTileContactFlagsArray[enemyIdx] & 2) && (5 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += randFloat(1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? -.2 : .2), enemyJointPosArray[enemyIdx][0].y -= randFloat(.5)), 1 > randFloat(100) && (enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2)));
+        var d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol]];
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - d * c + 1);
+        enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; 1 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.3, .3), Q[enemyIdx][b].y -= randFloatRange(1, 2);
+            for (b = 0; 1 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.3, .3), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
         for (b = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        Q[enemyIdx][yi].x = Q[enemyIdx][0].x;
-        Q[enemyIdx][yi].y = Q[enemyIdx][0].y - d * c + 1;
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = enemyJointPosArray[enemyIdx][0].x;
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y = enemyJointPosArray[enemyIdx][0].y - d * c + 1;
+        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
         for (b =
-            0; 1 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        50 <= Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+            0; 1 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        50 <= enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4103,38 +4103,38 @@ mainWindow.fff = enemyBoxSnakeBehavior;
 
 function enemyBoxSnakeBehavior(enemyIdx) {
     var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-    if (0 == Y[enemyIdx]) {
-        Q[enemyIdx][0].x += 2;
-        Q[enemyIdx][1].x += 3;
-        Q[enemyIdx][2].x += 4;
-        for (b = 0; 3 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
-        Y[enemyIdx] = 1
-    } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
-        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
-        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
-        var d = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != d && (Q[enemyIdx][0].x += heroJointPositionsByHero[d][2].x < Q[enemyIdx][0].x ? -.001 : .001);
-        0 < (Dk[enemyIdx] & 2) && (b = 0, -1 != d ? b = heroJointPositionsByHero[d][2].x < Q[enemyIdx][0].x ? -1 : 1 : b = randSelect(-1, 1), 10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(.4, .6) * b, Q[enemyIdx][0].y += randFloatRange(-1.5, -2)));
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 0, 0, .01);
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        enemyJointPosArray[enemyIdx][0].x += 2;
+        enemyJointPosArray[enemyIdx][1].x += 3;
+        enemyJointPosArray[enemyIdx][2].x += 4;
+        for (b = 0; 3 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .05, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], .05, .9);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], .05, .9);
+        var d = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0); - 1 != d && (enemyJointPosArray[enemyIdx][0].x += heroJointPositionsByHero[d][2].x < enemyJointPosArray[enemyIdx][0].x ? -.001 : .001);
+        0 < (enemyTileContactFlagsArray[enemyIdx] & 2) && (b = 0, -1 != d ? b = heroJointPositionsByHero[d][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1 : b = randSelect(-1, 1), 10 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += randFloatRange(.4, .6) * b, enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1.5, -2)));
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 0, 0, .01);
         d =
-            Nk[enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol]];
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y - d * c + 1);
-        Dk[enemyIdx] = 0;
+            enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol]];
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - d * c + 1);
+        enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; 3 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
+            for (b = 0; 3 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
         moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
-        b = Dk[enemyIdx];
+        b = enemyTileContactFlagsArray[enemyIdx];
         moveEnemyJointWithTileCollision(enemyIdx, 1, .5);
         moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
-        Dk[enemyIdx] = b;
-        Q[enemyIdx][yi].x = Q[enemyIdx][0].x;
-        Q[enemyIdx][yi].y = Q[enemyIdx][0].y - d * c + 1;
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
+        enemyTileContactFlagsArray[enemyIdx] = b;
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = enemyJointPosArray[enemyIdx][0].x;
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y = enemyJointPosArray[enemyIdx][0].y - d * c + 1;
+        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; 3 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        for (b = 0; 3 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4143,70 +4143,70 @@ mainWindow.fff = enemyBatBehavior;
 function enemyBatBehavior(enemyIdx) {
     var b, c = new Vec2;
     b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-    if (0 == Y[enemyIdx]) {
-        Q[enemyIdx][0].x += 4;
-        Q[enemyIdx][0].y += 4;
-        Q[enemyIdx][1].x += 4;
-        Q[enemyIdx][1].y += 4;
-        Q[enemyIdx][2].x += 2;
-        Q[enemyIdx][2].y += 2;
-        Q[enemyIdx][3].x += 2;
-        Q[enemyIdx][3].y += 6;
-        Q[enemyIdx][4].x += 4;
-        Q[enemyIdx][4].y += 4;
-        Q[enemyIdx][5].x += 6;
-        Q[enemyIdx][5].y += 2;
-        Q[enemyIdx][6].x += 6;
-        Q[enemyIdx][6].y += 6;
-        for (b = 0; 7 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
-        Y[enemyIdx] = 1
-    } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99);
-        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], 0, .99);
-        stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99);
-        stepWithVerticalBias(Q[enemyIdx][4], Z[enemyIdx][4], 0, .99);
-        stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99);
-        stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99);
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        enemyJointPosArray[enemyIdx][0].x += 4;
+        enemyJointPosArray[enemyIdx][0].y += 4;
+        enemyJointPosArray[enemyIdx][1].x += 4;
+        enemyJointPosArray[enemyIdx][1].y += 4;
+        enemyJointPosArray[enemyIdx][2].x += 2;
+        enemyJointPosArray[enemyIdx][2].y += 2;
+        enemyJointPosArray[enemyIdx][3].x += 2;
+        enemyJointPosArray[enemyIdx][3].y += 6;
+        enemyJointPosArray[enemyIdx][4].x += 4;
+        enemyJointPosArray[enemyIdx][4].y += 4;
+        enemyJointPosArray[enemyIdx][5].x += 6;
+        enemyJointPosArray[enemyIdx][5].y += 2;
+        enemyJointPosArray[enemyIdx][6].x += 6;
+        enemyJointPosArray[enemyIdx][6].y += 6;
+        for (b = 0; 7 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], 0, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4], 0, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
         Vec2Set(c, 0, 0);
-        var d = findNearestPartyMemberInRect(Q[enemyIdx][0].x,
-            Q[enemyIdx][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, heroJointPositionsByHero[d][2], Q[enemyIdx][0]), d = Vec2Norm(c), d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
-        Q[enemyIdx][0].add(c);
-        10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(-1, 1), Q[enemyIdx][0].y += randFloatRange(-1, 1));
-        Q[enemyIdx][2].x += randFloatRange(0, -.1);
-        Q[enemyIdx][3].x += randFloatRange(0, -.1);
-        Q[enemyIdx][5].x += randFloatRange(0, .1);
-        Q[enemyIdx][6].x += randFloatRange(0, .1);
+        var d = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x,
+            enemyJointPosArray[enemyIdx][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, heroJointPositionsByHero[d][2], enemyJointPosArray[enemyIdx][0]), d = Vec2Norm(c), d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
+        enemyJointPosArray[enemyIdx][0].add(c);
+        10 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1, 1));
+        enemyJointPosArray[enemyIdx][2].x += randFloatRange(0, -.1);
+        enemyJointPosArray[enemyIdx][3].x += randFloatRange(0, -.1);
+        enemyJointPosArray[enemyIdx][5].x += randFloatRange(0, .1);
+        enemyJointPosArray[enemyIdx][6].x += randFloatRange(0, .1);
         c = .5;
         d = 6 * b;
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 3 * b, c, c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][4], 3 * b, c, c);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][3], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][5], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][6], d, c, c);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        Dk[enemyIdx] = 0;
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 3 * b, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][4], 3 * b, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][5], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], d, c, c);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >=
             enemyHealthArray[enemyIdx])
-            for (b = 0; 7 > b; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
+            for (b = 0; 7 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
         for (b = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, 1);
-        Q[enemyIdx][yi].set(Q[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
+        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; 8 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 8 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        d = 6 * (150 - Ck[enemyIdx]) / 150;
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][3], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][5], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][6], d, c, c);
-        for (b = Dk[enemyIdx] = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        d = 6 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][5], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], d, c, c);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4214,15 +4214,15 @@ mainWindow.fff = enemyDragonBehavior;
 
 function enemyDragonBehavior(enemyIdx) {
     var b, c, d, f = new Vec2;
-    if (0 == Y[enemyIdx]) Y[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
-    else if (20 >= Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        for (b = 1; b < Y[enemyIdx]; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 0, .9);
-        Vec2Sub(f, Q[enemyIdx][0], Z[enemyIdx][0]);
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
+    else if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
+        Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
         Vec2Norm(f);
         Vec2Scale(f, .008);
-        b = Q[enemyIdx][0].x;
-        c = Q[enemyIdx][0].y;
+        b = enemyJointPosArray[enemyIdx][0].x;
+        c = enemyJointPosArray[enemyIdx][0].y;
         d = getStageTileAt(b - 24, c);
         if (28 >= d || 24 > b) f.x += .03;
         d = getStageTileAt(b + 24, c);
@@ -4232,25 +4232,25 @@ function enemyDragonBehavior(enemyIdx) {
         d = getStageTileAt(b, c + 24);
         if (28 >= d || c > 8 * stageHeight - 24) f.y -= .03;
         3 > randFloat(100) && (f.x += randFloatRange(-.1, .1), f.y += randFloatRange(-.1, .1));
-        Q[enemyIdx][0].add(f);
+        enemyJointPosArray[enemyIdx][0].add(f);
         f = .013;
         c = 5;
-        for (b = 0; b < Y[enemyIdx] - 1; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], c, 0, f);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x,
-            Q[enemyIdx][0].y);
-        Dk[enemyIdx] = 0;
+        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], c, 0, f);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x,
+            enemyJointPosArray[enemyIdx][0].y);
+        enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
-        for (b = 0; b < Y[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        Q[enemyIdx][yi].set(Q[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, Ck[enemyIdx] = 0, onEnemyDeath(enemyIdx))
+            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
+        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] += 20, enemyDeathTimerArray[enemyIdx] = 0, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; b < Y[enemyIdx] - 20; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         f = .5;
-        c = 10 * (150 - Ck[enemyIdx]) / 150;
-        for (b = 1; b < Y[enemyIdx] - 21; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], c, f, f);
-        for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        c = 10 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
+        for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 21; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], c, f, f);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4259,53 +4259,53 @@ mainWindow.fff = enemyStickmanBehavior;
 function enemyStickmanBehavior(enemyIdx) {
     var b;
     b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-    if (0 == Y[enemyIdx]) Y[enemyIdx] = 1;
-    else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx ? (stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.2, .99), stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], -.1, .99), stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), stepWithVerticalBias(Q[enemyIdx][4], Z[enemyIdx][4], 0, .99), stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), stepWithVerticalBias(Q[enemyIdx][9], Z[enemyIdx][9], .3, .99), stepWithVerticalBias(Q[enemyIdx][10], Z[enemyIdx][10], .3, .99)) : enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx && (stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.02, .99), stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], 0, .99), stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], -.01, .99), stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], 0, .99), stepWithVerticalBias(Q[enemyIdx][4],
-            Z[enemyIdx][4], 0, .99), stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], 0, .99), stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], 0, .99), stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], 0, .99), stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], 0, .99), stepWithVerticalBias(Q[enemyIdx][9], Z[enemyIdx][9], .1, .99), stepWithVerticalBias(Q[enemyIdx][10], Z[enemyIdx][10], .1, .99));
-        if (50 > randFloat(100) && 0 < (Dk[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != c ? Y[enemyIdx] = heroJointPositionsByHero[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx ? (stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.2, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.1, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .3, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .3, .99)) : enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx && (stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.02, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.01, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][4],
+            enemyPrevJointPosArray[enemyIdx][4], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .1, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .1, .99));
+        if (50 > randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
+            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0); - 1 != c ? enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2));
             var d = c = 1,
                 f = 0;
             enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx && (c = .25, d = .3, f = .25);
-            1 == Y[enemyIdx] ? (Q[enemyIdx][9].x < Q[enemyIdx][10].x ? (Q[enemyIdx][10].x += randFloat(-c), Q[enemyIdx][10].y += -d) : (Q[enemyIdx][9].x += randFloat(-c), Q[enemyIdx][9].y += -d), Q[enemyIdx][5].x += randFloat(-f), Q[enemyIdx][6].x += randFloat(-f)) : (Q[enemyIdx][9].x < Q[enemyIdx][10].x ? (Q[enemyIdx][9].x +=
-                randFloat(c), Q[enemyIdx][9].y += -d) : (Q[enemyIdx][10].x += randFloat(c), Q[enemyIdx][10].y += -d), Q[enemyIdx][5].x += randFloat(f), Q[enemyIdx][6].x += randFloat(f))
+            1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x ? (enemyJointPosArray[enemyIdx][10].x += randFloat(-c), enemyJointPosArray[enemyIdx][10].y += -d) : (enemyJointPosArray[enemyIdx][9].x += randFloat(-c), enemyJointPosArray[enemyIdx][9].y += -d), enemyJointPosArray[enemyIdx][5].x += randFloat(-f), enemyJointPosArray[enemyIdx][6].x += randFloat(-f)) : (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x ? (enemyJointPosArray[enemyIdx][9].x +=
+                randFloat(c), enemyJointPosArray[enemyIdx][9].y += -d) : (enemyJointPosArray[enemyIdx][10].x += randFloat(c), enemyJointPosArray[enemyIdx][10].y += -d), enemyJointPosArray[enemyIdx][5].x += randFloat(f), enemyJointPosArray[enemyIdx][6].x += randFloat(f))
         }
         c = .5;
         d = 1.2 * b;
         enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx && (c = .02, d = 1 * b);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 3 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 3 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][3], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][4], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][5], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][7], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][8], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][9], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][8], Q[enemyIdx][10], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][8], 5 * d, c, c);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol] && spawnEnemyLoot(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 3 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 3 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][3], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][4], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][5], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][7], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][8], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][9], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][8], enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 5 * d, c, c);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol] && spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
         for (b =
-            Dk[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        Q[enemyIdx][yi].set(Q[enemyIdx][1]);
+            enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][1]);
         if (0 >= enemyHealthArray[enemyIdx]) {
-            Y[enemyIdx] = 3;
-            for (b = Ck[enemyIdx] = 0; 11 > b; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
+            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            for (b = enemyDeathTimerArray[enemyIdx] = 0; 11 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
             onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; 11 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 11 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        d = 1.2 * (150 - Ck[enemyIdx]) / 150;
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 3 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][5], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][4], Q[enemyIdx][6], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][9], 4 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][8], Q[enemyIdx][10], 4 * d, c, c);
-        for (b = Dk[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        d = 1.2 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 3 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][5], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][9], 4 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][8], enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4313,32 +4313,32 @@ mainWindow.fff = enemyTreeBehavior;
 
 function enemyTreeBehavior(enemyIdx) {
     var b;
-    if (0 == Y[enemyIdx])
-        for (Y[enemyIdx] = floor(randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] + 2)), b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += 4, Q[enemyIdx][b].y += 4, Z[enemyIdx][b].set(Q[enemyIdx][b]);
-    else if (20 >= Y[enemyIdx]) {
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx])
+        for (enemyPoseTrailWriteIdxArray[enemyIdx] = floor(randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] + 2)), b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) enemyJointPosArray[enemyIdx][b].x += 4, enemyJointPosArray[enemyIdx][b].y += 4, enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+    else if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
         if (enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx) {
-            for (b = 0; b < Y[enemyIdx] - 1; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], -.04, .99);
-            stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 1, .99)
+            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], -.04, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 1, .99)
         } else {
-            for (b = 0; b < Y[enemyIdx] - 1; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .04, .99);
-            stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], -1, .99)
+            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .04, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], -1, .99)
         }
-        10 > randFloat(100) && (b = floor(randFloat(Y[enemyIdx] - 1)), Q[enemyIdx][b].x += randFloatRange(-.5, .5));
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 8, .2, .2);
-        for (b = 1; b < Y[enemyIdx] - 2; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], 6, .2, .2);
-        applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], 6, .2, 0);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        Dk[enemyIdx] = 0;
+        10 > randFloat(100) && (b = floor(randFloat(enemyPoseTrailWriteIdxArray[enemyIdx] - 1)), enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5));
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 8, .2, .2);
+        for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 2; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], 6, .2, .2);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], 6, .2, 0);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; b < Y[enemyIdx]; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
-        for (b = 0; b < Y[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        Q[enemyIdx][yi].x = .5 * (Q[enemyIdx][0].x + Q[enemyIdx][Y[enemyIdx] - 1].x);
-        Q[enemyIdx][yi].y = .5 * (Q[enemyIdx][0].y + Q[enemyIdx][Y[enemyIdx] - 1].y);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] += 20, onEnemyDeath(enemyIdx))
+            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
+        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = .5 * (enemyJointPosArray[enemyIdx][0].x + enemyJointPosArray[enemyIdx][enemyPoseTrailWriteIdxArray[enemyIdx] - 1].x);
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y = .5 * (enemyJointPosArray[enemyIdx][0].y + enemyJointPosArray[enemyIdx][enemyPoseTrailWriteIdxArray[enemyIdx] - 1].y);
+        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] += 20, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; b < Y[enemyIdx] - 20; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; b < Y[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4346,39 +4346,39 @@ mainWindow.fff = enemyHangingTreeBehavior;
 
 function enemyHangingTreeBehavior(enemyIdx) {
     var b;
-    if (0 == Y[enemyIdx]) {
-        Q[enemyIdx][0].x += 2;
-        Q[enemyIdx][1].x += 3;
-        Q[enemyIdx][2].x += 4;
-        for (b = 0; 3 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
-        Y[enemyIdx] = 1
-    } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], .05, .99);
-        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], .05, .9);
-        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .05, .9);
-        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 200, 50, 0); - 1 != b && (Q[enemyIdx][0].x += heroJointPositionsByHero[b][2].x < Q[enemyIdx][0].x ? -.001 : .001);
-        if (0 < (Dk[enemyIdx] & 2)) {
-            var c = 0; - 1 != b ? c = heroJointPositionsByHero[b][2].x < Q[enemyIdx][0].x ? -1 : 1 : c = randSelect(-1, 1);
-            10 > randFloat(100) && (Q[enemyIdx][0].x += randFloatRange(.4, .6) * c, Q[enemyIdx][0].y += randFloatRange(-1.5, -2))
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        enemyJointPosArray[enemyIdx][0].x += 2;
+        enemyJointPosArray[enemyIdx][1].x += 3;
+        enemyJointPosArray[enemyIdx][2].x += 4;
+        for (b = 0; 3 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .05, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], .05, .9);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], .05, .9);
+        b = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0); - 1 != b && (enemyJointPosArray[enemyIdx][0].x += heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -.001 : .001);
+        if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
+            var c = 0; - 1 != b ? c = heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1 : c = randSelect(-1, 1);
+            10 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += randFloatRange(.4, .6) * c, enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1.5, -2))
         }
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 0, 0, .01);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 0, 0, .01);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x,
-            Q[enemyIdx][0].y);
-        Dk[enemyIdx] = 0;
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 0, 0, .01);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x,
+            enemyJointPosArray[enemyIdx][0].y);
+        enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; 3 > b; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
+            for (b = 0; 3 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
         moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
-        b = Dk[enemyIdx];
+        b = enemyTileContactFlagsArray[enemyIdx];
         moveEnemyJointWithTileCollision(enemyIdx, 1, .5);
         moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
-        Dk[enemyIdx] = b;
-        Q[enemyIdx][yi].set(Q[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (Y[enemyIdx] = 3, onEnemyDeath(enemyIdx))
+        enemyTileContactFlagsArray[enemyIdx] = b;
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
+        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] = 3, onEnemyDeath(enemyIdx))
     } else {
-        for (b = 0; 3 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        for (b = Dk[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        for (b = 0; 3 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4388,18 +4388,18 @@ function enemyUpdateFunc7(enemyIdx) {
     var b, c, d, f = new Vec2,
         g = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol],
         h = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] * enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-    if (0 == Y[enemyIdx]) {
-        for (b = 0; b < g; b++) c = 360 * b / g * PI / 180, Q[enemyIdx][1 + b].x += Math.cos(c) * h, Q[enemyIdx][1 + b].y += Math.sin(c) * h;
-        for (b = 0; b <= g; b++) Q[enemyIdx][b].x += 4, Q[enemyIdx][b].y += 4, Z[enemyIdx][b].set(Q[enemyIdx][b]);
-        Y[enemyIdx] = 1
-    } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        for (b = 1; b <= g; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 0, .99);
-        Vec2Sub(f, Q[enemyIdx][0], Z[enemyIdx][0]);
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        for (b = 0; b < g; b++) c = 360 * b / g * PI / 180, enemyJointPosArray[enemyIdx][1 + b].x += Math.cos(c) * h, enemyJointPosArray[enemyIdx][1 + b].y += Math.sin(c) * h;
+        for (b = 0; b <= g; b++) enemyJointPosArray[enemyIdx][b].x += 4, enemyJointPosArray[enemyIdx][b].y += 4, enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        for (b = 1; b <= g; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .99);
+        Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
         Vec2Norm(f);
         Vec2Scale(f, .008);
-        b = Q[enemyIdx][0].x;
-        c = Q[enemyIdx][0].y;
+        b = enemyJointPosArray[enemyIdx][0].x;
+        c = enemyJointPosArray[enemyIdx][0].y;
         d = getStageTileAt(b - 16, c);
         30 >= d && (f.x += .05);
         d = getStageTileAt(b + 16, c);
@@ -4418,29 +4418,29 @@ function enemyUpdateFunc7(enemyIdx) {
         d = getStageTileAt(b, c + 8);
         30 >= d && (f.y -= .05);
         3 > randFloat(100) && (f.x += randFloatRange(-.1, .1), f.y += randFloatRange(-.1, .1));
-        Q[enemyIdx][0].add(f);
+        enemyJointPosArray[enemyIdx][0].add(f);
         c = 360 / g * PI / 180;
         f.x = Math.cos(0) * h - Math.cos(c) * h;
         f.y = Math.sin(0) * h - Math.sin(c) * h;
         f = Vec2Mag(f);
-        for (b = 0; b < g; b++) applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][b + 1], h, 0, .2);
-        for (b = 1; b < g; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], f, .2, .2);
-        applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][1], f, .2, .2);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        for (b = Dk[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        Q[enemyIdx][yi].set(Q[enemyIdx][0]);
+        for (b = 0; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][b + 1], h, 0, .2);
+        for (b = 1; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], f, .2, .2);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][1], f, .2, .2);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
-            Y[enemyIdx] =
+            enemyPoseTrailWriteIdxArray[enemyIdx] =
                 3;
-            for (b = Ck[enemyIdx] = 0; b <= g; b++) Q[enemyIdx][b].x += randFloatRange(-.5, .5), Q[enemyIdx][b].y -= randFloatRange(2, 3);
+            for (b = enemyDeathTimerArray[enemyIdx] = 0; b <= g; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
             onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; b <= g; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
-        h = h * (150 - Ck[enemyIdx]) / 150;
-        for (b = 1; b < g; b++) applySeparationCorrection(Q[enemyIdx][b], Q[enemyIdx][b + 1], h, .5, .5);
-        for (b = Dk[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        for (b = 0; b <= g; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        h = h * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
+        for (b = 1; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], h, .5, .5);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4449,81 +4449,81 @@ mainWindow.fff = enemyUpdateFunc8;
 function enemyUpdateFunc8(enemyIdx) {
     var b;
     b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-    if (0 == Y[enemyIdx]) {
-        Q[enemyIdx][0].x += 4;
-        Q[enemyIdx][0].y += 0;
-        Q[enemyIdx][1].x += 0;
-        Q[enemyIdx][1].y += 0;
-        Q[enemyIdx][2].x += 0;
-        Q[enemyIdx][2].y += 7.99;
-        Q[enemyIdx][3].x += 7.99;
-        Q[enemyIdx][3].y += 0;
-        Q[enemyIdx][4].x += 7.99;
-        Q[enemyIdx][4].y += 7.99;
-        Q[enemyIdx][5].x += 0;
-        Q[enemyIdx][5].y += 0;
-        Q[enemyIdx][6].x += 0;
-        Q[enemyIdx][6].y += 7.99;
-        Q[enemyIdx][7].x += 7.99;
-        Q[enemyIdx][7].y += 0;
-        Q[enemyIdx][8].x += 7.99;
-        Q[enemyIdx][8].y += 7.99;
-        for (b = 0; 9 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
-        Y[enemyIdx] = 1
-    } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], -.05, .99);
-        stepWithVerticalBias(Q[enemyIdx][1], Z[enemyIdx][1], -.1, .99);
-        stepWithVerticalBias(Q[enemyIdx][2], Z[enemyIdx][2], .8, .99);
-        stepWithVerticalBias(Q[enemyIdx][3], Z[enemyIdx][3], -.1, .99);
-        stepWithVerticalBias(Q[enemyIdx][4], Z[enemyIdx][4],
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        enemyJointPosArray[enemyIdx][0].x += 4;
+        enemyJointPosArray[enemyIdx][0].y += 0;
+        enemyJointPosArray[enemyIdx][1].x += 0;
+        enemyJointPosArray[enemyIdx][1].y += 0;
+        enemyJointPosArray[enemyIdx][2].x += 0;
+        enemyJointPosArray[enemyIdx][2].y += 7.99;
+        enemyJointPosArray[enemyIdx][3].x += 7.99;
+        enemyJointPosArray[enemyIdx][3].y += 0;
+        enemyJointPosArray[enemyIdx][4].x += 7.99;
+        enemyJointPosArray[enemyIdx][4].y += 7.99;
+        enemyJointPosArray[enemyIdx][5].x += 0;
+        enemyJointPosArray[enemyIdx][5].y += 0;
+        enemyJointPosArray[enemyIdx][6].x += 0;
+        enemyJointPosArray[enemyIdx][6].y += 7.99;
+        enemyJointPosArray[enemyIdx][7].x += 7.99;
+        enemyJointPosArray[enemyIdx][7].y += 0;
+        enemyJointPosArray[enemyIdx][8].x += 7.99;
+        enemyJointPosArray[enemyIdx][8].y += 7.99;
+        for (b = 0; 9 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.05, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], -.1, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], .8, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], -.1, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4],
             .8, .99);
-        stepWithVerticalBias(Q[enemyIdx][5], Z[enemyIdx][5], -.1, .99);
-        stepWithVerticalBias(Q[enemyIdx][6], Z[enemyIdx][6], .8, .99);
-        stepWithVerticalBias(Q[enemyIdx][7], Z[enemyIdx][7], -.1, .99);
-        stepWithVerticalBias(Q[enemyIdx][8], Z[enemyIdx][8], .8, .99);
-        if (50 > randFloat(100) && 0 < (Dk[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 500, 25, 0); - 1 != c ? Y[enemyIdx] = heroJointPositionsByHero[c][2].x < Q[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (Y[enemyIdx] = randSelect(1, 2));
-            1 == Y[enemyIdx] ? (Q[enemyIdx][2].x < Q[enemyIdx][6].x ? (Q[enemyIdx][6].x += randFloat(-1), Q[enemyIdx][6].y += randFloatRange(-1, -1)) : (Q[enemyIdx][2].x += randFloat(-1), Q[enemyIdx][2].y += randFloatRange(-1, -1)), Q[enemyIdx][4].x < Q[enemyIdx][8].x ? (Q[enemyIdx][8].x += randFloat(-1), Q[enemyIdx][8].y += randFloatRange(-1, -1)) : (Q[enemyIdx][4].x += randFloat(-1), Q[enemyIdx][4].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (--Q[enemyIdx][0].x, Q[enemyIdx][0].y -= 3)) : (Q[enemyIdx][2].x < Q[enemyIdx][6].x ?
-                (Q[enemyIdx][2].x += randFloat(1), Q[enemyIdx][2].y += randFloatRange(-1, -1)) : (Q[enemyIdx][6].x += randFloat(1), Q[enemyIdx][6].y += randFloatRange(-1, -1)), Q[enemyIdx][4].x < Q[enemyIdx][8].x ? (Q[enemyIdx][4].x += randFloat(1), Q[enemyIdx][4].y += randFloatRange(-1, -1)) : (Q[enemyIdx][8].x += randFloat(1), Q[enemyIdx][8].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (Q[enemyIdx][0].x += 1, Q[enemyIdx][0].y -= 3))
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], -.1, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], .8, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], -.1, .99);
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], .8, .99);
+        if (50 > randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
+            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 500, 25, 0); - 1 != c ? enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2));
+            1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x ? (enemyJointPosArray[enemyIdx][6].x += randFloat(-1), enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][2].x += randFloat(-1), enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1)), enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x ? (enemyJointPosArray[enemyIdx][8].x += randFloat(-1), enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][4].x += randFloat(-1), enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (--enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y -= 3)) : (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x ?
+                (enemyJointPosArray[enemyIdx][2].x += randFloat(1), enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][6].x += randFloat(1), enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1)), enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x ? (enemyJointPosArray[enemyIdx][4].x += randFloat(1), enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][8].x += randFloat(1), enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += 1, enemyJointPosArray[enemyIdx][0].y -= 3))
         }
         c = .3;
         b = 2.2 * b;
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][5], 3 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][7], 3 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][6], 3 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][6], 2 * b, .2 * c, .2 * c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][8], 3 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][8], 2 * b, .2 * c, .2 * c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 4 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][3], 4 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][2], 4 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][1],
-            Q[enemyIdx][2], 3 * b, .2 * c, .2 * c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][4], 4 * b, .1 * c, c);
-        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], 3 * b, .2 * c, .2 * c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][4], 8 * b, .1 * c, .1 * c);
-        applySeparationCorrection(Q[enemyIdx][5], Q[enemyIdx][7], 7 * b, .1 * c, .1 * c);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol] && spawnEnemyLoot(enemyIdx, 1, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        for (b = Dk[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        Q[enemyIdx][yi].set(Q[enemyIdx][0]);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][5], 3 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][7], 3 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][6], 3 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], 2 * b, .2 * c, .2 * c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][8], 3 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 2 * b, .2 * c, .2 * c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 4 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][3], 4 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][2], 4 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1],
+            enemyJointPosArray[enemyIdx][2], 3 * b, .2 * c, .2 * c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][4], 4 * b, .1 * c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], 3 * b, .2 * c, .2 * c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], 8 * b, .1 * c, .1 * c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][7], 7 * b, .1 * c, .1 * c);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol] && spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
-            Y[enemyIdx] = 3;
-            Ck[enemyIdx] = 0;
-            for (b = 1; 9 > b; b++) Q[enemyIdx][b].x += randFloatRange(-1, 1), Q[enemyIdx][b].y -= randFloatRange(1, 2);
+            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            enemyDeathTimerArray[enemyIdx] = 0;
+            for (b = 1; 9 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
             onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; 9 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 9 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        b = 1.2 * (150 - Ck[enemyIdx]) / 150;
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 4 * b, c, c);
-        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], 4 * b, c, c);
-        applySeparationCorrection(Q[enemyIdx][5],
-            Q[enemyIdx][6], 3 * b, c, c);
-        applySeparationCorrection(Q[enemyIdx][7], Q[enemyIdx][8], 3 * b, c, c);
-        for (b = Dk[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        b = 1.2 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 4 * b, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], 4 * b, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][5],
+            enemyJointPosArray[enemyIdx][6], 3 * b, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 3 * b, c, c);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4532,51 +4532,51 @@ mainWindow.fff = enemyUpdateFunc9;
 function enemyUpdateFunc9(enemyIdx) {
     var b, c = new Vec2,
         d = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-    if (0 == Y[enemyIdx]) {
-        1 > randFloat(2) ? (Q[enemyIdx][0].x += 0, Q[enemyIdx][1].x += 2, Q[enemyIdx][2].x += 4, Q[enemyIdx][3].x += 6, Q[enemyIdx][4].x += 6) : (Q[enemyIdx][0].x += 6, Q[enemyIdx][1].x += 4, Q[enemyIdx][2].x += 2, Q[enemyIdx][3].x += 0, Q[enemyIdx][4].x += 0);
-        for (b = 0; 5 > b; b++) Z[enemyIdx][b].set(Q[enemyIdx][b]);
-        Y[enemyIdx] = 1
-    } else if (1 == Y[enemyIdx] || 2 == Y[enemyIdx]) {
-        stepWithVerticalBias(Q[enemyIdx][0], Z[enemyIdx][0], 0, .99);
-        for (b = 1; 5 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], 0, .9);
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        1 > randFloat(2) ? (enemyJointPosArray[enemyIdx][0].x += 0, enemyJointPosArray[enemyIdx][1].x += 2, enemyJointPosArray[enemyIdx][2].x += 4, enemyJointPosArray[enemyIdx][3].x += 6, enemyJointPosArray[enemyIdx][4].x += 6) : (enemyJointPosArray[enemyIdx][0].x += 6, enemyJointPosArray[enemyIdx][1].x += 4, enemyJointPosArray[enemyIdx][2].x += 2, enemyJointPosArray[enemyIdx][3].x += 0, enemyJointPosArray[enemyIdx][4].x += 0);
+        for (b = 0; 5 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        for (b = 1; 5 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
         Vec2Set(c, 0, 0);
-        b = findNearestPartyMemberInRect(Q[enemyIdx][0].x, Q[enemyIdx][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, heroJointPositionsByHero[b][2], Q[enemyIdx][0]), b = Vec2Norm(c), b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
-        b = getStageTileAt(Q[enemyIdx][0].x, Q[enemyIdx][0].y);
+        b = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 150, 50, 0); - 1 != b && (Vec2Sub(c, heroJointPositionsByHero[b][2], enemyJointPosArray[enemyIdx][0]), b = Vec2Norm(c), b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] / 2 - 10, 0 > b ? Vec2Scale(c, -.01) : Vec2Scale(c, .01));
+        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
         31 != b && (c.y += .03);
-        b = getStageTileAt(Q[enemyIdx][0].x - 8, Q[enemyIdx][0].y);
+        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x - 8, enemyJointPosArray[enemyIdx][0].y);
         0 <= b && 23 >= b && (c.x += .03);
-        b = getStageTileAt(Q[enemyIdx][0].x + 8, Q[enemyIdx][0].y);
+        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x + 8, enemyJointPosArray[enemyIdx][0].y);
         0 <= b && 23 >= b && (c.x -= .03);
-        b = getStageTileAt(Q[enemyIdx][0].x, Q[enemyIdx][0].y - 8);
+        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - 8);
         0 <= b && 23 >= b && (c.y += .03);
-        b = getStageTileAt(Q[enemyIdx][0].x, Q[enemyIdx][0].y + 8);
+        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y + 8);
         0 <= b && 23 >= b && (c.y -= .03);
         2 > randFloat(100) && (c.x += randFloatRange(-.5, .5), c.y += randFloatRange(-.5, .5));
-        Q[enemyIdx][0].add(c);
+        enemyJointPosArray[enemyIdx][0].add(c);
         c = .1;
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][1], 6 * d, 0, c);
-        applySeparationCorrection(Q[enemyIdx][1], Q[enemyIdx][2], 4 * d, 0, c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], 6 * d, 0, c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][4], 6 * d, 0, c);
-        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], 8 * d, c, c);
-        applySeparationCorrection(Q[enemyIdx][0], Q[enemyIdx][2], 10 * d, 0, c);
-        spawnEnemyLoot(enemyIdx, 0, Q[enemyIdx][0].x, Q[enemyIdx][0].y);
-        for (b = Dk[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        Q[enemyIdx][yi].set(Q[enemyIdx][0]);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 6 * d, 0, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 4 * d, 0, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], 6 * d, 0, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], 6 * d, 0, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], 8 * d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][2], 10 * d, 0, c);
+        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
-            Y[enemyIdx] = 3;
-            for (b = Ck[enemyIdx] = 0; 5 > b; b++) Q[enemyIdx][b].x += randFloatRange(-2, 2), Q[enemyIdx][b].y -= randFloatRange(2, 4);
+            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            for (b = enemyDeathTimerArray[enemyIdx] = 0; 5 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-2, 2), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 4);
             onEnemyDeath(enemyIdx)
         }
     } else {
-        for (b = 0; 5 > b; b++) stepWithVerticalBias(Q[enemyIdx][b], Z[enemyIdx][b], .05, .99);
+        for (b = 0; 5 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        d = 7 * d * (150 - Ck[enemyIdx]) / 150;
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][3], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][2], Q[enemyIdx][4], d, c, c);
-        applySeparationCorrection(Q[enemyIdx][3], Q[enemyIdx][4], d, c, c);
-        for (b = Dk[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < Ck[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        d = 7 * d * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], d, c, c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], d, c, c);
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
     }
     return enemyIdx
 }
@@ -4590,47 +4590,47 @@ function drawEnemies() { // Cg
             f = enemyCatalog[enemyTypeArray[a]][enemySecondaryTintCol],
             g = enemyCatalog[enemyTypeArray[a]][enemyAccentTintCol];
         b = enemyCatalog[enemyTypeArray[a]][enemyDrawScaleCol];
-        var h = Nk[c];
+        var h = enemySpriteAnchorYBySpriteIndex[c];
         0 < enemyFreezeTimerArray[a] ? (d = 5934817, f = 1989840) : 0 < enemySkipDurationLeftArray[a] ? (d = 3368652, g = f = 13158) : 0 < enemyDmgDurationLeftArray[a] && (d = 3407616, g = f = 3381504);
-        var k = (150 - Ck[a]) / 150 * b;
-        if (enemyUpdateFuncIdxArray[a] == enemySlimeBehaviorIdx) 3 > Y[a] ? drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - Ck[a]) / 50));
-        else if (enemyUpdateFuncIdxArray[a] == enemyBoxSnakeBehaviorIdx) drawRectCentered(Q[a][2].x, Q[a][2].y - 2 * k, 4 * k, 4 * k, g), drawRectCentered(Q[a][1].x, Q[a][1].y -
-            2.5 * k, 5 * k, 5 * k, g), 3 > Y[a] && (k = max(1, k)), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (enemyUpdateFuncIdxArray[a] == enemyBatBehaviorIdx) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][1].x, Q[a][1].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, g), drawLine(Q[a][6].x, Q[a][6].y, Q[a][4].x, Q[a][4].y, g), 3 > Y[a] && (k = max(1, k)), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+        var k = (150 - enemyDeathTimerArray[a]) / 150 * b;
+        if (enemyUpdateFuncIdxArray[a] == enemySlimeBehaviorIdx) 3 > enemyPoseTrailWriteIdxArray[a] ? drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - enemyDeathTimerArray[a]) / 50));
+        else if (enemyUpdateFuncIdxArray[a] == enemyBoxSnakeBehaviorIdx) drawRectCentered(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y - 2 * k, 4 * k, 4 * k, g), drawRectCentered(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y -
+            2.5 * k, 5 * k, 5 * k, g), 3 > enemyPoseTrailWriteIdxArray[a] && (k = max(1, k)), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+        else if (enemyUpdateFuncIdxArray[a] == enemyBatBehaviorIdx) drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, g), drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, g), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, g), drawLine(enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, g), drawLine(enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, g), drawLine(enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, g), 3 > enemyPoseTrailWriteIdxArray[a] && (k = max(1, k)), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
         else if (enemyUpdateFuncIdxArray[a] == enemyDragonBehaviorIdx) {
             b = 0;
-            h = Y[a] - 1;
-            20 < Y[a] && (b = 1, h = Y[a] - 20 - 1);
-            for (; b < h; b++) drawLine(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, g);
-            drawRectCentered(floor(Q[a][h].x) + 1, floor(Q[a][h].y) + 1, floor(2 * k), floor(2 * k), d);
-            drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
-        } else if (enemyUpdateFuncIdxArray[a] == enemyStickmanBehaviorIdx || enemyUpdateFuncIdxArray[a] == enemyStickmanBehaviorAltIdx) drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, g), 3 > Y[a] && (drawLine(Q[a][1].x, Q[a][1].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][1].x, Q[a][1].y, Q[a][4].x, Q[a][4].y, g)), drawLine(Q[a][3].x, Q[a][3].y, Q[a][5].x, Q[a][5].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][6].x, Q[a][6].y, g), 3 > Y[a] && (drawLine(Q[a][2].x, Q[a][2].y,
-            Q[a][7].x, Q[a][7].y, g), drawLine(Q[a][2].x, Q[a][2].y, Q[a][8].x, Q[a][8].y, g)), drawLine(Q[a][7].x, Q[a][7].y, Q[a][9].x, Q[a][9].y, g), drawLine(Q[a][8].x, Q[a][8].y, Q[a][10].x, Q[a][10].y, g), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
+            h = enemyPoseTrailWriteIdxArray[a] - 1;
+            20 < enemyPoseTrailWriteIdxArray[a] && (b = 1, h = enemyPoseTrailWriteIdxArray[a] - 20 - 1);
+            for (; b < h; b++) drawLine(enemyJointPosArray[a][b].x, enemyJointPosArray[a][b].y, enemyJointPosArray[a][b + 1].x, enemyJointPosArray[a][b + 1].y, g);
+            drawRectCentered(floor(enemyJointPosArray[a][h].x) + 1, floor(enemyJointPosArray[a][h].y) + 1, floor(2 * k), floor(2 * k), d);
+            drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
+        } else if (enemyUpdateFuncIdxArray[a] == enemyStickmanBehaviorIdx || enemyUpdateFuncIdxArray[a] == enemyStickmanBehaviorAltIdx) drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, g), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, g), drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, g)), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, g), drawLine(enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, g), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y,
+            enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, g), drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, enemyJointPosArray[a][8].x, enemyJointPosArray[a][8].y, g)), drawLine(enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, enemyJointPosArray[a][9].x, enemyJointPosArray[a][9].y, g), drawLine(enemyJointPosArray[a][8].x, enemyJointPosArray[a][8].y, enemyJointPosArray[a][10].x, enemyJointPosArray[a][10].y, g), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
         else if (enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorRightIdx) {
             h = enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorLeftIdx ? -2 : 2;
-            for (b = 20 >= Y[a] ? Y[a] - 1 : Y[a] - 21; 0 < b; b--) drawRectOutlineCentered(floor(Q[a][b].x), floor(Q[a][b].y + h), 5, 5, g);
-            enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorLeftIdx ? drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
+            for (b = 20 >= enemyPoseTrailWriteIdxArray[a] ? enemyPoseTrailWriteIdxArray[a] - 1 : enemyPoseTrailWriteIdxArray[a] - 21; 0 < b; b--) drawRectOutlineCentered(floor(enemyJointPosArray[a][b].x), floor(enemyJointPosArray[a][b].y + h), 5, 5, g);
+            enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorLeftIdx ? drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
         } else if (enemyUpdateFuncIdxArray[a] ==
             enemyHangingTreeBehaviorIdx) {
-            for (b = 1; 6 > b; b++) drawLine(Q[a][b].x, Q[a][b].y, Q[a][b + 1].x, Q[a][b + 1].y, f);
-            3 > Y[a] && drawLine(Q[a][b].x, Q[a][b].y, Q[a][1].x, Q[a][1].y, f);
-            drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
+            for (b = 1; 6 > b; b++) drawLine(enemyJointPosArray[a][b].x, enemyJointPosArray[a][b].y, enemyJointPosArray[a][b + 1].x, enemyJointPosArray[a][b + 1].y, f);
+            3 > enemyPoseTrailWriteIdxArray[a] && drawLine(enemyJointPosArray[a][b].x, enemyJointPosArray[a][b].y, enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, f);
+            drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[a][0].x), floor(enemyJointPosArray[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
         } else if (enemyUpdateFuncIdxArray[a] == enemyUpdateFunc7Idx) {
             h = enemyCatalog[enemyTypeArray[a]][enemyShapeParamACol];
-            for (b = 1; b < h; b++) drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][b + 1].x - 1, Q[a][b + 1].y - 1, g);
-            drawLine(Q[a][b].x - 1, Q[a][b].y - 1, Q[a][1].x - 1, Q[a][1].y - 1, g);
-            drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
-        } else enemyUpdateFuncIdxArray[a] == enemyUpdateFunc9Idx ? (drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][1].x, Q[a][1].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][3].x, Q[a][3].y, f)), drawLine(Q[a][1].x, Q[a][1].y, Q[a][2].x, Q[a][2].y, f), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x, Q[a][4].y, f), 3 > Y[a] && (drawLine(Q[a][0].x, Q[a][0].y, Q[a][5].x, Q[a][5].y, f), drawLine(Q[a][0].x, Q[a][0].y, Q[a][7].x, Q[a][7].y, f)), drawLine(Q[a][5].x, Q[a][5].y, Q[a][6].x, Q[a][6].y, f), drawLine(Q[a][7].x, Q[a][7].y, Q[a][8].x, Q[a][8].y, f), drawSpriteSheetPartCentered(enemySpriteSheet, floor(Q[a][0].x), floor(Q[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : enemyUpdateFuncIdxArray[a] == enemyUpdateFunc10Idx && (drawLine(Q[a][2].x, Q[a][2].y, Q[a][3].x, Q[a][3].y, g), drawLine(Q[a][3].x, Q[a][3].y, Q[a][4].x,
-            Q[a][4].y, g), drawLine(Q[a][4].x, Q[a][4].y, Q[a][2].x, Q[a][2].y, g), drawRectOutlineCentered(Q[a][1].x, Q[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > Y[a] && (k = max(1, k)), drawEnemyScaledSprite(Q[a][0].x, Q[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
+            for (b = 1; b < h; b++) drawLine(enemyJointPosArray[a][b].x - 1, enemyJointPosArray[a][b].y - 1, enemyJointPosArray[a][b + 1].x - 1, enemyJointPosArray[a][b + 1].y - 1, g);
+            drawLine(enemyJointPosArray[a][b].x - 1, enemyJointPosArray[a][b].y - 1, enemyJointPosArray[a][1].x - 1, enemyJointPosArray[a][1].y - 1, g);
+            drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
+        } else enemyUpdateFuncIdxArray[a] == enemyUpdateFunc9Idx ? (drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, f), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, f), drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, f)), drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, f), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, f), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, f), drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, f)), drawLine(enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, f), drawLine(enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, enemyJointPosArray[a][8].x, enemyJointPosArray[a][8].y, f), drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[a][0].x), floor(enemyJointPosArray[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : enemyUpdateFuncIdxArray[a] == enemyUpdateFunc10Idx && (drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, g), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][4].x,
+            enemyJointPosArray[a][4].y, g), drawLine(enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, g), drawRectOutlineCentered(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > enemyPoseTrailWriteIdxArray[a] && (k = max(1, k)), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
     }
     for (a = 0; a < enemyCount; a++)
-        0 >= Ek[a] || (
-            Ek[a]--,
+        0 >= enemyAuxStateArray[a] || (
+            enemyAuxStateArray[a]--,
             0 >= enemyHealthArray[a] || (
                 b = enemyCatalog[enemyTypeArray[a]][enemyDrawScaleCol],
-                drawRect(floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b, 14 * b, 1, 10027008),
+                drawRect(floor(enemyJointPosArray[a][0].x) - 7 * b, floor(enemyJointPosArray[a][0].y) - 10 * b, 14 * b, 1, 10027008),
                 drawRect(
-                    floor(Q[a][0].x) - 7 * b, floor(Q[a][0].y) - 10 * b,
+                    floor(enemyJointPosArray[a][0].x) - 7 * b, floor(enemyJointPosArray[a][0].y) - 10 * b,
                     floor(14 * b * enemyHealthArray[a] / enemyCatalog[enemyTypeArray[a]][enemyHealthCol]), 1, 52224
                 )
             )
@@ -4645,7 +4645,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         k = enemyCatalog[_typeIdx][enemySecondaryTintCol],
         p = enemyCatalog[_typeIdx][enemyAccentTintCol];
     _scale = clamp(enemyCatalog[_typeIdx][enemyDrawScaleCol], 1, _scale);
-    var t = Nk[g],
+    var t = enemySpriteAnchorYBySpriteIndex[g],
         l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         n = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     if (f == enemySlimeBehaviorIdx) drawEnemyScaledSprite(_px + 0 * _scale, _py - t * _scale + 1, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
@@ -4691,41 +4691,47 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
             16 * (g >> 3), 16, 16, h)) : f == enemyUpdateFunc10Idx ? (drawLine(_px + 5 * _scale, _py - 6 * _scale, _px + 8 * _scale, _py - 11 * _scale, p), drawLine(_px + 8 * _scale, _py - 11 * _scale, _px + 10 * _scale, _py - 3 * _scale, p), drawLine(_px + 10 * _scale, _py - 3 * _scale, _px + 5 * _scale, _py - 6 * _scale, p), drawRectOutlineCentered(_px + 0 * _scale, _py - 9 * _scale, 6 * _scale + 1, 6 * _scale + 1, p), drawEnemyScaledSprite(_px - 5 * _scale, _py - 13 * _scale, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == enemyStickmanBehaviorAltIdx && (l[0] = _px + 0 * _scale, n[0] = _py - 16 * _scale, l[1] = _px + 0 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 2 * _scale, n[2] = _py - 7 * _scale, l[3] = _px - 2 * _scale, n[3] = _py - 8 * _scale, l[4] = _px - 3 * _scale, n[4] = _py - 11 * _scale, l[5] = _px - 5 * _scale, n[5] = _py - 7 * _scale, l[6] = _px - 8 * _scale, n[6] = _py - 10 * _scale, l[7] = _px - 1 * _scale, n[7] = _py - 4 * _scale, l[8] = _px + 2 * _scale, n[8] = _py - 5 * _scale, l[9] = _px - 0 * _scale, n[9] = _py - 1 * _scale, l[10] = _px + 4 * _scale, n[10] = _py - 0 * _scale)
 }
 var projectileCount = 0,
-    hl = new Int32Array(1E3),
-    il = new Int32Array(1E3),
-    jl = Array(1E3);
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) jl[iterIdxTemp_1] = new Vec2;
-var kl = Array(1E3);
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) kl[iterIdxTemp_1] = new Vec2;
-var ll = new Int32Array(1E3), // ll
-    ml = new Int32Array(1E3), // ml
-    nl = new Int32Array(1E3), // nl
-    ol = new Int32Array(1E3), // ol
-    pl = new Int32Array(1E3), // pl
-    ql = new Int32Array(1E3), // ql
-    rl = new Int32Array(1E3), // rl
-    sl = new Int32Array(1E3), // sl
-    tl = new Int32Array(1E3), // tl
-    ul = new Int32Array(1E3), // ul
-    vl = new Int32Array(1E3), // vl
-    wl = new Int32Array(1E3), // wl
-    xl = new Int32Array(1E3), // xl
-    yl = new Int32Array(1E3), // yl
-    zl = new Float32Array(1E3), // zl
-    Al = new Float32Array(1E3), // Al
-    Bl = new Int32Array(1E3), // Bl
-    Cl = new Int32Array(1E3), // Cl
-    Dl = new Int32Array(1E3), // Dl
-    El = new Int32Array(1E3), // El
-    Fl = new Int32Array(1E3), // Fl
-    Gl = new Int32Array(1E3), // Gl
-    Hl = new Int32Array(1E3), // Hl
-    Il = new Int32Array(1E3), // Il
+    projectileOwnerIdx = new Int32Array(1E3), // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
+    projectileJointPair = new Int32Array(1E3), // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
+    projectilePosition = Array(1E3); // jl, projectile position Vec2 — world position when free, local offset when attached.
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectilePosition[iterIdxTemp_1] = new Vec2;
+var projectileVelocity = Array(1E3); // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
+for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectileVelocity[iterIdxTemp_1] = new Vec2;
+var projectileImpactState = new Int32Array(1E3), // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
+    projectileDrawMode = new Int32Array(1E3), // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
+    projectileSpriteTileIndex = new Int32Array(1E3), // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
+    projectileTintColor = new Int32Array(1E3), // ol, packed RGBA tint used for projectile color/alpha (alpha scaled by life for fade-out).
+    
+    projectileSolidRenderMode = new Int32Array(1E3), // pl, projectile solid/blend render mode (used as isSolidRender with modes 0/1/2/3 selecting different compositing behavior).
+    projectileSpriteWidth = new Int32Array(1E3), // ql, projectile sprite/render width (pixels) passed to sprite/draw calls.
+    projectileSpriteHeight = new Int32Array(1E3), // rl, projectile sprite/render height (pixels) passed to sprite/draw calls.
+    
+    projectileShapeMode = new Int32Array(1E3), // sl, projectile effect shape/mode for hit detection (0 = rectangular area, 1 = line/beam shape; passed as shapeMode to applyEffectToEnemies).
+    projectileHitboxWidth = new Int32Array(1E3), // tl, full hitbox width (pixels) passed to collision/effect routines.
+    projectileHitboxHeight = new Int32Array(1E3), // ul, full hitbox height (pixels) passed to collision/effect routines.
+    
+    projectileSpawnDelayFrames = new Int32Array(1E3), // vl, frames to wait before the projectile becomes active (counts down each frame).
+    projectileHitCooldownFrames = new Int32Array(1E3), // wl, short frames of suppressed hit/impact processing after spawn/impact.
+    projectileImpactAge = new Int32Array(1E3), // xl, frames spent in impact/fade-out (incremented while impact-state == 1).
+    projectileImpactLifetime = new Int32Array(1E3), // yl, frames before an impacted projectile is deleted (impact lifetime).
+    projectileAttachJointIndex = new Float32Array(1E3), // zl, attachment/joint index mode (0 = free/gravity; -1 = special; >0 = index into owner joint positions used for seeking/attachment).
+    
+    projectileAcceleration = new Float32Array(1E3), // Al, per-projectile acceleration scalar used for gravity or homing (applied as .01 * Al to velocity each update).
+    projectileVelocityScale = new Int32Array(1E3), // Bl, per-projectile velocity scale applied each update (velocity multiplied by .01 * Bl).
+    projectileCustomIntA = new Int32Array(1E3), // Cl, integer per-projectile extra parameter assigned at spawn but not referenced elsewhere (reserved/unused in current code).
+    projectileTileCollisionMode = new Int32Array(1E3), // Dl, per-projectile tile-collision mode controlling how projectiles interact with stage tiles (observed modes: 0 triggers impact, 2/stick-to-tile, 3=bounce, 4=clamp/zero-vel).
+    projectileHomingRange = new Int32Array(1E3), // El, homing/search radius for projectiles; when >0 the projectile searches for targets within El and adjusts velocity toward them.
+    projectileCustomIntB = new Int32Array(1E3), // Fl, integer per-projectile extra parameter assigned at spawn but not observed used elsewhere (reserved/unused in current code).
+    projectileMaxTargets = new Int32Array(1E3), // Gl, per-projectile effect maxTargets passed to applyEffectToEnemies when the projectile hits (limits how many enemies the projectile affects).
+
+    projectileDamageMin = new Int32Array(1E3), // Hl
+    projectileDamageMax = new Int32Array(1E3), // Il
     Jl = new Int32Array(1E3), // Jl
     Kl = new Int32Array(1E3), // Kl
     Ll = new Int32Array(1E3), // Ll
     Ml = new Int32Array(1E3), // Ml
     Nl = new Int32Array(1E3), // Nl
+
     Ol = new Int32Array(1E3), // Ol
     Pl = new Int32Array(1E3), // Pl
     Ql = new Int32Array(1E3), // Ql
@@ -4762,18 +4768,18 @@ function spawnProjectile(
     tc, uc, vc, wc, xc, yc, zc
 ) { // zi
     if (projectileCount >= 1E3) return;
-    hl[projectileCount] = a, 
-    il[projectileCount] = b, 
-    Vec2Set(jl[projectileCount], c, d), 
-    Vec2Set(kl[projectileCount], f, g), 
-    ll[projectileCount] = 0, ml[projectileCount] = h, nl[projectileCount] = k, 
-    ol[projectileCount] = p, pl[projectileCount] = t, ql[projectileCount] = l, 
-    rl[projectileCount] = n, sl[projectileCount] = w, tl[projectileCount] = B, 
-    ul[projectileCount] = M, vl[projectileCount] = floor(randFloat(J)), wl[projectileCount] = y, 
-    xl[projectileCount] = x, yl[projectileCount] = K, zl[projectileCount] = ba, 
-    Al[projectileCount] = U, Bl[projectileCount] = na, Cl[projectileCount] = Fa, 
-    Dl[projectileCount] = Ga, El[projectileCount] = Ca, Fl[projectileCount] = ua, 
-    Gl[projectileCount] = fb, Hl[projectileCount] = ob, Il[projectileCount] = Bb, 
+    projectileOwnerIdx[projectileCount] = a, 
+    projectileJointPair[projectileCount] = b, 
+    Vec2Set(projectilePosition[projectileCount], c, d), 
+    Vec2Set(projectileVelocity[projectileCount], f, g), 
+    projectileImpactState[projectileCount] = 0, projectileDrawMode[projectileCount] = h, projectileSpriteTileIndex[projectileCount] = k, 
+    projectileTintColor[projectileCount] = p, projectileSolidRenderMode[projectileCount] = t, projectileSpriteWidth[projectileCount] = l, 
+    projectileSpriteHeight[projectileCount] = n, projectileShapeMode[projectileCount] = w, projectileHitboxWidth[projectileCount] = B, 
+    projectileHitboxHeight[projectileCount] = M, projectileSpawnDelayFrames[projectileCount] = floor(randFloat(J)), projectileHitCooldownFrames[projectileCount] = y, 
+    projectileImpactAge[projectileCount] = x, projectileImpactLifetime[projectileCount] = K, projectileAttachJointIndex[projectileCount] = ba, 
+    projectileAcceleration[projectileCount] = U, projectileVelocityScale[projectileCount] = na, projectileCustomIntA[projectileCount] = Fa, 
+    projectileTileCollisionMode[projectileCount] = Ga, projectileHomingRange[projectileCount] = Ca, projectileCustomIntB[projectileCount] = ua, 
+    projectileMaxTargets[projectileCount] = fb, projectileDamageMin[projectileCount] = ob, projectileDamageMax[projectileCount] = Bb, 
     Jl[projectileCount] = gc, Kl[projectileCount] = Qb, Ll[projectileCount] = Rb, 
     Ml[projectileCount] = gb, Nl[projectileCount] = jb, Ol[projectileCount] = La, 
     Pl[projectileCount] = hc, Ql[projectileCount] = Ib, Rl[projectileCount] = ic, 
@@ -4788,34 +4794,34 @@ function spawnProjectile(
 mainWindow.fff = deleteProjectile;
 
 function deleteProjectile(projIdx) { // jm
-    hl[projIdx] = hl[projectileCount - 1];
-    il[projIdx] = il[projectileCount - 1];
-    jl[projIdx].set(jl[projectileCount - 1]);
-    kl[projIdx].set(kl[projectileCount - 1]);
-    ll[projIdx] = ll[projectileCount - 1];
-    ml[projIdx] = ml[projectileCount - 1];
-    nl[projIdx] = nl[projectileCount - 1];
-    ol[projIdx] = ol[projectileCount - 1];
-    pl[projIdx] = pl[projectileCount - 1];
-    ql[projIdx] = ql[projectileCount - 1];
-    rl[projIdx] = rl[projectileCount - 1];
-    sl[projIdx] = sl[projectileCount - 1];
-    tl[projIdx] = tl[projectileCount - 1];
-    ul[projIdx] = ul[projectileCount - 1];
-    vl[projIdx] = vl[projectileCount - 1];
-    wl[projIdx] = wl[projectileCount - 1];
-    xl[projIdx] = xl[projectileCount - 1];
-    yl[projIdx] = yl[projectileCount - 1];
-    zl[projIdx] = zl[projectileCount - 1];
-    Al[projIdx] = Al[projectileCount - 1];
-    Bl[projIdx] = Bl[projectileCount - 1];
-    Cl[projIdx] = Cl[projectileCount - 1];
-    Dl[projIdx] = Dl[projectileCount - 1];
-    El[projIdx] = El[projectileCount - 1];
-    Fl[projIdx] = Fl[projectileCount - 1];
-    Gl[projIdx] = Gl[projectileCount - 1];
-    Hl[projIdx] = Hl[projectileCount - 1];
-    Il[projIdx] = Il[projectileCount - 1];
+    projectileOwnerIdx[projIdx] = projectileOwnerIdx[projectileCount - 1];
+    projectileJointPair[projIdx] = projectileJointPair[projectileCount - 1];
+    projectilePosition[projIdx].set(projectilePosition[projectileCount - 1]);
+    projectileVelocity[projIdx].set(projectileVelocity[projectileCount - 1]);
+    projectileImpactState[projIdx] = projectileImpactState[projectileCount - 1];
+    projectileDrawMode[projIdx] = projectileDrawMode[projectileCount - 1];
+    projectileSpriteTileIndex[projIdx] = projectileSpriteTileIndex[projectileCount - 1];
+    projectileTintColor[projIdx] = projectileTintColor[projectileCount - 1];
+    projectileSolidRenderMode[projIdx] = projectileSolidRenderMode[projectileCount - 1];
+    projectileSpriteWidth[projIdx] = projectileSpriteWidth[projectileCount - 1];
+    projectileSpriteHeight[projIdx] = projectileSpriteHeight[projectileCount - 1];
+    projectileShapeMode[projIdx] = projectileShapeMode[projectileCount - 1];
+    projectileHitboxWidth[projIdx] = projectileHitboxWidth[projectileCount - 1];
+    projectileHitboxHeight[projIdx] = projectileHitboxHeight[projectileCount - 1];
+    projectileSpawnDelayFrames[projIdx] = projectileSpawnDelayFrames[projectileCount - 1];
+    projectileHitCooldownFrames[projIdx] = projectileHitCooldownFrames[projectileCount - 1];
+    projectileImpactAge[projIdx] = projectileImpactAge[projectileCount - 1];
+    projectileImpactLifetime[projIdx] = projectileImpactLifetime[projectileCount - 1];
+    projectileAttachJointIndex[projIdx] = projectileAttachJointIndex[projectileCount - 1];
+    projectileAcceleration[projIdx] = projectileAcceleration[projectileCount - 1];
+    projectileVelocityScale[projIdx] = projectileVelocityScale[projectileCount - 1];
+    projectileCustomIntA[projIdx] = projectileCustomIntA[projectileCount - 1];
+    projectileTileCollisionMode[projIdx] = projectileTileCollisionMode[projectileCount - 1];
+    projectileHomingRange[projIdx] = projectileHomingRange[projectileCount - 1];
+    projectileCustomIntB[projIdx] = projectileCustomIntB[projectileCount - 1];
+    projectileMaxTargets[projIdx] = projectileMaxTargets[projectileCount - 1];
+    projectileDamageMin[projIdx] = projectileDamageMin[projectileCount - 1];
+    projectileDamageMax[projIdx] = projectileDamageMax[projectileCount - 1];
     Jl[projIdx] = Jl[projectileCount - 1];
     Kl[projIdx] = Kl[projectileCount - 1];
     Ll[projIdx] = Ll[projectileCount - 1];
@@ -4848,10 +4854,10 @@ mainWindow.fff = moveProjectileWithCollision;
 
 function moveProjectileWithCollision(a, b) { // km
     var c = 0;
-    b.set(kl[a]);
+    b.set(projectileVelocity[a]);
     var d = floor(Vec2Mag(b) / 4) + 1;
     Vec2Scale(b, 1 / d);
-    for (var f, g, h = 0; h < d; h++) f = jl[a].y + b.y, g = getStageTileAt(jl[a].x, f), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].y = f : 3 == Dl[a] ? (b.y = -b.y, kl[a].y = -kl[a].y) : 4 == Dl[a] && (0 < kl[a].y ? c = 1 : kl[a].y = 0) : jl[a].y = f, f = jl[a].x + b.x, g = getStageTileAt(f, jl[a].y), 0 <= g && 29 >= g ? 0 == Dl[a] ? c = 1 : 2 == Dl[a] ? jl[a].x = f : 3 == Dl[a] ? (b.x = -b.x, kl[a].x = -kl[a].x) : 4 == Dl[a] && (kl[a].x = 0) : jl[a].x = f;
+    for (var f, g, h = 0; h < d; h++) f = projectilePosition[a].y + b.y, g = getStageTileAt(projectilePosition[a].x, f), 0 <= g && 29 >= g ? 0 == projectileTileCollisionMode[a] ? c = 1 : 2 == projectileTileCollisionMode[a] ? projectilePosition[a].y = f : 3 == projectileTileCollisionMode[a] ? (b.y = -b.y, projectileVelocity[a].y = -projectileVelocity[a].y) : 4 == projectileTileCollisionMode[a] && (0 < projectileVelocity[a].y ? c = 1 : projectileVelocity[a].y = 0) : projectilePosition[a].y = f, f = projectilePosition[a].x + b.x, g = getStageTileAt(f, projectilePosition[a].y), 0 <= g && 29 >= g ? 0 == projectileTileCollisionMode[a] ? c = 1 : 2 == projectileTileCollisionMode[a] ? projectilePosition[a].x = f : 3 == projectileTileCollisionMode[a] ? (b.x = -b.x, projectileVelocity[a].x = -projectileVelocity[a].x) : 4 == projectileTileCollisionMode[a] && (projectileVelocity[a].x = 0) : projectilePosition[a].x = f;
     return c
 }
 mainWindow.fff = updateProjectiles;
@@ -4864,53 +4870,53 @@ function updateProjectiles() { // Bg
         k = new Vec2,
         p, t, l;
     for (a = 0; a < projectileCount; a++)
-        if (-64 > jl[a].x || 704 < jl[a].x) deleteProjectile(a--);
-        else if (0 < vl[a]) vl[a]--;
-        else if (1 == ll[a]) xl[a]++, xl[a] >= yl[a] && deleteProjectile(a--);
+        if (-64 > projectilePosition[a].x || 704 < projectilePosition[a].x) deleteProjectile(a--);
+        else if (0 < projectileSpawnDelayFrames[a]) projectileSpawnDelayFrames[a]--;
+        else if (1 == projectileImpactState[a]) projectileImpactAge[a]++, projectileImpactAge[a] >= projectileImpactLifetime[a] && deleteProjectile(a--);
         else {
-            0 < El[a] && (b = El[a], b = 0 <= hl[a] ? findEnemyInArea(jl[a].x, jl[a].y, b, b) : findNearestPartyMemberInRect(jl[a].x, jl[a].y, b, b, 0), -1 != b && (0 <= hl[a] ? Vec2Sub(d, Q[b][0], jl[a]) : Vec2Sub(d, heroJointPositionsByHero[b][0], jl[a]), Vec2Norm(d), b = Vec2Mag(kl[a]), kl[a].x = .85 * kl[a].x + .15 * d.x + randFloatRange(-.1, .1), kl[a].y = .85 * kl[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(kl[a]), Vec2Scale(kl[a], max(b, 1))));
-            0 == zl[a] ? kl[a].y += .01 * Al[a] : (-1 == zl[a] ?
-                d.set(jl[a]) : (c = hl[a], l = 0 <= c ? heroJointPositionsByHero : Q, c = 0 <= c ? c : -c - 1, Vec2Sub(d, jl[a], l[c][zl[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -Al[a]), kl[a].add(d));
-            Vec2Scale(kl[a], .01 * Bl[a]);
+            0 < projectileHomingRange[a] && (b = projectileHomingRange[a], b = 0 <= projectileOwnerIdx[a] ? findEnemyInArea(projectilePosition[a].x, projectilePosition[a].y, b, b) : findNearestPartyMemberInRect(projectilePosition[a].x, projectilePosition[a].y, b, b, 0), -1 != b && (0 <= projectileOwnerIdx[a] ? Vec2Sub(d, enemyJointPosArray[b][0], projectilePosition[a]) : Vec2Sub(d, heroJointPositionsByHero[b][0], projectilePosition[a]), Vec2Norm(d), b = Vec2Mag(projectileVelocity[a]), projectileVelocity[a].x = .85 * projectileVelocity[a].x + .15 * d.x + randFloatRange(-.1, .1), projectileVelocity[a].y = .85 * projectileVelocity[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(projectileVelocity[a]), Vec2Scale(projectileVelocity[a], max(b, 1))));
+            0 == projectileAttachJointIndex[a] ? projectileVelocity[a].y += .01 * projectileAcceleration[a] : (-1 == projectileAttachJointIndex[a] ?
+                d.set(projectilePosition[a]) : (c = projectileOwnerIdx[a], l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray, c = 0 <= c ? c : -c - 1, Vec2Sub(d, projectilePosition[a], l[c][projectileAttachJointIndex[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -projectileAcceleration[a]), projectileVelocity[a].add(d));
+            Vec2Scale(projectileVelocity[a], .01 * projectileVelocityScale[a]);
             b = 0;
-            0 > il[a] ? b = moveProjectileWithCollision(a, d) : jl[a].add(kl[a]);
-            0 > il[a] ? (h.set(jl[a]), k.set(kl[a])) : (c = hl[a], p = il[a] >> 8, t = il[a] & 255, l = 0 <= c ? heroJointPositionsByHero : Q, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], jl[a]), k.set(kl[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * jl[a].x + g.x * jl[a].y + l[c][p].x, h.y = f.y * jl[a].x + g.y * jl[a].y + l[c][p].y, k.x = f.x * kl[a].x + g.x * kl[a].y, k.y = f.y * kl[a].x + g.y * kl[a].y));
+            0 > projectileJointPair[a] ? b = moveProjectileWithCollision(a, d) : projectilePosition[a].add(projectileVelocity[a]);
+            0 > projectileJointPair[a] ? (h.set(projectilePosition[a]), k.set(projectileVelocity[a])) : (c = projectileOwnerIdx[a], p = projectileJointPair[a] >> 8, t = projectileJointPair[a] & 255, l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], projectilePosition[a]), k.set(projectileVelocity[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + l[c][p].x, h.y = f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + l[c][p].y, k.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y, k.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y));
             p = 1;
             1 == Jl[a] && 0 == Ml[a] &&
                 Kl[a] <= randFloat(60) && (p = 0);
-            0 < wl[a] && (wl[a]--, p = 0);
+            0 < projectileHitCooldownFrames[a] && (projectileHitCooldownFrames[a]--, p = 0);
             c = -1;
             if (1 == p) {
                 c = 0;
                 if (1 == Ll[a] || 2 == Ll[a]) c = 1;
-                c = 0 <= hl[a] ? applyEffectToEnemies(c, sl[a], Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h, k, tl[a], ul[a]) : damagePartyMemberInArea(0, Gl[a], Jl[a], Kl[a], Hl[a], Il[a], h.x, h.y, tl[a], ul[a])
+                c = 0 <= projectileOwnerIdx[a] ? applyEffectToEnemies(c, projectileShapeMode[a], projectileMaxTargets[a], Jl[a], Kl[a], projectileDamageMin[a], projectileDamageMax[a], h, k, projectileHitboxWidth[a], projectileHitboxHeight[a]) : damagePartyMemberInArea(0, projectileMaxTargets[a], Jl[a], Kl[a], projectileDamageMin[a], projectileDamageMax[a], h.x, h.y, projectileHitboxWidth[a], projectileHitboxHeight[a])
             }
             1 == Jl[a] && 0 == Ml[a] && (c = -1);
-            4 == Jl[a] && 99 == Gl[a] && (c = -1);
-            2 == Ll[a] && 1 == xl[a] && (b = 1);
+            4 == Jl[a] && 99 == projectileMaxTargets[a] && (c = -1);
+            2 == Ll[a] && 1 == projectileImpactAge[a] && (b = 1);
             if (1 == b || -1 != c)
-                if (ll[a] = 1, xl[a] = 0, 1 <= Ml[a] && 9 >= Ml[a])
+                if (projectileImpactState[a] = 1, projectileImpactAge[a] = 0, 1 <= Ml[a] && 9 >= Ml[a])
                     for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, hm[a]), d.x = rotationLUT[c][0] * p, d.y = rotationLUT[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
-                        Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), spawnProjectile(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 else if (-1 != c && 20 <= Ml[a] && 29 >= Ml[a])
-                    for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = rotationLUT[c][0] * hm[a], d.y = -rotationLUT[c][1] * hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
-                        Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], Ml[a], Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], gm[a], hm[a]);
-            0 < xl[a] && xl[a]--;
-            0 == xl[a] && (ll[a] = 1);
-            if (10 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a],
-                Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (11 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), p = randFloatRange(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(hl[a], -1, h.x, h.y,
-                k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+                    for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = rotationLUT[c][0] * hm[a], d.y = -rotationLUT[c][1] * hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
+                        Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], Ll[a], Ml[a], Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], gm[a], hm[a]);
+            0 < projectileImpactAge[a] && projectileImpactAge[a]--;
+            0 == projectileImpactAge[a] && (projectileImpactState[a] = 1);
+            if (10 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a],
+                projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            else if (11 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), p = randFloatRange(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y,
+                k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
             else if (13 == Ml[a]) {
                 if (randFloat(60) < Nl[a])
-                    for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0,
+                    for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             } else if (14 == Ml[a]) {
                 if (randFloat(60) < Nl[a] && (c = findEnemyInArea(h.x, h.y, 200, 200), -1 != c))
-                    for (d.x = Q[c][yi].x - h.x, d.y = Q[c][yi].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * hm[a] * .1 + rotationLUT[c][1] * p, spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * hm[a] * .1 + rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             } else 15 == Ml[a] && randFloat(60) < gm[a] &&
-                (Vec2Norm(k), Vec2Scale(k, hm[a]), spawnProjectile(hl[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], Hl[a], Il[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
+                (Vec2Norm(k), Vec2Scale(k, hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
         }
 }
 mainWindow.fff = drawProjectiles;
@@ -4924,23 +4930,23 @@ function drawProjectiles() { // Eg
         t = new Vec2,
         l, n, w, B;
     for (a = 0; a < projectileCount; a++)
-        if (!(0 < vl[a])) {
-            b = (nl[a] & 7) << 4;
-            c = nl[a] >> 3 << 4;
-            1 == ll[a] ? d = floor((ol[a] >> 24 & 255) * (yl[a] - xl[a]) / yl[a]) << 24 | ol[a] & 16777215 : d = ol[a];
-            0 < wl[a] && (d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215);
-            isSolidRender = pl[a];
+        if (!(0 < projectileSpawnDelayFrames[a])) {
+            b = (projectileSpriteTileIndex[a] & 7) << 4;
+            c = projectileSpriteTileIndex[a] >> 3 << 4;
+            1 == projectileImpactState[a] ? d = floor((projectileTintColor[a] >> 24 & 255) * (projectileImpactLifetime[a] - projectileImpactAge[a]) / projectileImpactLifetime[a]) << 24 | projectileTintColor[a] & 16777215 : d = projectileTintColor[a];
+            0 < projectileHitCooldownFrames[a] && (d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215);
+            isSolidRender = projectileSolidRenderMode[a];
             fh = 1;
-            0 > il[a] ? (p.set(jl[a]), t.set(kl[a])) : (l = hl[a], n = il[a] >> 8, w = il[a] & 255, B = 0 <= l ? heroJointPositionsByHero : Q, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], jl[a]), t.set(kl[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * jl[a].x + g.x * jl[a].y + B[l][n].x, p.y =
-                f.y * jl[a].x + g.y * jl[a].y + B[l][n].y, t.x = f.x * kl[a].x + g.x * kl[a].y, t.y = f.y * kl[a].x + g.y * kl[a].y));
-            if (0 == ml[a]) drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, ql[a], rl[a], b, c, 16, 16, d);
-            else if (1 == ml[a]) {
+            0 > projectileJointPair[a] ? (p.set(projectilePosition[a]), t.set(projectileVelocity[a])) : (l = projectileOwnerIdx[a], n = projectileJointPair[a] >> 8, w = projectileJointPair[a] & 255, B = 0 <= l ? heroJointPositionsByHero : enemyJointPosArray, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], projectilePosition[a]), t.set(projectileVelocity[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + B[l][n].x, p.y =
+                f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + B[l][n].y, t.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y, t.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y));
+            if (0 == projectileDrawMode[a]) drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
+            else if (1 == projectileDrawMode[a]) {
                 g.set(t);
                 Vec2Norm(g);
                 f.set(g);
                 Vec2Rotate(f);
-                Vec2Scale(f, ql[a] >> 1);
-                Vec2Scale(g, rl[a] >> 1);
+                Vec2Scale(f, projectileSpriteWidth[a] >> 1);
+                Vec2Scale(g, projectileSpriteHeight[a] >> 1);
                 Vec2Sub(h, g, f);
                 Vec2Add(k, g, f);
                 w = p.x + h.x;
@@ -5007,15 +5013,15 @@ function drawProjectiles() { // Eg
                     for (l = Ki[b] - Ji[b] + 1, n = floor((nm[b] - om[b]) / l), Fa = floor((pm[b] - qm[b]) / l), U = om[b], na = qm[b], 0 > Ji[b] && (U += n * -Ji[b], na += Fa * -Ji[b], Ji[b] =
                         0), 640 <= Ki[b] && (Ki[b] = 639), K = 640 * b + Ji[b], ba = K + (Ki[b] - Ji[b]); K <= ba; K++, U += n, na += Fa) l = w[(na >> 16) * B + (U >> 16)], 0 != l && (l = (l & 255) * M >> 8, 1 == isSolidRender ? (Ga = frameBufferArray[K] >> 16 & 255, Ga = ((J - Ga) * l >> 8) + Ga, Ca = frameBufferArray[K] >> 8 & 255, Ca = ((y - Ca) * l >> 8) + Ca, ua = frameBufferArray[K] & 255, ua = ((x - ua) * l >> 8) + ua, frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 2 == isSolidRender ? (Ga = (frameBufferArray[K] >> 16 & 255) + (J * l >> 8), 255 < Ga && (Ga = 255), Ca = (frameBufferArray[K] >> 8 & 255) + (y * l >> 8), 255 < Ca && (Ca = 255), ua = (frameBufferArray[K] & 255) + (x * l >> 8), 255 < ua && (ua = 255), frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 3 == isSolidRender && (Ga = (frameBufferArray[K] >> 16 & 255) - (J * l >> 8), 0 > Ga && (Ga = 0), Ca = (frameBufferArray[K] >> 8 & 255) - (y * l >> 8), 0 > Ca && (Ca = 0),
                             ua = (frameBufferArray[K] & 255) - (x * l >> 8), 0 > ua && (ua = 0), frameBufferArray[K] = Ga << 16 | Ca << 8 | ua))
-            } else if (2 == ml[a]) {
+            } else if (2 == projectileDrawMode[a]) {
                 fh = 0;
-                l = -hl[a] - 1;
+                l = -projectileOwnerIdx[a] - 1;
                 n = enemyCatalog[enemyTypeArray[l]][enemyBehaviorIdxCol];
                 w = enemyCatalog[enemyTypeArray[l]][enemySpriteIndexCol];
                 l = max(enemyCatalog[enemyTypeArray[l]][enemyDrawScaleCol], 1);
                 B = 0;
-                if (n == enemySlimeBehaviorIdx || n == enemyBoxSnakeBehaviorIdx) B = -Nk[w] * l + 1;
-                drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, ql[a], rl[a], b, c, 16, 16, d)
+                if (n == enemySlimeBehaviorIdx || n == enemyBoxSnakeBehaviorIdx) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
+                drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d)
             }
             fh = isSolidRender = 0
         }

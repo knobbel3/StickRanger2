@@ -3042,7 +3042,7 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
 mainWindow.fff = pickHeroJointUnderMouse;
 
 function pickHeroJointUnderMouse() { // vi
-    var a = new Vec2,
+    var a = new Vec2(),
         b, c;
     if (-1 == draggedHeroIndex) {
         if (isMouseClicked && !clickInUI) {
@@ -3050,12 +3050,33 @@ function pickHeroJointUnderMouse() { // vi
             a.x = mouseXCurrent - heroJointPrevPositionsByHero[selectingHero][0].x;
             a.y = mouseYCurrent - (heroJointPrevPositionsByHero[selectingHero][0].y - 8);
             c = Vec2Mag(a);
-            20 > c && c < b && (b = c, draggedHeroIndex = selectingHero, draggedJointIndex = 0);
+            if (20 > c) {
+                if (c < b) {
+                    b = c;
+                    draggedHeroIndex = selectingHero;
+                    draggedJointIndex = 0;
+                }
+            }
             for (var d = 0; d < partyMemberCount; d++)
                 if (heroUpperJointMode[d] != areUpperJointsDisabled)
-                    for (var f = 0; 10 > f; f++) a.x = mouseXCurrent - heroJointPrevPositionsByHero[d][f].x, a.y = mouseYCurrent - heroJointPrevPositionsByHero[d][f].y, c = Vec2Mag(a), 20 > c && c < b && (b = c, draggedHeroIndex = d, draggedJointIndex = f, selectingHero = d)
+                    for (var f = 0; 10 > f; f++) {
+                        a.x = mouseXCurrent - heroJointPrevPositionsByHero[d][f].x;
+                        a.y = mouseYCurrent - heroJointPrevPositionsByHero[d][f].y;
+                        c = Vec2Mag(a);
+                        if (20 > c) {
+                            if (c < b) {
+                                b = c;
+                                draggedHeroIndex = d;
+                                draggedJointIndex = f;
+                                selectingHero = d;
+                            }
+                        }
+                    }
         }
-    } else wasMouseDown || (draggedHeroIndex = -1, draggedJointIndex = 0)
+    } else if (!wasMouseDown) {
+        draggedHeroIndex = -1; 
+        draggedJointIndex = 0;
+    }
 }
 mainWindow.fff = spawnHeroAttackPattern;
 

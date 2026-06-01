@@ -2943,47 +2943,101 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
     var l = _cx - _h - 10;
     _w = _cy + _w + 5;
     _h = _cx + _h + 10;
-    for (var n, w = new Vec2, B = new Vec2, M, J, y = -1, x = 0; x < partyMemberCount; x++)
-        if (heroUpperJointMode[x] != areUpperJointsDisabled && (n = heroJointPositionsByHero[x][2], !(n.x > _w || n.x < __unused || n.y > _h || n.y < l))) {
-            B.x = n.x - _cy;
-            B.y = n.y - _cx;
-            n = Vec2Mag(B);
-            M = (n >> 3) + 1;
-            Vec2Scale(B, 1 / M);
-            Vec2Set(w, _cy, _cx);
-            for (n = 0; n <= M; n++) {
-                J = getStageTileAt(w.x, w.y);
-                if (0 <= J && 29 >= J) break;
-                w.add(B)
-            }
-            if (!(n <= M)) {
-                y = dmgMin + floor(randFloat(dmgMax - dmgMin + 1));
-                M = 0 == heroBodyDrawStateByHero[x][2] ? 1 : -1;
-                J = 16711680;
-                heroHitFlashTimer[x] = 2;
-                0 == attackType ? y = max(y - heroMeleeDefensesFlatArray[x], 1) : 6 == attackType ? y = max(y - heroProjDefenseFlatArray[x], 1) : 1 <= attackType && (y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1));
-                randFloat(100) < heroDodgeChanceArray[x] && (y = 0, J = 16744576, heroHitFlashTimer[x] = 0);
-                1 == attackType && heroHasAccessoryEffect(x,
-                    accessoryMagicDamageReductionCol) && (y = max(y - countAccessoryLvlBonuses(x, accessoryMagicDamageReductionCol), 1));
-                if (2 == attackType) heroSkipTimer[x] = 120, heroSkipChancePercent[x] = auxValue, heroHasAccessoryEffect(x, accessoryStunChanceReductionCol) && (heroSkipChancePercent[x] = max(floor(heroSkipChancePercent[x] * (100 - countAccessoryLvlBonuses(x, accessoryStunChanceReductionCol)) / 100), 0));
-                else if (3 == attackType) heroHasAccessoryEffect(x, accessoryDamageNegationChanceCol) && randFloat(100) < countAccessoryLvlBonuses(x, accessoryDamageNegationChanceCol) && (y = 0, J = 16744576, heroHitFlashTimer[x] = 0);
-                else if (4 == attackType) {
-                    heroTimedDamageTimer[x] = auxValue;
-                    heroTimedDamageAmount[x] = y;
-                    heroHasAccessoryEffect(x, accessoryDebuffDurationReductionCol) && (heroTimedDamageTimer[x] = max(heroTimedDamageTimer[x] - 60 * countAccessoryLvlBonuses(x, accessoryDebuffDurationReductionCol), 0));
+    for (var n, w = new Vec2(), B = new Vec2(), M, J, y = -1, x = 0; x < partyMemberCount; x++) {
+        if (heroUpperJointMode[x] != areUpperJointsDisabled) {
+            n = heroJointPositionsByHero[x][2];
+            if (!(n.x > _w || n.x < __unused || n.y > _h || n.y < l)) {
+                B.x = n.x - _cy;
+                B.y = n.y - _cx;
+                n = Vec2Mag(B);
+                M = (n >> 3) + 1;
+                Vec2Scale(B, 1 / M);
+                Vec2Set(w, _cy, _cx);
+                for (n = 0; n <= M; n++) {
+                    J = getStageTileAt(w.x, w.y);
+                    if (0 <= J && 29 >= J) break;
+                    w.add(B);
+                }
+                if (!(n <= M)) {
+                    y = dmgMin + floor(randFloat(dmgMax - dmgMin + 1));
+                    M = 0 == heroBodyDrawStateByHero[x][2] ? 1 : -1;
+                    J = 16711680;
+                    heroHitFlashTimer[x] = 2;
+                    if (0 == attackType) {
+                        y = max(y - heroMeleeDefensesFlatArray[x], 1);
+                    } else {
+                        if (6 == attackType) {
+                            y = max(y - heroProjDefenseFlatArray[x], 1);
+                        } else {
+                            if (1 <= attackType) {
+                                y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1);
+                            }
+                        }
+                    }
+                    if (randFloat(100) < heroDodgeChanceArray[x]) {
+                        y = 0;
+                        J = 16744576;
+                        heroHitFlashTimer[x] = 0;
+                    }
+                    if (1 == attackType) {
+                        if (heroHasAccessoryEffect(x,
+                                accessoryMagicDamageReductionCol)) {
+                            y = max(y - countAccessoryLvlBonuses(x, accessoryMagicDamageReductionCol), 1);
+                        }
+                    }
+                    if (2 == attackType) {
+                        heroSkipTimer[x] = 120;
+                        heroSkipChancePercent[x] = auxValue;
+                        if (heroHasAccessoryEffect(x, accessoryStunChanceReductionCol)) {
+                            heroSkipChancePercent[x] = max(floor(heroSkipChancePercent[x] * (100 - countAccessoryLvlBonuses(x, accessoryStunChanceReductionCol)) / 100), 0);
+                        }
+                    } else
+                    if (3 == attackType) {
+                        if (heroHasAccessoryEffect(x, accessoryDamageNegationChanceCol)) {
+                            if (randFloat(100) < countAccessoryLvlBonuses(x, accessoryDamageNegationChanceCol)) {
+                                y = 0;
+                                J = 16744576;
+                                heroHitFlashTimer[x] = 0;
+                            }
+                        }
+                    } else
+                    if (4 == attackType) {
+                        heroTimedDamageTimer[x] = auxValue;
+                        heroTimedDamageAmount[x] = y;
+                        if (heroHasAccessoryEffect(x, accessoryDebuffDurationReductionCol)) {
+                            heroTimedDamageTimer[x] = max(heroTimedDamageTimer[x] - 60 * countAccessoryLvlBonuses(x, accessoryDebuffDurationReductionCol), 0);
+                        }
+                        y = x;
+                        continue;
+                    } else if (5 == attackType) {
+                        heroStatusTintTimer[x] = floor(auxValue / 10);
+                    }
+                    if (isBadgeIncompleteForCurrentStage(43)) {
+                        if (1 == attackType) {
+                            if (0 < heroSkipTimer[x]) {
+                                if (0 < heroTimedDamageTimer[x]) {
+                                    IncrementBadgeCount(43);
+                                }
+                            }
+                        }
+                    }
+                    partyLP[x] -= y;
+                    spawnPopup(heroJointPositionsByHero[x][0].x, heroJointPositionsByHero[x][0].y, M, y, 60, J);
+                    stage_partyDamageTaken += y;
+                    if (0 > partyLP[x])
+                        for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++)
+                            if (x != n) {
+                                partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]);
+                                spawnPopup(heroJointPositionsByHero[n][0].x, heroJointPositionsByHero[n][0].y, M, y, 60, J);
+                                stage_partyDamageTaken += y;
+                            }
                     y = x;
-                    continue
-                } else 5 == attackType && (heroStatusTintTimer[x] = floor(auxValue / 10));
-                isBadgeIncompleteForCurrentStage(43) && 1 == attackType && 0 < heroSkipTimer[x] && 0 < heroTimedDamageTimer[x] && IncrementBadgeCount(43);
-                partyLP[x] -= y;
-                spawnPopup(heroJointPositionsByHero[x][0].x, heroJointPositionsByHero[x][0].y, M, y, 60, J);
-                stage_partyDamageTaken += y;
-                if (0 > partyLP[x])
-                    for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++) x != n && (partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]), spawnPopup(heroJointPositionsByHero[n][0].x, heroJointPositionsByHero[n][0].y, M, y, 60, J), stage_partyDamageTaken += y);
-                y = x;
-                if (0 == stopOnHit) break
+                    if (0 == stopOnHit) break;
+                }
             }
-        } return y
+        }
+        return y;
+    }
 }
 mainWindow.fff = pickHeroJointUnderMouse;
 

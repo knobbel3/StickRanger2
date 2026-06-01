@@ -1449,27 +1449,28 @@ function drawCanvas() {
                 currentStage = lastStageIdx;
                 saveGame();
             }
-            } else if (30 == gameScreenState && (
-                100 > screenStateTimer && screenStateTimer++,
-                c = floor(255 * screenStateTimer / 100),
-                drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24),
-                    100 == screenStateTimer && isMouseClicked)) {
-            for (a = 0; 4 > a; a++) {
-                partyLP[a] = 1;
-                heroEmitCurrent[a] = 0;
-            }
-            screenFadeFactor = 0;
-            gameScreenState = 10;
-            currentStage = 1;
-            partySpawnXByHero[0] = 20;
-            partySpawnXByHero[1] = 28;
-            partySpawnXByHero[2] = 36;
-            partySpawnXByHero[3] = 44;
-            partySpawnYByHero[0] = 40;
-            partySpawnYByHero[1] = 40;
-            partySpawnYByHero[2] = 40;
-            partySpawnYByHero[3] = 40;
-            saveGame();
+            } else if (30 == gameScreenState) {
+                100 > screenStateTimer && screenStateTimer++;
+                c = floor(255 * screenStateTimer / 100);
+                drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24);
+                if (100 == screenStateTimer && isMouseClicked) {
+                    for (a = 0; 4 > a; a++) {
+                        partyLP[a] = 1;
+                        heroEmitCurrent[a] = 0;
+                    }
+                    screenFadeFactor = 0;
+                    gameScreenState = 10;
+                    currentStage = 1;
+                    partySpawnXByHero[0] = 20;
+                    partySpawnXByHero[1] = 28;
+                    partySpawnXByHero[2] = 36;
+                    partySpawnXByHero[3] = 44;
+                    partySpawnYByHero[0] = 40;
+                    partySpawnYByHero[1] = 40;
+                    partySpawnYByHero[2] = 40;
+                    partySpawnYByHero[3] = 40;
+                    saveGame();
+                }
             }
         }
         // updatePartyChecksum();

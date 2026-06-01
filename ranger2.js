@@ -4691,68 +4691,70 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
             16 * (g >> 3), 16, 16, h)) : f == enemyUpdateFunc10Idx ? (drawLine(_px + 5 * _scale, _py - 6 * _scale, _px + 8 * _scale, _py - 11 * _scale, p), drawLine(_px + 8 * _scale, _py - 11 * _scale, _px + 10 * _scale, _py - 3 * _scale, p), drawLine(_px + 10 * _scale, _py - 3 * _scale, _px + 5 * _scale, _py - 6 * _scale, p), drawRectOutlineCentered(_px + 0 * _scale, _py - 9 * _scale, 6 * _scale + 1, 6 * _scale + 1, p), drawEnemyScaledSprite(_px - 5 * _scale, _py - 13 * _scale, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == enemyStickmanBehaviorAltIdx && (l[0] = _px + 0 * _scale, n[0] = _py - 16 * _scale, l[1] = _px + 0 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 2 * _scale, n[2] = _py - 7 * _scale, l[3] = _px - 2 * _scale, n[3] = _py - 8 * _scale, l[4] = _px - 3 * _scale, n[4] = _py - 11 * _scale, l[5] = _px - 5 * _scale, n[5] = _py - 7 * _scale, l[6] = _px - 8 * _scale, n[6] = _py - 10 * _scale, l[7] = _px - 1 * _scale, n[7] = _py - 4 * _scale, l[8] = _px + 2 * _scale, n[8] = _py - 5 * _scale, l[9] = _px - 0 * _scale, n[9] = _py - 1 * _scale, l[10] = _px + 4 * _scale, n[10] = _py - 0 * _scale)
 }
 var projectileCount = 0,
-    projectileOwnerIdx = new Int32Array(1E3), // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
-    projectileJointPair = new Int32Array(1E3), // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
-    projectilePosition = Array(1E3); // jl, projectile position Vec2 — world position when free, local offset when attached.
+    projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
+    projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
+    projectilePosition = Array(1E3);                    // jl, projectile position Vec2 — world position when free, local offset when attached.
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectilePosition[iterIdxTemp_1] = new Vec2;
-var projectileVelocity = Array(1E3); // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
+var projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectileVelocity[iterIdxTemp_1] = new Vec2;
-var projectileImpactState = new Int32Array(1E3), // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
-    projectileDrawMode = new Int32Array(1E3), // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
-    projectileSpriteTileIndex = new Int32Array(1E3), // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
-    projectileTintColor = new Int32Array(1E3), // ol, packed RGBA tint used for projectile color/alpha (alpha scaled by life for fade-out).
+var projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
+    projectileDrawMode = new Int32Array(1E3),           // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
+    projectileSpriteTileIndex = new Int32Array(1E3),    // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
+    projectileTintColor = new Int32Array(1E3),          // ol, packed RGBA tint used for projectile color/alpha (alpha scaled by life for fade-out).
     
-    projectileSolidRenderMode = new Int32Array(1E3), // pl, projectile solid/blend render mode (used as isSolidRender with modes 0/1/2/3 selecting different compositing behavior).
-    projectileSpriteWidth = new Int32Array(1E3), // ql, projectile sprite/render width (pixels) passed to sprite/draw calls.
-    projectileSpriteHeight = new Int32Array(1E3), // rl, projectile sprite/render height (pixels) passed to sprite/draw calls.
+    projectileSolidRenderMode = new Int32Array(1E3),    // pl, projectile solid/blend render mode (used as isSolidRender with modes 0/1/2/3 selecting different compositing behavior).
+    projectileSpriteWidth = new Int32Array(1E3),        // ql, projectile sprite/render width (pixels) passed to sprite/draw calls.
+    projectileSpriteHeight = new Int32Array(1E3),       // rl, projectile sprite/render height (pixels) passed to sprite/draw calls.
     
-    projectileShapeMode = new Int32Array(1E3), // sl, projectile effect shape/mode for hit detection (0 = rectangular area, 1 = line/beam shape; passed as shapeMode to applyEffectToEnemies).
-    projectileHitboxWidth = new Int32Array(1E3), // tl, full hitbox width (pixels) passed to collision/effect routines.
-    projectileHitboxHeight = new Int32Array(1E3), // ul, full hitbox height (pixels) passed to collision/effect routines.
+    projectileShapeMode = new Int32Array(1E3),          // sl, projectile effect shape/mode for hit detection (0 = rectangular area, 1 = line/beam shape; passed as shapeMode to applyEffectToEnemies).
+    projectileHitboxWidth = new Int32Array(1E3),        // tl, full hitbox width (pixels) passed to collision/effect routines.
+    projectileHitboxHeight = new Int32Array(1E3),       // ul, full hitbox height (pixels) passed to collision/effect routines.
     
-    projectileSpawnDelayFrames = new Int32Array(1E3), // vl, frames to wait before the projectile becomes active (counts down each frame).
-    projectileHitCooldownFrames = new Int32Array(1E3), // wl, short frames of suppressed hit/impact processing after spawn/impact.
-    projectileImpactAge = new Int32Array(1E3), // xl, frames spent in impact/fade-out (incremented while impact-state == 1).
-    projectileImpactLifetime = new Int32Array(1E3), // yl, frames before an impacted projectile is deleted (impact lifetime).
+    projectileSpawnDelayFrames = new Int32Array(1E3),   // vl, frames to wait before the projectile becomes active (counts down each frame).
+    projectileHitCooldownFrames = new Int32Array(1E3),  // wl, short frames of suppressed hit/impact processing after spawn/impact.
+    projectileImpactAge = new Int32Array(1E3),          // xl, frames spent in impact/fade-out (incremented while impact-state == 1).
+    projectileImpactLifetime = new Int32Array(1E3),     // yl, frames before an impacted projectile is deleted (impact lifetime).
     projectileAttachJointIndex = new Float32Array(1E3), // zl, attachment/joint index mode (0 = free/gravity; -1 = special; >0 = index into owner joint positions used for seeking/attachment).
     
-    projectileAcceleration = new Float32Array(1E3), // Al, per-projectile acceleration scalar used for gravity or homing (applied as .01 * Al to velocity each update).
-    projectileVelocityScale = new Int32Array(1E3), // Bl, per-projectile velocity scale applied each update (velocity multiplied by .01 * Bl).
-    projectileCustomIntA = new Int32Array(1E3), // Cl, integer per-projectile extra parameter assigned at spawn but not referenced elsewhere (reserved/unused in current code).
-    projectileTileCollisionMode = new Int32Array(1E3), // Dl, per-projectile tile-collision mode controlling how projectiles interact with stage tiles (observed modes: 0 triggers impact, 2/stick-to-tile, 3=bounce, 4=clamp/zero-vel).
-    projectileHomingRange = new Int32Array(1E3), // El, homing/search radius for projectiles; when >0 the projectile searches for targets within El and adjusts velocity toward them.
-    projectileCustomIntB = new Int32Array(1E3), // Fl, integer per-projectile extra parameter assigned at spawn but not observed used elsewhere (reserved/unused in current code).
-    projectileMaxTargets = new Int32Array(1E3), // Gl, per-projectile effect maxTargets passed to applyEffectToEnemies when the projectile hits (limits how many enemies the projectile affects).
+    projectileAcceleration = new Float32Array(1E3),     // Al, per-projectile acceleration scalar used for gravity or homing (applied as .01 * Al to velocity each update).
+    projectileVelocityScale = new Int32Array(1E3),      // Bl, per-projectile velocity scale applied each update (velocity multiplied by .01 * Bl).
+    projectileCustomIntA = new Int32Array(1E3),         // Cl, integer per-projectile extra parameter assigned at spawn but not referenced elsewhere (reserved/unused in current code).
+    projectileTileCollisionMode = new Int32Array(1E3),  // Dl, per-projectile tile-collision mode controlling how projectiles interact with stage tiles (observed modes: 0 triggers impact, 2/stick-to-tile, 3=bounce, 4=clamp/zero-vel).
+    projectileHomingRange = new Int32Array(1E3),        // El, homing/search radius for projectiles; when >0 the projectile searches for targets within El and adjusts velocity toward them.
+    projectileCustomIntB = new Int32Array(1E3),         // Fl, integer per-projectile extra parameter assigned at spawn but not observed used elsewhere (reserved/unused in current code).
+    projectileMaxTargets = new Int32Array(1E3),         // Gl, per-projectile effect maxTargets passed to applyEffectToEnemies when the projectile hits (limits how many enemies the projectile affects).
 
-    projectileDamageMin = new Int32Array(1E3), // Hl
-    projectileDamageMax = new Int32Array(1E3), // Il
-    Jl = new Int32Array(1E3), // Jl
-    Kl = new Int32Array(1E3), // Kl
-    Ll = new Int32Array(1E3), // Ll
-    Ml = new Int32Array(1E3), // Ml
-    Nl = new Int32Array(1E3), // Nl
+    projectileDamageMin = new Int32Array(1E3),          // Hl, projectile effect damage minimum (passed as damageMin to applyEffectToEnemies / damagePartyMemberInArea)
+    projectileDamageMax = new Int32Array(1E3),          // Il, projectile effect damage maximum (passed as damageMax to applyEffectToEnemies / damagePartyMemberInArea)
+    projectileEffectType = new Int32Array(1E3),         // Jl, projectile effect type (0=phys,1=fire,2=ice,3=light,4=poison - selects damage/effect branch in applyEffectToEnemies)
+    projectileEffectDuration = new Int32Array(1E3),     // Kl, projectile effect duration/parameter (frames passed as effectDuration to applyEffectToEnemies)
+    projectileApplyMode = new Int32Array(1E3),          // Ll, projectile hit/apply mode flag (controls whether effect call is "check-only" vs applies damage; certain values also alter impact timing)
+    projectileImpactSpawnMode = new Int32Array(1E3),    // Ml, projectile impact/spawn mode (selects child-spawn / impact pattern used when the projectile hits)
+    projectileSpawnParam = new Int32Array(1E3),         // Nl, projectile spawn parameter (used as angular spread or probability threshold depending on Ml)
 
-    Ol = new Int32Array(1E3), // Ol
-    Pl = new Int32Array(1E3), // Pl
-    Ql = new Int32Array(1E3), // Ql
-    Rl = new Int32Array(1E3), // Rl
-    Sl = new Int32Array(1E3), // Sl
-    Tl = new Int32Array(1E3), // Tl
-    Ul = new Int32Array(1E3), // Ul
-    Vl = new Int32Array(1E3), // Vl
-    Wl = new Int32Array(1E3), // Wl
-    Xl = new Int32Array(1E3), // Xl
-    Yl = new Int32Array(1E3), // Yl
-    Zl = new Int32Array(1E3), // Zl
-    $l = new Int32Array(1E3), // $l
-    am = new Int32Array(1E3), // am
-    bm = new Int32Array(1E3), // bm
-    cm = new Int32Array(1E3), // cm
-    dm = new Int32Array(1E3), // dm
-    em = new Int32Array(1E3), // em
-    fm = new Int32Array(1E3), // fm
-    gm = new Int32Array(1E3), // gm
-    hm = new Int32Array(1E3);
+    // Per-projectile extra integer parameters forwarded from item/projectile template
+    projectileTmplSpeed = new Int32Array(1E3),          // Ol, template itemProjectileSpeedCol forwarded: projectile base speed from item template; carried into spawn and child-spawns.
+    projectileTmplElementType = new Int32Array(1E3),    // Pl, template itemElementTypeCol forwarded: item element/type (0=phys,1=fire,2=ice,3=light,4=poison); used by effect/aux logic and forwarded to child spawns.
+    projectileTmplElementBonus = new Int32Array(1E3),   // Ql, modified itemIceBonusPercent (adjusted by accessories) forwarded: per-template element bonus percent applied to effect calculations; carried into projectile and child spawns.
+    projectileTmplParam1 = new Int32Array(1E3),         // Rl, template itemProjectileParam1Col forwarded: template-specific integer parameter (semantics defined by projectile template); passed to child-spawns.
+    projectileTmplAttackMode = new Int32Array(1E3),     // Sl, template itemAttackModeCol forwarded: attack mode flag from item (influences attack/spawn behaviour); carried into projectile and children.
+    projectileTmplParam2 = new Int32Array(1E3),         // Tl, template itemProjectileParam2Col forwarded: second template-specific integer parameter; passed through to spawn/impact handlers.
+    projectileTmplAux1 = new Int32Array(1E3),           // Ul, template itemProjectileAux1Col forwarded: auxiliary template integer A; forwarded into spawned children.
+    projectileTmplAux2 = new Int32Array(1E3),           // Vl, template itemProjectileAux2Col forwarded: auxiliary template integer B; forwarded into spawned children.
+    projectileTmplAuxValueA = new Int32Array(1E3),      // Wl, template itemAuxValueACol forwarded: auxiliary value A from item (template-defined use); carried into projectile and child spawns.
+    projectileTmplAuxValueB = new Int32Array(1E3),      // Xl, per-projectile template param forwarded to child spawns.
+    projectileTmplAuxValueC = new Int32Array(1E3),      // Yl, template itemAuxValueBCol forwarded: auxiliary value B from item; forwarded into spawn/impact calls.
+    projectileTmplDisplayStatA = new Int32Array(1E3),   // Zl, template itemDisplayStatACol forwarded: display/stat A from item (often shown in UI or used by template logic); forwarded to children.
+    projectileTmplAuxValueD = new Int32Array(1E3),      // $l, template itemAuxValueDCol forwarded: auxiliary value D from item; carried through to spawn/impact handlers.
+    projectileTmplFlag = new Int32Array(1E3),           // am, template itemProjectileFlagCol forwarded: bitfield/flag set on the item’s projectile template altering spawn/impact behaviours; forwarded into projectile and child spawns.
+    projectileTmplParamTime = new Int32Array(1E3),      // bm, template itemProjectileParamTimeCol forwarded: time/threshold parameter used by some impact/spawn modes; carried from item -> spawn and forwarded into child-spawn calls.
+    projectileTmplHitCount = new Int32Array(1E3),       // cm, template itemHitCountCol forwarded: hit/count parameter from item (used as per-template hit-count or chance for spawned children).
+    projectileTmplEffectMode = new Int32Array(1E3),     // dm, template itemProjectileEffectModeCol forwarded: per-template effect-mode flag (selects specialised effect/spawn handling); passed from item into projectile and into child spawns.
+    projectileTmplStatA = new Int32Array(1E3),          // em, template itemStatACol (modified) forwarded: per-item stat A (modified by hero/accessories) carried into projectile and child spawns for template-specific behaviors.
+    projectileTmplExtraStat1 = new Int32Array(1E3),     // fm, template itemExtraStatCol1 forwarded: extra/template stat carried through to projectile and child-spawns (template-defined use).
+    
+    projectileChildCount = new Int32Array(1E3),         // gm, child‑spawn count (or chance threshold in some impact modes); used as loop bound and probability check.
+    projectileChildSpeed = new Int32Array(1E3);         // hm, scalar used to set spawned child projectile velocity/scale (interpreted as speed/magnitude)
 mainWindow.fff = clearProjectiles;
 
 function clearProjectiles() { // im
@@ -4780,15 +4782,15 @@ function spawnProjectile(
     projectileAcceleration[projectileCount] = U, projectileVelocityScale[projectileCount] = na, projectileCustomIntA[projectileCount] = Fa, 
     projectileTileCollisionMode[projectileCount] = Ga, projectileHomingRange[projectileCount] = Ca, projectileCustomIntB[projectileCount] = ua, 
     projectileMaxTargets[projectileCount] = fb, projectileDamageMin[projectileCount] = ob, projectileDamageMax[projectileCount] = Bb, 
-    Jl[projectileCount] = gc, Kl[projectileCount] = Qb, Ll[projectileCount] = Rb, 
-    Ml[projectileCount] = gb, Nl[projectileCount] = jb, Ol[projectileCount] = La, 
-    Pl[projectileCount] = hc, Ql[projectileCount] = Ib, Rl[projectileCount] = ic, 
-    Sl[projectileCount] = jc, Tl[projectileCount] = kc, Ul[projectileCount] = lc, 
-    Vl[projectileCount] = mc, Wl[projectileCount] = nc, Xl[projectileCount] = oc, 
-    Yl[projectileCount] = pc, Zl[projectileCount] = qc, $l[projectileCount] = rc, 
-    am[projectileCount] = sc, bm[projectileCount] = tc, cm[projectileCount] = uc, 
-    dm[projectileCount] = vc, em[projectileCount] = wc, fm[projectileCount] = xc, 
-    gm[projectileCount] = yc, hm[projectileCount] = zc, 
+    projectileEffectType[projectileCount] = gc, projectileEffectDuration[projectileCount] = Qb, projectileApplyMode[projectileCount] = Rb, 
+    projectileImpactSpawnMode[projectileCount] = gb, projectileSpawnParam[projectileCount] = jb, projectileTmplSpeed[projectileCount] = La, 
+    projectileTmplElementType[projectileCount] = hc, projectileTmplElementBonus[projectileCount] = Ib, projectileTmplParam1[projectileCount] = ic, 
+    projectileTmplAttackMode[projectileCount] = jc, projectileTmplParam2[projectileCount] = kc, projectileTmplAux1[projectileCount] = lc, 
+    projectileTmplAux2[projectileCount] = mc, projectileTmplAuxValueA[projectileCount] = nc, projectileTmplAuxValueB[projectileCount] = oc, 
+    projectileTmplAuxValueC[projectileCount] = pc, projectileTmplDisplayStatA[projectileCount] = qc, projectileTmplAuxValueD[projectileCount] = rc, 
+    projectileTmplFlag[projectileCount] = sc, projectileTmplParamTime[projectileCount] = tc, projectileTmplHitCount[projectileCount] = uc, 
+    projectileTmplEffectMode[projectileCount] = vc, projectileTmplStatA[projectileCount] = wc, projectileTmplExtraStat1[projectileCount] = xc, 
+    projectileChildCount[projectileCount] = yc, projectileChildSpeed[projectileCount] = zc, 
     projectileCount++
 }
 mainWindow.fff = deleteProjectile;
@@ -4822,32 +4824,32 @@ function deleteProjectile(projIdx) { // jm
     projectileMaxTargets[projIdx] = projectileMaxTargets[projectileCount - 1];
     projectileDamageMin[projIdx] = projectileDamageMin[projectileCount - 1];
     projectileDamageMax[projIdx] = projectileDamageMax[projectileCount - 1];
-    Jl[projIdx] = Jl[projectileCount - 1];
-    Kl[projIdx] = Kl[projectileCount - 1];
-    Ll[projIdx] = Ll[projectileCount - 1];
-    Ml[projIdx] = Ml[projectileCount - 1];
-    Nl[projIdx] = Nl[projectileCount - 1];
-    Ol[projIdx] = Ol[projectileCount - 1];
-    Pl[projIdx] = Pl[projectileCount - 1];
-    Ql[projIdx] = Ql[projectileCount - 1];
-    Rl[projIdx] = Rl[projectileCount - 1];
-    Sl[projIdx] = Sl[projectileCount - 1];
-    Tl[projIdx] = Tl[projectileCount - 1];
-    Ul[projIdx] = Ul[projectileCount - 1];
-    Vl[projIdx] = Vl[projectileCount - 1];
-    Wl[projIdx] = Wl[projectileCount - 1];
-    Xl[projIdx] = Xl[projectileCount - 1];
-    Yl[projIdx] = Yl[projectileCount - 1];
-    Zl[projIdx] = Zl[projectileCount - 1];
-    $l[projIdx] = $l[projectileCount - 1];
-    am[projIdx] = am[projectileCount - 1];
-    bm[projIdx] = bm[projectileCount - 1];
-    cm[projIdx] = cm[projectileCount - 1];
-    dm[projIdx] = dm[projectileCount - 1];
-    em[projIdx] = em[projectileCount - 1];
-    fm[projIdx] = fm[projectileCount - 1];
-    gm[projIdx] = gm[projectileCount - 1];
-    hm[projIdx] = hm[projectileCount - 1];
+    projectileEffectType[projIdx] = projectileEffectType[projectileCount - 1];
+    projectileEffectDuration[projIdx] = projectileEffectDuration[projectileCount - 1];
+    projectileApplyMode[projIdx] = projectileApplyMode[projectileCount - 1];
+    projectileImpactSpawnMode[projIdx] = projectileImpactSpawnMode[projectileCount - 1];
+    projectileSpawnParam[projIdx] = projectileSpawnParam[projectileCount - 1];
+    projectileTmplSpeed[projIdx] = projectileTmplSpeed[projectileCount - 1];
+    projectileTmplElementType[projIdx] = projectileTmplElementType[projectileCount - 1];
+    projectileTmplElementBonus[projIdx] = projectileTmplElementBonus[projectileCount - 1];
+    projectileTmplParam1[projIdx] = projectileTmplParam1[projectileCount - 1];
+    projectileTmplAttackMode[projIdx] = projectileTmplAttackMode[projectileCount - 1];
+    projectileTmplParam2[projIdx] = projectileTmplParam2[projectileCount - 1];
+    projectileTmplAux1[projIdx] = projectileTmplAux1[projectileCount - 1];
+    projectileTmplAux2[projIdx] = projectileTmplAux2[projectileCount - 1];
+    projectileTmplAuxValueA[projIdx] = projectileTmplAuxValueA[projectileCount - 1];
+    projectileTmplAuxValueB[projIdx] = projectileTmplAuxValueB[projectileCount - 1];
+    projectileTmplAuxValueC[projIdx] = projectileTmplAuxValueC[projectileCount - 1];
+    projectileTmplDisplayStatA[projIdx] = projectileTmplDisplayStatA[projectileCount - 1];
+    projectileTmplAuxValueD[projIdx] = projectileTmplAuxValueD[projectileCount - 1];
+    projectileTmplFlag[projIdx] = projectileTmplFlag[projectileCount - 1];
+    projectileTmplParamTime[projIdx] = projectileTmplParamTime[projectileCount - 1];
+    projectileTmplHitCount[projIdx] = projectileTmplHitCount[projectileCount - 1];
+    projectileTmplEffectMode[projIdx] = projectileTmplEffectMode[projectileCount - 1];
+    projectileTmplStatA[projIdx] = projectileTmplStatA[projectileCount - 1];
+    projectileTmplExtraStat1[projIdx] = projectileTmplExtraStat1[projectileCount - 1];
+    projectileChildCount[projIdx] = projectileChildCount[projectileCount - 1];
+    projectileChildSpeed[projIdx] = projectileChildSpeed[projectileCount - 1];
     projectileCount--
 }
 mainWindow.fff = moveProjectileWithCollision;
@@ -4882,41 +4884,41 @@ function updateProjectiles() { // Bg
             0 > projectileJointPair[a] ? b = moveProjectileWithCollision(a, d) : projectilePosition[a].add(projectileVelocity[a]);
             0 > projectileJointPair[a] ? (h.set(projectilePosition[a]), k.set(projectileVelocity[a])) : (c = projectileOwnerIdx[a], p = projectileJointPair[a] >> 8, t = projectileJointPair[a] & 255, l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], projectilePosition[a]), k.set(projectileVelocity[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + l[c][p].x, h.y = f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + l[c][p].y, k.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y, k.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y));
             p = 1;
-            1 == Jl[a] && 0 == Ml[a] &&
-                Kl[a] <= randFloat(60) && (p = 0);
+            1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a] &&
+                projectileEffectDuration[a] <= randFloat(60) && (p = 0);
             0 < projectileHitCooldownFrames[a] && (projectileHitCooldownFrames[a]--, p = 0);
             c = -1;
             if (1 == p) {
                 c = 0;
-                if (1 == Ll[a] || 2 == Ll[a]) c = 1;
-                c = 0 <= projectileOwnerIdx[a] ? applyEffectToEnemies(c, projectileShapeMode[a], projectileMaxTargets[a], Jl[a], Kl[a], projectileDamageMin[a], projectileDamageMax[a], h, k, projectileHitboxWidth[a], projectileHitboxHeight[a]) : damagePartyMemberInArea(0, projectileMaxTargets[a], Jl[a], Kl[a], projectileDamageMin[a], projectileDamageMax[a], h.x, h.y, projectileHitboxWidth[a], projectileHitboxHeight[a])
+                if (1 == projectileApplyMode[a] || 2 == projectileApplyMode[a]) c = 1;
+                c = 0 <= projectileOwnerIdx[a] ? applyEffectToEnemies(c, projectileShapeMode[a], projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h, k, projectileHitboxWidth[a], projectileHitboxHeight[a]) : damagePartyMemberInArea(0, projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h.x, h.y, projectileHitboxWidth[a], projectileHitboxHeight[a])
             }
-            1 == Jl[a] && 0 == Ml[a] && (c = -1);
-            4 == Jl[a] && 99 == projectileMaxTargets[a] && (c = -1);
-            2 == Ll[a] && 1 == projectileImpactAge[a] && (b = 1);
+            1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a] && (c = -1);
+            4 == projectileEffectType[a] && 99 == projectileMaxTargets[a] && (c = -1);
+            2 == projectileApplyMode[a] && 1 == projectileImpactAge[a] && (b = 1);
             if (1 == b || -1 != c)
-                if (projectileImpactState[a] = 1, projectileImpactAge[a] = 0, 1 <= Ml[a] && 9 >= Ml[a])
-                    for (b = 0; b < gm[a]; b++) 1 == Ml[a] ? Vec2Set(d, 0, 0) : 2 == Ml[a] || 3 == Ml[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, hm[a]), d.x = rotationLUT[c][0] * p, d.y = rotationLUT[c][1] * p, 0 < d.y && 2 == Ml[a] && (d.y = -d.y)) : 4 == Ml[a] && (Vec2Norm(k),
-                        Vec2Scale(k, randFloatRange(.1, .1 * Nl[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * hm[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                else if (-1 != c && 20 <= Ml[a] && 29 >= Ml[a])
-                    for (b = 0; b < gm[a]; b++) 20 == Ml[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-Nl[a], Nl[a]) & 511, d.x = rotationLUT[c][0] * hm[a], d.y = -rotationLUT[c][1] * hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, Ol[a], Pl[a], Ql[a],
-                        Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], Ll[a], Ml[a], Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], gm[a], hm[a]);
+                if (projectileImpactState[a] = 1, projectileImpactAge[a] = 0, 1 <= projectileImpactSpawnMode[a] && 9 >= projectileImpactSpawnMode[a])
+                    for (b = 0; b < projectileChildCount[a]; b++) 1 == projectileImpactSpawnMode[a] ? Vec2Set(d, 0, 0) : 2 == projectileImpactSpawnMode[a] || 3 == projectileImpactSpawnMode[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, projectileChildSpeed[a]), d.x = rotationLUT[c][0] * p, d.y = rotationLUT[c][1] * p, 0 < d.y && 2 == projectileImpactSpawnMode[a] && (d.y = -d.y)) : 4 == projectileImpactSpawnMode[a] && (Vec2Norm(k),
+                        Vec2Scale(k, randFloatRange(.1, .1 * projectileSpawnParam[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * projectileChildSpeed[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                else if (-1 != c && 20 <= projectileImpactSpawnMode[a] && 29 >= projectileImpactSpawnMode[a])
+                    for (b = 0; b < projectileChildCount[a]; b++) 20 == projectileImpactSpawnMode[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]) & 511, d.x = rotationLUT[c][0] * projectileChildSpeed[a], d.y = -rotationLUT[c][1] * projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a],
+                        projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], projectileApplyMode[a], projectileImpactSpawnMode[a], projectileSpawnParam[a], projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], projectileTmplExtraStat1[a], projectileChildCount[a], projectileChildSpeed[a]);
             0 < projectileImpactAge[a] && projectileImpactAge[a]--;
             0 == projectileImpactAge[a] && (projectileImpactState[a] = 1);
-            if (10 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a],
-                projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (11 == Ml[a]) randFloat(60) < gm[a] && (Vec2Norm(k), p = randFloatRange(-Nl[a], Nl[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (12 == Ml[a]) randFloat(60) < gm[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * Nl[a], .1 * hm[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y,
-                k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (13 == Ml[a]) {
-                if (randFloat(60) < Nl[a])
-                    for (c = floor(randFloat(512)), b = 0; b < gm[a]; b++) c = c + floor(512 / gm[a]) & 511, p = .1 * hm[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0,
+            if (10 == projectileImpactSpawnMode[a]) randFloat(60) < projectileChildCount[a] && (Vec2Norm(k), Vec2Scale(k, .1 * projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a],
+                projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            else if (11 == projectileImpactSpawnMode[a]) randFloat(60) < projectileChildCount[a] && (Vec2Norm(k), p = randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            else if (12 == projectileImpactSpawnMode[a]) randFloat(60) < projectileChildCount[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * projectileSpawnParam[a], .1 * projectileChildSpeed[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y,
+                k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            else if (13 == projectileImpactSpawnMode[a]) {
+                if (randFloat(60) < projectileSpawnParam[a])
+                    for (c = floor(randFloat(512)), b = 0; b < projectileChildCount[a]; b++) c = c + floor(512 / projectileChildCount[a]) & 511, p = .1 * projectileChildSpeed[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-            } else if (14 == Ml[a]) {
-                if (randFloat(60) < Nl[a] && (c = findEnemyInArea(h.x, h.y, 200, 200), -1 != c))
-                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, Vec2Norm(d), b = 0; b < gm[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(gm[a] - 1), k.x = d.x * hm[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * hm[a] * .1 + rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-            } else 15 == Ml[a] && randFloat(60) < gm[a] &&
-                (Vec2Norm(k), Vec2Scale(k, hm[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], 0, 0, fm[a], projectileDamageMin[a], projectileDamageMax[a], Jl[a], Kl[a], Ll[a], 20, Nl[a], Ol[a], Pl[a], Ql[a], Rl[a], Sl[a], Tl[a], Ul[a], Vl[a], Wl[a], Xl[a], Yl[a], Zl[a], $l[a], am[a], bm[a], cm[a], dm[a], em[a], fm[a], 1, hm[a]))
+            } else if (14 == projectileImpactSpawnMode[a]) {
+                if (randFloat(60) < projectileSpawnParam[a] && (c = findEnemyInArea(h.x, h.y, 200, 200), -1 != c))
+                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, Vec2Norm(d), b = 0; b < projectileChildCount[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(projectileChildCount[a] - 1), k.x = d.x * projectileChildSpeed[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * projectileChildSpeed[a] * .1 + rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            } else 15 == projectileImpactSpawnMode[a] && randFloat(60) < projectileChildCount[a] &&
+                (Vec2Norm(k), Vec2Scale(k, projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], projectileApplyMode[a], 20, projectileSpawnParam[a], projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], projectileTmplExtraStat1[a], 1, projectileChildSpeed[a]))
         }
 }
 mainWindow.fff = drawProjectiles;

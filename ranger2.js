@@ -1655,13 +1655,25 @@ function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // 
     var h;
     if (buttonCheck(_x, _y, _width, _height))
         if (fillEmptyPixelsRect(_x, _y, _width, _height, 6684672), isMouseClicked && 0 != _itemId) {
-            (inventoryUIVisible = inventoryUIVisible && inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx ] == _itemId ? false : true) && (shrineUIVisible = false);
+            if (inventoryUIVisible = inventoryUIVisible && inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx] == _itemId ? false : true) {
+                shrineUIVisible = false;
+            }
             for (_x = 0; _x < inventoryItemLists.length; _x++) {
                 for (h = 0; h < inventoryItemLists[_x].length && inventoryItemLists[_x][h] != _itemId; h++);
-                if (inventoryItemLists[_x][h] == _itemId) break
+                if (inventoryItemLists[_x][h] == _itemId) break;
             }
-            _x != inventoryItemLists.length && (inventoryTabIdx = _x, inventoryPageIdx = floor(h / 28), inventorySlotIdx  = h % 28)
-        } else isMouseClicked && ((inventoryUIVisible = inventoryUIVisible && inventoryTabIdx == _pageIdx ? false : true) && (shrineUIVisible = false), inventoryTabIdx = _pageIdx, inventorySlotIdx  = inventoryPageIdx = 0)
+            if (_x != inventoryItemLists.length) {
+                inventoryTabIdx = _x;
+                inventoryPageIdx = floor(h / 28);
+                inventorySlotIdx = h % 28;
+            }
+        } else if (isMouseClicked) {
+        if (inventoryUIVisible = inventoryUIVisible && inventoryTabIdx == _pageIdx ? false : true) {
+            shrineUIVisible = false;
+        }
+        inventoryTabIdx = _pageIdx;
+        inventorySlotIdx = inventoryPageIdx = 0;
+    }
 }
 mainWindow.fff = drawGameUI;
 

@@ -679,8 +679,18 @@ function IncrementBadgeCount(badgeIndex) {
         badgePopupTimer = 120;
         var b = 0;
         badgeIndex = badgeList[badgeIndex][2];
-        for (var c = 0; c < badgeList.length; c++) badgeList[c] && badgeIndex == badgeList[c][2] && badgeCounterArray[c] == badgeList[c][4] && b++;
-        5 == b && (itemForgeLvls[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1, itemIsNew[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1)
+        for (var c = 0; c < badgeList.length; c++)
+            if (badgeList[c]) {
+                if (badgeIndex == badgeList[c][2]) {
+                    if (badgeCounterArray[c] == badgeList[c][4]) {
+                        b++;
+                    }
+                }
+            } if (
+            5 == b) {
+            itemForgeLvls[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1;
+            itemIsNew[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1;
+        }
     }
 }
 var shrineRewardClaimSlotCount = 10, // Ec

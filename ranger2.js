@@ -4511,19 +4511,59 @@ function drawGameStage() {
                 t = f.h - g;
                 g = k + g;
                 for (h = k + 640 * h; k < h; k += p, g += 640, d += t)
-                    for (; k < g; k++, d++) l = f.g[d], -1 != l && (frameBufferArray[k] = l)
+                    for (; k < g; k++, d++) {
+                        l = f.g[d];
+                        if (-1 != l) {
+                            frameBufferArray[k] = l;
+                        }
+                    }
             } for (c = 0; c < stageHeight; c++)
-        for (b = 1; b < stageWidth - 1; b++) 30 == stageTileData[c][b] ? (30 != stageTileData[c][b - 1] && fillEmptyPixelsRect(8 * b - 2, 8 * c + 6, 2, 2, 21913), 30 != stageTileData[c][b + 1] && fillEmptyPixelsRect(8 * b + 8, 8 * c + 6, 2, 2, 21913)) : 31 == stageTileData[c][b] && (31 != stageTileData[c][b - 1] && fillEmptyPixelsRect(8 * b - 2, 8 * c, 2, 8, 21913), 31 != stageTileData[c][b + 1] && fillEmptyPixelsRect(8 * b + 8, 8 * c, 2, 8, 21913));
-    if (1 == currentStage) 1 == isStageReachedArray[6] && (b = 184 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-    else if (6 == currentStage) b = 304 + randFloatRange(4, 28), c = 192 + randFloatRange(3, 7), spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    else if (14 == currentStage) b = 2 * rotationLUT[gameFrameCounter >> 2 & 511][0], c = 2 * rotationLUT[gameFrameCounter >> 2 & 511][1], spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    else if (17 == currentStage) 70 == gameFrameCounter % 360 && spawnProjectile(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    else if (18 == currentStage)
+        for (b = 1; b < stageWidth - 1; b++)
+            if (30 == stageTileData[c][b]) {
+                if (30 != stageTileData[c][b - 1]) {
+                    fillEmptyPixelsRect(8 * b - 2, 8 * c + 6, 2, 2, 21913);
+                }
+                if (30 != stageTileData[c][b + 1]) {
+                    fillEmptyPixelsRect(8 * b + 8, 8 * c + 6, 2, 2, 21913);
+                }
+            } else {
+                if (31 == stageTileData[c][b]) {
+                    if (31 != stageTileData[c][b - 1]) {
+                        fillEmptyPixelsRect(8 * b - 2, 8 * c, 2, 8, 21913);
+                    }
+                    if (31 != stageTileData[c][b + 1]) {
+                        fillEmptyPixelsRect(8 * b + 8, 8 * c, 2, 8, 21913);
+                    }
+                }
+            }
+    if (1 == currentStage) {
+        if (1 == isStageReachedArray[6]) {
+            b = 184 + randFloatRange(4, 28);
+            c = 192 + randFloatRange(3, 7);
+            spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+    } else
+    if (6 == currentStage) {
+        b = 304 + randFloatRange(4, 28);
+        c = 192 + randFloatRange(3, 7);
+        spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    } else
+    if (14 == currentStage) {
+        b = 2 * rotationLUT[gameFrameCounter >> 2 & 511][0];
+        c = 2 * rotationLUT[gameFrameCounter >> 2 & 511][1];
+        spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    } else
+    if (17 == currentStage) {
+        if (70 == gameFrameCounter % 360) {
+            spawnProjectile(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+    } else
+    if (18 == currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
             for (h = 0; h < partyMemberCount && !(b = clamp(heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
             h == partyMemberCount || gameFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
 }
 var stage_partyDamageTaken = 0, // Og, accumulated party LP lost this stage (used for badges and payouts).
@@ -4546,17 +4586,21 @@ function initStageState() { // cj
             d = randFloat(2.1);
             d = 3 + ~~(d * d * d);
             if (32 == stageTileData[d][c]) {
-                fillStageTilesRect(c, d, c, d, 39); 
+                fillStageTilesRect(c, d, c, d, 39);
                 a++;
             }
         }
-        isBadgeIncompleteForCurrentStage(67) && 99 == b && IncrementBadgeCount(67)
-    } else if (19 == currentStage){
+        if (isBadgeIncompleteForCurrentStage(67)) {
+            if (99 == b) {
+                IncrementBadgeCount(67);
+            }
+        }
+    } else if (19 == currentStage) {
         let b = [14, 13, 13, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 19, 19, 19, 17, 17, 17, 0, 0, 0, 0, 17, 17, 17, 19, 19, 19, 20];
         for (a = 0; 39 > a; a++) {
             if (0 != b[a]) {
                 spawnEnemy(19 + a, b[a], 88, 6);
-                activeSpawnCountByGroup[6]++; 
+                activeSpawnCountByGroup[6]++;
                 totalSpawnedCountByGroup[6]++;
             }
         }

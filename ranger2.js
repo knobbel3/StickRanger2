@@ -3083,25 +3083,25 @@ mainWindow.fff = spawnHeroAttackPattern;
 
 function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
     console.log(`spawnHeroAttackPattern(${heroIdx}, ${limbDesc}, ${itemSlot}, ${originX}, ${originY}, ${targetEnemyIdx})`);
-    let projDir = new Vec2,
+    let projDir = new Vec2(),
         selectedItemIdx = partyEquipmentTable[heroIdx][itemSlot],
         selectedItem = itemList[selectedItemIdx],
         t = selectedItem[itemLimbSelectionCol];
     switch (t) {
         case 0:
-            t = -1
+            t = -1;
             break;
         case 1:
-            t = limbDesc
+            t = limbDesc;
             break;
         case 2:
-            t = limbDesc & 65280 | 1
+            t = limbDesc & 65280 | 1;
             break;
         case 3:
-            t = limbDesc & 65280 | limbDesc >> 8
+            t = limbDesc & 65280 | limbDesc >> 8;
             break;
         case 5:
-            t = 257
+            t = 257;
             break;
     }
     var l = selectedItem[itemProjectileDrawWidthCol],
@@ -3124,7 +3124,9 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
     }
     var ua = selectedItem[projectileAuxParamCol],
         fb = selectedItem[itemProjectileMaxTargetsCol];
-    2 == fb && (fb = limbDesc >> 8);
+    if (2 == fb) {
+        fb = limbDesc >> 8;
+    }
     limbDesc = selectedItem[itemProjectileDamageMinCol];
 
     var ob = selectedItem[itemProjectileDamageMaxCol],
@@ -3135,16 +3137,28 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         gb = minAtkArray[4 * itemSlot + heroIdx],
         jb = maxAtkArray[4 * itemSlot + heroIdx];
     if (heroHasAccessoryEffect(heroIdx, accessoryEffectPhysicalProcChanceCol) && 0 == selectedItem[itemElementTypeCol] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, accessoryEffectPhysicalProcChanceCol)) {
-        gb = floor(gb *  (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
+        gb = floor(gb * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
         jb = floor(jb * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
     }
     itemSlot = atkCountArray[4 * itemSlot + heroIdx];
     var La = selectedItem[itemProjectileSpeedCol],
         hc = selectedItem[itemElementTypeCol],
         Ib = getModifiedStatVal(heroIdx, selectedItemIdx, itemIceBonusPercentCol);
-    heroHasAccessoryEffect(heroIdx, accessoryEffectFireStatBonusCol) && 1 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectFireStatBonusCol));
-    heroHasAccessoryEffect(heroIdx, accessoryEffectIceStatBonusCol) && 2 == selectedItem[itemElementTypeCol] && (Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectIceStatBonusCol));
-    heroHasAccessoryEffect(heroIdx, accessoryEffectPoisonStatBonusCol) && 4 == selectedItem[itemElementTypeCol] && (Ib += 60 * countAccessoryLvlBonuses(heroIdx, accessoryEffectPoisonStatBonusCol));
+    if (heroHasAccessoryEffect(heroIdx, accessoryEffectFireStatBonusCol)) {
+        if (1 == selectedItem[itemElementTypeCol]) {
+            Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectFireStatBonusCol);
+        }
+    }
+    if (heroHasAccessoryEffect(heroIdx, accessoryEffectIceStatBonusCol)) {
+        if (2 == selectedItem[itemElementTypeCol]) {
+            Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectIceStatBonusCol);
+        }
+    }
+    if (heroHasAccessoryEffect(heroIdx, accessoryEffectPoisonStatBonusCol)) {
+        if (4 == selectedItem[itemElementTypeCol]) {
+            Ib += 60 * countAccessoryLvlBonuses(heroIdx, accessoryEffectPoisonStatBonusCol);
+        }
+    }
     var ic = selectedItem[itemProjectileParam1Col],
         jc = selectedItem[itemAttackModeCol],
         kc = selectedItem[itemProjectileParam2Col],
@@ -3169,8 +3183,14 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         Sf = selectedItem[itemProjectileParam3Col];
 
     selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, itemAttackPowerCol);
-    heroHasAccessoryEffect(heroIdx, accessoryEffectLightningElemBonusCol) && 3 == selectedItem[itemElementTypeCol] && 20 == selectedItem[itemAttackModeCol] && (selectedItemIdx += countAccessoryLvlBonuses(heroIdx, accessoryEffectLightningElemBonusCol));
-    
+    if (heroHasAccessoryEffect(heroIdx, accessoryEffectLightningElemBonusCol)) {
+        if (3 == selectedItem[itemElementTypeCol]) {
+            if (20 == selectedItem[itemAttackModeCol]) {
+                selectedItemIdx += countAccessoryLvlBonuses(heroIdx, accessoryEffectLightningElemBonusCol);
+            }
+        }
+    }
+
     selectedItem = selectedItem[itemProjectileTemplateCol];
     let Ac = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].x;
     let Rg = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].y;
@@ -3182,12 +3202,12 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             let Dd = -w,
                 Rd = 0,
                 De = -.1 * La;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
-                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
-                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca,
+                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc,
+                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd,
                 Qf, Rf, Sf, selectedItemIdx, selectedItem
             );
-        } 
+        }
     } else if (2 == l) {
         let dirX = Ac - originX;
         dirX /= abs(dirX);
@@ -3195,16 +3215,18 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             targetEnemyIdx = originX + dirX * n;
             let Dd = originY + randFloatRange(-w, w);
             let Rd = dirX * La * .1;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
-                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, 
-                kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca,
+                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc,
+                kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc,
                 zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
             );
         }
     } else if (3 == l) {
         Vec2Set(projDir, Ac - originX, Rg - originY);
         var We = 0 < n ? n - 1 : 16;
-        heroHasAccessoryEffect(heroIdx, accessoryMultiShotSpreadDivisorCol) && (We = floor(We / countAccessoryLvlBonuses(heroIdx, accessoryMultiShotSpreadDivisorCol)));
+        if (heroHasAccessoryEffect(heroIdx, accessoryMultiShotSpreadDivisorCol)) {
+            We = floor(We / countAccessoryLvlBonuses(heroIdx, accessoryMultiShotSpreadDivisorCol));
+        }
         Ac = floor(512 * Vec2Angle(projDir) / TAU);
         Ac -= floor((itemSlot - 1) * We / 2);
         for (l = 0; l < itemSlot; l++) {
@@ -3214,50 +3236,57 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             let Dd = originY + projDir.y * w;
             let Rd = projDir.x * La * .1;
             let De = projDir.y * La * .1;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca, 
-                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
-                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca,
+                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc,
+                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd,
                 Qf, Rf, Sf, selectedItemIdx, selectedItem
             );
             Ac += We;
         }
     } else if (4 == l) {
         Vec2Set(projDir, Ac - originX, Rg - originY - 5);
-        La = Vec2Mag(projDir) / (.1 * La); 
+        La = Vec2Mag(projDir) / (.1 * La);
         limbDesc = 2E4 / (La * La);
         for (l = 0; l < itemSlot; l++) {
-                Vec2Set(projDir, Ac - originX, Rg - 5 - originY);
-                if (1 < itemSlot)  {
-                    We = 0 < n ? n : itemSlot + 4;
-                    w = randInt(512);
-                    targetEnemyIdx = randFloat(We);
-                    projDir.x += rotationLUT[w][0] * targetEnemyIdx, projDir.y += rotationLUT[w][1] * targetEnemyIdx;
-                };
-                targetEnemyIdx = originX;
-                let Dd = originY;
-                let Rd = projDir.x / La;
-                let De = (projDir.y - .5 * La * La * limbDesc * .01) / La;
-                spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, 
-                    Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, 
-                    jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, 
-                    sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
-                );
+            Vec2Set(projDir, Ac - originX, Rg - 5 - originY);
+            if (1 < itemSlot) {
+                We = 0 < n ? n : itemSlot + 4;
+                w = randInt(512);
+                targetEnemyIdx = randFloat(We);
+                {
+                    projDir.x += rotationLUT[w][0] * targetEnemyIdx;
+                    projDir.y += rotationLUT[w][1] * targetEnemyIdx;
+                }
+            };
+            targetEnemyIdx = originX;
+            let Dd = originY;
+            let Rd = projDir.x / La;
+            let De = (projDir.y - .5 * La * La * limbDesc * .01) / La;
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na,
+                Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb,
+                jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc,
+                sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+            );
         }
     } else if (5 == l) {
-        Ac = 256 + 256 * heroBodyDrawStateByHero[heroIdx][2]; 
+        Ac = 256 + 256 * heroBodyDrawStateByHero[heroIdx][2];
         We = floor(512 / itemSlot);
         for (l = 0; l < itemSlot; l++) {
             projDir.x = rotationLUT[Ac & 511][0];
             projDir.y = -rotationLUT[Ac & 511][1];
             targetEnemyIdx = 0 + projDir.x * n;
             let Dd = 0 + projDir.y * n;
-            -1 == t && (targetEnemyIdx += originX, Dd += originY);
+            if (-1 == t) {
+                targetEnemyIdx += originX;
+                Dd += originY;
+            }
             w = Math.sqrt(n * La * .01);
-            let Rd = projDir.y * w, De = -projDir.x * w; 
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, 
-                ba, U, na, Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, 
-                gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc, 
-                lc, mc, nc, oc, pc, qc, rc, sc,tc, uc, vc, 
+            let Rd = projDir.y * w,
+                De = -projDir.x * w;
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K,
+                ba, U, na, Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb,
+                gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc,
+                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc,
                 wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
             );
             Ac += We;
@@ -3270,9 +3299,9 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             let Dd = Rg + rotationLUT[w][1] * n;
             let Rd = rotationLUT[w][0] * La * .1;
             let De = rotationLUT[w][1] * La * .1;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, 
-                Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, 
-                jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, 
+            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga,
+                Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic,
+                jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc,
                 yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
             );
             w += originX;

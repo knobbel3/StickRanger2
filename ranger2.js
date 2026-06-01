@@ -824,7 +824,10 @@ function loadGame(saveString) {
     let b = inverseCodingCharTable[saveString[d + 0]];
     let f = inverseCodingCharTable[saveString[d + 1]];
     let c = b + d & 63;
-    for (b = 0; b < d; b++) saveLoadCodecScratchBuffer[b] = inverseCodingCharTable[saveString[b]] - c & 63, c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
+    for (b = 0; b < d; b++) {
+        saveLoadCodecScratchBuffer[b] = inverseCodingCharTable[saveString[b]] - c & 63;
+        c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
+    }
     if (inverseCodingCharTable[saveString[d + 2]] != (c >> 6 & 63) || inverseCodingCharTable[saveString[d + 3]] != (c >> 0 & 63)) return 4; // load err
 
     let i = 0;
@@ -839,9 +842,20 @@ function loadGame(saveString) {
     resetGameProgress();
 
     let p = 0;
-    p++; p++; p++; p++; p++;
-    p += 8; p++; p++; p++;
-    for (b = 0; 4 > b; b++) p++, p++, p++;
+    p++;
+    p++;
+    p++;
+    p++;
+    p++;
+    p += 8;
+    p++;
+    p++;
+    p++;
+    for (b = 0; 4 > b; b++) {
+        p++;
+        p++;
+        p++;
+    }
 
     partyMemberCount = gameSaveBuffer[p++];
     partyLevel = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
@@ -870,7 +884,7 @@ function loadGame(saveString) {
     if (!g) return 0;
     if (5 <= g) {
         for (b = 0; 4 > b; b++) autoMoveEnabled[b] = gameSaveBuffer[p++];
-        cliffStopEnabled = gameSaveBuffer[p++]
+        cliffStopEnabled = gameSaveBuffer[p++];
     }
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
@@ -881,7 +895,7 @@ function loadGame(saveString) {
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     for (b = 0; b < g; b++) stageEventFlagArray[b] = gameSaveBuffer[p++];
-    return 0
+    return 0;
 }
 var partyChecksum = 0,
     basePartyChecksum = 0,

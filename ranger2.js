@@ -3346,18 +3346,19 @@ function updatePartyMemberAI(memberIdx) { // Di
 mainWindow.fff = updatePlayerParty;
 
 function updatePlayerParty() {
-    var a, b, c, d, f = new Vec2,
-        g = new Vec2,
-        h = new Vec2;
+    var a, b, c, d, f = new Vec2(),
+        g = new Vec2(),
+        h = new Vec2();
     pickHeroJointUnderMouse();
     for (a = 0; a < partyMemberCount; a++) {
         if (0 < heroTimedDamageTimer[a] && (heroTimedDamageTimer[a]--, d = floor(heroTimedDamageAmount[a] / 60), b = heroTimedDamageAmount[a] - 60 * d, randFloat(60) < b && (d += 1), partyLP[a] -= d, stage_partyDamageTaken += d, 0 > partyLP[a]))
             for (c = 0 == heroBodyDrawStateByHero[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
-                a != b && (
-                    partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]),
-                    spawnPopup(heroJointPositionsByHero[b][0].x, heroJointPositionsByHero[b][0].y, c, d, 60, 16711680),
-                    stage_partyDamageTaken += d
-                );
+                if (a != b) {
+                    partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]);
+                    spawnPopup(heroJointPositionsByHero[b][0].x, heroJointPositionsByHero[b][0].y, c, d, 60, 16711680);
+                    stage_partyDamageTaken += d;
+                }
+
 
         if (0 < heroStatusTintTimer[a]) heroStatusTintTimer[a]--;
         else {
@@ -3367,87 +3368,296 @@ function updatePlayerParty() {
                 for (b = 0; 11 > b; b++) stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
             else if (2 == heroTileContactFlags[a])
                 for (b = 0; 11 > b; b++) stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .01, .99);
-            else if (20 > heroPoseAgeFrames[a])
-                stepWithVerticalBias(heroJointPositionsByHero[a][0], heroJointPrevPositionsByHero[a][0], -.2, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][1], heroJointPrevPositionsByHero[a][1], 0, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][2], heroJointPrevPositionsByHero[a][2], -.1, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][3], heroJointPrevPositionsByHero[a][3], 0, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][4], heroJointPrevPositionsByHero[a][4], 0, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][5], heroJointPrevPositionsByHero[a][5], 0, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][6], heroJointPrevPositionsByHero[a][6], 0, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][7], heroJointPrevPositionsByHero[a][7], 0, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][8], heroJointPrevPositionsByHero[a][8], 0, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][9], heroJointPrevPositionsByHero[a][9], .3, .99),
-                    stepWithVerticalBias(heroJointPositionsByHero[a][10], heroJointPrevPositionsByHero[a][10], .3, .99);
-            else
-                for (b = 0; 11 > b; b++) heroHasAccessoryEffect(a, accessoryJointStepDividerCol) ? stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05 / countAccessoryLvlBonuses(a, accessoryJointStepDividerCol), .99) : stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
+            else if (20 > heroPoseAgeFrames[a]) {
+                stepWithVerticalBias(heroJointPositionsByHero[a][0], heroJointPrevPositionsByHero[a][0], -.2, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][1], heroJointPrevPositionsByHero[a][1], 0, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][2], heroJointPrevPositionsByHero[a][2], -.1, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][3], heroJointPrevPositionsByHero[a][3], 0, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][4], heroJointPrevPositionsByHero[a][4], 0, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][5], heroJointPrevPositionsByHero[a][5], 0, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][6], heroJointPrevPositionsByHero[a][6], 0, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][7], heroJointPrevPositionsByHero[a][7], 0, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][8], heroJointPrevPositionsByHero[a][8], 0, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][9], heroJointPrevPositionsByHero[a][9], .3, .99);
+                stepWithVerticalBias(heroJointPositionsByHero[a][10], heroJointPrevPositionsByHero[a][10], .3, .99);
+            } else for (b = 0; 11 > b; b++)
+                if (heroHasAccessoryEffect(a, accessoryJointStepDividerCol)) {
+                    stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05 / countAccessoryLvlBonuses(a, accessoryJointStepDividerCol), .99);
+                } else {
+                    stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
+                }
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
             if (0 == d && heroUpperJointMode[a] != areUpperJointsDisabled)
-                for (heroUpperJointMode[a] = areUpperJointsDisabled, b = heroAttackCooldownFrames[a] = 0; 11 > b; b++) heroJointPositionsByHero[a][b].x += randFloatRange(-2, 2), heroJointPositionsByHero[a][b].y +=
-                    randFloatRange(-1, -3);
+                for (heroUpperJointMode[a] = areUpperJointsDisabled, b = heroAttackCooldownFrames[a] = 0; 11 > b; b++) {
+                    heroJointPositionsByHero[a][b].x += randFloatRange(-2, 2);
+                    heroJointPositionsByHero[a][b].y +=
+                        randFloatRange(-1, -3);
+                }
             if (heroUpperJointMode[a] != areUpperJointsDisabled) {
-                1 == currentStage && partyLP[a] < partyMaxLP[a] && 1 > randFloat(100) && (partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]), spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, 5, 60, 65280));
-                draggedHeroIndex == a && (heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x += .2 * (mouseXCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x), heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y += .2 * (mouseYCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y));
+                if (1 == currentStage) {
+                    if (partyLP[a] < partyMaxLP[a]) {
+                        if (1 > randFloat(100)) {
+                            partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]);
+                            spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, 5, 60, 65280);
+                        }
+                    }
+                }
+                if (draggedHeroIndex == a) {
+                    heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x += .2 * (mouseXCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x);
+                    heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y += .2 * (mouseYCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y);
+                }
                 b = itemList[partyEquipmentTable[a][0]][itemAppearanceCol];
                 c = heroRangeValues[a];
                 d = heroJointPositionsByHero[a][1].x;
                 var k = heroJointPositionsByHero[a][1].y;
-                c = findEnemyInArea(d, k, c, c); - 1 == heroEmitValues[a] && (0 < heroEmitCooldown[a] && heroEmitCooldown[a]--, 0 == heroEmitCooldown[a] && (k = findEnemyInArea(d, k, 999, 999), -1 != k && (spawnHeroAttackPattern(a, 1540, 1, heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][6].y, k), heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][attackCooldownCol])));
+                c = findEnemyInArea(d, k, c, c);
+                if (-1 == heroEmitValues[a]) {
+                    if (0 < heroEmitCooldown[a]) {
+                        heroEmitCooldown[a]--;
+                    }
+                    if (0 == heroEmitCooldown[a]) {
+                        k = findEnemyInArea(d, k, 999, 999);
+                        if (-1 != k) {
+                            spawnHeroAttackPattern(a, 1540, 1, heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][6].y, k);
+                            heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][attackCooldownCol];
+                        }
+                    }
+                }
                 if (0 < heroAttackCooldownFrames[a]) heroAttackCooldownFrames[a]--;
                 else if (draggedHeroIndex != a && 0 != b && -1 != c) {
                     heroAttackCooldownFrames[a] = heroAgiValues[a] + randIntRange(-1, 1);
                     heroBodyDrawStateByHero[a][2] = d < enemyJointPosArray[c][enemyTargetJointIdx].x ? 1 : 0;
-                    k = 0; - 1 == heroEmitValues[a] ? (heroEmitCurrent[a] =
-                        0, attackWeaponSlotIdx[a] = 0) : heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a] ? (heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]), attackWeaponSlotIdx[a] = 0, heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol) && (heroEmitCurrent[a] = heroEmitValues[a])) : (heroEmitCurrent[a] = 0, attackWeaponSlotIdx[a] = 1, b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol], heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol) && 100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol) && (heroEmitCurrent[a] = heroEmitValues[a]));
+                    k = 0;
+                    if (-1 == heroEmitValues[a]) {
+                        heroEmitCurrent[a] =
+                            0;
+                        attackWeaponSlotIdx[a] = 0;
+                    } else {
+                        if (heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a]) {
+                            heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]);
+                            attackWeaponSlotIdx[a] = 0;
+                            if (heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol)) {
+                                if (100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol)) {
+                                    heroEmitCurrent[a] = heroEmitValues[a];
+                                }
+                            }
+                        } else {
+                            heroEmitCurrent[a] = 0;
+                            attackWeaponSlotIdx[a] = 1;
+                            b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol];
+                            if (heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol)) {
+                                if (100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol)) {
+                                    heroEmitCurrent[a] = heroEmitValues[a];
+                                }
+                            }
+                        }
+                    }
                     if (0 != b)
-                        if (3 == b) Vec2Sub(g, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][5]), Vec2Sub(h, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][6]), g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y ? (Vec2Norm(g), Vec2Scale(g, 3), heroJointPositionsByHero[a][5].add(g), heroJointPositionsByHero[a][4].sub(g), f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (Vec2Norm(h), Vec2Scale(h, 3), heroJointPositionsByHero[a][6].add(h), heroJointPositionsByHero[a][3].sub(h), f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), heroAimPosByHero[a].set(enemyJointPosArray[c][enemyTargetJointIdx]), heroAttackLineTimer[a] = 5;
-                        else if (4 == b) {
-                            var k = 5 + attackWeaponSlotIdx[a],
-                                p = 3 +
-                                    attackWeaponSlotIdx[a],
-                                t = 4 - attackWeaponSlotIdx[a];
-                            d < enemyJointPosArray[c][enemyTargetJointIdx].x ? (heroJointPositionsByHero[a][k].x += .5, heroJointPositionsByHero[a][p].x += .5, --heroJointPositionsByHero[a][t].x) : (heroJointPositionsByHero[a][k].x -= .5, heroJointPositionsByHero[a][p].x -= .5, heroJointPositionsByHero[a][t].x += 1);
-                            f.set(heroJointPositionsByHero[a][k]);
-                            k = k << 8 | 3;
-                            attackTrailSideIdx[a] = attackWeaponSlotIdx[a]
-                        } else 5 == b ? (d < enemyJointPosArray[c][enemyTargetJointIdx].x ? (heroJointPositionsByHero[a][5].x += 1, heroJointPositionsByHero[a][6].x += 1, heroJointPositionsByHero[a][1].x -= 2) : (--heroJointPositionsByHero[a][5].x, --heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][1].x += 2), heroJointPositionsByHero[a][5].y < heroJointPositionsByHero[a][6].y ? (f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1), applySeparationCorrection(heroJointPositionsByHero[a][5], heroJointPositionsByHero[a][6], 5, .1, .1)) : d < enemyJointPosArray[c][enemyTargetJointIdx].x ? heroJointPositionsByHero[a][5].x < heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x += 4, heroJointPositionsByHero[a][4].x -= 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (heroJointPositionsByHero[a][6].x += 4, heroJointPositionsByHero[a][3].x -= 4, f.set(heroJointPositionsByHero[a][6]), k =
-                            1540, attackTrailSideIdx[a] = 1) : heroJointPositionsByHero[a][5].x > heroJointPositionsByHero[a][6].x ? (heroJointPositionsByHero[a][5].x -= 4, heroJointPositionsByHero[a][4].x += 4, f.set(heroJointPositionsByHero[a][5]), k = 1283, attackTrailSideIdx[a] = 0) : (heroJointPositionsByHero[a][6].x -= 4, heroJointPositionsByHero[a][3].x += 4, f.set(heroJointPositionsByHero[a][6]), k = 1540, attackTrailSideIdx[a] = 1);
-                    2 == b && (heroAttackTrailTimerByHero[a] = 30);
+                        if (3 == b) {
+                            Vec2Sub(g, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][5]);
+                            Vec2Sub(h, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][6]);
+                            if (g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y) {
+                                Vec2Norm(g);
+                                Vec2Scale(g, 3);
+                                heroJointPositionsByHero[a][5].add(g);
+                                heroJointPositionsByHero[a][4].sub(g);
+                                f.set(heroJointPositionsByHero[a][5]);
+                                k = 1283;
+                                attackTrailSideIdx[a] = 0;
+                            } else {
+                                Vec2Norm(h);
+                                Vec2Scale(h, 3);
+                                heroJointPositionsByHero[a][6].add(h);
+                                heroJointPositionsByHero[a][3].sub(h);
+                                f.set(heroJointPositionsByHero[a][6]);
+                                k = 1540;
+                                attackTrailSideIdx[a] = 1;
+                            }
+                            heroAimPosByHero[a].set(enemyJointPosArray[c][enemyTargetJointIdx]);
+                            heroAttackLineTimer[a] = 5;
+                        } else
+                    if (4 == b) {
+                        var k = 5 + attackWeaponSlotIdx[a],
+                            p = 3 +
+                            attackWeaponSlotIdx[a],
+                            t = 4 - attackWeaponSlotIdx[a];
+                        if (
+                            d < enemyJointPosArray[c][enemyTargetJointIdx].x) {
+                            heroJointPositionsByHero[a][k].x += .5;
+                            heroJointPositionsByHero[a][p].x += .5;
+                            --heroJointPositionsByHero[a][t].x;
+                        } else {
+                            heroJointPositionsByHero[a][k].x -= .5;
+                            heroJointPositionsByHero[a][p].x -= .5;
+                            heroJointPositionsByHero[a][t].x += 1;
+                        }
+                        f.set(heroJointPositionsByHero[a][k]);
+                        k = k << 8 | 3;
+                        attackTrailSideIdx[a] = attackWeaponSlotIdx[a];
+                    } else if (5 == b) {
+                        if (d < enemyJointPosArray[c][enemyTargetJointIdx].x) {
+                            heroJointPositionsByHero[a][5].x += 1;
+                            heroJointPositionsByHero[a][6].x += 1;
+                            heroJointPositionsByHero[a][1].x -= 2;
+                        } else {
+                            --heroJointPositionsByHero[a][5].x;
+                            --heroJointPositionsByHero[a][6].x;
+                            heroJointPositionsByHero[a][1].x += 2;
+                        }
+                        if (heroJointPositionsByHero[a][5].y < heroJointPositionsByHero[a][6].y) {
+                            f.set(heroJointPositionsByHero[a][5]);
+                            k = 1283;
+                            attackTrailSideIdx[a] = 0;
+                        } else {
+                            f.set(heroJointPositionsByHero[a][6]);
+                            k = 1540;
+                            attackTrailSideIdx[a] = 1;
+                        }
+                        applySeparationCorrection(heroJointPositionsByHero[a][5], heroJointPositionsByHero[a][6], 5, .1, .1);
+                    } else {
+                        if (d < enemyJointPosArray[c][enemyTargetJointIdx].x) {
+                            if (heroJointPositionsByHero[a][5].x < heroJointPositionsByHero[a][6].x) {
+                                heroJointPositionsByHero[a][5].x += 4;
+                                heroJointPositionsByHero[a][4].x -= 4;
+                                f.set(heroJointPositionsByHero[a][5]);
+                                k = 1283;
+                                attackTrailSideIdx[a] = 0;
+                            } else {
+                                heroJointPositionsByHero[a][6].x += 4;
+                                heroJointPositionsByHero[a][3].x -= 4;
+                                f.set(heroJointPositionsByHero[a][6]);
+                                k =
+                                    1540;
+                                attackTrailSideIdx[a] = 1;
+                            }
+                        } else {
+                            if (heroJointPositionsByHero[a][5].x > heroJointPositionsByHero[a][6].x) {
+                                heroJointPositionsByHero[a][5].x -= 4;
+                                heroJointPositionsByHero[a][4].x += 4;
+                                f.set(heroJointPositionsByHero[a][5]);
+                                k = 1283;
+                                attackTrailSideIdx[a] = 0;
+                            } else {
+                                heroJointPositionsByHero[a][6].x -= 4;
+                                heroJointPositionsByHero[a][3].x += 4;
+                                f.set(heroJointPositionsByHero[a][6]);
+                                k = 1540;
+                                attackTrailSideIdx[a] = 1;
+                            }
+                        }
+                    }
+                    if (2 == b) {
+                        heroAttackTrailTimerByHero[a] = 30;
+                    }
                     heroBodyDrawStateByHero[a][attackTrailSideIdx[a]] = attackWeaponSlotIdx[a];
-                    spawnHeroAttackPattern(a, k, attackWeaponSlotIdx[a], f.x, f.y, c)
+                    spawnHeroAttackPattern(a, k, attackWeaponSlotIdx[a], f.x, f.y, c);
                 }
-                draggedHeroIndex != a && 0 != b && -1 == c && updatePartyMemberAI(a)
+                if (draggedHeroIndex != a) {
+                    if (0 != b) {
+                        if (-1 == c) {
+                            updatePartyMemberAI(a);
+                        }
+                    }
+                }
             }
-            heroUpperJointMode[a] == areUpperJointsDisabled ? (applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5)) : (applySeparationCorrection(heroJointPositionsByHero[a][0], heroJointPositionsByHero[a][1], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][3], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][4], 4.8,
-                .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][7], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][8], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5), applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][8], 6, .1, .1));
-            0 < (heroTileContactFlags[a] & 1) && (heroPoseAgeFrames[a] = 0);
+            if (
+                heroUpperJointMode[a] == areUpperJointsDisabled) {
+                applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5);
+            } else {
+                applySeparationCorrection(heroJointPositionsByHero[a][0], heroJointPositionsByHero[a][1], 3.6, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][2], 3.6, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][3], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][1], heroJointPositionsByHero[a][4], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][3], heroJointPositionsByHero[a][5], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][4], heroJointPositionsByHero[a][6], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][7], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][2], heroJointPositionsByHero[a][8], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][9], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][8], heroJointPositionsByHero[a][10], 4.8, .5, .5);
+                applySeparationCorrection(heroJointPositionsByHero[a][7], heroJointPositionsByHero[a][8], 6, .1, .1);
+            }
+            if (0 < (heroTileContactFlags[a] & 1)) {
+                heroPoseAgeFrames[a] = 0;
+            }
             for (b = heroTileContactFlags[a] = 0; 11 > b; b++) moveJointWithCollisions(a, b);
             heroPoseTrailWriteIdxByHero[a] = heroPoseTrailWriteIdxByHero[a] + 1 & 15;
             heroJoint5HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][5]);
             heroJoint3HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][3]);
             heroJoint6HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][6]);
             heroJoint4HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][4]);
-            0 < heroAttackTrailTimerByHero[a] && (heroAttackTrailTimerByHero[a]--, b = itemList[partyEquipmentTable[a][attackWeaponSlotIdx[a]]][itemAppearanceCol], 2 != b && (heroAttackTrailTimerByHero[a] = 0));
-            0 == heroAttackCooldownFrames[a] && (f.set(heroJointPositionsByHero[a][1]), f.x += 0 == heroBodyDrawStateByHero[a][2] ? -50 : 50, Vec2Scale(f, .1),
-                Vec2Scale(heroAimPosByHero[a], .9), heroAimPosByHero[a].add(f));
-            0 < heroAttackLineTimer[a] && heroAttackLineTimer[a]--;
+            if (0 < heroAttackTrailTimerByHero[a]) {
+                heroAttackTrailTimerByHero[a]--;
+                b = itemList[partyEquipmentTable[a][attackWeaponSlotIdx[a]]][itemAppearanceCol];
+                if (2 != b) {
+                    heroAttackTrailTimerByHero[a] = 0;
+                }
+            }
+            if (0 == heroAttackCooldownFrames[a]) {
+                f.set(heroJointPositionsByHero[a][1]);
+                f.x += 0 == heroBodyDrawStateByHero[a][2] ? -50 : 50;
+                Vec2Scale(f, .1);
+                Vec2Scale(heroAimPosByHero[a], .9);
+                heroAimPosByHero[a].add(f);
+            }
+            if (0 < heroAttackLineTimer[a]) {
+                heroAttackLineTimer[a]--;
+            }
             if (heroTileContactFlags[a] & 2) {
                 if (0 == heroTileEffectLatch[a])
-                    for (heroTileEffectLatch[a] = 1, b = 0; 11 > b; b++) d = clamp(heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3, 30 == stageTileData[c][d] && spawnProjectile(a, -1, heroJointPositionsByHero[a][b].x, heroJointPositionsByHero[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    for (heroTileEffectLatch[a] = 1, b = 0; 11 > b; b++) {
+                        d = clamp(heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3;
+                        c = clamp(heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3;
+                        if (30 == stageTileData[c][d]) {
+                            spawnProjectile(a, -1, heroJointPositionsByHero[a][b].x, heroJointPositionsByHero[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        }
+                    }
                 d = clamp(heroJointPositionsByHero[a][0].x, 0, 8 * stageWidth - 1) >> 3;
                 c = clamp(heroJointPositionsByHero[a][0].y, 0, 8 * stageHeight - 1) >> 3;
-                31 == stageTileData[c][d] && 1 > randFloat(50) && (b = randFloatRange(-1, 2), spawnProjectile(a, -1, heroJointPositionsByHero[a][0].x + b, heroJointPositionsByHero[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                if (31 == stageTileData[c][d]) {
+                    if (1 > randFloat(50)) {
+                        b = randFloatRange(-1, 2);
+                        spawnProjectile(a, -1, heroJointPositionsByHero[a][0].x + b, heroJointPositionsByHero[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    }
+                }
             } else heroTileEffectLatch[a] = 0;
-            5 == currentStage && heroTileContactFlags[a] & 1 && (stageConditionMask |= 1);
-            5 == currentStage && heroTileContactFlags[a] & 2 && (stageConditionMask |= 2);
-            16 == currentStage && heroTileContactFlags[a] & 1 && (stageConditionMask |= 1);
-            16 == currentStage && heroTileContactFlags[a] & 2 && (stageConditionMask |= 2);
-            18 == currentStage && heroTileContactFlags[a] & 1 && (stageConditionMask |= 1);
-            18 == currentStage && heroTileContactFlags[a] & 2 && (stageConditionMask |= 2)
+            if (5 == currentStage) {
+                if (heroTileContactFlags[a] & 1) {
+                    stageConditionMask |= 1;
+                }
+            }
+            if (5 == currentStage) {
+                if (heroTileContactFlags[a] & 2) {
+                    stageConditionMask |= 2;
+                }
+            }
+            if (16 == currentStage) {
+                if (heroTileContactFlags[a] & 1) {
+                    stageConditionMask |= 1;
+                }
+            }
+            if (16 == currentStage) {
+                if (heroTileContactFlags[a] & 2) {
+                    stageConditionMask |= 2;
+                }
+            }
+            if (18 == currentStage) {
+                if (heroTileContactFlags[a] & 1) {
+                    stageConditionMask |= 1;
+                }
+            }
+            if (18 == currentStage) {
+                if (heroTileContactFlags[a] & 2) {
+                    stageConditionMask |= 2;
+                }
+            }
         }
     }
 }
+
 mainWindow.fff = drawPlayerParty;
 
 function drawPlayerParty() {

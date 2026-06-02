@@ -812,7 +812,13 @@ function saveGame() {
     gameSaveString += encodingCharTable[f];
     gameSaveString += encodingCharTable[c >> 6 & 63];
     let saveItem = gameSaveString += encodingCharTable[c >> 0 & 63];
-    currentStorage && ("" != saveItem ? currentStorage.setItem("ranger2", saveItem) : currentStorage.removeItem("ranger2"));
+    if (currentStorage) {
+        if ("" != saveItem) {
+            currentStorage.setItem("ranger2", saveItem);
+        } else {
+            currentStorage.removeItem("ranger2");
+        }
+    }
     gameSaveStatusDuration = 50
 }
 mainWindow.fff = loadGame;

@@ -849,21 +849,8 @@ function loadGame(saveString) {
         if (gameSaveBuffer[b + 5] != userSaveKey[b]) return 5; // user err
     resetGameProgress();
 
-    let p = 0;
-    p++;
-    p++;
-    p++;
-    p++;
-    p++;
-    p += 8;
-    p++;
-    p++;
-    p++;
-    for (b = 0; 4 > b; b++) {
-        p++;
-        p++;
-        p++;
-    }
+    let p = 16 + 3*4;
+    b = 4;
 
     partyMemberCount = gameSaveBuffer[p++];
     partyLevel = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];

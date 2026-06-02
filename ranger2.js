@@ -1050,17 +1050,17 @@ function gameInit(a, b) {
         }
     }
     if (1 == gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
-        drawSprite(gameFont.i);
-        drawSprite(gameFontSmall.i);
-        drawSprite(gameFontMed.i);
-        drawSprite(titleSprite);
-        drawSprite(iconSpriteSheet);
-        for (_t0 = 0; 3 > _t0; _t0++) drawSprite(tilesetSprites[_t0]);
-        drawSprite(enemySpriteSheet);
-        drawSprite(droppedItemSpriteSheet);
-        drawSprite(itemsSpriteSheet);
-        drawSprite(effectSpriteSheet);
-        drawSprite(medalSpriteSheet);
+        loadSprite(gameFont.i);
+        loadSprite(gameFontSmall.i);
+        loadSprite(gameFontMed.i);
+        loadSprite(titleSprite);
+        loadSprite(iconSpriteSheet);
+        for (_t0 = 0; 3 > _t0; _t0++) loadSprite(tilesetSprites[_t0]);
+        loadSprite(enemySpriteSheet);
+        loadSprite(droppedItemSpriteSheet);
+        loadSprite(itemsSpriteSheet);
+        loadSprite(effectSpriteSheet);
+        loadSprite(medalSpriteSheet);
         if (uncheckedSpriteCount > 0) {
             _setTimeout(gameInit, computeFrameDelay());
         } else {
@@ -4100,7 +4100,7 @@ function loadLevelData(a) {
         currentLevelSprite = new Sprite;
         currentLevelSprite.f("m" + a + ".png");
     }
-    drawSprite(currentLevelSprite); // check if loaded sprite is valid
+    loadSprite(currentLevelSprite); // check if loaded sprite is valid
     if (uncheckedSpriteCount) return false;
     lastStageIdx = currentStage;
     isStageReachedArray[currentStage] = 1;
@@ -6628,7 +6628,7 @@ Sprite.prototype.f = function (path) {
     }
 };
 
-function drawSprite(sprite) {
+function loadSprite(sprite) {
     if (!sprite.c && sprite.a.complete) {
         uncheckedSpriteCount--;
         var imgWidth = sprite.a.width,

@@ -2871,11 +2871,9 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
                     if (0 <= n && n <= _modelFlag) break;
                     p.add(t);
                 }
-                if (J > k) {
-                    if (l < w) {
-                        w = l;
-                        B = M;
-                    }
+                if (J > k && l < w) {
+                    w = l;
+                    B = M;
                 }
             }
         } 

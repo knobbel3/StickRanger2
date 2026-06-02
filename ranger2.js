@@ -1675,7 +1675,7 @@ mainWindow.fff = drawGameUI;
 function drawGameUI() {
     var hidx, b, c, d, f, g, h, k;
     if (keyJustPressed[32]) {
-        if (    memberUIVisible ||
+        if (memberUIVisible ||
             inventoryUIVisible ||
             bestiaryUIVisible ||
             badgesUIVisible ||
@@ -1690,7 +1690,6 @@ function drawGameUI() {
             shrineUIVisibleBackup = shrineUIVisible;
             memberUIVisible = inventoryUIVisible = bestiaryUIVisible = badgesUIVisible = optionsUIVisible = shrineUIVisible = false;
         } else {
-
             memberUIVisible = memberUIVisibleBackup;
             inventoryUIVisible = inventoryUIVisibleBackup;
             bestiaryUIVisible = bestiaryUIVisibleBackup;
@@ -1717,7 +1716,6 @@ function drawGameUI() {
     h = "CB " + comboCount;
     gameFontMed.a = 4;
     drawText(gameFontMed, f + 265, g + 2, h, 12281344, 0); // combo count 
-    //10 <= Hc && (gameFontMed.a = 4, drawTooltip(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0));
     if (comboCount >= 10) {
         gameFontMed.a = 4;
         drawText(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0);
@@ -1779,14 +1777,10 @@ function drawGameUI() {
         c = 16777215;
         if (0 < heroStatusTintTimer[hidx]) {
             c = 5934817;
-        } else {
-            if (0 < heroSkipTimer[hidx]) {
-                c = 1989840;
-            } else {
-                if (0 < heroTimedDamageTimer[hidx]) {
-                    c = 3407616;
-                }
-            }
+        } else if (0 < heroSkipTimer[hidx]) {
+            c = 1989840;
+        } else if (0 < heroTimedDamageTimer[hidx]) {
+            c = 3407616;
         }
         drawHero(hidx, l, 0, 1, 15908203, c, 2);
 
@@ -1798,11 +1792,11 @@ function drawGameUI() {
         drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / max(heroEmitValues[hidx], 1), 5, 221);
         if (buttonCheck(f + hidx * d, g, 24, 24)) {
             fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608);
-            if (isMouseClicked) {
-                if (selectingHero == hidx) {
-                    memberUIVisible = !memberUIVisible;
-                }
+
+            if (isMouseClicked && selectingHero == hidx) {
+                memberUIVisible = !memberUIVisible;
             }
+
             if (isMouseClicked) {
                 selectingHero = hidx;
             }
@@ -1817,17 +1811,15 @@ function drawGameUI() {
                 h = itemList[c][itemHeadwearType];
                 if (2 == b) {
                     drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true);
+                } else if (3 == b || 4 == b) {
+                    drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]);
                 } else {
-                    if (3 == b || 4 == b) {
-                        drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]);
-                    } else {
-                        drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]);
-                    }
+                    drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]);
                 }
                 spriteAltRenderFlag = 0;
             }
             handleInventoryButton(k, n, 16, 16, c, b);
-            if (        buttonCheck(k, n, 16, 16)) {
+            if (buttonCheck(k, n, 16, 16)) {
                 if (isMouseClicked) {
                     if (0 != c) {
                         selectingHero = hidx;
@@ -1858,27 +1850,25 @@ function drawGameUI() {
             memberUIVisible = !memberUIVisible;
         }
     }
+
     if (drawIconButton(f + 1 * d, g, 2, "ITEM", inventoryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked) {
-            if (inventoryUIVisible = !inventoryUIVisible) {
-                shrineUIVisible = false;
-            }
+        if (isMouseClicked && (inventoryUIVisible = !inventoryUIVisible)) {
+            shrineUIVisible = false;
         }
     }
+
     if (drawIconButton(f + 2 * d, g, 3, "MONSTER", bestiaryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked) {
-            if (bestiaryUIVisible = !bestiaryUIVisible) {
-                badgesUIVisible = false;
-            }
+        if (isMouseClicked && (bestiaryUIVisible = !bestiaryUIVisible)) {
+            badgesUIVisible = false;
         }
     }
+
     if (drawIconButton(f + 3 * d, g, 4, "MEDAL", badgesUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked) {
-            if (badgesUIVisible = !badgesUIVisible) {
-                bestiaryUIVisible = false;
-            }
+        if (isMouseClicked && (badgesUIVisible = !badgesUIVisible)) {
+            bestiaryUIVisible = false;
         }
     }
+
     if (drawIconButton(f + 4 * d, g, 5, "OPTION", optionsUIVisible ? 16750950 : 16777215)) {
         if (isMouseClicked) {
             optionsUIVisible = !optionsUIVisible;
@@ -1909,7 +1899,7 @@ function drawGameUI() {
                     }
                     partyLP[hidx] = partyMaxLP[hidx];
                 }
-                if (            collectedStageFlagsCount != stageFlagsSetCount) {
+                if (collectedStageFlagsCount != stageFlagsSetCount) {
                     spawnPopup(436, 380, 0, stageFlagsSetCount - collectedStageFlagsCount, 60, 65280);
                 }
                 collectedStageFlagsCount = stageFlagsSetCount;
@@ -1935,12 +1925,8 @@ function drawGameUI() {
         if (buttonCheckCentered(416, 108, 48, 40)) {
             gameFont.a = 1;
             drawTextCentered(gameFont, 418, 104, "SHRINE", 15908203, 8409120);
-            if (isMouseClicked) {
-                if (!clickInUI) {
-                    if (shrineUIVisible = !shrineUIVisible) {
-                        inventoryUIVisible = false;
-                    }
-                }
+            if (isMouseClicked && !clickInUI && (shrineUIVisible = !shrineUIVisible)) {
+                inventoryUIVisible = false;
             }
         }
     };
@@ -1963,12 +1949,11 @@ function drawGameUI() {
                 "" + partyStats[_statIdx][selectingHero],
                 selectedStatIndex == _statIdx ? 16737894 : 16777215);
             if (_clicked) {
-                if (selectedStatIndex != _statIdx) { // mouse button is held, but the cursor is hovering over another icon
+                if (selectedStatIndex != _statIdx) {
+                    // mouse button is held, but the cursor is hovering over another icon
                     if (isMouseReleased) selectedStatIndex = _statIdx;
-                } else if (0 < partySP[selectingHero] &&
-                    partyStats[selectedStatIndex][selectingHero] < maxStats[selectedStatIndex]) {
+                } else if (0 < partySP[selectingHero] && partyStats[selectedStatIndex][selectingHero] < maxStats[selectedStatIndex]) {
                     drawText(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481);
-
                     if (isMouseReleased) {
                         partyStats[selectedStatIndex][selectingHero]++;
                         partySP[selectingHero]--;
@@ -1976,11 +1961,9 @@ function drawGameUI() {
                 }
             }
         }
-        if (
-            drawCancelButton(f + 188, g + 4)) {
-            if (isMouseClicked) {
-                memberUIVisible = false;
-            }
+
+        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+            memberUIVisible = false;
         }
 
         g += 64;
@@ -1991,25 +1974,17 @@ function drawGameUI() {
                 if (10 > itemList[_equipmentIdx][itemAppearanceCol]) {
                     gameFontMed.a = 4;
                     let accessoryLevel = itemForgeLvls[_equipmentIdx];
-                    if (heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol0)) {
-                        if (3 == itemList[_equipmentIdx][itemDropIconCol]) {
-                            accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol0);
-                        }
+                    if (heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol0) && 3 == itemList[_equipmentIdx][itemDropIconCol]) {
+                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol0);
                     }
-                    if (heroHasAccessoryEffect(selectingHero, accessoryChargeBonusCol)) {
-                        if (4 == itemList[_equipmentIdx][itemDropIconCol]) {
-                            accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryChargeBonusCol);
-                        }
+                    if (heroHasAccessoryEffect(selectingHero, accessoryChargeBonusCol) && 4 == itemList[_equipmentIdx][itemDropIconCol]) {
+                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryChargeBonusCol);
                     }
-                    if (heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1)) {
-                        if (3 == itemList[_equipmentIdx][itemDropIconCol]) {
-                            accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol1);
-                        }
+                    if (heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1) && 3 == itemList[_equipmentIdx][itemDropIconCol]) {
+                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, accessoryArmsBonusCol1);
                     }
-                    if (heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1)) {
-                        if (4 == itemList[_equipmentIdx][itemDropIconCol]) {
-                            accessoryLevel += sumAccessorySecondaryValues(selectingHero, accessoryArmsBonusCol1);
-                        }
+                    if (heroHasAccessoryEffect(selectingHero, accessoryArmsBonusCol1) && 4 == itemList[_equipmentIdx][itemDropIconCol]) {
+                        accessoryLevel += sumAccessorySecondaryValues(selectingHero, accessoryArmsBonusCol1);
                     }
 
                     drawText(gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][itemNameCol] + " " + accessoryLevel, -1, 0);
@@ -2096,10 +2071,10 @@ function drawGameUI() {
             h = itemList[c][itemHeadwearType];
             drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]);
             spriteAltRenderFlag = 0;
-            {
-                drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0);
-                handleInventoryButton(b, d, 24, 24, c, hidx);
-            }
+            
+            drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0);
+            handleInventoryButton(b, d, 24, 24, c, hidx);
+            
         }
     }
 
@@ -2362,15 +2337,11 @@ function drawGameUI() {
                 drawText(gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1);
             }
         }
-        if (drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215)) {
-            if (isMouseClicked) {
-                inventoryPageIdx--;
-            }
+        if (drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked) {
+            inventoryPageIdx--;
         }
-        if (drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215)) {
-            if (isMouseClicked) {
-                inventoryPageIdx++;
-            }
+        if (drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215) && isMouseClicked) {
+            inventoryPageIdx++;
         }
         h = ~~(inventoryItemLists[inventoryTabIdx].length / 28);
         inventoryPageIdx = clamp(inventoryPageIdx, 0, h - 1);
@@ -2381,10 +2352,8 @@ function drawGameUI() {
         let f = 434;
         let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4)) {
-            if (isMouseClicked) {
-                bestiaryUIVisible = false;
-            }
+        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+            bestiaryUIVisible = false;
         }
         bestiaryEnemySelection = clamp(bestiaryEnemySelection, 0, bestiaryPageItems[currentBestiaryPage].length - 1);
         let c = bestiaryPageItems[currentBestiaryPage][bestiaryEnemySelection];
@@ -2393,18 +2362,11 @@ function drawGameUI() {
             drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         } else {
             if (0 == bestiaryEntryState[c]) {
-                {
-                    h = enemyCatalog[c][enemyBestiaryUnlockCostCol];
-                    if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h)) {
-                        if (h <= partyGold) {
-                            if (isMouseClicked) {
-                                partyGold = clamp(partyGold - h, 0, 9999999);
-                                bestiaryEntryState[c] = 1;
-                            }
-                        }
-                    }
+                h = enemyCatalog[c][enemyBestiaryUnlockCostCol];
+                if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold && isMouseClicked) {
+                    partyGold = clamp(partyGold - h, 0, 9999999);
+                    bestiaryEntryState[c] = 1;
                 }
-
             } else {
                 drawText(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyLevelCol], 16777215, 0);
                 drawText(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][enemyHealthCol], 16777215, 0);
@@ -2527,7 +2489,8 @@ function drawGameUI() {
                 badgesUIVisible = false;
             }
         }
-        if (0 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+        if (0 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) 
+            drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else for (hidx = 0; hidx < badgeIndicesByStage[badgesUIStageIdx].length; hidx++) {
                 c = badgeIndicesByStage[badgesUIStageIdx][hidx];
                 if (badgeList[c]) {
@@ -2556,15 +2519,11 @@ function drawGameUI() {
                     }
                 }
             }
-        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215)) {
-            if (isMouseClicked) {
-                badgesUIStageIdx--;
-            }
+        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked) {
+            badgesUIStageIdx--;
         }
-        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215)) {
-            if (isMouseClicked) {
-                badgesUIStageIdx++;
-            }
+        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked) {
+            badgesUIStageIdx++;
         }
         badgesUIStageIdx = wrapStageIndex(badgesUIStageIdx);
         drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
@@ -2577,10 +2536,8 @@ function drawGameUI() {
         let g = 202;
         d = 32;
         drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4)) {
-            if (isMouseClicked) {
-                optionsUIVisible = false;
-            }
+        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+            optionsUIVisible = false;
         }
         c = ["ON", "OFF"];
         drawText(gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
@@ -2697,26 +2654,25 @@ function drawGameUI() {
                 f = randIntRange(2, 78);
                 g = randIntRange(1, 44);
                 25 >= stageTileData[g][f] || (h = floor(100 * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
-            } else
-        if (1 == c)
+        } else if (1 == c)
             for (shrineRewardClaimed[c] = 1, hidx = 0; 4 > hidx; hidx++)
                 for (b = 0; b < partyStats.length; b++) {
                     partySP[hidx] += partyStats[b][hidx];
                     partyStats[b][hidx] = 0;
-                } else
-        if (2 == c) {
+        } else if (2 == c) {
             shrineRewardClaimed[c] = 1;
             stageEventFlagArray[3] = 1;
             collectedStageFlagsCount++;
-        } else
-        if (3 == c)
-            for (shrineRewardClaimed[c] = 1, hidx = 0; 2 > hidx; hidx++)
+        } else if (3 == c){
+            for (shrineRewardClaimed[c] = 1, hidx = 0; 2 > hidx; hidx++){
                 if (99 > partyLevel) {
                     partyEXPAccum = LevelExpThresholds[partyLevel];
                     partyLevel++;
                     for (b = 0; 4 > b; b++) partySP[b] += 2;
                     levelUpPopupTimer = 60;
                 }
+            }
+        }
     }
     gameFontSmall.a = 2;
     drawScaledTintedText(gameFontSmall, 476, 421, copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);

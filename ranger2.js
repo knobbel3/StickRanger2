@@ -5222,34 +5222,97 @@ function spawnEnemyLoot(a, b, c, d) { // bl
 mainWindow.fff = onEnemyDeath;
 
 function onEnemyDeath(_enemyIdx) { // cl
-    var b;
-    b = abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyLevelCol] - partyLevel);
-    var c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyExpRewardCol] * (100 + partyEnemyHpBonusPercent) / 100);
-    stageMaxEnemyLevel + 10 <= partyLevel ? c = 0 : 10 > b ? c = floor(c * (10 - b) / 10) : c = 1;
-    partyEXPAccum = clamp(partyEXPAccum + c, 0, 9999999);
+    let lvlDiff = abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyLevelCol] - partyLevel);
+    let expRewardValue = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyExpRewardCol] * (100 + partyEnemyHpBonusPercent) / 100);
+    if (stageMaxEnemyLevel + 10 <= partyLevel) {
+        expRewardValue = 0;
+    } else if (10 > lvlDiff) {
+        expRewardValue = floor(expRewardValue * (10 - lvlDiff) / 10);
+    } else {
+        expRewardValue = 1;
+    }
+
+    partyEXPAccum = clamp(partyEXPAccum + expRewardValue, 0, 9999999);
     if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
         partyLevel++;
-        for (b = 0; 4 > b; b++) partySP[b] += 2;
-        levelUpPopupTimer = 60
+        for (let _i = 0; 4 > _i; _i++) partySP[_i] += 2;
+        levelUpPopupTimer = 60;
     }
-    for (b = enemyDropTableStartIdxCol; b < enemyDropTableStartIdxCol + 8; b += 2)
-        if (c = enemyCatalog[enemyTypeArray[_enemyIdx]][b], 0 != c) {
-            var d = floor(100 * (100 + partyDropChanceBonusPercent) / 100);
-            2 == c ? (c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, c, 0)) : rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][b + 1] * 100 < d && 1 > itemForgeLvls[c] && isDropTypeAbsent(c) && spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, c, 1, 0)
-        } c = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyGoldRewardCol] * (100 + partyRewardValueBonusPercent) / 100);
-    1 > 3 * rand() && spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, c, 0);
-    30 != gameScreenState && comboCount++;
-    isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx] &&
+    for (let _dropIdx = enemyDropTableStartIdxCol; _dropIdx < enemyDropTableStartIdxCol + 8; _dropIdx += 2) {
+        let itemIdx = enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx];
+        if (0 != itemIdx) {
+            let randComp = floor(100 * (100 + partyDropChanceBonusPercent) / 100);
+            if (2 == itemIdx) {
+                itemIdx = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * (100 + partyRewardValueBonusPercent) / 100);
+                spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, itemIdx, 0);
+            } else if (rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * 100 < randComp) {
+                if (1 > itemForgeLvls[itemIdx] && isDropTypeAbsent(itemIdx)) {
+                    spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, itemIdx, 1, 0);    
+                }
+            }
+        }
+    }
+    let val = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyGoldRewardCol] * (100 + partyRewardValueBonusPercent) / 100);
+    if (1 > 3 * rand()) {
+        spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, val, 0);
+    }
+    if (30 != gameScreenState) {
+        comboCount++;
+    }
+    if (isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(2);
-    isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(5);
-    3 == currentStage && (8 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(8) && 1800 > gameFrameCounter && IncrementBadgeCount(8), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431)), 15 == enemyTypeArray[_enemyIdx] && (stageEncounterCounter++, 3 == stageEncounterCounter && (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrameCount && IncrementBadgeCount(9), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + floor(consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431))));
-    5 == currentStage && 22 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(18) && 1200 > gameFrameCounter && IncrementBadgeCount(18), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
-    isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(22);
-    !isBadgeIncompleteForCurrentStage(47) || 50 != enemyTypeArray[_enemyIdx] && 52 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(47);
-    51 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(49) && 1500 > gameFrameCounter && IncrementBadgeCount(49), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
+    }
+    if (isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx]) {
+        IncrementBadgeCount(5);
+    }
+    if (3 == currentStage) {
+        if (8 == enemyTypeArray[_enemyIdx]) {
+            if (isBadgeIncompleteForCurrentStage(8) && 1800 > gameFrameCounter) {
+                IncrementBadgeCount(8);
+            }
+            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+        }
+
+        if (15 == enemyTypeArray[_enemyIdx]) {
+            stageEncounterCounter++;
+            if (3 == stageEncounterCounter) {
+                if (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrameCount) {
+                    IncrementBadgeCount(9);    
+                }
+                spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + floor(consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431);
+            }
+        }
+    }
+    if (5 == currentStage) {
+        if (22 == enemyTypeArray[_enemyIdx]) {
+            if (isBadgeIncompleteForCurrentStage(18) && 1200 > gameFrameCounter) {
+                IncrementBadgeCount(18);
+            }
+            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+        }
+    }
+    if (isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[_enemyIdx]) {
+        IncrementBadgeCount(22);    
+    }
+    if (isBadgeIncompleteForCurrentStage(47) && !(50 != enemyTypeArray[_enemyIdx] && 52 != enemyTypeArray[_enemyIdx])) {
+        IncrementBadgeCount(47);
+    }
+    if (51 == enemyTypeArray[_enemyIdx]) {
+        if (isBadgeIncompleteForCurrentStage(49) && 1500 > gameFrameCounter) {
+            IncrementBadgeCount(49);    
+        }
+        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+    }
     !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[_enemyIdx] && 57 != enemyTypeArray[_enemyIdx] && 58 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(52);
-    63 == enemyTypeArray[_enemyIdx] && (isBadgeIncompleteForCurrentStage(58) && 3600 > gameFrameCounter && IncrementBadgeCount(58), spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431));
-    isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[_enemyIdx] && IncrementBadgeCount(69)
+    if (63 == enemyTypeArray[_enemyIdx]) {
+        if (isBadgeIncompleteForCurrentStage(58) && 3600 > gameFrameCounter) {
+            IncrementBadgeCount(58);
+        }
+        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+    }
+    if (isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[_enemyIdx]) {
+        IncrementBadgeCount(69);
+    }
 }
 mainWindow.fff = updateEnemies;
 

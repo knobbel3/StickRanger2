@@ -6518,61 +6518,206 @@ function moveProjectileWithCollision(projIdx, vel) { // km
 mainWindow.fff = updateProjectiles;
 
 function updateProjectiles() { // Bg
-    var a, b, c, d = new Vec2,
-        f = new Vec2,
-        g = new Vec2,
-        h = new Vec2,
-        k = new Vec2,
+    let a, b, c, d = new Vec2(),
+        f = new Vec2(),
+        g = new Vec2(),
+        h = new Vec2(),
+        k = new Vec2(),
         p, t, l;
-    for (a = 0; a < projectileCount; a++)
-        if (-64 > projectilePosition[a].x || 704 < projectilePosition[a].x) deleteProjectile(a--);
-        else if (0 < projectileSpawnDelayFrames[a]) projectileSpawnDelayFrames[a]--;
-        else if (1 == projectileImpactState[a]) projectileImpactAge[a]++, projectileImpactAge[a] >= projectileImpactLifetime[a] && deleteProjectile(a--);
-        else {
-            0 < projectileHomingRange[a] && (b = projectileHomingRange[a], b = 0 <= projectileOwnerIdx[a] ? findEnemyInArea(projectilePosition[a].x, projectilePosition[a].y, b, b) : findNearestPartyMemberInRect(projectilePosition[a].x, projectilePosition[a].y, b, b, 0), -1 != b && (0 <= projectileOwnerIdx[a] ? Vec2Sub(d, enemyJointPosArray[b][0], projectilePosition[a]) : Vec2Sub(d, heroJointPositionsByHero[b][0], projectilePosition[a]), Vec2Norm(d), b = Vec2Mag(projectileVelocity[a]), projectileVelocity[a].x = .85 * projectileVelocity[a].x + .15 * d.x + randFloatRange(-.1, .1), projectileVelocity[a].y = .85 * projectileVelocity[a].y + .15 * d.y + randFloatRange(-.1, .1), Vec2Norm(projectileVelocity[a]), Vec2Scale(projectileVelocity[a], max(b, 1))));
-            0 == projectileAttachJointIndex[a] ? projectileVelocity[a].y += .01 * projectileAcceleration[a] : (-1 == projectileAttachJointIndex[a] ?
-                d.set(projectilePosition[a]) : (c = projectileOwnerIdx[a], l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray, c = 0 <= c ? c : -c - 1, Vec2Sub(d, projectilePosition[a], l[c][projectileAttachJointIndex[a]])), Vec2Norm(d), Vec2Scale(d, .01 * -projectileAcceleration[a]), projectileVelocity[a].add(d));
+    for (a = 0; a < projectileCount; a++){
+        if (-64 > projectilePosition[a].x || 704 < projectilePosition[a].x) {
+            deleteProjectile(a--);
+        } else if (0 < projectileSpawnDelayFrames[a]) {
+            projectileSpawnDelayFrames[a]--;
+        } else if (1 == projectileImpactState[a]) {
+            projectileImpactAge[a]++;
+            if (projectileImpactAge[a] >= projectileImpactLifetime[a]) {
+                deleteProjectile(a--);
+            }
+        } else {
+            if (0 < projectileHomingRange[a]) {
+                b = projectileHomingRange[a];
+                b = 0 <= projectileOwnerIdx[a] ? findEnemyInArea(projectilePosition[a].x, projectilePosition[a].y, b, b) : findNearestPartyMemberInRect(projectilePosition[a].x, projectilePosition[a].y, b, b, 0);
+                if (-1 != b) {
+                    if (0 <= projectileOwnerIdx[a]) {
+                        Vec2Sub(d, enemyJointPosArray[b][0], projectilePosition[a]);
+                    } else {
+                        Vec2Sub(d, heroJointPositionsByHero[b][0], projectilePosition[a]);
+                    }
+                    Vec2Norm(d);
+                    b = Vec2Mag(projectileVelocity[a]);
+                    projectileVelocity[a].x = .85 * projectileVelocity[a].x + .15 * d.x + randFloatRange(-.1, .1);
+                    projectileVelocity[a].y = .85 * projectileVelocity[a].y + .15 * d.y + randFloatRange(-.1, .1);
+                    Vec2Norm(projectileVelocity[a]);
+                    Vec2Scale(projectileVelocity[a], max(b, 1));
+                }
+            }
+            if (0 == projectileAttachJointIndex[a]) {
+                projectileVelocity[a].y += .01 * projectileAcceleration[a];
+            } else {
+                if (-1 == projectileAttachJointIndex[a]) {
+                    d.set(projectilePosition[a]);
+                } else {
+                    c = projectileOwnerIdx[a];
+                    l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray;
+                    c = 0 <= c ? c : -c - 1;
+                    Vec2Sub(d, projectilePosition[a], l[c][projectileAttachJointIndex[a]]);
+                }
+                Vec2Norm(d);
+                Vec2Scale(d, .01 * -projectileAcceleration[a]);
+                projectileVelocity[a].add(d);
+            }
             Vec2Scale(projectileVelocity[a], .01 * projectileVelocityScale[a]);
             b = 0;
-            0 > projectileJointPair[a] ? b = moveProjectileWithCollision(a, d) : projectilePosition[a].add(projectileVelocity[a]);
-            0 > projectileJointPair[a] ? (h.set(projectilePosition[a]), k.set(projectileVelocity[a])) : (c = projectileOwnerIdx[a], p = projectileJointPair[a] >> 8, t = projectileJointPair[a] & 255, l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray, c = 0 <= c ? c : -c - 1, p == t ? (Vec2Add(h, l[c][p], projectilePosition[a]), k.set(projectileVelocity[a])) : (Vec2Sub(g, l[c][t], l[c][p]), Vec2Norm(g), f.set(g), Vec2Rotate(f), h.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + l[c][p].x, h.y = f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + l[c][p].y, k.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y, k.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y));
+            if (0 > projectileJointPair[a]) {
+                b = moveProjectileWithCollision(a, d);
+            } else {
+                projectilePosition[a].add(projectileVelocity[a]);
+            }
+            if (0 > projectileJointPair[a]) {
+                h.set(projectilePosition[a]);
+                k.set(projectileVelocity[a]);
+            } else {
+                c = projectileOwnerIdx[a];
+                p = projectileJointPair[a] >> 8;
+                t = projectileJointPair[a] & 255;
+                l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray;
+                c = 0 <= c ? c : -c - 1;
+                if (p == t) {
+                    Vec2Add(h, l[c][p], projectilePosition[a]);
+                    k.set(projectileVelocity[a]);
+                } else {
+                    Vec2Sub(g, l[c][t], l[c][p]);
+                    Vec2Norm(g);
+                    f.set(g);
+                    Vec2Rotate(f);
+                    h.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + l[c][p].x;
+                    h.y = f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + l[c][p].y;
+                    k.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y;
+                    k.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y;
+                }
+            }
             p = 1;
-            1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a] &&
-                projectileEffectDuration[a] <= randFloat(60) && (p = 0);
-            0 < projectileHitCooldownFrames[a] && (projectileHitCooldownFrames[a]--, p = 0);
+            if (1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a] && projectileEffectDuration[a] <= randFloat(60)) {
+                p = 0;
+            }
+            if (0 < projectileHitCooldownFrames[a]) {
+                projectileHitCooldownFrames[a]--;
+                p = 0;
+            }
             c = -1;
             if (1 == p) {
                 c = 0;
                 if (1 == projectileApplyMode[a] || 2 == projectileApplyMode[a]) c = 1;
-                c = 0 <= projectileOwnerIdx[a] ? applyEffectToEnemies(c, projectileShapeMode[a], projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h, k, projectileHitboxWidth[a], projectileHitboxHeight[a]) : damagePartyMemberInArea(0, projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h.x, h.y, projectileHitboxWidth[a], projectileHitboxHeight[a])
+                c = 0 <= projectileOwnerIdx[a] ? applyEffectToEnemies(c, projectileShapeMode[a], projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h, k, projectileHitboxWidth[a], projectileHitboxHeight[a]) : damagePartyMemberInArea(0, projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h.x, h.y, projectileHitboxWidth[a], projectileHitboxHeight[a]);
             }
-            1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a] && (c = -1);
-            4 == projectileEffectType[a] && 99 == projectileMaxTargets[a] && (c = -1);
-            2 == projectileApplyMode[a] && 1 == projectileImpactAge[a] && (b = 1);
-            if (1 == b || -1 != c)
-                if (projectileImpactState[a] = 1, projectileImpactAge[a] = 0, 1 <= projectileImpactSpawnMode[a] && 9 >= projectileImpactSpawnMode[a])
-                    for (b = 0; b < projectileChildCount[a]; b++) 1 == projectileImpactSpawnMode[a] ? Vec2Set(d, 0, 0) : 2 == projectileImpactSpawnMode[a] || 3 == projectileImpactSpawnMode[a] ? (c = floor(randFloat(512)), p = randFloatRange(.1, projectileChildSpeed[a]), d.x = rotationLUT[c][0] * p, d.y = rotationLUT[c][1] * p, 0 < d.y && 2 == projectileImpactSpawnMode[a] && (d.y = -d.y)) : 4 == projectileImpactSpawnMode[a] && (Vec2Norm(k),
-                        Vec2Scale(k, randFloatRange(.1, .1 * projectileSpawnParam[a])), c = floor(randFloat(512)), p = randFloatRange(0, .1 * projectileChildSpeed[a]), d.x = k.x + rotationLUT[c][0] * p, d.y = k.y + rotationLUT[c][1] * p), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                else if (-1 != c && 20 <= projectileImpactSpawnMode[a] && 29 >= projectileImpactSpawnMode[a])
-                    for (b = 0; b < projectileChildCount[a]; b++) 20 == projectileImpactSpawnMode[a] && (c = floor(512 * Vec2Angle(k) / TAU), c = c + randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]) & 511, d.x = rotationLUT[c][0] * projectileChildSpeed[a], d.y = -rotationLUT[c][1] * projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a],
+            if (1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a]) {
+                c = -1;    
+            }
+            if (4 == projectileEffectType[a] && 99 == projectileMaxTargets[a]) {
+                c = -1;    
+            }
+            if (2 == projectileApplyMode[a] && 1 == projectileImpactAge[a]) {
+                b = 1;
+            }
+            if (1 == b || -1 != c) {
+                projectileImpactState[a] = 1; 
+                projectileImpactAge[a] = 0;
+                if (1 <= projectileImpactSpawnMode[a] && 9 >= projectileImpactSpawnMode[a]) {
+                    for (b = 0; b < projectileChildCount[a]; b++) {
+                        if (1 == projectileImpactSpawnMode[a]) {
+                            Vec2Set(d, 0, 0);
+                        } else if (2 == projectileImpactSpawnMode[a] || 3 == projectileImpactSpawnMode[a]) {
+                            c = floor(randFloat(512));
+                            p = randFloatRange(.1, projectileChildSpeed[a]);
+                            d.x = rotationLUT[c][0] * p;
+                            d.y = rotationLUT[c][1] * p;
+                            if (0 < d.y && 2 == projectileImpactSpawnMode[a]) {
+                                d.y = -d.y;
+                            }
+                        } else if (4 == projectileImpactSpawnMode[a]) {
+                            Vec2Norm(k);
+                            Vec2Scale(k, randFloatRange(.1, .1 * projectileSpawnParam[a]));
+                            c = floor(randFloat(512));
+                            p = randFloatRange(0, .1 * projectileChildSpeed[a]);
+                            d.x = k.x + rotationLUT[c][0] * p;
+                            d.y = k.y + rotationLUT[c][1] * p;
+                        }
+                        spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    } 
+                }
+            } else if (-1 != c && 20 <= projectileImpactSpawnMode[a] && 29 >= projectileImpactSpawnMode[a]) {
+                for (b = 0; b < projectileChildCount[a]; b++) {
+                    if (20 == projectileImpactSpawnMode[a]) {
+                        c = floor(512 * Vec2Angle(k) / TAU);
+                        c = c + randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]) & 511;
+                        d.x = rotationLUT[c][0] * projectileChildSpeed[a];
+                        d.y = -rotationLUT[c][1] * projectileChildSpeed[a];
+                    }
+                    spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a],
                         projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], projectileApplyMode[a], projectileImpactSpawnMode[a], projectileSpawnParam[a], projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], projectileTmplExtraStat1[a], projectileChildCount[a], projectileChildSpeed[a]);
-            0 < projectileImpactAge[a] && projectileImpactAge[a]--;
-            0 == projectileImpactAge[a] && (projectileImpactState[a] = 1);
-            if (10 == projectileImpactSpawnMode[a]) randFloat(60) < projectileChildCount[a] && (Vec2Norm(k), Vec2Scale(k, .1 * projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a],
-                projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (11 == projectileImpactSpawnMode[a]) randFloat(60) < projectileChildCount[a] && (Vec2Norm(k), p = randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]), h.x += k.x * p, h.y += k.y * p, Vec2Rotate(k), Vec2Scale(k, .1 * projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (12 == projectileImpactSpawnMode[a]) randFloat(60) < projectileChildCount[a] && (c = floor(randFloat(512)), p = randFloatRange(.1 * projectileSpawnParam[a], .1 * projectileChildSpeed[a]), k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y,
-                k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            else if (13 == projectileImpactSpawnMode[a]) {
+                }
+            }
+            if (0 < projectileImpactAge[a]) {
+                projectileImpactAge[a]--;
+            }
+            if (0 == projectileImpactAge[a]) {
+                projectileImpactState[a] = 1;
+            }
+            if (10 == projectileImpactSpawnMode[a]) {
+                if (randFloat(60) < projectileChildCount[a]) {
+                    Vec2Norm(k);
+                    Vec2Scale(k, .1 * projectileChildSpeed[a]);
+                    spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a],
+                        projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                }
+            } else if (11 == projectileImpactSpawnMode[a]) {
+                if (randFloat(60) < projectileChildCount[a]) {
+                    Vec2Norm(k);
+                    p = randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]);
+                    h.x += k.x * p;
+                    h.y += k.y * p;
+                    Vec2Rotate(k);
+                    Vec2Scale(k, .1 * projectileChildSpeed[a]);
+                    spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                }
+            } else if (12 == projectileImpactSpawnMode[a]) {
+                if (randFloat(60) < projectileChildCount[a]) {
+                    c = floor(randFloat(512));
+                    p = randFloatRange(.1 * projectileSpawnParam[a], .1 * projectileChildSpeed[a]);
+                    k.x = rotationLUT[c][0] * p;
+                    k.y = rotationLUT[c][1] * p;
+                    spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y,
+                        k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                }
+            } else if (13 == projectileImpactSpawnMode[a]) {
                 if (randFloat(60) < projectileSpawnParam[a])
-                    for (c = floor(randFloat(512)), b = 0; b < projectileChildCount[a]; b++) c = c + floor(512 / projectileChildCount[a]) & 511, p = .1 * projectileChildSpeed[a], k.x = rotationLUT[c][0] * p, k.y = rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                    for (c = floor(randFloat(512)), b = 0; b < projectileChildCount[a]; b++) {
+                        c = c + floor(512 / projectileChildCount[a]) & 511;
+                        p = .1 * projectileChildSpeed[a];
+                        k.x = rotationLUT[c][0] * p;
+                        k.y = rotationLUT[c][1] * p;
+                        spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    }
             } else if (14 == projectileImpactSpawnMode[a]) {
                 if (randFloat(60) < projectileSpawnParam[a] && (c = findEnemyInArea(h.x, h.y, 200, 200), -1 != c))
-                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, Vec2Norm(d), b = 0; b < projectileChildCount[a]; b++) c = floor(randFloat(512)), p = .1 * randFloat(projectileChildCount[a] - 1), k.x = d.x * projectileChildSpeed[a] * .1 + rotationLUT[c][0] * p, k.y = d.y * projectileChildSpeed[a] * .1 + rotationLUT[c][1] * p, spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-            } else 15 == projectileImpactSpawnMode[a] && randFloat(60) < projectileChildCount[a] &&
-                (Vec2Norm(k), Vec2Scale(k, projectileChildSpeed[a]), spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], projectileApplyMode[a], 20, projectileSpawnParam[a], projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], projectileTmplExtraStat1[a], 1, projectileChildSpeed[a]))
+                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, Vec2Norm(d), b = 0; b < projectileChildCount[a]; b++) {
+                        c = floor(randFloat(512));
+                        p = .1 * randFloat(projectileChildCount[a] - 1);
+                        k.x = d.x * projectileChildSpeed[a] * .1 + rotationLUT[c][0] * p;
+                        k.y = d.y * projectileChildSpeed[a] * .1 + rotationLUT[c][1] * p;
+                        spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    }
+            } else if (15 == projectileImpactSpawnMode[a]) {
+                if (randFloat(60) < projectileChildCount[a]) {
+                    Vec2Norm(k);
+                    Vec2Scale(k, projectileChildSpeed[a]);
+                    spawnProjectile(projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], 0, 0, projectileTmplExtraStat1[a], projectileDamageMin[a], projectileDamageMax[a], projectileEffectType[a], projectileEffectDuration[a], projectileApplyMode[a], 20, projectileSpawnParam[a], projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], projectileTmplAuxValueC[a], projectileTmplDisplayStatA[a], projectileTmplAuxValueD[a], projectileTmplFlag[a], projectileTmplParamTime[a], projectileTmplHitCount[a], projectileTmplEffectMode[a], projectileTmplStatA[a], projectileTmplExtraStat1[a], 1, projectileChildSpeed[a]);
+                }
+            }
         }
+    }
 }
 mainWindow.fff = drawProjectiles;
 

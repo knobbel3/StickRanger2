@@ -5041,16 +5041,15 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
         B = centerPos.y - height;
         M = centerPos.x + width;
         J = centerPos.y + height;
-    } else {
-        if (1 == shapeMode) {
-            Vec2Norm(directionVec);
-            Vec2Scale(directionVec, height);
-            w = min(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
-            B = min(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
-            M = max(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
-            J = max(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
-        }
+    } else if (1 == shapeMode) {
+        Vec2Norm(directionVec);
+        Vec2Scale(directionVec, height);
+        w = min(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+        B = min(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
+        M = max(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+        J = max(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
     }
+    
 
     for (height = 0; height < enemyCount; height++)
         if (0 != enemyHealthArray[height]) {
@@ -5105,18 +5104,13 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                     } else {
                         if (0 == effectType) {
                             n = max(1, n - enemyCatalog[enemyTypeArray[height]][enemyPhysResistPctCol]);
+                        } else if (1 == effectType) {
+                            n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyFireResistPctCol] / 100));
+                        } else if (2 == effectType) {
+                            n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100));
                         } else {
-                            if (1 == effectType) {
-                                n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyFireResistPctCol] / 100));
-                            } else {
-                                if (2 == effectType) {
-                                    n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100));
-                                } else {
-                                    3 == effectType && (n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100)));
-                                }
-                            }
+                            3 == effectType && (n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100)));
                         }
-
                         enemyHealthArray[height] = max(enemyHealthArray[height] - n, 0);
                         spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
                         stage_totalDamageDealt += n;

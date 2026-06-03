@@ -1020,6 +1020,10 @@ function gameInit(a, b) {
         keyMapNoShift[160] = 94;
         keyMapShift[160] = 126;
         let _t2;
+        for (_t0 = 0; 276480 > _t0; _t0++) 
+            frameBufferArray[_t0] = 0;
+        
+        // uncheckedSpriteCount is incremented
         for (_t0 = 0; 1024 > _t0; _t0++) randLUT[_t0] = _t0 / 1024;
         for (_t0 = 0; 1024 > _t0; _t0++) {
             _t1 = floor(1024 * rand());
@@ -1030,10 +1034,6 @@ function gameInit(a, b) {
         randSeed = floor(1024 * rand()) & 1023;
         randSeedStep = floor(512 * rand()) | 1;
         // clear frame buffer
-        for (_t0 = 0; 276480 > _t0; _t0++) 
-            frameBufferArray[_t0] = 0;
-        
-        // uncheckedSpriteCount is incremented
         gameFont.f("font.png", 8, 12);
         gameFontSmall.f("font_s.png", 5, 7);
         gameFontMed.f("font_m.png", 6, 8);
@@ -1045,6 +1045,9 @@ function gameInit(a, b) {
         itemsSpriteSheet.f("item.png");
         effectSpriteSheet.f("ef.png");
         medalSpriteSheet.f("medal.png");
+        // hostnameCheck();
+        // iterIdxTemp_3 = 0;
+        // hostnameCheckIdx = hostname.length;
         // if (hostnameCheck()) {
         //     gameInitStage--;
         // } else {
@@ -1052,7 +1055,6 @@ function gameInit(a, b) {
         // }
         gameInitStage++;
     }
-
     if (1 == gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
         loadSprite(gameFont.i);
         loadSprite(gameFontSmall.i);
@@ -1071,7 +1073,6 @@ function gameInit(a, b) {
             gameInitStage++;
         }
     }
-
     if (2 == gameInitStage) {
         if (currentStorage) {
             _t0 = currentStorage.getItem("ranger2");
@@ -1127,8 +1128,7 @@ function gameInit(a, b) {
 mainWindow.fff = drawCanvas;
 
 function drawCanvas() {
-    if (0 < iterIdxTemp_3) iterIdxTemp_3++;
-    else {
+    if (true) {
         var a, b, c, d;
         for (let a = CANVAS_WIDTH * CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
         var d;
@@ -6520,12 +6520,13 @@ function setupAnimRequest() {
         keyJustPressed[a] = keyPressPending[a];
         keyPressPending[a] = false;
     }
+    
     randSeed = randSeed + floor(1024 * rand()) & 1023;
     randSeedStep = floor(512 * rand()) | 1;
 
     drawCanvas();
 
-    var canvasBufferLength = targetHostname.length == hostnameCheckIdx ? CANVAS_WIDTH * CANVAS_HEIGHT : 0;
+    var canvasBufferLength = CANVAS_WIDTH * CANVAS_HEIGHT;
     if (1 <= screenFadeFactor){
         for (a = 0; a < canvasBufferLength; a++) {
             canvasBuffer[a] = 4278190080 | 
@@ -6544,13 +6545,15 @@ function setupAnimRequest() {
     canvasDrawImage(canvasImage, 0, 0);
     requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay());
 }
-var iterIdxTemp_3 = 1;
+var hostNameUnchecked = 1;
 
 /** Checks hostname */
 function hostnameCheck() {
-    if (hostname.length != targetHostname.length) return true;
-    for (iterIdxTemp_3 = 0; hostnameCheckIdx < hostname.length; hostnameCheckIdx++)
-        if (hostname[hostnameCheckIdx] != targetHostname[hostnameCheckIdx]) return true;
+    if (hostname.length != targetHostname.length) 
+        return true;
+    for (hostNameUnchecked = 0; hostnameCheckIdx < hostname.length; hostnameCheckIdx++)
+        if (hostname[hostnameCheckIdx] != targetHostname[hostnameCheckIdx]) 
+            return true;
     return false
 }
 var requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,

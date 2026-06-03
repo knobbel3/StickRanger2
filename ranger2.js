@@ -6239,13 +6239,48 @@ function deleteProjectile(projIdx) { // jm
 }
 mainWindow.fff = moveProjectileWithCollision;
 
-function moveProjectileWithCollision(a, b) { // km
+function moveProjectileWithCollision(projIdx, vel) { // km
     var c = 0;
-    b.set(projectileVelocity[a]);
-    var d = floor(Vec2Mag(b) / 4) + 1;
-    Vec2Scale(b, 1 / d);
-    for (var f, g, h = 0; h < d; h++) f = projectilePosition[a].y + b.y, g = getStageTileAt(projectilePosition[a].x, f), 0 <= g && 29 >= g ? 0 == projectileTileCollisionMode[a] ? c = 1 : 2 == projectileTileCollisionMode[a] ? projectilePosition[a].y = f : 3 == projectileTileCollisionMode[a] ? (b.y = -b.y, projectileVelocity[a].y = -projectileVelocity[a].y) : 4 == projectileTileCollisionMode[a] && (0 < projectileVelocity[a].y ? c = 1 : projectileVelocity[a].y = 0) : projectilePosition[a].y = f, f = projectilePosition[a].x + b.x, g = getStageTileAt(f, projectilePosition[a].y), 0 <= g && 29 >= g ? 0 == projectileTileCollisionMode[a] ? c = 1 : 2 == projectileTileCollisionMode[a] ? projectilePosition[a].x = f : 3 == projectileTileCollisionMode[a] ? (b.x = -b.x, projectileVelocity[a].x = -projectileVelocity[a].x) : 4 == projectileTileCollisionMode[a] && (projectileVelocity[a].x = 0) : projectilePosition[a].x = f;
-    return c
+    vel.set(projectileVelocity[projIdx]);
+    var d = floor(Vec2Mag(vel) / 4) + 1;
+    Vec2Scale(vel, 1 / d);
+    for (var f, g, h = 0; h < d; h++) {
+        f = projectilePosition[projIdx].y + vel.y;
+        g = getStageTileAt(projectilePosition[projIdx].x, f);
+        if (0 <= g && 29 >= g) {
+            if (0 == projectileTileCollisionMode[projIdx]) {
+                c = 1;
+            } else if (2 == projectileTileCollisionMode[projIdx]) {
+                projectilePosition[projIdx].y = f;
+            } else if (3 == projectileTileCollisionMode[projIdx]) {
+                vel.y = -vel.y;
+                projectileVelocity[projIdx].y = -projectileVelocity[projIdx].y;
+            } else if (4 == projectileTileCollisionMode[projIdx] && 0 < projectileVelocity[projIdx].y) {
+                c = 1;
+            } else {
+                projectileVelocity[projIdx].y = 0;
+            }
+        } else {
+            projectilePosition[projIdx].y = f;
+        }
+        f = projectilePosition[projIdx].x + vel.x;
+        g = getStageTileAt(f, projectilePosition[projIdx].y);
+        if (0 <= g && 29 >= g) {
+            if (0 == projectileTileCollisionMode[projIdx]) {
+                c = 1;
+            } else if (2 == projectileTileCollisionMode[projIdx]) {
+                projectilePosition[projIdx].x = f;
+            } else if (3 == projectileTileCollisionMode[projIdx]) {
+                vel.x = -vel.x;
+                projectileVelocity[projIdx].x = -projectileVelocity[projIdx].x;
+            } else if (4 == projectileTileCollisionMode[projIdx]) {
+                projectileVelocity[projIdx].x = 0;
+            }
+        } else {
+            projectilePosition[projIdx].x = f;
+        }
+    }
+    return c;
 }
 mainWindow.fff = updateProjectiles;
 

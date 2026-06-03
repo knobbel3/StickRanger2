@@ -6327,25 +6327,26 @@ function clearDrops() { // bj
 }
 mainWindow.fff = spawnDrop;
 
-function spawnDrop(a, b, c, d, f) { // Gh
-    if (100 != dropCount)
+function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
+    if (100 != dropCount) {
+        _x = clamp(_x, 16, 623);
+        _y = clamp(_y, 8, 351);
+        Vec2Set(dropPos[dropCount], _x, _y);
+        dropVel[dropCount].x = mouseXCurrent < _x ?
+            randFloatRange(-.5, -1) :
+            randFloatRange(.5, 1);
+        dropVel[dropCount].y = randFloatRange(-1, -2);
+        dropType[dropCount] = _tidx;
+        dropValue[dropCount] = _val;
+        dropMeta[dropCount] = _meta;
+        dropState[dropCount] = 0;
+        dropCount++;
         for (
-            a = clamp(a, 16, 623), 
-            b = clamp(b, 8, 351), 
-            Vec2Set(dropPos[dropCount], a, b), 
-            dropVel[dropCount].x = (mouseXCurrent < a) 
-                        ? randFloatRange(-.5, -1) 
-                        : randFloatRange(.5, 1), 
-            dropVel[dropCount].y = randFloatRange(-1, -2), 
-            dropType[dropCount] = c, 
-            dropValue[dropCount] = d, 
-            dropMeta[dropCount] = f, 
-            dropState[dropCount] = 0, 
-            dropCount++, 
-            c = dropScore = 0; // end initialization
-            c < dropCount; // condition
-            c++ // repeat
-        ) dropScore += 7 * dropType[c] + 3 * dropValue[c] + 11 * dropMeta[c]
+            _tidx = dropScore = 0; // end initialization
+            _tidx < dropCount; // condition
+            _tidx++ // repeat
+        ) dropScore += 7 * dropType[_tidx] + 3 * dropValue[_tidx] + 11 * dropMeta[_tidx];
+    }
 }
 mainWindow.fff = removeDrop;
 

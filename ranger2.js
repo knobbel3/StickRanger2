@@ -6065,57 +6065,216 @@ function drawEnemies() { // Cg
 mainWindow.fff = drawEnemyStatic;
 
 function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
-    var f = enemyCatalog[_typeIdx][enemyBehaviorIdxCol],
-        g = enemyCatalog[_typeIdx][enemySpriteIndexCol],
-        h = enemyCatalog[_typeIdx][enemyPrimaryTintCol],
-        k = enemyCatalog[_typeIdx][enemySecondaryTintCol],
-        p = enemyCatalog[_typeIdx][enemyAccentTintCol];
+    let behaviorIdx = enemyCatalog[_typeIdx][enemyBehaviorIdxCol],
+        spriteIdx = enemyCatalog[_typeIdx][enemySpriteIndexCol],
+        primTint = enemyCatalog[_typeIdx][enemyPrimaryTintCol],
+        secTint = enemyCatalog[_typeIdx][enemySecondaryTintCol],
+        accentTint = enemyCatalog[_typeIdx][enemyAccentTintCol];
     _scale = clamp(enemyCatalog[_typeIdx][enemyDrawScaleCol], 1, _scale);
-    var t = enemySpriteAnchorYBySpriteIndex[g],
-        l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        n = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    if (f == enemySlimeBehaviorIdx) drawEnemyScaledSprite(_px + 0 * _scale, _py - t * _scale + 1, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == enemyBoxSnakeBehaviorIdx) drawRectCentered(_px + 5 * _scale, _py - 4 * _scale, 4 * _scale, 4 * _scale, p), drawRectCentered(_px + 2 * _scale, _py - 10 * _scale, 5 * _scale, 5 * _scale, p), drawEnemyScaledSprite(_px - 4 * _scale, _py - 11 * _scale, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == enemyBatBehaviorIdx) l[0] = _px + 0 * _scale, n[0] = _py - 8 * _scale, l[1] = _px - 4 * _scale, n[1] = _py - 8 * _scale, l[2] = _px - 9 * _scale, n[2] = _py - 9 * _scale, l[3] = _px - 7 * _scale, n[3] = _py - 4 * _scale, l[4] = _px + 3 * _scale, n[4] = _py - 8 * _scale, l[5] = _px + 9 * _scale, n[5] = _py - 10 * _scale,
-        l[6] = _px + 7 * _scale, n[6] = _py - 4 * _scale, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[5], n[5], l[6], n[6], p), drawLine(l[6], n[6], l[4], n[4], p), drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == enemyDragonBehaviorIdx) l[0] = _px - 3 * _scale, n[0] = _py - 10 * _scale, l[1] = _px + 1 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 4 * _scale, n[2] = _py - 8 * _scale, l[3] = _px + 5 * _scale, n[3] = _py - 6 * _scale, l[4] = _px + 5 * _scale, n[4] = _py - 4 * _scale, l[5] = _px + 3 * _scale, n[5] = _py - 1 * _scale, drawLine(l[0], n[0], l[1], n[1], p), drawLine(l[4], n[4], l[5], n[5], p), drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[2], n[2], l[3], n[3], p), drawLine(l[3], n[3], l[4], n[4], p), drawRectCentered(floor(l[5]),
-        floor(n[5]), floor(2 * _scale), floor(2 * _scale), h), drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == enemyStickmanBehaviorIdx) l[0] = _px + 0 * _scale, n[0] = _py - 15 * _scale, l[1] = _px + 0 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 0 * _scale, n[2] = _py - 7 * _scale, l[3] = _px - 2 * _scale, n[3] = _py - 8 * _scale, l[4] = _px + 3 * _scale, n[4] = _py - 11 * _scale, l[5] = _px - 5 * _scale, n[5] = _py - 7 * _scale, l[6] = _px + 5 * _scale, n[6] = _py - 8 * _scale, l[7] = _px - 3 * _scale, n[7] = _py - 3 * _scale, l[8] = _px + 3 * _scale, n[8] = _py - 5 * _scale, l[9] = _px - 1 * _scale, n[9] = _py - 1 * _scale, l[10] = _px + 2 * _scale, n[10] = _py - 0 * _scale, drawLine(l[1], n[1], l[2], n[2], p), drawLine(l[1], n[1], l[3], n[3], p), drawLine(l[1], n[1], l[4], n[4], p), drawLine(l[3], n[3], l[5], n[5], p), drawLine(l[4], n[4], l[6], n[6], p), drawLine(l[2], n[2], l[7], n[7], p), drawLine(l[2], n[2],
-        l[8], n[8], p), drawLine(l[7], n[7], l[9], n[9], p), drawLine(l[8], n[8], l[10], n[10], p), drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == enemyTreeBehaviorLeftIdx) drawRectOutlineCentered(_px + 0, _py + 0, 5, 5, p), drawRectOutlineCentered(_px - 1, _py - 6, 5, 5, p), drawRectOutlineCentered(_px + 0, _py - 12, 5, 5, p), drawEnemyScaledSprite(_px + 0, _py - 18, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255);
-    else if (f == enemyTreeBehaviorRightIdx) drawRectOutlineCentered(_px + 0, _py - 17, 5, 5, p), drawRectOutlineCentered(_px - 1, _py - 11, 5, 5, p), drawRectOutlineCentered(_px + 0, _py - 5, 5, 5, p), drawEnemyScaledSprite(_px + 0, _py + 1, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3) + 16, -16, h, k, 255);
-    else if (f == enemyHangingTreeBehaviorIdx) {
-        l[0] = _px + 0 * _scale;
-        n[0] = _py - 10 * _scale;
-        l[1] = _px - 7 * _scale;
-        n[1] = _py - 19 * _scale;
-        l[2] = _px + 5 * _scale;
-        n[2] = _py - 21 * _scale;
-        l[3] = _px + 12 * _scale;
-        n[3] = _py - 12 * _scale;
-        l[4] = _px + 7 * _scale;
-        n[4] = _py - 2 * _scale;
-        l[5] =
+    let yAnchor = enemySpriteAnchorYBySpriteIndex[spriteIdx],
+        posY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        posX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    if (behaviorIdx == enemySlimeBehaviorIdx) {
+        drawEnemyScaledSprite(
+            _px + 0 * _scale, _py - yAnchor * _scale + 1, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 
+            16 * (spriteIdx >> 3), 16, primTint, secTint, 255
+        );
+    } else if (behaviorIdx == enemyBoxSnakeBehaviorIdx) {
+        drawRectCentered(_px + 5 * _scale, _py - 4 * _scale, 4 * _scale, 4 * _scale, accentTint);
+        drawRectCentered(_px + 2 * _scale, _py - 10 * _scale, 5 * _scale, 5 * _scale, accentTint);
+        drawEnemyScaledSprite(
+            _px - 4 * _scale, _py - 11 * _scale, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 
+            16 * (spriteIdx >> 3), 16, primTint, secTint, 255
+    );
+    } else if (behaviorIdx == enemyBatBehaviorIdx) {
+        posY[0] = _px + 0 * _scale;
+        posX[0] = _py - 8 * _scale;
+        posY[1] = _px - 4 * _scale;
+        posX[1] = _py - 8 * _scale;
+        posY[2] = _px - 9 * _scale;
+        posX[2] = _py - 9 * _scale;
+        posY[3] = _px - 7 * _scale;
+        posX[3] = _py - 4 * _scale;
+        posY[4] = _px + 3 * _scale;
+        posX[4] = _py - 8 * _scale;
+        posY[5] = _px + 9 * _scale;
+        posX[5] = _py - 10 * _scale;
+        posY[6] = _px + 7 * _scale;
+        posX[6] = _py - 4 * _scale;
+        drawLine(posY[1], posX[1], posY[2], posX[2], accentTint);
+        drawLine(posY[2], posX[2], posY[3], posX[3], accentTint);
+        drawLine(posY[3], posX[3], posY[1], posX[1], accentTint);
+        drawLine(posY[4], posX[4], posY[5], posX[5], accentTint);
+        drawLine(posY[5], posX[5], posY[6], posX[6], accentTint);
+        drawLine(posY[6], posX[6], posY[4], posX[4], accentTint);
+        drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
+    } else if (behaviorIdx == enemyDragonBehaviorIdx) {
+        posY[0] = _px - 3 * _scale;
+        posX[0] = _py - 10 * _scale;
+        posY[1] = _px + 1 * _scale;
+        posX[1] = _py - 10 * _scale;
+        posY[2] = _px + 4 * _scale;
+        posX[2] = _py - 8 * _scale;
+        posY[3] = _px + 5 * _scale;
+        posX[3] = _py - 6 * _scale;
+        posY[4] = _px + 5 * _scale;
+        posX[4] = _py - 4 * _scale;
+        posY[5] = _px + 3 * _scale;
+        posX[5] = _py - 1 * _scale;
+        drawLine(posY[0], posX[0], posY[1], posX[1], accentTint);
+        drawLine(posY[4], posX[4], posY[5], posX[5], accentTint);
+        drawLine(posY[1], posX[1], posY[2], posX[2], accentTint);
+        drawLine(posY[2], posX[2], posY[3], posX[3], accentTint);
+        drawLine(posY[3], posX[3], posY[4], posX[4], accentTint);
+        drawRectCentered(floor(posY[5]),
+            floor(posX[5]), floor(2 * _scale), floor(2 * _scale), primTint);
+        drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
+    } else if (behaviorIdx == enemyStickmanBehaviorIdx) {
+        posY[0] = _px + 0 * _scale;
+        posX[0] = _py - 15 * _scale;
+        posY[1] = _px + 0 * _scale;
+        posX[1] = _py - 10 * _scale;
+        posY[2] = _px + 0 * _scale;
+        posX[2] = _py - 7 * _scale;
+        posY[3] = _px - 2 * _scale;
+        posX[3] = _py - 8 * _scale;
+        posY[4] = _px + 3 * _scale;
+        posX[4] = _py - 11 * _scale;
+        posY[5] = _px - 5 * _scale;
+        posX[5] = _py - 7 * _scale;
+        posY[6] = _px + 5 * _scale;
+        posX[6] = _py - 8 * _scale;
+        posY[7] = _px - 3 * _scale;
+        posX[7] = _py - 3 * _scale;
+        posY[8] = _px + 3 * _scale;
+        posX[8] = _py - 5 * _scale;
+        posY[9] = _px - 1 * _scale;
+        posX[9] = _py - 1 * _scale;
+        posY[10] = _px + 2 * _scale;
+        posX[10] = _py - 0 * _scale;
+        drawLine(posY[1], posX[1], posY[2], posX[2], accentTint);
+        drawLine(posY[1], posX[1], posY[3], posX[3], accentTint);
+        drawLine(posY[1], posX[1], posY[4], posX[4], accentTint);
+        drawLine(posY[3], posX[3], posY[5], posX[5], accentTint);
+        drawLine(posY[4], posX[4], posY[6], posX[6], accentTint);
+        drawLine(posY[2], posX[2], posY[7], posX[7], accentTint);
+        drawLine(posY[2], posX[2],
+            posY[8], posX[8], accentTint);
+        drawLine(posY[7], posX[7], posY[9], posX[9], accentTint);
+        drawLine(posY[8], posX[8], posY[10], posX[10], accentTint);
+        drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
+    } else if (behaviorIdx == enemyTreeBehaviorLeftIdx) {
+        drawRectOutlineCentered(_px + 0, _py + 0, 5, 5, accentTint);
+        drawRectOutlineCentered(_px - 1, _py - 6, 5, 5, accentTint);
+        drawRectOutlineCentered(_px + 0, _py - 12, 5, 5, accentTint);
+        drawEnemyScaledSprite(_px + 0, _py - 18, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
+    } else if (behaviorIdx == enemyTreeBehaviorRightIdx) {
+        drawRectOutlineCentered(_px + 0, _py - 17, 5, 5, accentTint);
+        drawRectOutlineCentered(_px - 1, _py - 11, 5, 5, accentTint);
+        drawRectOutlineCentered(_px + 0, _py - 5, 5, 5, accentTint);
+        drawEnemyScaledSprite(_px + 0, _py + 1, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3) + 16, -16, primTint, secTint, 255);
+    } else if (behaviorIdx == enemyHangingTreeBehaviorIdx) {
+        posY[0] = _px + 0 * _scale;
+        posX[0] = _py - 10 * _scale;
+        posY[1] = _px - 7 * _scale;
+        posX[1] = _py - 19 * _scale;
+        posY[2] = _px + 5 * _scale;
+        posX[2] = _py - 21 * _scale;
+        posY[3] = _px + 12 * _scale;
+        posX[3] = _py - 12 * _scale;
+        posY[4] = _px + 7 * _scale;
+        posX[4] = _py - 2 * _scale;
+        posY[5] =
             _px - 5 * _scale;
-        n[5] = _py - 0 * _scale;
-        l[6] = _px - 12 * _scale;
-        n[6] = _py - 10 * _scale;
-        for (_px = 1; 6 > _px; _px++) drawLine(l[_px], n[_px], l[_px + 1], n[_px + 1], k);
-        drawLine(l[_px], n[_px], l[1], n[1], k);
-        drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * _scale), floor(16 * _scale), 16 * (g & 7), 16 * (g >> 3), 16, 16, h)
-    } else if (f == enemyUpdateFunc7Idx) {
-        f = enemyCatalog[_typeIdx][enemyShapeParamACol];
+        posX[5] = _py - 0 * _scale;
+        posY[6] = _px - 12 * _scale;
+        posX[6] = _py - 10 * _scale;
+        for (_px = 1; 6 > _px; _px++) drawLine(posY[_px], posX[_px], posY[_px + 1], posX[_px + 1], secTint);
+        drawLine(posY[_px], posX[_px], posY[1], posX[1], secTint);
+        drawSpriteSheetPartCentered(
+            enemySpriteSheet, floor(posY[0]), floor(posX[0]), floor(16 * _scale), floor(16 * _scale), 
+            16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
+        );
+    } else if (behaviorIdx == enemyUpdateFunc7Idx) {
+        behaviorIdx = enemyCatalog[_typeIdx][enemyShapeParamACol];
         _typeIdx = enemyCatalog[_typeIdx][enemyShapeParamBCol];
-        l[0] = _px + 0 * _scale;
-        n[0] = _py - 10 * _scale;
-        for (_px = 0; _px < f; _px++) _py = 360 * _px / f * PI / 180, l[_px + 1] = l[0] + Math.cos(_py) * _typeIdx * _scale, n[_px + 1] = n[0] + Math.sin(_py) * _typeIdx * _scale;
-        for (_px = 1; _px < f; _px++) drawLine(l[_px], n[_px], l[_px + 1], n[_px + 1], p);
-        drawLine(l[_px], n[_px], l[1], n[1], p);
-        drawEnemyScaledSprite(l[0], n[0], 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)
-    } else f == enemyUpdateFunc9Idx ? (l[0] = _px + 0 * _scale, n[0] = _py - 6 * _scale, l[1] = _px - 9 * _scale, n[1] = _py -
-        9 * _scale, l[2] = _px - 7 * _scale, n[2] = _py - 0 * _scale, l[3] = _px + 9 * _scale, n[3] = _py - 9 * _scale, l[4] = _px + 7 * _scale, n[4] = _py - 0 * _scale, l[5] = _px - 7 * _scale, n[5] = _py - 5 * _scale, l[6] = _px - 5 * _scale, n[6] = _py - 0 * _scale, l[7] = _px + 7 * _scale, n[7] = _py - 5 * _scale, l[8] = _px + 5 * _scale, n[8] = _py - 0 * _scale, drawLine(floor(l[0]), floor(n[0]), floor(l[1]), floor(n[1]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[3]), floor(n[3]), k), drawLine(floor(l[1]), floor(n[1]), floor(l[2]), floor(n[2]), k), drawLine(floor(l[3]), floor(n[3]), floor(l[4]), floor(n[4]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[5]), floor(n[5]), k), drawLine(floor(l[0]), floor(n[0]), floor(l[7]), floor(n[7]), k), drawLine(floor(l[5]), floor(n[5]), floor(l[6]), floor(n[6]), k), drawLine(floor(l[7]), floor(n[7]), floor(l[8]), floor(n[8]), k), drawSpriteSheetPartCentered(enemySpriteSheet, floor(l[0]), floor(n[0]), floor(16 * _scale), floor(16 * _scale), 16 * (g & 7),
-            16 * (g >> 3), 16, 16, h)) : f == enemyUpdateFunc10Idx ? (drawLine(_px + 5 * _scale, _py - 6 * _scale, _px + 8 * _scale, _py - 11 * _scale, p), drawLine(_px + 8 * _scale, _py - 11 * _scale, _px + 10 * _scale, _py - 3 * _scale, p), drawLine(_px + 10 * _scale, _py - 3 * _scale, _px + 5 * _scale, _py - 6 * _scale, p), drawRectOutlineCentered(_px + 0 * _scale, _py - 9 * _scale, 6 * _scale + 1, 6 * _scale + 1, p), drawEnemyScaledSprite(_px - 5 * _scale, _py - 13 * _scale, 16 * _scale, 16 * _scale, 16 * (g & 7), 16 * (g >> 3), 16, h, k, 255)) : f == enemyStickmanBehaviorAltIdx && (l[0] = _px + 0 * _scale, n[0] = _py - 16 * _scale, l[1] = _px + 0 * _scale, n[1] = _py - 10 * _scale, l[2] = _px + 2 * _scale, n[2] = _py - 7 * _scale, l[3] = _px - 2 * _scale, n[3] = _py - 8 * _scale, l[4] = _px - 3 * _scale, n[4] = _py - 11 * _scale, l[5] = _px - 5 * _scale, n[5] = _py - 7 * _scale, l[6] = _px - 8 * _scale, n[6] = _py - 10 * _scale, l[7] = _px - 1 * _scale, n[7] = _py - 4 * _scale, l[8] = _px + 2 * _scale, n[8] = _py - 5 * _scale, l[9] = _px - 0 * _scale, n[9] = _py - 1 * _scale, l[10] = _px + 4 * _scale, n[10] = _py - 0 * _scale)
+        posY[0] = _px + 0 * _scale;
+        posX[0] = _py - 10 * _scale;
+        for (_px = 0; _px < behaviorIdx; _px++) {
+            _py = 360 * _px / behaviorIdx * PI / 180;
+            posY[_px + 1] = posY[0] + Math.cos(_py) * _typeIdx * _scale;
+            posX[_px + 1] = posX[0] + Math.sin(_py) * _typeIdx * _scale;
+        }
+        for (_px = 1; _px < behaviorIdx; _px++) 
+            drawLine(posY[_px], posX[_px], posY[_px + 1], posX[_px + 1], accentTint);
+        drawLine(posY[_px], posX[_px], posY[1], posX[1], accentTint);
+        drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
+    } else if (behaviorIdx == enemyUpdateFunc9Idx) {
+        posY[0] = _px + 0 * _scale;
+        posX[0] = _py - 6 * _scale;
+        posY[1] = _px - 9 * _scale;
+        posX[1] = _py - 9 * _scale;
+        posY[2] = _px - 7 * _scale;
+        posX[2] = _py - 0 * _scale;
+        posY[3] = _px + 9 * _scale;
+        posX[3] = _py - 9 * _scale;
+        posY[4] = _px + 7 * _scale;
+        posX[4] = _py - 0 * _scale;
+        posY[5] = _px - 7 * _scale;
+        posX[5] = _py - 5 * _scale;
+        posY[6] = _px - 5 * _scale;
+        posX[6] = _py - 0 * _scale;
+        posY[7] = _px + 7 * _scale;
+        posX[7] = _py - 5 * _scale;
+        posY[8] = _px + 5 * _scale;
+        posX[8] = _py - 0 * _scale;
+        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[1]), floor(posX[1]), secTint);
+        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[3]), floor(posX[3]), secTint);
+        drawLine(floor(posY[1]), floor(posX[1]), floor(posY[2]), floor(posX[2]), secTint);
+        drawLine(floor(posY[3]), floor(posX[3]), floor(posY[4]), floor(posX[4]), secTint);
+        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[5]), floor(posX[5]), secTint);
+        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[7]), floor(posX[7]), secTint);
+        drawLine(floor(posY[5]), floor(posX[5]), floor(posY[6]), floor(posX[6]), secTint);
+        drawLine(floor(posY[7]), floor(posX[7]), floor(posY[8]), floor(posX[8]), secTint);
+        drawSpriteSheetPartCentered(
+            enemySpriteSheet, floor(posY[0]), floor(posX[0]), floor(16 * _scale), floor(16 * _scale), 
+            16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
+        );
+    } else if (behaviorIdx == enemyUpdateFunc10Idx) {
+        drawLine(_px + 5 * _scale, _py - 6 * _scale, _px + 8 * _scale, _py - 11 * _scale, accentTint);
+        drawLine(_px + 8 * _scale, _py - 11 * _scale, _px + 10 * _scale, _py - 3 * _scale, accentTint);
+        drawLine(_px + 10 * _scale, _py - 3 * _scale, _px + 5 * _scale, _py - 6 * _scale, accentTint);
+        drawRectOutlineCentered(_px + 0 * _scale, _py - 9 * _scale, 6 * _scale + 1, 6 * _scale + 1, accentTint);
+        drawEnemyScaledSprite(
+            _px - 5 * _scale, _py - 13 * _scale, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 
+            16 * (spriteIdx >> 3), 16, primTint, secTint, 255
+        );
+    } else if (behaviorIdx == enemyStickmanBehaviorAltIdx) {
+        posY[0] = _px + 0 * _scale;
+        posX[0] = _py - 16 * _scale;
+        posY[1] = _px + 0 * _scale;
+        posX[1] = _py - 10 * _scale;
+        posY[2] = _px + 2 * _scale;
+        posX[2] = _py - 7 * _scale;
+        posY[3] = _px - 2 * _scale;
+        posX[3] = _py - 8 * _scale;
+        posY[4] = _px - 3 * _scale;
+        posX[4] = _py - 11 * _scale;
+        posY[5] = _px - 5 * _scale;
+        posX[5] = _py - 7 * _scale;
+        posY[6] = _px - 8 * _scale;
+        posX[6] = _py - 10 * _scale;
+        posY[7] = _px - 1 * _scale;
+        posX[7] = _py - 4 * _scale;
+        posY[8] = _px + 2 * _scale;
+        posX[8] = _py - 5 * _scale;
+        posY[9] = _px - 0 * _scale;
+        posX[9] = _py - 1 * _scale;
+        posY[10] = _px + 4 * _scale;
+        posX[10] = _py - 0 * _scale;
+    }
 }
+
 var projectileCount = 0,
     projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
     projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.

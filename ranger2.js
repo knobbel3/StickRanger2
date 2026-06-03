@@ -5935,58 +5935,138 @@ function enemyUpdateFunc9(enemyIdx) {
 mainWindow.fff = drawEnemies;
 
 function drawEnemies() { // Cg
-    var a, b;
-    for (a = 0; a < enemyCount; a++) {
-        var c = enemyCatalog[enemyTypeArray[a]][enemySpriteIndexCol],
-            d = enemyCatalog[enemyTypeArray[a]][enemyPrimaryTintCol],
-            f = enemyCatalog[enemyTypeArray[a]][enemySecondaryTintCol],
-            g = enemyCatalog[enemyTypeArray[a]][enemyAccentTintCol];
-        b = enemyCatalog[enemyTypeArray[a]][enemyDrawScaleCol];
-        var h = enemySpriteAnchorYBySpriteIndex[c];
-        0 < enemyFreezeTimerArray[a] ? (d = 5934817, f = 1989840) : 0 < enemySkipDurationLeftArray[a] ? (d = 3368652, g = f = 13158) : 0 < enemyDmgDurationLeftArray[a] && (d = 3407616, g = f = 3381504);
-        var k = (150 - enemyDeathTimerArray[a]) / 150 * b;
-        if (enemyUpdateFuncIdxArray[a] == enemySlimeBehaviorIdx) 3 > enemyPoseTrailWriteIdxArray[a] ? drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y - h * b + 1, 16 * b, 16 * b, 16 * (c & 7), 16 * (c >> 3) + 15, -15, d, f, floor(128 * (50 - enemyDeathTimerArray[a]) / 50));
-        else if (enemyUpdateFuncIdxArray[a] == enemyBoxSnakeBehaviorIdx) drawRectCentered(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y - 2 * k, 4 * k, 4 * k, g), drawRectCentered(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y -
-            2.5 * k, 5 * k, 5 * k, g), 3 > enemyPoseTrailWriteIdxArray[a] && (k = max(1, k)), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y - h * k + 1, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (enemyUpdateFuncIdxArray[a] == enemyBatBehaviorIdx) drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, g), drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, g), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, g), drawLine(enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, g), drawLine(enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, g), drawLine(enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, g), 3 > enemyPoseTrailWriteIdxArray[a] && (k = max(1, k)), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (enemyUpdateFuncIdxArray[a] == enemyDragonBehaviorIdx) {
-            b = 0;
-            h = enemyPoseTrailWriteIdxArray[a] - 1;
-            20 < enemyPoseTrailWriteIdxArray[a] && (b = 1, h = enemyPoseTrailWriteIdxArray[a] - 20 - 1);
-            for (; b < h; b++) drawLine(enemyJointPosArray[a][b].x, enemyJointPosArray[a][b].y, enemyJointPosArray[a][b + 1].x, enemyJointPosArray[a][b + 1].y, g);
-            drawRectCentered(floor(enemyJointPosArray[a][h].x) + 1, floor(enemyJointPosArray[a][h].y) + 1, floor(2 * k), floor(2 * k), d);
-            drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
-        } else if (enemyUpdateFuncIdxArray[a] == enemyStickmanBehaviorIdx || enemyUpdateFuncIdxArray[a] == enemyStickmanBehaviorAltIdx) drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, g), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, g), drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, g)), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, g), drawLine(enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, g), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y,
-            enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, g), drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, enemyJointPosArray[a][8].x, enemyJointPosArray[a][8].y, g)), drawLine(enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, enemyJointPosArray[a][9].x, enemyJointPosArray[a][9].y, g), drawLine(enemyJointPosArray[a][8].x, enemyJointPosArray[a][8].y, enemyJointPosArray[a][10].x, enemyJointPosArray[a][10].y, g), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255);
-        else if (enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorRightIdx) {
-            h = enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorLeftIdx ? -2 : 2;
-            for (b = 20 >= enemyPoseTrailWriteIdxArray[a] ? enemyPoseTrailWriteIdxArray[a] - 1 : enemyPoseTrailWriteIdxArray[a] - 21; 0 < b; b--) drawRectOutlineCentered(floor(enemyJointPosArray[a][b].x), floor(enemyJointPosArray[a][b].y + h), 5, 5, g);
-            enemyUpdateFuncIdxArray[a] == enemyTreeBehaviorLeftIdx ? drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255) : drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3) + 16, -16, d, f, 255)
-        } else if (enemyUpdateFuncIdxArray[a] ==
-            enemyHangingTreeBehaviorIdx) {
-            for (b = 1; 6 > b; b++) drawLine(enemyJointPosArray[a][b].x, enemyJointPosArray[a][b].y, enemyJointPosArray[a][b + 1].x, enemyJointPosArray[a][b + 1].y, f);
-            3 > enemyPoseTrailWriteIdxArray[a] && drawLine(enemyJointPosArray[a][b].x, enemyJointPosArray[a][b].y, enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, f);
-            drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[a][0].x), floor(enemyJointPosArray[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)
-        } else if (enemyUpdateFuncIdxArray[a] == enemyUpdateFunc7Idx) {
-            h = enemyCatalog[enemyTypeArray[a]][enemyShapeParamACol];
-            for (b = 1; b < h; b++) drawLine(enemyJointPosArray[a][b].x - 1, enemyJointPosArray[a][b].y - 1, enemyJointPosArray[a][b + 1].x - 1, enemyJointPosArray[a][b + 1].y - 1, g);
-            drawLine(enemyJointPosArray[a][b].x - 1, enemyJointPosArray[a][b].y - 1, enemyJointPosArray[a][1].x - 1, enemyJointPosArray[a][1].y - 1, g);
-            drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255)
-        } else enemyUpdateFuncIdxArray[a] == enemyUpdateFunc9Idx ? (drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, f), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, f), drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, f)), drawLine(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, f), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, f), 3 > enemyPoseTrailWriteIdxArray[a] && (drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, f), drawLine(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, f)), drawLine(enemyJointPosArray[a][5].x, enemyJointPosArray[a][5].y, enemyJointPosArray[a][6].x, enemyJointPosArray[a][6].y, f), drawLine(enemyJointPosArray[a][7].x, enemyJointPosArray[a][7].y, enemyJointPosArray[a][8].x, enemyJointPosArray[a][8].y, f), drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[a][0].x), floor(enemyJointPosArray[a][0].y), floor(16 * k), floor(16 * k), 16 * c, 0, 16, 16, d)) : enemyUpdateFuncIdxArray[a] == enemyUpdateFunc10Idx && (drawLine(enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, g), drawLine(enemyJointPosArray[a][3].x, enemyJointPosArray[a][3].y, enemyJointPosArray[a][4].x,
-            enemyJointPosArray[a][4].y, g), drawLine(enemyJointPosArray[a][4].x, enemyJointPosArray[a][4].y, enemyJointPosArray[a][2].x, enemyJointPosArray[a][2].y, g), drawRectOutlineCentered(enemyJointPosArray[a][1].x, enemyJointPosArray[a][1].y, 6 * k + 1, 6 * k + 1, g), 3 > enemyPoseTrailWriteIdxArray[a] && (k = max(1, k)), drawEnemyScaledSprite(enemyJointPosArray[a][0].x, enemyJointPosArray[a][0].y, 16 * k, 16 * k, 16 * (c & 7), 16 * (c >> 3), 16, d, f, 255))
+    for (let enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
+        let sprIdx = enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol],
+            primTint = enemyCatalog[enemyTypeArray[enemyIdx]][enemyPrimaryTintCol],
+            secTint = enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryTintCol],
+            accentTint = enemyCatalog[enemyTypeArray[enemyIdx]][enemyAccentTintCol];
+        let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+        let yAnchor = enemySpriteAnchorYBySpriteIndex[sprIdx];
+        if (0 < enemyFreezeTimerArray[enemyIdx]) {
+            primTint = 5934817;
+            secTint = 1989840;
+        } else if (0 < enemySkipDurationLeftArray[enemyIdx]) {
+            primTint = 3368652;
+            accentTint = secTint = 13158;
+        } else if (0 < enemyDmgDurationLeftArray[enemyIdx]) {
+            primTint = 3407616;
+            accentTint = secTint = 3381504;
+        }
+        
+        let k = (150 - enemyDeathTimerArray[enemyIdx]) / 150 * drawScale;
+        if (enemyUpdateFuncIdxArray[enemyIdx] == enemySlimeBehaviorIdx) {
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+            } else {
+                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 15, -15, primTint, secTint, floor(128 * (50 - enemyDeathTimerArray[enemyIdx]) / 50));
+            }
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyBoxSnakeBehaviorIdx) {
+            drawRectCentered(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y - 2 * k, 4 * k, 4 * k, accentTint);
+            drawRectCentered(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y - 2.5 * k, 5 * k, 5 * k, accentTint);
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                k = max(1, k);
+            }
+            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * k + 1, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyBatBehaviorIdx) {
+            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, accentTint);
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                k = max(1, k);
+            }
+            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyDragonBehaviorIdx) {
+            let _a = 0;
+            let _b = enemyPoseTrailWriteIdxArray[enemyIdx] - 1;
+            if (20 < enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                _a = 1;
+                _b = enemyPoseTrailWriteIdxArray[enemyIdx] - 20 - 1;
+            }
+            for (; _a < _b; _a++) drawLine(enemyJointPosArray[enemyIdx][_a].x, enemyJointPosArray[enemyIdx][_a].y, enemyJointPosArray[enemyIdx][_a + 1].x, enemyJointPosArray[enemyIdx][_a + 1].y, accentTint);
+            drawRectCentered(floor(enemyJointPosArray[enemyIdx][_b].x) + 1, floor(enemyJointPosArray[enemyIdx][_b].y) + 1, floor(2 * k), floor(2 * k), primTint);
+            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx || enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
+                drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, accentTint);
+            }
+            drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, accentTint);
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y,
+                    enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, accentTint);
+                drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, accentTint);
+            }
+            drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][9].x, enemyJointPosArray[enemyIdx][9].y, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, enemyJointPosArray[enemyIdx][10].x, enemyJointPosArray[enemyIdx][10].y, accentTint);
+            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorRightIdx) {
+            let leftHanded = enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx ? -2 : 2;
+            let startI = 20 >= enemyPoseTrailWriteIdxArray[enemyIdx] ? enemyPoseTrailWriteIdxArray[enemyIdx] - 1 : enemyPoseTrailWriteIdxArray[enemyIdx] - 21;
+            for (let _i = startI; 0 < _i; _i--) 
+                drawRectOutlineCentered(floor(enemyJointPosArray[enemyIdx][_i].x), floor(enemyJointPosArray[enemyIdx][_i].y + leftHanded), 5, 5, accentTint);
+            if (enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx) {
+                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+            } else {
+                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 16, -16, primTint, secTint, 255);
+            }
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyHangingTreeBehaviorIdx) {
+            for (let _i = 1; 6 > _i; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x, enemyJointPosArray[enemyIdx][_i].y, enemyJointPosArray[enemyIdx][_i + 1].x, enemyJointPosArray[enemyIdx][_i + 1].y, secTint);
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(enemyJointPosArray[enemyIdx][drawScale].x, enemyJointPosArray[enemyIdx][drawScale].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
+            }
+            drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[enemyIdx][0].x), floor(enemyJointPosArray[enemyIdx][0].y), floor(16 * k), floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc7Idx) {
+            let _a = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
+            for (let _i = 1; _i < _a; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x - 1, enemyJointPosArray[enemyIdx][_i].y - 1, enemyJointPosArray[enemyIdx][_i + 1].x - 1, enemyJointPosArray[enemyIdx][_i + 1].y - 1, accentTint);
+            drawLine(enemyJointPosArray[enemyIdx][drawScale].x - 1, enemyJointPosArray[enemyIdx][drawScale].y - 1, enemyJointPosArray[enemyIdx][1].x - 1, enemyJointPosArray[enemyIdx][1].y - 1, accentTint);
+            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc9Idx) {
+            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, secTint);
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
+                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, secTint);
+            }
+            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, secTint);
+            drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, secTint);
+            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, secTint);
+                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, secTint);
+            }
+            drawLine(enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, secTint);
+            drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, secTint);
+            drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[enemyIdx][0].x), floor(enemyJointPosArray[enemyIdx][0].y), floor(16 * k), floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+        } else {
+            if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc10Idx) {
+                drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
+                drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][4].x,
+                    enemyJointPosArray[enemyIdx][4].y, accentTint);
+                drawLine(enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
+                drawRectOutlineCentered(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, 6 * k + 1, 6 * k + 1, accentTint);
+                if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                    k = max(1, k);
+                }
+                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+            }
+        }
     }
-    for (a = 0; a < enemyCount; a++)
-        0 >= enemyAuxStateArray[a] || (
-            enemyAuxStateArray[a]--,
-            0 >= enemyHealthArray[a] || (
-                b = enemyCatalog[enemyTypeArray[a]][enemyDrawScaleCol],
-                drawRect(floor(enemyJointPosArray[a][0].x) - 7 * b, floor(enemyJointPosArray[a][0].y) - 10 * b, 14 * b, 1, 10027008),
+    for (let enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
+        if (enemyAuxStateArray[enemyIdx] > 0){
+            enemyAuxStateArray[enemyIdx]--;
+            if (enemyHealthArray[enemyIdx] > 0) {
+                drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+                drawRect(floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale, 14 * drawScale, 1, 10027008);
                 drawRect(
-                    floor(enemyJointPosArray[a][0].x) - 7 * b, floor(enemyJointPosArray[a][0].y) - 10 * b,
-                    floor(14 * b * enemyHealthArray[a] / enemyCatalog[enemyTypeArray[a]][enemyHealthCol]), 1, 52224
+                    floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale,
+                    floor(14 * drawScale * enemyHealthArray[enemyIdx] / enemyCatalog[enemyTypeArray[enemyIdx]][enemyHealthCol]), 1, 52224
                 )
-            )
-        )
+            }
+        }
+    }
 }
 mainWindow.fff = drawEnemyStatic;
 

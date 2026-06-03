@@ -1045,6 +1045,12 @@ function gameInit(a, b) {
         itemsSpriteSheet.f("item.png");
         effectSpriteSheet.f("ef.png");
         medalSpriteSheet.f("medal.png");
+        // if (hostnameCheck()) {
+        //     gameInitStage--;
+        // } else {
+        //     gameInitStage++;
+        // }
+        gameInitStage++;
     }
 
     if (1 == gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
@@ -1065,11 +1071,11 @@ function gameInit(a, b) {
             gameInitStage++;
         }
     }
-    
+
     if (2 == gameInitStage) {
         if (currentStorage) {
             _t0 = currentStorage.getItem("ranger2");
-            gameSaveString = t0 ?? "";
+            gameSaveString = _t0 ?? "";
         } else {
             gameSaveString = "";
         }
@@ -6440,9 +6446,11 @@ var domDocument = document,
     hostname = "dan-ball.jp";//location.hostname;
 mainWindow.fff = canvasDrawImage;
 
-function canvasDrawImage(a, b, c) {
+function canvasDrawImage(_canvas, _dx, _dy) {
     try {
-        canvasElement = domDocument.getElementById("cv"), context2d = canvasElement.getContext("2d"), context2d.putImageData(a, b, c)
+        canvasElement = domDocument.getElementById("cv"); 
+        context2d = canvasElement.getContext("2d");
+        context2d.putImageData(_canvas, _dx, _dy);
     } catch (d) { }
 }
 mainWindow.fff = LogMsg;
@@ -6507,6 +6515,7 @@ function setupAnimRequest() {
         for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) << 16 | frameBufferArray[a] & 65280 | frameBufferArray[a] >> 16 & 255;
     else
         for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) * screenFadeFactor << 16 | (frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | (frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
+    
     canvasDrawImage(canvasImage, 0, 0);
     requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay())
 }

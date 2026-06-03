@@ -6115,35 +6115,68 @@ function clearProjectiles() { // im
 mainWindow.fff = spawnProjectile;
 
 function spawnProjectile(
-    a, b, c, d, f, g, h, k, p, t, l, n, w, B, 
-    M, J, y, x, K, ba, U, na, Fa, Ga, Ca, ua, 
-    fb, ob, Bb, gc, Qb, Rb, gb, jb, La, hc, Ib, 
-    ic, jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, 
-    tc, uc, vc, wc, xc, yc, zc
+    _parent, jointPair, _px, _py, _vx, _vy, drawMode, tileIdx, tint, render, width, height, shape, hitboxWidth, 
+    hitboxHeight, spawnDelay, hitCooldown, impactAge, impactLife, jointIdx, acel, velScale, custIntA, collisionMode, homingRange, customIntB, 
+    maxTargets, dmgMin, dmgMax, effectType, effectDuration, applyMode, impactSpawnMode, spawnParam, tmpl_speed, tmpl_elementType, tmpl_elementBonus, 
+    tmpl_param1, tmpl_attackMode, tmpl_param2, tmpl_aux1, tmpl_aux2, tmpl_auxA, tmpl_auxB, tmpl_auxC, tmpl_dispStatsA, tmpl_auxD, tmpl_flag, 
+    tmmpl_paramTime, tmpl_hitCount, tmpl_effectMode, tmpl_statA, tmpl_extraStat1, tmpl_childCount, tmpl_childSpeed
 ) { // zi
     if (projectileCount >= 1E3) return;
-    projectileOwnerIdx[projectileCount] = a, 
-    projectileJointPair[projectileCount] = b, 
-    Vec2Set(projectilePosition[projectileCount], c, d), 
-    Vec2Set(projectileVelocity[projectileCount], f, g), 
-    projectileImpactState[projectileCount] = 0, projectileDrawMode[projectileCount] = h, projectileSpriteTileIndex[projectileCount] = k, 
-    projectileTintColor[projectileCount] = p, projectileSolidRenderMode[projectileCount] = t, projectileSpriteWidth[projectileCount] = l, 
-    projectileSpriteHeight[projectileCount] = n, projectileShapeMode[projectileCount] = w, projectileHitboxWidth[projectileCount] = B, 
-    projectileHitboxHeight[projectileCount] = M, projectileSpawnDelayFrames[projectileCount] = floor(randFloat(J)), projectileHitCooldownFrames[projectileCount] = y, 
-    projectileImpactAge[projectileCount] = x, projectileImpactLifetime[projectileCount] = K, projectileAttachJointIndex[projectileCount] = ba, 
-    projectileAcceleration[projectileCount] = U, projectileVelocityScale[projectileCount] = na, projectileCustomIntA[projectileCount] = Fa, 
-    projectileTileCollisionMode[projectileCount] = Ga, projectileHomingRange[projectileCount] = Ca, projectileCustomIntB[projectileCount] = ua, 
-    projectileMaxTargets[projectileCount] = fb, projectileDamageMin[projectileCount] = ob, projectileDamageMax[projectileCount] = Bb, 
-    projectileEffectType[projectileCount] = gc, projectileEffectDuration[projectileCount] = Qb, projectileApplyMode[projectileCount] = Rb, 
-    projectileImpactSpawnMode[projectileCount] = gb, projectileSpawnParam[projectileCount] = jb, projectileTmplSpeed[projectileCount] = La, 
-    projectileTmplElementType[projectileCount] = hc, projectileTmplElementBonus[projectileCount] = Ib, projectileTmplParam1[projectileCount] = ic, 
-    projectileTmplAttackMode[projectileCount] = jc, projectileTmplParam2[projectileCount] = kc, projectileTmplAux1[projectileCount] = lc, 
-    projectileTmplAux2[projectileCount] = mc, projectileTmplAuxValueA[projectileCount] = nc, projectileTmplAuxValueB[projectileCount] = oc, 
-    projectileTmplAuxValueC[projectileCount] = pc, projectileTmplDisplayStatA[projectileCount] = qc, projectileTmplAuxValueD[projectileCount] = rc, 
-    projectileTmplFlag[projectileCount] = sc, projectileTmplParamTime[projectileCount] = tc, projectileTmplHitCount[projectileCount] = uc, 
-    projectileTmplEffectMode[projectileCount] = vc, projectileTmplStatA[projectileCount] = wc, projectileTmplExtraStat1[projectileCount] = xc, 
-    projectileChildCount[projectileCount] = yc, projectileChildSpeed[projectileCount] = zc, 
-    projectileCount++
+    projectileOwnerIdx[projectileCount] = _parent;
+    projectileJointPair[projectileCount] = jointPair;
+    Vec2Set(projectilePosition[projectileCount], _px, _py);
+    Vec2Set(projectileVelocity[projectileCount], _vx, _vy);
+    projectileImpactState[projectileCount] = 0;
+    projectileDrawMode[projectileCount] = drawMode;
+    projectileSpriteTileIndex[projectileCount] = tileIdx;
+    projectileTintColor[projectileCount] = tint;
+    projectileSolidRenderMode[projectileCount] = render;
+    projectileSpriteWidth[projectileCount] = width;
+    projectileSpriteHeight[projectileCount] = height;
+    projectileShapeMode[projectileCount] = shape;
+    projectileHitboxWidth[projectileCount] = hitboxWidth;
+    projectileHitboxHeight[projectileCount] = hitboxHeight;
+    projectileSpawnDelayFrames[projectileCount] = floor(randFloat(spawnDelay));
+    projectileHitCooldownFrames[projectileCount] = hitCooldown;
+    projectileImpactAge[projectileCount] = impactAge;
+    projectileImpactLifetime[projectileCount] = impactLife;
+    projectileAttachJointIndex[projectileCount] = jointIdx;
+    projectileAcceleration[projectileCount] = acel;
+    projectileVelocityScale[projectileCount] = velScale;
+    projectileCustomIntA[projectileCount] = custIntA;
+    projectileTileCollisionMode[projectileCount] = collisionMode;
+    projectileHomingRange[projectileCount] = homingRange;
+    projectileCustomIntB[projectileCount] = customIntB;
+    projectileMaxTargets[projectileCount] = maxTargets;
+    projectileDamageMin[projectileCount] = dmgMin;
+    projectileDamageMax[projectileCount] = dmgMax;
+    projectileEffectType[projectileCount] = effectType;
+    projectileEffectDuration[projectileCount] = effectDuration;
+    projectileApplyMode[projectileCount] = applyMode;
+    projectileImpactSpawnMode[projectileCount] = impactSpawnMode;
+    projectileSpawnParam[projectileCount] = spawnParam;
+    projectileTmplSpeed[projectileCount] = tmpl_speed;
+    projectileTmplElementType[projectileCount] = tmpl_elementType;
+    projectileTmplElementBonus[projectileCount] = tmpl_elementBonus;
+    projectileTmplParam1[projectileCount] = tmpl_param1;
+    projectileTmplAttackMode[projectileCount] = tmpl_attackMode;
+    projectileTmplParam2[projectileCount] = tmpl_param2;
+    projectileTmplAux1[projectileCount] = tmpl_aux1;
+    projectileTmplAux2[projectileCount] = tmpl_aux2;
+    projectileTmplAuxValueA[projectileCount] = tmpl_auxA;
+    projectileTmplAuxValueB[projectileCount] = tmpl_auxB;
+    projectileTmplAuxValueC[projectileCount] = tmpl_auxC;
+    projectileTmplDisplayStatA[projectileCount] = tmpl_dispStatsA;
+    projectileTmplAuxValueD[projectileCount] = tmpl_auxD;
+    projectileTmplFlag[projectileCount] = tmpl_flag;
+    projectileTmplParamTime[projectileCount] = tmmpl_paramTime;
+    projectileTmplHitCount[projectileCount] = tmpl_hitCount;
+    projectileTmplEffectMode[projectileCount] = tmpl_effectMode;
+    projectileTmplStatA[projectileCount] = tmpl_statA;
+    projectileTmplExtraStat1[projectileCount] = tmpl_extraStat1;
+    projectileChildCount[projectileCount] = tmpl_childCount;
+    projectileChildSpeed[projectileCount] = tmpl_childSpeed;
+    projectileCount++;
 }
 mainWindow.fff = deleteProjectile;
 

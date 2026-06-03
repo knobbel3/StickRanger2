@@ -6494,30 +6494,55 @@ function setupAnimRequest() {
         requestAnimCallCount++;
         timestampAnim = Date.now();
         var a = floor(60 * (timestampAnim - lastTimestamp) / 1E3 + .5);
-        if (0 > a || 60 <= a) requestAnimCallCount = 0, currentFPS = frameCountThisSecond, frameCountThisSecond = 0, lastTimestamp = timestampAnim, a = 0;
-        else if (a == lastAnimFrameBucket) return;
+        if (0 > a || 60 <= a) {
+            requestAnimCallCount = 0;
+            currentFPS = frameCountThisSecond;
+            frameCountThisSecond = 0;
+            lastTimestamp = timestampAnim;
+            a = 0;
+        } else if (a == lastAnimFrameBucket) {
+            return;
+        }
         frameCountThisSecond++;
         lastAnimFrameBucket = a;
-        totalFrames++
+        totalFrames++;
     }
     isMouseClicked = 0 == wasMouseDown && 1 == isMouseDown;
     isMouseReleased = 1 == wasMouseDown && 0 == isMouseDown;
-    (wasMouseDown = isMouseDown) ? mouseHoldFrames++ : mouseHoldFrames = 0;
+    if (wasMouseDown = isMouseDown) {
+        mouseHoldFrames++;
+    } else {
+        mouseHoldFrames = 0;
+    }
     mouseXCurrent = mouseXRel;
     mouseYCurrent = mouseYRel;
-    for (a = 0; 256 > a; a++) keyJustPressed[a] = keyPressPending[a], keyPressPending[a] = false;
+    for (a = 0; 256 > a; a++) {
+        keyJustPressed[a] = keyPressPending[a];
+        keyPressPending[a] = false;
+    }
     randSeed = randSeed + floor(1024 * rand()) & 1023;
     randSeedStep = floor(512 * rand()) | 1;
+
     drawCanvas();
 
     var canvasBufferLength = targetHostname.length == hostnameCheckIdx ? CANVAS_WIDTH * CANVAS_HEIGHT : 0;
-    if (1 <= screenFadeFactor)
-        for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) << 16 | frameBufferArray[a] & 65280 | frameBufferArray[a] >> 16 & 255;
-    else
-        for (a = 0; a < canvasBufferLength; a++) canvasBuffer[a] = 4278190080 | (frameBufferArray[a] & 255) * screenFadeFactor << 16 | (frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | (frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
-    
+    if (1 <= screenFadeFactor){
+        for (a = 0; a < canvasBufferLength; a++) {
+            canvasBuffer[a] = 4278190080 | 
+            (frameBufferArray[a] & 255) << 16 | 
+            frameBufferArray[a] & 65280 | 
+            frameBufferArray[a] >> 16 & 255;
+        }
+    } else {
+        for (a = 0; a < canvasBufferLength; a++) {
+            canvasBuffer[a] = 4278190080 | 
+            (frameBufferArray[a] & 255) * screenFadeFactor << 16 | 
+            (frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | 
+            (frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
+        }
+    }
     canvasDrawImage(canvasImage, 0, 0);
-    requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay())
+    requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay());
 }
 var iterIdxTemp_3 = 1;
 

@@ -1154,38 +1154,37 @@ function drawCanvas() {
         updatePlayerParty();
         drawGameStage();
         drawPlayerParty();
-        a = 145;
-        b = 26;
-        d = 350;
-        var f = 125,
-            g, h = isMinimalTitleMode ? 0 : 125,
-            k, p, t = titleSprite.g,
-            l, n, w, B, M;
-        k = ~~(89600 / d);
-        p = ~~(32E3 / f);
-        g = 0;
-        h <<= 8;
-        if (0 > a) {
-            g += ~~(k * -a);
-        }
-        if (0 > b) {
-            h += ~~(p * -b);
-        }
-        d = 640 < a + d ? 640 : ~~(a + d);
-        f = 432 < b + f ? 432 : ~~(b + f);
+        let a = 145;
+        let b = 26;
+        let d = 350;
+        let f = 125;
+        let h = (isMinimalTitleMode ? 0 : 125) << 8 + ((b < 0) ? h += ~~(p * -b) : 0);
+        let k = ~~(89600 / d);
+        let p = ~~(32E3 / f);
+        let g = (a < 0) ? ~~(k * -a) : 0;
+
+        d = (640 < a + d) ? 640 : ~~(a + d);
+        f = (432 < b + f) ? 432 : ~~(b + f);
 
         a = 0 > a ? 0 : ~~a;
         b = 0 > b ? 0 : ~~b;
-        n = 640 * b + a;
-        for (w = 640 - (d - a); b < f; b++, n += w, h += p)
-            for (B = ((h >> 8) * titleSprite.h << 8) + g, l = a; l < d; l++, n++, B += k) {
-                M = t[B >> 8];
-                if (-1 != M) {
-                    frameBufferArray[n] = M;
+        let n = 640 * b + a;
+        let titleSpriteData = titleSprite.g;
+        for (let w = 640 - (d - a); b < f; b++, n += w, h += p) { // draw title
+            let idxmask = ((h >> 8) * titleSprite.h << 8) + g; 
+            let _dx = a;
+            while (_dx < d) {
+                let _px = titleSpriteData[idxmask >> 8];
+                if (-1 != _px) {
+                    frameBufferArray[n] = _px;
                 }
+                _dx++; 
+                n++; 
+                idxmask += k;
             }
-        if (2 == gameScreenState) {
+        }
 
+        if (2 == gameScreenState) {
             drawTextCentered(gameFont, 320, 220, "NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
                 if (isMouseClicked) {
@@ -1195,53 +1194,46 @@ function drawCanvas() {
             }
             if (0 == gameLoadStatusCode) {
                 drawTextCentered(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171);
-                if (
-                    buttonCheckCentered(320, 260, 128, 24)) {
+                if (buttonCheckCentered(320, 260, 128, 24)) {
                     if (isMouseClicked) {
                         gameScreenState = 5;
                     }
                     drawLine(256, 268, 384, 268, 11141120);
                 }
             }
-        } else {
-            if (3 == gameScreenState) {
-                drawTextCentered(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171);
-                if (
-                    buttonCheckCentered(320, 220, 128, 24)) {
-                    if (isMouseClicked) {
-                        gameScreenState = 4;
-                    }
-                    drawLine(192, 228, 448, 228, 11141120);
+        } else if (3 == gameScreenState) {
+            drawTextCentered(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171);
+            if (buttonCheckCentered(320, 220, 128, 24)) {
+                if (isMouseClicked) {
+                    gameScreenState = 4;
                 }
+                drawLine(192, 228, 448, 228, 11141120);
+            }
 
-                drawTextCentered(gameFont, 320, 260, "CANCEL", 16777215, 10053171);
-                if (buttonCheckCentered(320, 260, 128, 24)) {
-                    if (isMouseClicked) {
-                        gameScreenState = 2;
-                    }
-                    drawLine(256, 268, 384, 268, 11141120);
+            drawTextCentered(gameFont, 320, 260, "CANCEL", 16777215, 10053171);
+            if (buttonCheckCentered(320, 260, 128, 24)) {
+                if (isMouseClicked) {
+                    gameScreenState = 2;
                 }
+                drawLine(256, 268, 384, 268, 11141120);
             }
         }
+        
         if (drawIconButton(608, 312, 8, "IMPORT", 16777215)) {
             if (8 != userSaveCode.length) {
                 drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
-            } else {
-                if (isMouseClicked) {
-                    if (a = promptInput("Import Game Data", "")) {
-                        gameLoadStatusCode = loadGame(a);
-                        statusDuration = 100;
-                    }
+            } else if (isMouseClicked) {
+                if (a = promptInput("Import Game Data", "")) {
+                    gameLoadStatusCode = loadGame(a);
+                    statusDuration = 100;
                 }
             }
         }
         if (drawIconButton(608, 352, 9, "EXPORT", 16777215)) {
             if (8 != userSaveCode.length) {
                 drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
-            } else {
-                if (isMouseClicked) {
-                    promptInput("Export Game Data", gameSaveString);
-                }
+            } else if (isMouseClicked) {
+                promptInput("Export Game Data", gameSaveString);
             }
         }
         drawRect(0, 408, 640, 16, 0);
@@ -1261,20 +1253,19 @@ function drawCanvas() {
             partySpawnYByHero[2] = 40;
             partySpawnYByHero[3] = 40;
             updatePartyStats();
-        } else {
-            if (5 == gameScreenState) {
-                resetUIStates();
-                currentStage = 1;
-                partySpawnXByHero[0] = 20;
-                partySpawnXByHero[1] = 28;
-                partySpawnXByHero[2] = 36;
-                partySpawnXByHero[3] = 44;
-                partySpawnYByHero[0] = 40;
-                partySpawnYByHero[1] = 40;
-                partySpawnYByHero[2] = 40;
-                partySpawnYByHero[3] = 40;
-            }
+        } else if (5 == gameScreenState) {
+            resetUIStates();
+            currentStage = 1;
+            partySpawnXByHero[0] = 20;
+            partySpawnXByHero[1] = 28;
+            partySpawnXByHero[2] = 36;
+            partySpawnXByHero[3] = 44;
+            partySpawnYByHero[0] = 40;
+            partySpawnYByHero[1] = 40;
+            partySpawnYByHero[2] = 40;
+            partySpawnYByHero[3] = 40;
         }
+        
         screenFadeFactor = 0;
         gameScreenState = 10;
     } else if (10 == gameScreenState) {
@@ -1371,21 +1362,19 @@ function drawCanvas() {
                 screenStateTimer = 0;
                 gameScreenState = 13;
                 if (isBadgeIncompleteForCurrentStage(6)) {
-                    if (2 == lastClearedStageIdx && 4 == lastStageIdx || 4 == lastClearedStageIdx && 2 == lastStageIdx) {
-                        if (0 == stage_partyDamageTaken) {
-                            if (0 == stage_totalDamageDealt) {
-                                IncrementBadgeCount(6);
-                            }
-                        }
+                    if ((2 == lastClearedStageIdx && 4 == lastStageIdx || 4 == lastClearedStageIdx && 2 == lastStageIdx) &&
+                        0 == stage_partyDamageTaken &&
+                        0 == stage_totalDamageDealt
+                    ) {
+                        IncrementBadgeCount(6);
                     }
                 }
                 if (isBadgeIncompleteForCurrentStage(51)) {
-                    if (13 == lastClearedStageIdx && 15 == lastStageIdx || 15 == lastClearedStageIdx && 13 == lastStageIdx) {
-                        if (0 == stage_partyDamageTaken) {
-                            if (0 == stage_totalDamageDealt) {
-                                IncrementBadgeCount(51);
-                            }
-                        }
+                    if ((13 == lastClearedStageIdx && 15 == lastStageIdx || 15 == lastClearedStageIdx && 13 == lastStageIdx) && 
+                        0 == stage_partyDamageTaken &&
+                        0 == stage_totalDamageDealt
+                    ) {
+                        IncrementBadgeCount(51);
                     }
                 }
             }

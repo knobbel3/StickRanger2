@@ -1669,25 +1669,17 @@ function drawGameUI() {
                 comboPopupTimer = 60;
                 comboGoldPayoutPerHero = floor((comboCount * p / 10 + partyMemberCount - 1) / partyMemberCount);
                 partyGold = clamp(partyGold + comboGoldPayoutPerHero * partyMemberCount, 0, 9999999);
-                if (isBadgeIncompleteForCurrentStage(1)) {
-                    if (100 <= comboCount) {
-                        IncrementBadgeCount(1);
-                    }
+                if (isBadgeIncompleteForCurrentStage(1) && 100 <= comboCount) {
+                    IncrementBadgeCount(1);
                 }
-                if (isBadgeIncompleteForCurrentStage(26)) {
-                    if (300 <= comboCount) {
-                        IncrementBadgeCount(26);
-                    }
+                if (isBadgeIncompleteForCurrentStage(26) && 300 <= comboCount) {
+                    IncrementBadgeCount(26);
                 }
-                if (isBadgeIncompleteForCurrentStage(36)) {
-                    if (500 <= comboCount) {
-                        IncrementBadgeCount(36);
-                    }
+                if (isBadgeIncompleteForCurrentStage(36) && 500 <= comboCount) {
+                    IncrementBadgeCount(36);
                 }
-                if (isBadgeIncompleteForCurrentStage(56)) {
-                    if (600 <= comboCount) {
-                        IncrementBadgeCount(56);
-                    }
+                if (isBadgeIncompleteForCurrentStage(56) && 600 <= comboCount) {
+                    IncrementBadgeCount(56);
                 }
             }
             comboCount = 0;
@@ -1760,12 +1752,8 @@ function drawGameUI() {
                 spriteAltRenderFlag = 0;
             }
             handleInventoryButton(k, n, 16, 16, c, b);
-            if (buttonCheck(k, n, 16, 16)) {
-                if (isMouseClicked) {
-                    if (0 != c) {
-                        selectingHero = hidx;
-                    }
-                }
+            if (buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c) {
+                selectingHero = hidx;
             }
         }
     }
@@ -1786,34 +1774,24 @@ function drawGameUI() {
             stageFlagUseCount++;
         }
     }
-    if (drawIconButton(f + 0 * d, g, 1, "STATUS", memberUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked) {
-            memberUIVisible = !memberUIVisible;
-        }
+    if (drawIconButton(f + 0 * d, g, 1, "STATUS", memberUIVisible ? 16750950 : 16777215) && isMouseClicked) {
+        memberUIVisible = !memberUIVisible;
     }
 
-    if (drawIconButton(f + 1 * d, g, 2, "ITEM", inventoryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (inventoryUIVisible = !inventoryUIVisible)) {
-            shrineUIVisible = false;
-        }
+    if (drawIconButton(f + 1 * d, g, 2, "ITEM", inventoryUIVisible ? 16750950 : 16777215) && isMouseClicked) {
+        shrineUIVisible = false;
     }
 
-    if (drawIconButton(f + 2 * d, g, 3, "MONSTER", bestiaryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (bestiaryUIVisible = !bestiaryUIVisible)) {
-            badgesUIVisible = false;
-        }
+    if (drawIconButton(f + 2 * d, g, 3, "MONSTER", bestiaryUIVisible ? 16750950 : 16777215) && isMouseClicked) {
+        badgesUIVisible = false;
     }
 
-    if (drawIconButton(f + 3 * d, g, 4, "MEDAL", badgesUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (badgesUIVisible = !badgesUIVisible)) {
-            bestiaryUIVisible = false;
-        }
+    if (drawIconButton(f + 3 * d, g, 4, "MEDAL", badgesUIVisible ? 16750950 : 16777215) && isMouseClicked) {
+        bestiaryUIVisible = false;
     }
 
-    if (drawIconButton(f + 4 * d, g, 5, "OPTION", optionsUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked) {
-            optionsUIVisible = !optionsUIVisible;
-        }
+    if (drawIconButton(f + 4 * d, g, 5, "OPTION", optionsUIVisible ? 16750950 : 16777215) && isMouseClicked) {
+        optionsUIVisible = !optionsUIVisible;
     }
     c = 0;
     for (b = itemIsNew.length - 1; 0 <= b; b--) c += itemIsNew[b];
@@ -1852,11 +1830,9 @@ function drawGameUI() {
         if (buttonCheckCentered(52, 308, 56, 40)) {
             gameFont.a = 1;
             drawTextCentered(gameFont, 54, 296, "SMITH", 15908203, 8409120);
-            if (isMouseClicked) {
-                if (!clickInUI) {
-                    if (inventoryUIVisible = !inventoryUIVisible) {
-                        shrineUIVisible = false;
-                    }
+            if (isMouseClicked && !clickInUI) {
+                if (inventoryUIVisible = !inventoryUIVisible) {
+                    shrineUIVisible = false;
                 }
             }
         }
@@ -1885,10 +1861,12 @@ function drawGameUI() {
 
         // draw each hero stat
         for (let _statIdx = 0; 7 > _statIdx; _statIdx++) {
-            let _clicked = drawMenuButton(        f + 12 + _statIdx % 7 * 28, g + 46 + 28 * ~~(_statIdx / 7),
+            let _clicked = drawMenuButton(
+                f + 12 + _statIdx % 7 * 28, g + 46 + 28 * ~~(_statIdx / 7),
                 statXs[_statIdx],
                 "" + partyStats[_statIdx][selectingHero],
-                selectedStatIndex == _statIdx ? 16737894 : 16777215);
+                selectedStatIndex == _statIdx ? 16737894 : 16777215
+            );
             if (_clicked) {
                 if (selectedStatIndex != _statIdx) {
                     // mouse button is held, but the cursor is hovering over another icon

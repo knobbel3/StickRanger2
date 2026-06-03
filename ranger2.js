@@ -5142,82 +5142,163 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
 }
 mainWindow.fff = spawnEnemyLoot;
 
-function spawnEnemyLoot(a, b, c, d) { // bl
-    var itemPos = new Vec2,
-        itemIdx = enemyTypeArray[a] + b,
+function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
+    let itemPos = new Vec2(),
+        itemIdx = enemyTypeArray[enemyIdx] + lootVariant,
         selectedItem = enemyCatalog[itemIdx];
-    b = -a - 1;
-    var k = selectedItem[enemyProjectileAttachModeCol];
-    0 == k ? k = -1 : 1 == k ? k = 0 : 2 == k && (k = 1);
-    var p = selectedItem[enemyProjectileVisualPackCol] % 100,
-        t = floor(selectedItem[enemyProjectileVisualPackCol] / 100),
-        l = selectedItem[enemyPArg0Col],
-        n = selectedItem[enemyPArg1Col],
-        w = selectedItem[enemyPArg2Col],
-        B = selectedItem[enemyPArg3Col],
-        M = selectedItem[enemyPArg4Col],
-        J = selectedItem[enemyPArg5Col],
-        y = selectedItem[enemyPArg6Col],
-        x = selectedItem[enemyPArg7Col],
-        K = selectedItem[enemyPArg8Col],
-        ba = selectedItem[enemyPArg9Col],
-        U = selectedItem[enemyPArg10Col],
-        na = selectedItem[enemyPArg11Col],
-        Fa = selectedItem[enemyPArg12Col],
-        Ga = selectedItem[enemyPArg13Col],
-        Ca = selectedItem[enemyPArg14Col],
-        ua = selectedItem[enemyPArg15Col],
-        fb = selectedItem[enemyPArg16Col],
-        ob = selectedItem[enemyPArg17Col],
-        Bb = selectedItem[enemyPArg18Col],
-        gc = selectedItem[enemyPArg19Col],
-        Qb = selectedItem[enemyPArg20Col],
-        Rb = selectedItem[enemyPArg21Col],
-        gb = selectedItem[enemyPArg22Col],
-        jb = selectedItem[enemyPArg23Col],
-        La = selectedItem[enemyPArg24Col],
-        hc = selectedItem[enemyPArg25Col],
-        Ib = selectedItem[enemyPArg26Col],
-        ic = selectedItem[enemyPArg27Col],
-        jc = selectedItem[enemyPArg28Col],
-        kc = selectedItem[enemyPArg29Col],
-        lc = selectedItem[enemyPArg30Col],
-        mc = selectedItem[enemyPArg31Col],
-        nc = selectedItem[enemyPArg32Col],
-        oc = selectedItem[enemyPArg33Col],
-        pc = selectedItem[enemyPArg34Col],
-        qc = selectedItem[enemyPArg35Col],
-        rc = selectedItem[enemyPArg36Col],
-        sc = selectedItem[enemyPArg37Col],
-        tc = selectedItem[enemyPArg38Col],
-        uc = selectedItem[enemyPArg39Col],
-        vc = selectedItem[enemyPArg40Col],
-        wc = selectedItem[enemyPArg41Col],
-        xc =
-            selectedItem[enemyPArg42Col],
-        yc = selectedItem[enemyPArg43Col],
-        selectedItem = selectedItem[enemyPArg44Col],
-        zc = findNearestPartyMemberInRect(c, d, La, La, 0);
-    if (-1 != zc)
-        if (0 < enemyActionCooldownTimerArray[a]) enemyActionCooldownTimerArray[a]--;
-        else if (!(randFloat(1E3) >= jb)) {
-            enemyActionCooldownTimerArray[a] = gb;
-            var Qd;
-            if (!p) spawnProjectile(b, k, 0, 0, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
-            else if (1 == p) spawnProjectile(b, k, c, d, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
-            else if (2 == p)
-                for (gb = c, jb = d, La = gb < heroJointPositionsByHero[zc][2].x ? .1 * Rb : -.1 * Rb, p = 0; p < Qb; p++) spawnProjectile(b, k, gb, jb, La, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
-            else if (3 == p || 6 == p)
-                for (3 == p ? Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - enemyJointPosArray[a][enemyTargetJointIdx].x, heroJointPositionsByHero[zc][2].y - enemyJointPosArray[a][enemyTargetJointIdx].y) : 6 == p && Vec2Set(itemPos, 0, -1), itemIdx = 0 < t ? t : 16, a = floor(512 * Vec2Angle(itemPos) / TAU), a -= floor((Qb - 1) * itemIdx / 2), p = 0; p < Qb; p++) itemPos.x = rotationLUT[a & 511][0], itemPos.y = -rotationLUT[a & 511][1], gb = c + 10 * itemPos.x, jb = d + 10 * itemPos.y, La = itemPos.x * Rb * .1, Qd = itemPos.y * Rb * .1, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc,
-                    vc, wc, xc, yc, selectedItem), a += itemIdx;
-            else if (4 == p)
-                for (p = 0; p < Qb; p++) Vec2Set(itemPos, heroJointPositionsByHero[zc][2].x - enemyJointPosArray[a][0].x, heroJointPositionsByHero[zc][2].y - enemyJointPosArray[a][0].y), itemIdx = 0 < t ? t - 1 : Qb, 0 < Qb && (La = floor(randFloat(512)), itemIdx = randFloat(10) * itemIdx, itemPos.x += rotationLUT[La][0] * itemIdx, itemPos.y += rotationLUT[La][1] * itemIdx), gb = c, jb = d, La = itemPos.x / Rb, Qd = (itemPos.y - .5 * Rb * Rb * Fa * .01) / Rb, spawnProjectile(b, k, gb, jb, La, Qd, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc, hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
-            else if (5 == p)
-                for (p = 0; p < Qb; p++) gb = c + randFloatRange(-La, La), jb = d + randFloatRange(-La, 0), spawnProjectile(b, k, gb, jb, 0, 0, l, n, w, B, M, J, 0, y, x, K, ba, U, na, 0, Fa, Ga, Ca, ua, fb, 0, ob, Bb, gc,
-                    hc, Ib, 0, ic, 0, jc, kc, lc, mc, nc, oc, 0, pc, qc, 0, 0, rc, sc, 0, tc, uc, vc, wc, xc, yc, selectedItem);
-            else if (7 == p)
-                for (p = 0; p < Qb; p++) gb = floor(c / 8), jb = floor(d / 8), spawnEnemy(gb, jb, itemIdx + Bb, 0)
+    lootVariant = -enemyIdx - 1;
+    let k = selectedItem[enemyProjectileAttachModeCol];
+    if (0 == k) {
+        k = -1;
+    } else if (1 == k) {
+        k = 0;
+    } else if (2 == k) {
+        k = 1;
+    }
+    
+    let _s0 = selectedItem[enemyProjectileVisualPackCol] % 100,
+        _s1 = floor(selectedItem[enemyProjectileVisualPackCol] / 100),
+        _p0 = selectedItem[enemyPArg0Col],
+        _p1 = selectedItem[enemyPArg1Col],
+        _p2 = selectedItem[enemyPArg2Col],
+        _p3 = selectedItem[enemyPArg3Col],
+        _p4 = selectedItem[enemyPArg4Col],
+        _p5 = selectedItem[enemyPArg5Col],
+        _p6 = selectedItem[enemyPArg6Col],
+        _p7 = selectedItem[enemyPArg7Col],
+        _p8 = selectedItem[enemyPArg8Col],
+        _p9 = selectedItem[enemyPArg9Col],
+        _p10 = selectedItem[enemyPArg10Col],
+        _p11 = selectedItem[enemyPArg11Col],
+        _p12 = selectedItem[enemyPArg12Col],
+        _p13 = selectedItem[enemyPArg13Col],
+        _p14 = selectedItem[enemyPArg14Col],
+        _p15 = selectedItem[enemyPArg15Col],
+        _p16 = selectedItem[enemyPArg16Col],
+        _p17 = selectedItem[enemyPArg17Col],
+        _p18 = selectedItem[enemyPArg18Col],
+        _p19 = selectedItem[enemyPArg19Col],
+        _p20 = selectedItem[enemyPArg20Col],
+        _p21 = selectedItem[enemyPArg21Col],
+        _p22 = selectedItem[enemyPArg22Col],
+        _p23 = selectedItem[enemyPArg23Col],
+        _p24 = selectedItem[enemyPArg24Col],
+        _p25 = selectedItem[enemyPArg25Col],
+        _p26 = selectedItem[enemyPArg26Col],
+        _p27 = selectedItem[enemyPArg27Col],
+        _p28 = selectedItem[enemyPArg28Col],
+        _p29 = selectedItem[enemyPArg29Col],
+        _p30 = selectedItem[enemyPArg30Col],
+        _p31 = selectedItem[enemyPArg31Col],
+        _p32 = selectedItem[enemyPArg32Col],
+        _p33 = selectedItem[enemyPArg33Col],
+        _p34 = selectedItem[enemyPArg34Col],
+        _p35 = selectedItem[enemyPArg35Col],
+        _p36 = selectedItem[enemyPArg36Col],
+        _p37 = selectedItem[enemyPArg37Col],
+        _p38 = selectedItem[enemyPArg38Col],
+        _p39 = selectedItem[enemyPArg39Col],
+        _p40 = selectedItem[enemyPArg40Col],
+        _p41 = selectedItem[enemyPArg41Col],
+        _p42 = selectedItem[enemyPArg42Col],
+        _p43 = selectedItem[enemyPArg43Col],
+        _p44 = selectedItem[enemyPArg44Col];
+
+    let _foundHero = findNearestPartyMemberInRect(_px, _py, _p24, _p24, 0);
+    if (_foundHero == -1)
+        return;
+    
+    if (0 < enemyActionCooldownTimerArray[enemyIdx]) {
+        enemyActionCooldownTimerArray[enemyIdx]--;
+    } else if (!(randFloat(1E3) >= _p23)) {
+        enemyActionCooldownTimerArray[enemyIdx] = _p22;
+        let pVelY;
+        if (0 == _s0) {
+            spawnProjectile(
+                lootVariant, k, 0, 0, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
+                _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31, 
+                _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+            );
+        } else if (1 == _s0) {
+            spawnProjectile(
+                lootVariant, k, _px, _py, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
+                _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31,
+                 _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+            );
+        } else if (2 == _s0) {
+            _p22 = _px;
+            _p23 = _py;
+            _p24 = _p22 < heroJointPositionsByHero[_foundHero][2].x ? .1 * _p21 : -.1 * _p21;
+            for (_s0 = 0; _s0 < _p20; _s0++) {
+                spawnProjectile(
+                    lootVariant, k, _p22, _p23, _p24, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
+                    _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+                );
+            }
+        } else if (3 == _s0 || 6 == _s0) {
+            if (3 == _s0) {
+                Vec2Set(itemPos, heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x, heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y);
+            } else if (6 == _s0) {
+                Vec2Set(itemPos, 0, -1);
+            }
+            itemIdx = (0 < _s1) ? _s1 : 16;
+            enemyIdx = floor(512 * Vec2Angle(itemPos) / TAU);
+            enemyIdx -= floor((_p20 - 1) * itemIdx / 2);
+            for (_s0 = 0; _s0 < _p20; _s0++) {
+                itemPos.x = rotationLUT[enemyIdx & 511][0];
+                itemPos.y = -rotationLUT[enemyIdx & 511][1];
+                _p22 = _px + 10 * itemPos.x;
+                _p23 = _py + 10 * itemPos.y;
+                _p24 = itemPos.x * _p21 * .1;
+                pVelY = itemPos.y * _p21 * .1;
+                spawnProjectile(
+                    lootVariant, k, _p22, _p23, _p24, pVelY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
+                    _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+                );
+                enemyIdx += itemIdx;
+            } 
+        } else if (4 == _s0) {
+            for (_s0 = 0; _s0 < _p20; _s0++) {
+                Vec2Set(itemPos, heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][0].x, heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][0].y);
+                itemIdx = 0 < _s1 ? _s1 - 1 : _p20;
+                if (0 < _p20) {
+                    _p24 = floor(randFloat(512));
+                    itemIdx = randFloat(10) * itemIdx;
+                    itemPos.x += rotationLUT[_p24][0] * itemIdx;
+                    itemPos.y += rotationLUT[_p24][1] * itemIdx;
+                }
+                _p22 = _px;
+                _p23 = _py;
+                _p24 = itemPos.x / _p21;
+                pVelY = (itemPos.y - .5 * _p21 * _p21 * _p12 * .01) / _p21;
+                spawnProjectile(
+                    lootVariant, k, _p22, _p23, _p24, pVelY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
+                    _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+                );
+            } 
+        } else if (5 == _s0) {
+            for (_s0 = 0; _s0 < _p20; _s0++) {
+                _p22 = _px + randFloatRange(-_p24, _p24);
+                _p23 = _py + randFloatRange(-_p24, 0);
+                spawnProjectile(
+                    lootVariant, k, _p22, _p23, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, 
+                    _p30, _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, 
+                    _p43, _p44
+                );
+            } 
+        } else if (7 == _s0) {
+            for (_s0 = 0; _s0 < _p20; _s0++) {
+                _p22 = floor(_px / 8);
+                _p23 = floor(_py / 8);
+                spawnEnemy(_p22, _p23, itemIdx + _p18, 0);
+            }
         }
+    }
+    
 }
 mainWindow.fff = onEnemyDeath;
 

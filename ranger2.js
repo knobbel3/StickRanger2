@@ -948,7 +948,7 @@ var gameInitStage = 0;
 function gameInit(a, b) {
     let _t0;
     console.log(`gameInit(${a}, ${b}) ${gameInitStage}`);
-    if (!gameInitStage) {
+    if (0 == gameInitStage) {
         if (a != null) {
             userSaveCode = a;
         } else {
@@ -1030,8 +1030,10 @@ function gameInit(a, b) {
         randSeed = floor(1024 * rand()) & 1023;
         randSeedStep = floor(512 * rand()) | 1;
         // clear frame buffer
-        for (_t0 = 0; 276480 > _t0; _t0++) frameBufferArray[_t0] = 0;
-
+        for (_t0 = 0; 276480 > _t0; _t0++) 
+            frameBufferArray[_t0] = 0;
+        
+        // uncheckedSpriteCount is incremented
         gameFont.f("font.png", 8, 12);
         gameFontSmall.f("font_s.png", 5, 7);
         gameFontMed.f("font_m.png", 6, 8);
@@ -1043,12 +1045,8 @@ function gameInit(a, b) {
         itemsSpriteSheet.f("item.png");
         effectSpriteSheet.f("ef.png");
         medalSpriteSheet.f("medal.png");
-        if (hostnameCheck()) {
-            gameInitStage--;
-        } else {
-            gameInitStage++;
-        }
     }
+
     if (1 == gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
         loadSprite(gameFont.i);
         loadSprite(gameFontSmall.i);
@@ -1061,36 +1059,59 @@ function gameInit(a, b) {
         loadSprite(itemsSpriteSheet);
         loadSprite(effectSpriteSheet);
         loadSprite(medalSpriteSheet);
-        if (uncheckedSpriteCount > 0) {
+        if (uncheckedSpriteCount > 0) { // restart
             _setTimeout(gameInit, computeFrameDelay());
         } else {
             gameInitStage++;
         }
     }
+    
     if (2 == gameInitStage) {
         if (currentStorage) {
             _t0 = currentStorage.getItem("ranger2");
-            gameSaveString = null == _t0 ? "" : _t0;
+            gameSaveString = t0 ?? "";
         } else {
             gameSaveString = "";
         }
         gameLoadStatusCode = loadGame(gameSaveString);
         statusDuration = 100;
 
+
         itemHashTable = Array(256);
-        for (_t0 = 0; 256 > _t0; _t0++)
-            if (itemHashTable[_t0] = 0, itemList[_t0])
-                for (_t1 = 1; _t1 < itemList[_t0].length; _t1++) itemHashTable[_t0] = hashAdjust(itemHashTable[_t0], itemList[_t0][_t1]);
+        for (_t0 = 0; 256 > _t0; _t0++) {
+            itemHashTable[_t0] = 0;
+            if (itemList[_t0]) {
+                for (_t1 = 1; _t1 < itemList[_t0].length; _t1++) {
+                    itemHashTable[_t0] = hashAdjust(itemHashTable[_t0], itemList[_t0][_t1]);
+                }
+            }
+        }
+
         levelHashTable = Array(stageListArray.length);
-        for (_t0 = 0; _t0 < stageListArray.length; _t0++)
-            if (levelHashTable[_t0] = 0, stageListArray[_t0])
-                for (_t1 = 2; _t1 < stageListArray[_t0].length; _t1++) levelHashTable[_t0] = hashAdjust(levelHashTable[_t0], stageListArray[_t0][_t1]);
+        for (_t0 = 0; _t0 < stageListArray.length; _t0++) {
+            levelHashTable[_t0] = 0;
+            if (stageListArray[_t0]) {
+                for (_t1 = 2; _t1 < stageListArray[_t0].length; _t1++) {
+                    levelHashTable[_t0] = hashAdjust(levelHashTable[_t0], stageListArray[_t0][_t1]);
+                }
+            }
+        }
+
         itemCatalogHashTable = Array(enemyCatalog.length);
-        for (_t0 = 0; _t0 < enemyCatalog.length; _t0++)
-            if (itemCatalogHashTable[_t0] = 0, enemyCatalog[_t0])
-                for (_t1 = 0; _t1 < enemyCatalog[_t0].length; _t1++) itemCatalogHashTable[_t0] = hashAdjust(itemCatalogHashTable[_t0], enemyCatalog[_t0][_t1]);
-        for (_t0 = inventoryItemListsChecksum = 0; _t0 < inventoryItemLists.length; _t0++)
-            for (_t1 = 0; _t1 < inventoryItemLists[_t0].length; _t1++) inventoryItemListsChecksum = hashAdjust(inventoryItemListsChecksum, inventoryItemLists[_t0][_t1]);
+        for (_t0 = 0; _t0 < enemyCatalog.length; _t0++) {
+            itemCatalogHashTable[_t0] = 0;
+            if (enemyCatalog[_t0]) {
+                for (_t1 = 0; _t1 < enemyCatalog[_t0].length; _t1++) {
+                    itemCatalogHashTable[_t0] = hashAdjust(itemCatalogHashTable[_t0], enemyCatalog[_t0][_t1]);
+                }
+            }
+        }
+
+        for (_t0 = inventoryItemListsChecksum = 0; _t0 < inventoryItemLists.length; _t0++) {
+            for (_t1 = 0; _t1 < inventoryItemLists[_t0].length; _t1++) {
+                inventoryItemListsChecksum = hashAdjust(inventoryItemListsChecksum, inventoryItemLists[_t0][_t1]);
+            }
+        }
 
         // updatePartyChecksum();
         spriteCreateBuffer(canvasImageBuffer, 640, 432);
@@ -1102,7 +1123,7 @@ mainWindow.fff = drawCanvas;
 function drawCanvas() {
     if (0 < iterIdxTemp_3) iterIdxTemp_3++;
     else {
-        var a, b, c;
+        var a, b, c, d;
         for (let a = CANVAS_WIDTH * CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
         var d;
 

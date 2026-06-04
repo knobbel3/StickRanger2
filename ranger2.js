@@ -129,7 +129,7 @@ var partyMemberCount = 1,
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemForgeLvls[iterIdxTemp_1] = 0;
 var itemIsNew = Array(256); // ac, 
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemIsNew[iterIdxTemp_1] = 0;
-mainWindow.fff = resetGameProgress;
+
 
 function resetGameProgress() { // bc
     let a, b;
@@ -153,7 +153,7 @@ function resetGameProgress() { // bc
     for (a = 0; 4 > a; a++) autoMoveEnabled[a] = 0;
     cliffStopEnabled = 0
 }
-mainWindow.fff = resetUIStates;
+
 
 function resetUIStates() {
     screenStateTimer = 0;
@@ -308,14 +308,14 @@ const accessoryDodgeChanceCol = iterIdxTemp_1++, // accessory effect that grants
     accessoryStunChanceReductionCol = iterIdxTemp_1++, // Re, accessory effect that reduces the "skip/chance" parameter hi[...] applied on attackType==2 (reduces skip/stun probability or similar).
     accessoryDamageNegationChanceCol = iterIdxTemp_1++, // Se, accessory effect that gives a random chance to fully negate certain attacks (attackType == 3 branch).
     accessoryDebuffDurationReductionCol = iterIdxTemp_1++; // Te, accessory effect that reduces debuff/duration timers (subtracts from dh[...] when attackType==4).
-mainWindow.fff = getItemModifierAmount;
+
 
 function getItemModifierAmount(itemIdx, columnIdx) { // Ue
     for (var c = 0; 6 > c; c += 2)
         if (itemList[itemIdx][itemStatModifyingBaseCol + c] == columnIdx) return itemList[itemIdx][itemStatModifyingBaseCol + c + 1];
     return 0
 }
-mainWindow.fff = getItemStatWithForge;
+
 
 function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
     var c = 0;
@@ -338,7 +338,7 @@ function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
     }
     return itemList[_itemIdx][_columnIdx];
 }
-mainWindow.fff = getItemForgeMultiplier;
+
 
 function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     var c = 0;
@@ -359,7 +359,7 @@ function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     }
     return -1;
 }
-mainWindow.fff = getModifiedStatVal;
+
 
 function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
     let d = 0;
@@ -395,7 +395,7 @@ function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
     }
     return itemList[itemIdx][columnIdx]
 }
-mainWindow.fff = heroHasAccessoryEffect;
+
 
 function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
     return itemList[partyEquipmentTable[partyIdx][3]][accessoryTempIdxCol] == accessoryIdx ||
@@ -403,7 +403,7 @@ function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
         ? true
         : false
 }
-mainWindow.fff = countAccessoryLvlBonuses;
+
 
 function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
     var c = 0;
@@ -411,7 +411,7 @@ function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
     itemList[partyEquipmentTable[partyIdx][4]][accessoryTempIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessoryPrimaryValueCol]);
     return c
 }
-mainWindow.fff = sumAccessorySecondaryValues;
+
 
 function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     var c = 0;
@@ -661,12 +661,12 @@ badgeList[70] = ["Stage clear", "within 150 sec", 18, 0, 1];
 badgeList[71] = ["Defeat all fish", "without diving", 18, 12, 1];
 badgeList[72] = ["Defeat all fish", "without landing", 18, 12, 1];
 var stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139]; // ef, stage-indexed reward item table used when all five badges for a stage are cleared.
-mainWindow.fff = isBadgeIncompleteForCurrentStage;
+
 
 function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
     return currentStage == badgeList[badgeIdx][2] && badgeCounterArray[badgeIdx] != badgeList[badgeIdx][4] ? true : false
 }
-mainWindow.fff = IncrementBadgeCount;
+
 
 function IncrementBadgeCount(badgeIndex) {
     badgeCounterArray[badgeIndex]++;
@@ -706,7 +706,7 @@ var shrineRewardOptions = [
     statusDuration = 0,
     gameSaveBuffer = new Int32Array(5E3),
     saveLoadCodecScratchBuffer = new Int32Array(5E3); // lf, scratch buffer used while encoding and decoding save strings
-mainWindow.fff = saveGame;
+
 
 function saveGame() {
     let b, c;
@@ -817,7 +817,7 @@ function saveGame() {
     }
     gameSaveStatusDuration = 50
 }
-mainWindow.fff = loadGame;
+
 
 function loadGame(saveString) {
 
@@ -895,7 +895,7 @@ var partyChecksum = 0,
     levelHashTable = [],
     itemCatalogHashTable = [],
     inventoryItemListsChecksum = 0; // zf, checksum of inventoryItemLists used by the tamper-check path
-mainWindow.fff = hashAdjust;
+
 
 function hashAdjust(a, b) {
     a += (b | 1) * (a & 255 | 1);
@@ -1121,7 +1121,7 @@ function gameInit(a, b) {
         setupAnimRequest();
     }
 }
-mainWindow.fff = drawCanvas;
+
 
 function drawCanvas() {
 
@@ -1471,7 +1471,7 @@ function drawCanvas() {
 
 
 }
-mainWindow.fff = updatePartyStats;
+
 
 function updatePartyStats() {
     for (let hidx = 0; 4 > hidx; hidx++) {
@@ -1585,7 +1585,7 @@ function updatePartyStats() {
     comboWindowTimer = clamp(comboWindowTimer, 0, comboWindowMaxFrames);
     for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlagArray[hidx] && stageFlagsSetCount++
 }
-mainWindow.fff = handleInventoryButton;
+
 
 function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // Wg
     var h;
@@ -1611,7 +1611,7 @@ function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // 
         inventorySlotIdx = inventoryPageIdx = 0;
     }
 }
-mainWindow.fff = drawGameUI;
+
 
 function drawGameUI() {
     var hidx, b, c, d, f, g, h, k;
@@ -2678,13 +2678,13 @@ var heroAttackLineTimer = Array(4),
     heroTimedDamageAmount = new Int32Array(4), // ii, per-hero damage-over-time amount used to drain LP each tick.
     heroStatusTintTimer = new Int32Array(4), // bh, per-hero status tint timer used for the buff-colored hero draw.
     heroTileEffectLatch = new Int32Array(4); // ji, per-hero tile-effect latch used to fire one-off stage tile projectiles.
-mainWindow.fff = resetDragSelection;
+
 
 function resetDragSelection() { // ki
     draggedHeroIndex = -1;
     draggedJointIndex = 0
 }
-mainWindow.fff = resetHeroPose;
+
 
 function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     spawnX *= 8;
@@ -2718,7 +2718,7 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     heroStatusTintTimer[heroIdx] = 0;
     heroTileEffectLatch[heroIdx] = 0
 }
-mainWindow.fff = moveJointWithCollisions;
+
 
 function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
     var c = new Vec2();
@@ -2763,7 +2763,7 @@ function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
         }
     }
 }
-mainWindow.fff = findNearestPartyMemberInRect;
+
 
 function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { // ti
     var g = _cx - _halfW - 5,
@@ -2799,7 +2799,7 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
     }
     return B;
 }
-mainWindow.fff = damagePartyMemberInArea;
+
 
 /**
 *  Purpose: Finds party members inside a rectangular area, checks line-of-sight, and applies an area hit/effect (damage/status); returns the affected party index or -1.
@@ -2907,7 +2907,7 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
         return y;
     }
 }
-mainWindow.fff = pickHeroJointUnderMouse;
+
 
 function pickHeroJointUnderMouse() { // vi
     var a = new Vec2(),
@@ -2946,7 +2946,7 @@ function pickHeroJointUnderMouse() { // vi
         draggedJointIndex = 0;
     }
 }
-mainWindow.fff = spawnHeroAttackPattern;
+
 
 
 function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
@@ -3176,7 +3176,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         }
     }
 }
-mainWindow.fff = updatePartyMemberAI;
+
 
 function updatePartyMemberAI(memberIdx) { // Di
     var b = heroJointPositionsByHero[memberIdx][2].x,
@@ -3211,7 +3211,7 @@ function updatePartyMemberAI(memberIdx) { // Di
         }
     }
 }
-mainWindow.fff = updatePlayerParty;
+
 
 function updatePlayerParty() {
     var a, b, c, d, f = new Vec2(),
@@ -3526,7 +3526,7 @@ function updatePlayerParty() {
     }
 }
 
-mainWindow.fff = drawPlayerParty;
+
 
 function drawPlayerParty() {
     var a, b, c, d, f, g, h = new Vec2(),
@@ -3799,7 +3799,7 @@ function drawPlayerParty() {
         }
     }
 }
-mainWindow.fff = drawHero;
+
 
 /**     ANATOMY OF A STICKMAN
             
@@ -4011,7 +4011,7 @@ var loadedLevelIndex = -1,
     activeSpawnCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // V[group], active spawn counts per spawn-group (number of currently active enemies)
     totalSpawnedCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Xi[group], cumulative spawned count per spawn-group (used to cap spawns and compute stage-clear payouts)
     stageClearBaseGoldPerHero = 0; // Mi, per-hero stage-clear gold payout (base amount computed from spawned enemies)
-mainWindow.fff = loadLevelData;
+
 
 function loadLevelData(a) {
     if (loadedLevelIndex != a) {
@@ -4189,21 +4189,21 @@ function loadLevelData(a) {
     initStageState();
     return true
 }
-mainWindow.fff = getStageTileAt;
+
 
 function getStageTileAt(x, y) { // ri
     x = clamp(x, 0, 8 * stageWidth - 1) >> 3; // divide by 8
     y = clamp(y, 0, 8 * stageHeight - 1) >> 3;
     return stageTileData[y][x]
 }
-mainWindow.fff = fillStageTilesRect;
+
 
 function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
     let _row;
     for (_row = _ty0; _row <= _ty1; _row++)
         for (_ty0 = _tx0; _ty0 <= _tx1; _ty0++) stageTileData[_row][_ty0] = _tid
 }
-mainWindow.fff = updateStageEdgeSpawns;
+
 
 function updateStageEdgeSpawns() { // wg
     var a;
@@ -4360,7 +4360,7 @@ function updateStageEdgeSpawns() { // wg
         }
     }
 }
-mainWindow.fff = drawGameStage;
+
 
 function drawGameStage() {
     var a, b, c, d;
@@ -4442,7 +4442,7 @@ var stage_partyDamageTaken = 0, // Og, accumulated party LP lost this stage (use
     stageConditionMask = 0, // Hi, bitmask of stage tile/contact conditions set by heroes (per-stage).
     stageFlagUseCount = 0, // jh, count of stage-flag uses (increments when stage flags are triggered).
     stageEventFlagArray = [0, 0, 0, 0]; // of, array of per-stage event flags (saved/loaded and used for one-off stage events).
-mainWindow.fff = initStageState;
+
 
 function initStageState() { // cj
     stageFlagUseCount = stageConditionMask = stageEncounterCounter = consecutiveConditionFrameCount = gameFrameCounter = stage_totalDamageDealt = stage_partyDamageTaken = 0;
@@ -4474,7 +4474,7 @@ function initStageState() { // cj
         }
     }
 }
-mainWindow.fff = updateStageTick;
+
 
 function updateStageTick() { // xg
     var a, b, c, d, f = b = 0,
@@ -4851,12 +4851,12 @@ var enemyTypeArray = new Int32Array(999), //
         enemyUpdateFunc9,
         enemyStickmanBehavior
     ];
-mainWindow.fff = clearEnemies;
+
 
 function clearEnemies() {
     stageMaxEnemyLevel = enemyCount = 0
 }
-mainWindow.fff = spawnEnemy;
+
 
 /** spawns an enemy at coordinates (8 * gridX, 8 * gridY) */
 function spawnEnemy(gridX, gridY, enemyType, d) {
@@ -4884,7 +4884,7 @@ function spawnEnemy(gridX, gridY, enemyType, d) {
         enemyCount++
     }
 }
-mainWindow.fff = deleteEnemy;
+
 
 // swaps the last enemy entry with the selected one
 // and decrements the enemyCount variable to invalidate it
@@ -4908,7 +4908,7 @@ function deleteEnemy(enemyIdx) {
     enemyFreezeTimerArray[enemyIdx] = enemyFreezeTimerArray[enemyCount - 1];
     enemyCount--
 }
-mainWindow.fff = moveEnemyJointWithTileCollision;
+
 
 function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
     let d = new Vec2;
@@ -4936,7 +4936,7 @@ function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $
                     ? (d.y *= bounceScale, d.x = -d.x, enemyTileContactFlagsArray[enemyIdx] |= 1) 
                     : enemyJointPosArray[enemyIdx][jointIdx].x = g
 }
-mainWindow.fff = findEnemyInArea;
+
 
 /**
  * finds the closest living enemy to a center point inside an axis-aligned rectangle that is not blocked by stage tiles (ray-stepped line-of-sight check). Returns the index of that enemy or -1 if none found.
@@ -4969,7 +4969,7 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
             }
         } return w
 }
-mainWindow.fff = applyEffectToEnemies;
+
 
 // effects
 /**
@@ -5108,7 +5108,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
             }
         } return n; // index of a hit enemy (last one hit), or -1 if none.
 }
-mainWindow.fff = spawnEnemyLoot;
+
 
 function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     let itemPos = new Vec2(),
@@ -5268,7 +5268,7 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     }
     
 }
-mainWindow.fff = onEnemyDeath;
+
 
 function onEnemyDeath(_enemyIdx) { // cl
     let lvlDiff = abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyLevelCol] - partyLevel);
@@ -5363,7 +5363,7 @@ function onEnemyDeath(_enemyIdx) { // cl
         IncrementBadgeCount(69);
     }
 }
-mainWindow.fff = updateEnemies;
+
 
 function updateEnemies() {
     var enemyIdx;
@@ -5389,7 +5389,7 @@ function updateEnemies() {
         }
     }
 }
-mainWindow.fff = enemySlimeBehavior;
+
 
 function enemySlimeBehavior(enemyIdx) {
 
@@ -5419,7 +5419,7 @@ function enemySlimeBehavior(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyBoxSnakeBehavior;
+
 
 function enemyBoxSnakeBehavior(enemyIdx) {
     var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
@@ -5458,7 +5458,7 @@ function enemyBoxSnakeBehavior(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyBatBehavior;
+
 
 function enemyBatBehavior(enemyIdx) {
     var b, c = new Vec2;
@@ -5530,7 +5530,7 @@ function enemyBatBehavior(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyDragonBehavior;
+
 
 function enemyDragonBehavior(enemyIdx) {
     var b, c, d, f = new Vec2;
@@ -5574,7 +5574,7 @@ function enemyDragonBehavior(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyStickmanBehavior;
+
 
 function enemyStickmanBehavior(enemyIdx) {
     var b;
@@ -5629,7 +5629,7 @@ function enemyStickmanBehavior(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyTreeBehavior;
+
 
 function enemyTreeBehavior(enemyIdx) {
     var b;
@@ -5662,7 +5662,7 @@ function enemyTreeBehavior(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyHangingTreeBehavior;
+
 
 function enemyHangingTreeBehavior(enemyIdx) {
     var b;
@@ -5702,7 +5702,7 @@ function enemyHangingTreeBehavior(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyUpdateFunc7;
+
 
 function enemyUpdateFunc7(enemyIdx) {
     var b, c, d, f = new Vec2,
@@ -5764,7 +5764,7 @@ function enemyUpdateFunc7(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyUpdateFunc8;
+
 
 function enemyUpdateFunc8(enemyIdx) {
     var b;
@@ -5847,7 +5847,7 @@ function enemyUpdateFunc8(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = enemyUpdateFunc9;
+
 
 function enemyUpdateFunc9(enemyIdx) {
     var b, c = new Vec2,
@@ -5900,7 +5900,7 @@ function enemyUpdateFunc9(enemyIdx) {
     }
     return enemyIdx
 }
-mainWindow.fff = drawEnemies;
+
 
 function drawEnemies() { // Cg
     for (let enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
@@ -6036,7 +6036,7 @@ function drawEnemies() { // Cg
         }
     }
 }
-mainWindow.fff = drawEnemyStatic;
+
 
 function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
     let behaviorIdx = enemyCatalog[_typeIdx][enemyBehaviorIdxCol],
@@ -6314,12 +6314,12 @@ var projectileImpactState = new Int32Array(1E3),        // ll, projectile life/s
     
     projectileChildCount = new Int32Array(1E3),         // gm, child‑spawn count (or chance threshold in some impact modes); used as loop bound and probability check.
     projectileChildSpeed = new Int32Array(1E3);         // hm, scalar used to set spawned child projectile velocity/scale (interpreted as speed/magnitude)
-mainWindow.fff = clearProjectiles;
+
 
 function clearProjectiles() { // im
     projectileCount = 0
 }
-mainWindow.fff = spawnProjectile;
+
 
 function spawnProjectile(
     _parent, jointPair, _px, _py, _vx, _vy, drawMode, tileIdx, tint, render, width, height, shape, hitboxWidth, 
@@ -6385,7 +6385,7 @@ function spawnProjectile(
     projectileChildSpeed[projectileCount] = tmpl_childSpeed;
     projectileCount++;
 }
-mainWindow.fff = deleteProjectile;
+
 
 function deleteProjectile(projIdx) { // jm
     projectileOwnerIdx[projIdx] = projectileOwnerIdx[projectileCount - 1];
@@ -6444,7 +6444,7 @@ function deleteProjectile(projIdx) { // jm
     projectileChildSpeed[projIdx] = projectileChildSpeed[projectileCount - 1];
     projectileCount--
 }
-mainWindow.fff = moveProjectileWithCollision;
+
 
 function moveProjectileWithCollision(projIdx, vel) { // km
     var c = 0;
@@ -6489,7 +6489,7 @@ function moveProjectileWithCollision(projIdx, vel) { // km
     }
     return c;
 }
-mainWindow.fff = updateProjectiles;
+
 
 function updateProjectiles() { // Bg
     let a, b, c, d = new Vec2(),
@@ -6693,7 +6693,7 @@ function updateProjectiles() { // Bg
         }
     }
 }
-mainWindow.fff = drawProjectiles;
+
 
 function drawProjectiles() { // Eg
     var a, b, c, d, f = new Vec2,
@@ -6808,12 +6808,12 @@ for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) popupVel[iterIdxTe
 var popupValue = Array(1E3), // tm
     popupLife = new Int32Array(1E3), // um
     popupColor = new Int32Array(1E3); // vm
-mainWindow.fff = clearPopups;
+
 
 function clearPopups() { // wm
     popupCount = 0
 }
-mainWindow.fff = spawnPopup;
+
 
 function spawnPopup(x, y, vx, vy, life, color) { // Lg
     (1E3 != popupCount) && (
@@ -6831,7 +6831,7 @@ function spawnPopup(x, y, vx, vy, life, color) { // Lg
         popupCount++
     )
 }
-mainWindow.fff = removePopup;
+
 
 function removePopup(idx) { // xm
     popupPos[idx].set(popupPos[popupCount - 1]);
@@ -6841,7 +6841,7 @@ function removePopup(idx) { // xm
     popupColor[idx] = popupColor[popupCount - 1];
     popupCount--
 }
-mainWindow.fff = updatePopups;
+
 
 function updatePopups() { // Ag
     let a;
@@ -6859,7 +6859,7 @@ function updatePopups() { // Ag
         0 >= popupLife[a] && removePopup(a--)
     }
 }
-mainWindow.fff = drawPopups;
+
 
 function drawPopups() { // Fg
     let a, b, c, d, f;
@@ -6884,12 +6884,12 @@ var dropType = new Int32Array(100), // Bm, in id
     dropMeta = new Int32Array(100), // Dm, rarity/state
     dropState = new Int32Array(100), // Em, state/lifetime
     dropScore = 0; // Fm, aggregated score/weight for drops (sum of 7type + 3value + 11*meta)
-mainWindow.fff = clearDrops;
+
 
 function clearDrops() { // bj
     dropScore = dropCount = 0
 }
-mainWindow.fff = spawnDrop;
+
 
 function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
     if (100 != dropCount) {
@@ -6912,7 +6912,7 @@ function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
         ) dropScore += 7 * dropType[_tidx] + 3 * dropValue[_tidx] + 11 * dropMeta[_tidx];
     }
 }
-mainWindow.fff = removeDrop;
+
 
 function removeDrop(a) { // Gm
     dropCount--;
@@ -6924,7 +6924,7 @@ function removeDrop(a) { // Gm
     dropState[a] = dropState[dropCount];
     for (a = dropScore = 0; a < dropCount; a++) dropScore += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a]
 }
-mainWindow.fff = isDropTypeAbsent;
+
 
 function isDropTypeAbsent(typeIdx) { // dl
     if (2 == typeIdx) return true;
@@ -6933,7 +6933,7 @@ function isDropTypeAbsent(typeIdx) { // dl
         if (dropType[b] == typeIdx) return false;
     return true
 }
-mainWindow.fff = updateDrops;
+
 
 function updateDrops() { // zg
     let a, b, c;
@@ -6986,7 +6986,7 @@ function updateDrops() { // zg
     }
 }
 
-mainWindow.fff = drawDrops;
+
 
 function drawDrops() { // Dg
     let a;
@@ -7011,7 +7011,7 @@ var domDocument = document,
     fromCharCode = String.fromCharCode,
     _setTimeout = setTimeout,
     hostname = "dan-ball.jp";//location.hostname;
-mainWindow.fff = canvasDrawImage;
+
 
 function canvasDrawImage(_canvas, _dx, _dy) {
     try {
@@ -7020,7 +7020,7 @@ function canvasDrawImage(_canvas, _dx, _dy) {
         context2d.putImageData(_canvas, _dx, _dy);
     } catch (d) { }
 }
-mainWindow.fff = LogMsg;
+
 
 function LogMsg(a) {
     try {
@@ -7028,6 +7028,7 @@ function LogMsg(a) {
     } catch (b) { }
 }
 mainWindow.Init = gameInit;
+
 var copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     dataPath = "./data/", //fromCharCode(46, 47, 100, 97, 116, 97, 47),

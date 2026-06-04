@@ -2,13 +2,13 @@
  The games source code use is permission :-)
 */
 
-var domDocument = document,
+let domDocument = document,
     mainWindow = window,
     canvasElement = domDocument.getElementById("cv"),
     context2d = canvasElement.getContext("2d"),
     canvasImage = context2d.createImageData(640, 432),
     canvasBuffer = new Uint32Array(canvasImage.data.buffer),
-    mainConsole = mainWindow.console,
+    mainConsole = window.console,
     fromCharCode = String.fromCharCode,
     _setTimeout = setTimeout,
     currentStorage = mainWindow.localStorage,
@@ -28,7 +28,7 @@ export {gameInit as Init, toggleFullscreen as full_screen};
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 432;
 
-var iterIdxTemp_1, iterIdxTemp_2,
+let iterIdxTemp_1, iterIdxTemp_2,
     userSaveCode, // ca
     userSaveKey = [0, 0, 0, 0, 0, 0, 0, 0], // da
     isMinimalTitleMode, // ea
@@ -36,8 +36,9 @@ var iterIdxTemp_1, iterIdxTemp_2,
     titleSprite = new Sprite,
     iconSpriteSheet = new Sprite,
     tilesetSprites = Array(3);
-for (iterIdxTemp_1 = 0; 3 > iterIdxTemp_1; iterIdxTemp_1++) tilesetSprites[iterIdxTemp_1] = new Sprite;
-var currentLevelSprite = new Sprite,
+for (let _i = 0; 3 > _i; _i++) tilesetSprites[_i] = new Sprite;
+
+let currentLevelSprite = new Sprite,
     enemySpriteSheet = new Sprite,
     droppedItemSpriteSheet = new Sprite,
     itemsSpriteSheet = new Sprite,
@@ -72,12 +73,12 @@ var currentLevelSprite = new Sprite,
     badgesUIStageIdx = 0, // Sa
     LevelExpThresholds = Array(100);
 LevelExpThresholds[0] = 0;
-for (iterIdxTemp_1 = 1; 98 > iterIdxTemp_1; iterIdxTemp_1++) 
-    LevelExpThresholds[iterIdxTemp_1] = LevelExpThresholds[iterIdxTemp_1 - 1] + 1E3 * iterIdxTemp_1;
+for (let _i = 1; 98 > _i; _i++) 
+    LevelExpThresholds[_i] = LevelExpThresholds[_i - 1] + 1E3 * _i;
 LevelExpThresholds[98] = 9999999;
 LevelExpThresholds[99] = 9999999;
 
-var partyMemberCount = 1,
+let partyMemberCount = 1,
     partyLevel = 1,
     partyEXPAccum = 0,
     partyGold = 0,
@@ -150,7 +151,7 @@ var partyMemberCount = 1,
     itemForgeLvls = Array(256);
 
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemForgeLvls[iterIdxTemp_1] = 0;
-var itemIsNew = Array(256); // ac, 
+let itemIsNew = Array(256); // ac, 
 for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemIsNew[iterIdxTemp_1] = 0;
 
 
@@ -184,7 +185,7 @@ function resetUIStates() {
     comboMultBonus = comboCount = comboWindowTimer = selectingHero = selectedStatIndex = inventoryTabIdx = inventoryPageIdx = inventorySlotIdx  = 0
 }
 
-var inventoryItemLists = [
+let inventoryItemLists = [
     [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [7, 8, 12, 13, 14, 16, 18, 20, 22, 23, 25, 27, 34, 35, 39, 40, 44, 46, 47, 48, 55, 56, 57, 58, 59, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 131, 132, 133, 134, 135, 0, 0, 0, 0, 0, 0, 0],
     [28, 29, 30, 31, 32, 33, 36, 37, 45, 60, 0, 0, 0, 0, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 0, 0, 0, 0, 0],
@@ -442,7 +443,7 @@ function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     itemList[partyEquipmentTable[partyIdx][4]][accessoryTempIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessorySecondaryValueCol]);
     return c
 }
-var itemList = Array(256);
+let itemList = Array(256);
 itemList[0] = ["NONE", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[1] = ["NG", 0, 1, 0, 0, 8947848, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[2] = ["gold", 1, 0, 0, 0, 16777215, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -584,11 +585,11 @@ itemList[116] = ["Peridot Amulet", 8, 144, 30, 0, 10092288, 4478276, accessoryEf
 itemList[118] = ["Ammolite Amulet", 8, 144, 30, 0, 6736896, 13382400, accessoryMultiShotSpreadDivisorCol, "Injection angle 1/", 2, "", "", 0, ""];
 itemList[120] = ["Warrior Amulet", 8, 144, 30, 0, 16737792, 8930338, accessoryComboMaxIncreaseCol, "Combo duration +", 1, " sec", "", 0, ""];
 itemList[139] = ["Giant Amulet", 8, 144, 30, 0, 16711782, 16764057, accessoryHealthBonusCol, "LP +", 50, "%", "", 0, ""];
-var badgeCount = 128,
+let badgeCount = 128,
     badgeList = Array(badgeCount),
     badgeCounterArray = Array(badgeCount);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < badgeCount; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
-var badgePopupTimer = 0, // bf
+let badgePopupTimer = 0, // bf
     lastCompletedBadgeIdx = 0, // cf
     badgeIndicesByStage = [ // df
         [0, 1, 2, 3, 4],
@@ -683,7 +684,7 @@ badgeList[69] = ["Sunflower hunt 50", "", 17, 9, 50];
 badgeList[70] = ["Stage clear", "within 150 sec", 18, 0, 1];
 badgeList[71] = ["Defeat all fish", "without diving", 18, 12, 1];
 badgeList[72] = ["Defeat all fish", "without landing", 18, 12, 1];
-var stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139]; // ef, stage-indexed reward item table used when all five badges for a stage are cleared.
+let stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139]; // ef, stage-indexed reward item table used when all five badges for a stage are cleared.
 
 
 function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
@@ -714,10 +715,10 @@ function IncrementBadgeCount(badgeIndex) {
     }
 }
 
-var shrineRewardClaimSlotCount = 10, // Ec
+let shrineRewardClaimSlotCount = 10, // Ec
     shrineRewardClaimed = Array(shrineRewardClaimSlotCount);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < shrineRewardClaimSlotCount; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
-var shrineRewardOptions = [
+let shrineRewardOptions = [
     ["Gold Shower", 15],
     ["Clear Status", 30],
     ["ONIGIRI", 45],
@@ -911,7 +912,7 @@ function loadGame(saveString) {
     for (b = 0; b < g; b++) stageEventFlags[b] = gameSaveBuffer[p++];
     return 0;
 }
-var partyChecksum = 0,
+let partyChecksum = 0,
     basePartyChecksum = 0,
     tamperCheckScanOffset = 0, // vf, rotating start offset for the chunked tamper-check hash pass
     itemHashTable = [],
@@ -962,7 +963,7 @@ function updatePartyChecksum() {
     partyChecksum = c ^ 16777215
 }
 
-var gameInitStage = 0;
+let gameInitStage = 0;
 
 function gameInit(a, b) {
     let _t0;
@@ -2591,12 +2592,12 @@ function drawGameUI() {
     drawScaledTintedText(gameFontSmall, 607, 421, "" + currentFPS + fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
 }
 
-var areUpperJointsDisabled = 1, // rig mode flag
+let areUpperJointsDisabled = 1, // rig mode flag
     heroJointPositionsByHero = Array(4); // O, current joint positions for each hero.
 
     for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJointPositionsByHero[iterIdxTemp_1] = Array(21);
 
-var heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions used for collision resolution and drag selection.
+let heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions used for collision resolution and drag selection.
 
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJointPrevPositionsByHero[iterIdxTemp_1] = Array(21);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
@@ -2604,31 +2605,31 @@ for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) heroJointPrevPositionsByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
-var heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
+let heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
 
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint5HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint5HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
-var heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
+let heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
 
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint3HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint3HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
-var heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
+let heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
 
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint6HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint6HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
-var heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
+let heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
 
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint4HistoryByHero[iterIdxTemp_1] = Array(16);
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint4HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
-var heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
+let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
     heroAttackTrailTimerByHero = Array(4), // Sh, hero attack trail timer per hero.
     heroAttackTrailHistorySets = [
         heroJoint5HistoryByHero, 
@@ -2640,7 +2641,7 @@ var heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index p
 
 for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroAimPosByHero[iterIdxTemp_1] = new Vec2;
 
-var heroAttackLineTimer = Array(4),
+let heroAttackLineTimer = Array(4),
     heroUpperJointMode = new Int32Array(4), // Wh, per-hero rig mode flag that switches between normal and upper-joint-disabled updates.
     heroPoseAgeFrames = new Int32Array(4), // Xh, per-hero pose age counter used while the rig settles after movement or impact.
     heroTileContactFlags = new Int32Array(4), // Yh, per-hero tile-contact flags set while joint movement hits stage geometry.
@@ -4000,9 +4001,9 @@ stageListArray[17] = ["Limestone cave 5", 2, 8686715, 14, 18, 0, 16, 0, 50, 71, 
 stageListArray[18] = ["Limestone cave 6", 2, 8686715, 15, 19, 17, 0, 0, 50, 77, 1, 3, 29, 42, 29, 42, 77, 1, 3, 44, 42, 44, 42, 77, 1, 3, 59, 42, 59, 42, 78, 2, 0, 7, 34, 15, 34, 78, 1, 0, 7, 18, 14, 18, 79, 20, 80, 4, 26, 17, 26, 80, 1, 0, 39, 4, 53, 8, 81, 99, 99, 23, 14, 67, 28, 82, 1, 0, 47, 20, 47, 20];
 stageListArray[19] = ["Limestone cave 7", 2, 8686715, 16, 0, 18, 20, 0, 50, 84, 20, 0, 10, 36, 18, 36, 84, 10, 0, 29, 38, 34, 38, 85, 1, 0, 63, 28, 63, 28, 85, 1, 0, 13, 25, 13, 25];
 stageListArray[20] = ["Limestone cave 8", 2, 8686715, 17, 0, 15, 0, 19, 50, 0, 0, 0, 0, 0, 0, 0];
-var isStageReachedArray = Array(stageCount);
+let isStageReachedArray = Array(stageCount);
 for (iterIdxTemp_1 = 0; iterIdxTemp_1 < stageCount; iterIdxTemp_1++) isStageReachedArray[iterIdxTemp_1] = 0;
-var stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+let stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     /** array of lists of enemy ids indexed by stage number */
     bestiaryPageItems = [
         [0, 1, 2, 5, 3],
@@ -4027,7 +4028,7 @@ var stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     stageHeight = 60, // si
     stageTileData = Array(stageHeight); // P
 for (let i = 0; i < stageHeight; i++) stageTileData[i] = Array(stageWidth);
-var loadedLevelIndex = -1,
+let loadedLevelIndex = -1,
     lastStageIdx = 0, // Mg
     lastClearedStageIdx = 0, // Ng, last cleared stage index (stage just completed before returning)
     partySpawnXByHero = [0, 0, 0, 0], // per-hero spawn Y (tile/row) positions used when placing party members on stage
@@ -4458,7 +4459,7 @@ function drawGameStage() {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
 }
-var stage_partyDamageTaken = 0, // Og, accumulated party LP lost this stage (used for badges and payouts).
+let stage_partyDamageTaken = 0, // Og, accumulated party LP lost this stage (used for badges and payouts).
     stage_totalDamageDealt = 0, // total damage dealt this stage (used for badges/conditions).
     gameFrameCounter = 0, // gj, global frame tick counter (drives time-based events and UI timers).
     consecutiveConditionFrameCount = 0, // hj, consecutive-frame counter for stage condition (used for timed badges/popups).
@@ -4828,7 +4829,7 @@ const // Dispatch-table indices
     enemyUpdateFunc10Idx = 10, // zk, 
     enemyStickmanBehaviorAltIdx = 11; // Ak, 
 
-var enemyJointPosArray = Array(999), // Q, 
+let enemyJointPosArray = Array(999), // Q, 
     enemyPrevJointPosArray = Array(999); // Z, 
 for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) enemyPrevJointPosArray[iterIdxTemp_1] = Array(21);
 for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) enemyJointPosArray[iterIdxTemp_1] = Array(21);
@@ -4841,7 +4842,7 @@ for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
     for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
         enemyPrevJointPosArray[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
 
-var enemyTypeArray = new Int32Array(999), // 
+let enemyTypeArray = new Int32Array(999), // 
     enemyUpdateFuncIdxArray = new Int32Array(999),
     enemyPoseTrailWriteIdxArray  = new Int32Array(999), // Y , 
     enemyDeathTimerArray = new Int32Array(999), // Ck, 
@@ -6273,14 +6274,14 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
     }
 }
 
-var projectileCount = 0,
+let projectileCount = 0,
     projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
     projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
     projectilePosition = Array(1E3);                    // jl, projectile position Vec2 — world position when free, local offset when attached.
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectilePosition[iterIdxTemp_1] = new Vec2;
-var projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
+let projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectileVelocity[iterIdxTemp_1] = new Vec2;
-var projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
+let projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
     projectileDrawMode = new Int32Array(1E3),           // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
     projectileSpriteTileIndex = new Int32Array(1E3),    // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
     projectileTintColor = new Int32Array(1E3),          // ol, packed RGBA tint used for projectile color/alpha (alpha scaled by life for fade-out).
@@ -6824,12 +6825,12 @@ function drawProjectiles() { // Eg
             spriteAltRenderFlag = isSolidRender = 0
         }
 }
-var popupCount = 0, // aj
+let popupCount = 0, // aj
     popupPos = Array(1E3); // rm
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) popupPos[iterIdxTemp_1] = new Vec2;
-var popupVel = Array(1E3); // sm
+let popupVel = Array(1E3); // sm
 for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) popupVel[iterIdxTemp_1] = new Vec2;
-var popupValue = Array(1E3), // tm
+let popupValue = Array(1E3), // tm
     popupLife = new Int32Array(1E3), // um
     popupColor = new Int32Array(1E3); // vm
 
@@ -6898,12 +6899,12 @@ function drawPopups() { // Fg
                 drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7)
             )
 }
-var dropCount = 0, // ym
+let dropCount = 0, // ym
     dropPos = Array(100); // zm
 for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) dropPos[iterIdxTemp_1] = new Vec2;
-var dropVel = Array(100); // Am
+let dropVel = Array(100); // Am
 for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) dropVel[iterIdxTemp_1] = new Vec2;
-var dropType = new Int32Array(100), // Bm, in id
+let dropType = new Int32Array(100), // Bm, in id
     dropValue = new Int32Array(100), // Cm, value/amount
     dropMeta = new Int32Array(100), // Dm, rarity/state
     dropState = new Int32Array(100), // Em, state/lifetime
@@ -7039,7 +7040,7 @@ function canvasDrawImage(_canvas, _dx, _dy) {
 
 
 
-var copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
+let copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     dataPath = "./data/", //fromCharCode(46, 47, 100, 97, 116, 97, 47),
     fpsName = "fps", //fromCharCode(102, 112, 115),
@@ -7051,7 +7052,7 @@ var copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 3
     inverseCodingCharTable = [];
 
 for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) inverseCodingCharTable[encodingCharTable[iterIdxTemp_1]] = iterIdxTemp_1;
-var hostnameCheckIdx = 0,
+let hostnameCheckIdx = 0,
     targetHostname = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
     frameBufferArray = new Int32Array(276480),
 
@@ -7124,7 +7125,7 @@ function setupAnimRequest() {
     canvasDrawImage(canvasImage, 0, 0);
     requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay());
 }
-var hostNameUnchecked = 1;
+let hostNameUnchecked = 1;
 
 /** Checks hostname */
 function hostnameCheck() {
@@ -7135,7 +7136,8 @@ function hostnameCheck() {
             return true;
     return false
 }
-var requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
+
+let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     requestAnimCallCount = 0, // Vm, counts active requestAnimationFrame callbacks (incremented each anim callback; reset on timing jumps).
     lastAnimFrameBucket = 0,  // Zm, last rounded animation-frame bucket (stores previous a to detect/skip duplicate callbacks).
     frameCountThisSecond = 0, // Ym
@@ -7157,7 +7159,8 @@ function computeFrameDelay() { // ag
     lastTimestamp = timestampAnim;
     return a
 }
-var uncheckedSpriteCount = 0;
+
+let uncheckedSpriteCount = 0;
 
 function Sprite() {
     /** Image object */
@@ -7216,22 +7219,22 @@ function loadSprite(sprite) {
         sprite.c = 1
     }
 }
-var charKerningBefore = [
+let charKerningBefore = [
     [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
     [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
 ]; // jn
-var charKerningAfter = [
+let charKerningAfter = [
     [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
     [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
 ]; // kn
 
-var gameFont = new GameFont;
-var gameFontSmall = new GameFont;
-var gameFontMed = new GameFont;
+let gameFont = new GameFont;
+let gameFontSmall = new GameFont;
+let gameFontMed = new GameFont;
 
 function GameFont() {
     this.i = new Sprite;
@@ -7322,7 +7325,7 @@ function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, 
     x -= text.length * (glyphWidth + font.b) >> 1;
     drawScaledTintedText(font, x, y - (glyphHeight >> 1), text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight)
 }
-var screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
+let screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
     isSolidRender = 0,
     spriteAltRenderFlag = 0; // fh, auxiliary sprite render-mode flag used for temporary tint/alt-draw modes.
 
@@ -7558,7 +7561,7 @@ function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
 function toggleFullscreen() {
     domDocument.fullscreenEnabled && (domDocument.fullscreenElement ? domDocument.exitFullscreen() : canvasElement.requestFullscreen())
 }
-var isMouseClicked = false,
+let isMouseClicked = false,
     isMouseReleased = false,
     wasMouseDown = false,
     isMouseDown = false,
@@ -7658,7 +7661,7 @@ canvasElement.ontouchcancel = function () {
     activeTouchCount = 0;
     isMouseDown = false
 };
-var keyJustPressed = Array(256), // Jf
+let keyJustPressed = Array(256), // Jf
     keyPressPending = Array(256), // Kf
     keyHeld = Array(256), // Lf
     keyMapNoShift = Array(256), // Mf
@@ -7681,7 +7684,8 @@ domDocument.onkeyup = function (a) {
     0 <= b && 256 > b && (keyHeld[b] = false);
     if (0 != b && isCanvasFocused) return false
 };
-var isCanvasFocused = false;
+
+let isCanvasFocused = false;
 
 function promptInput(message, _default) {
     var c = null;
@@ -7690,22 +7694,6 @@ function promptInput(message, _default) {
     } catch (d) { }
     return c
 }
-"POST";// fromCharCode(80, 79, 83, 84);
-"&b=";// fromCharCode(38, 98, 61);
-"&c=";// fromCharCode(38, 99, 61);
-"&d=";// fromCharCode(38, 100, 61);
-"&e=";// fromCharCode(38, 101, 61);
-"&f=";// fromCharCode(38, 102, 61);
-"&g=";// fromCharCode(38, 103, 61);
-"&h=";// fromCharCode(38, 104, 61);
-"&i=";// fromCharCode(38, 105, 61);
-"&j=";// fromCharCode(38, 106, 61);
-"&k=";// fromCharCode(38, 107, 61);
-"ok";// fromCharCode(111, 107);
-"=";// fromCharCode(61);
-"\n";// fromCharCode(10);
-"Content-Type";// fromCharCode(67, 111, 110, 116, 101, 110, 116, 45, 84, 121, 112, 101);
-"application/x-www-form-urlencoded";// fromCharCode(97, 112, 112, 108, 105, 99, 97, 116, 105, 111, 110, 47, 120, 45, 119, 119, 119, 45, 102, 111, 114, 109, 45, 117, 114, 108, 101, 110, 99, 111, 100, 101, 100);
 
 function Vec2() {
     this.y = this.x = 0
@@ -7807,7 +7795,7 @@ function randIntRange(a, b) {
     return ~~(randLUT[randSeed] * (b - a) + a)
 }
 
-var rotationLUT = Array(513),
+let rotationLUT = Array(513),
     PI = 3.1415927,
     TAU = 6.2831855;
 

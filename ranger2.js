@@ -3144,36 +3144,72 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
 
 
 function updatePartyMemberAI(memberIdx) { // Di
-    var b = heroJointPositionsByHero[memberIdx][2].x,
+    let b = heroJointPositionsByHero[memberIdx][2].x,
         c = heroJointPositionsByHero[memberIdx][2].y;
-    if (1 != autoMoveEnabled[memberIdx]) {
-        var d = findEnemyInArea(heroJointPositionsByHero[memberIdx][0].x, heroJointPositionsByHero[memberIdx][0].y, 200, 50);
-        if (-1 != d) {
-            if (0 != heroTileContactFlags[memberIdx])
-                if (0 < heroEnemySeekTimer[memberIdx]) heroEnemySeekTimer[memberIdx]--;
-                else {
-                    heroEnemySeekTimer[memberIdx] = 15;
-                    var f = b > enemyJointPosArray[d][enemyTargetJointIdx].x ? -1 : 1,
-                        g = .6,
-                        h;
-                    h = getStageTileAt(b + 14 * f, c + 4);
-                    0 <= h && 26 >= h && (g = 2);
-                    h = getStageTileAt(b + 14 * f, c - 3);
-                    0 <= h && 26 >= h && (g = 4);
-                    var k;
-                    1 == f ? (k = heroJointPositionsByHero[memberIdx][9].x < heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, heroBodyDrawStateByHero[memberIdx][2] = 1) : (k = heroJointPositionsByHero[memberIdx][9].x > heroJointPositionsByHero[memberIdx][10].x ? 7 : 8, heroBodyDrawStateByHero[memberIdx][2] = 0);
-                    if (!cliffStopEnabled) {
-                        h = getStageTileAt(b + 20 * f, c + 8 + 0);
-                        var p = getStageTileAt(b + 20 * f, c + 8 + 8),
-                            t = getStageTileAt(b + 20 * f, c + 8 + 16),
-                            l = getStageTileAt(b + 20 * f, c + 8 + 24);
-                        30 <= h && 30 <= p && 30 <= t && 30 <= l && (k = (k = 7, 8), f *= -1)
-                    }
-                    heroJointPositionsByHero[memberIdx][k].x += 4 * f;
-                    heroJointPositionsByHero[memberIdx][k].y -=
-                        3 * g
-                } 2 == heroTileContactFlags[memberIdx] && (b < enemyJointPosArray[d][enemyTargetJointIdx].x ? (heroJointPositionsByHero[memberIdx][0].x += .25, heroJointPositionsByHero[memberIdx][1].x += .25, heroBodyDrawStateByHero[memberIdx][2] = 1) : (heroJointPositionsByHero[memberIdx][0].x -= .25, heroJointPositionsByHero[memberIdx][1].x -= .25, heroBodyDrawStateByHero[memberIdx][2] = 0), c < enemyJointPosArray[d][enemyTargetJointIdx].y ? (heroJointPositionsByHero[memberIdx][0].y += .25, heroJointPositionsByHero[memberIdx][1].y += .25) : (heroJointPositionsByHero[memberIdx][0].y -= .25, heroJointPositionsByHero[memberIdx][1].y -= .25), heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25), heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25))
+    
+    if (autoMoveEnabled[memberIdx] == 1)
+        return;
+    let nearestEnem = findEnemyInArea(heroJointPositionsByHero[memberIdx][0].x, heroJointPositionsByHero[memberIdx][0].y, 200, 50);
+
+    if (!(-1 != nearestEnem && 0 != heroTileContactFlags[memberIdx]))
+        return;
+
+    if (0 < heroEnemySeekTimer[memberIdx]) {
+        heroEnemySeekTimer[memberIdx]--;
+    } else {
+        heroEnemySeekTimer[memberIdx] = 15;
+        let f = b > enemyJointPosArray[nearestEnem][enemyTargetJointIdx].x ? -1 : 1;
+        let g = .6;
+        let h = getStageTileAt(b + 14 * f, c + 4);
+        if (0 <= h && 26 >= h) {
+            g = 2;    
         }
+        h = getStageTileAt(b + 14 * f, c - 3);
+        if (0 <= h && 26 >= h) {
+            g = 4;
+        }
+        let k;
+        if (1 == f) {
+            k = heroJointPositionsByHero[memberIdx][9].x < heroJointPositionsByHero[memberIdx][10].x ? 7 : 8;
+            heroBodyDrawStateByHero[memberIdx][2] = 1;
+        } else {
+            k = heroJointPositionsByHero[memberIdx][9].x > heroJointPositionsByHero[memberIdx][10].x ? 7 : 8;
+            heroBodyDrawStateByHero[memberIdx][2] = 0;
+        }
+        if (!cliffStopEnabled) {
+            h = getStageTileAt(b + 20 * f, c + 8 + 0);
+            let p = getStageTileAt(b + 20 * f, c + 8 + 8),
+                t = getStageTileAt(b + 20 * f, c + 8 + 16),
+                l = getStageTileAt(b + 20 * f, c + 8 + 24);
+            if (30 <= h && 30 <= p && 30 <= t && 30 <= l) {
+                k = (k = 7, 8);
+                f *= -1;
+            }
+        }
+        heroJointPositionsByHero[memberIdx][k].x += 4 * f;
+        heroJointPositionsByHero[memberIdx][k].y -= 3 * g;
+    }
+    if (2 == heroTileContactFlags[memberIdx]) {
+        if (b < enemyJointPosArray[nearestEnem][enemyTargetJointIdx].x) {
+            heroJointPositionsByHero[memberIdx][0].x += .25;
+            heroJointPositionsByHero[memberIdx][1].x += .25;
+            heroBodyDrawStateByHero[memberIdx][2] = 1;
+        } else {
+            heroJointPositionsByHero[memberIdx][0].x -= .25;
+            heroJointPositionsByHero[memberIdx][1].x -= .25;
+            heroBodyDrawStateByHero[memberIdx][2] = 0;
+        }
+        if (c < enemyJointPosArray[nearestEnem][enemyTargetJointIdx].y) {
+            heroJointPositionsByHero[memberIdx][0].y += .25;
+            heroJointPositionsByHero[memberIdx][1].y += .25;
+        } else {
+            heroJointPositionsByHero[memberIdx][0].y -= .25;
+            heroJointPositionsByHero[memberIdx][1].y -= .25;
+        }
+        heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25);
+        heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25);
+        heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25);
+        heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25);
     }
 }
 

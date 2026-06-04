@@ -2710,14 +2710,12 @@ function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
                 c.x *= .5;
                 c.y = -c.y;
                 heroTileContactFlags[_entityIdx] |= 1;
+            } else if (24 <= g && 26 >= g && 0 < c.y && draggedHeroIndex != _entityIdx) {
+                c.x *= .5;
+                c.y = -c.y;
+                heroTileContactFlags[_entityIdx] |= 1;
             } else {
-                if (24 <= g && 26 >= g && 0 < c.y && draggedHeroIndex != _entityIdx) {
-                    c.x *= .5;
-                    c.y = -c.y;
-                    heroTileContactFlags[_entityIdx] |= 1;
-                } else {
-                    heroJointPositionsByHero[_entityIdx][_jointIdx].y = f;
-                }
+                heroJointPositionsByHero[_entityIdx][_jointIdx].y = f;
             }
         }
         f = heroJointPositionsByHero[_entityIdx][_jointIdx].x + c.x;

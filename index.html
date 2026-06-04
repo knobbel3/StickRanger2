@@ -26,43 +26,6 @@
     <canvas id="cv" style="WIDTH:512px;HEIGHT:384px;" width="512" height="384" class="nrnb"></canvas>
     <div id="overlay">Loading…</div>
   </div>
-  <script src="java.js"></script>
-  <script src="ranger2.js" ></script>
-  <script>
-    // Wait for JS variables & Init to exist, then start.
-    function startGame() {
-      var src_ck=cookie_get('user');
-      Init(src_ck[3],1);
-      cvs_mv2(640,432,1000,1,0,1);
-      if (window.Init) {
-        try {
-          window.Init();
-        } catch (e) {
-          console.error(e);
-          const overlay = document.getElementById('overlay');
-          if (overlay) {
-            overlay.style.opacity = '1';
-            overlay.style.display = 'flex';
-            overlay.textContent = 'Initialization error – likely missing images in ./data/*.png';
-          }
-          document.getElementById('status').textContent = 'Error: assets missing';
-          return; // abort further fade out scheduling
-        }
-        const overlay = document.getElementById('overlay');
-        if (overlay) overlay.style.opacity = '0';
-        setTimeout(() => overlay && (overlay.style.display = 'none'), 600);
-        document.getElementById('status').textContent = 'Running';
-      } else {
-        document.getElementById('status').textContent = 'Waiting for script…';
-        setTimeout(startGame, 120);
-      }
-    }
-    window.addEventListener('load', startGame);
-
-    document.getElementById('fullscreenBtn').addEventListener('click', () => {
-      if (typeof window.full_screen === 'function') window.full_screen();
-      else if (typeof pf === 'function') pf();
-    });
-  </script>
+  <script type="module" src="start.js"></script>
 </body>
 </html>

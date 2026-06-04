@@ -1,0 +1,16 @@
+{
+  "name": "ranger2-game",
+  "version": "1.0.0",
+  "description": "Ranger 2 browser game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["game"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

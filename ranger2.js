@@ -2,10 +2,33 @@
  The games source code use is permission :-)
 */
 
+var domDocument = document,
+    mainWindow = window,
+    canvasElement = domDocument.getElementById("cv"),
+    context2d = canvasElement.getContext("2d"),
+    canvasImage = context2d.createImageData(640, 432),
+    canvasBuffer = new Uint32Array(canvasImage.data.buffer),
+    mainConsole = mainWindow.console,
+    fromCharCode = String.fromCharCode,
+    _setTimeout = setTimeout,
+    currentStorage = mainWindow.localStorage,
+    hostname = "dan-ball.jp";//location.hostname;
+
+function LogMsg(a) {
+    try {
+        mainConsole.log(a)
+    } catch (b) { }
+}
+
+export {gameInit as Init, toggleFullscreen as full_screen};
+// mainWindow.Init = gameInit;
+// mainWindow.full_screen = toggleFullscreen;
+
+
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 432;
 
-var iterIdxTemp_1, iterIdxTemp_2, mainWindow = window,
+var iterIdxTemp_1, iterIdxTemp_2,
     userSaveCode, // ca
     userSaveKey = [0, 0, 0, 0, 0, 0, 0, 0], // da
     isMinimalTitleMode, // ea
@@ -7003,15 +7026,7 @@ function drawDrops() { // Dg
             );
     spriteAltRenderFlag = 0
 }
-var domDocument = document,
-    canvasElement = domDocument.getElementById("cv"),
-    context2d = canvasElement.getContext("2d"),
-    canvasImage = context2d.createImageData(640, 432),
-    canvasBuffer = new Uint32Array(canvasImage.data.buffer),
-    mainConsole = mainWindow.console,
-    fromCharCode = String.fromCharCode,
-    _setTimeout = setTimeout,
-    hostname = "dan-ball.jp";//location.hostname;
+
 
 
 function canvasDrawImage(_canvas, _dx, _dy) {
@@ -7023,12 +7038,6 @@ function canvasDrawImage(_canvas, _dx, _dy) {
 }
 
 
-function LogMsg(a) {
-    try {
-        mainConsole.log(a)
-    } catch (b) { }
-}
-mainWindow.Init = gameInit;
 
 var copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
     copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
@@ -7040,6 +7049,7 @@ var copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 3
     //fromCharCode(48, 49, 87, 116, 67, 112, 108, 120, 97, 121, 102, 84, 118, 113, 99, 104, 72, 109, 65, 57, 42, 74, 90, 79, 114, 105, 54, 86, 78, 55, 76, 52, 119, 56, 100, 85, 71, 101, 46, 83, 51, 70, 73, 68, 122, 115, 110, 80, 98, 69, 107, 81, 88,
     //89, 77, 82, 103, 117, 50, 53, 66, 106, 111, 75),
     inverseCodingCharTable = [];
+
 for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) inverseCodingCharTable[encodingCharTable[iterIdxTemp_1]] = iterIdxTemp_1;
 var hostnameCheckIdx = 0,
     targetHostname = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
@@ -7544,7 +7554,6 @@ function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
     Vec2Scale(scratchVec2, _scale);
     _a.add(scratchVec2)
 }
-mainWindow.full_screen = toggleFullscreen;
 
 function toggleFullscreen() {
     domDocument.fullscreenEnabled && (domDocument.fullscreenElement ? domDocument.exitFullscreen() : canvasElement.requestFullscreen())
@@ -7672,8 +7681,7 @@ domDocument.onkeyup = function (a) {
     0 <= b && 256 > b && (keyHeld[b] = false);
     if (0 != b && isCanvasFocused) return false
 };
-var isCanvasFocused = false,
-    currentStorage = mainWindow.localStorage;
+var isCanvasFocused = false;
 
 function promptInput(message, _default) {
     var c = null;

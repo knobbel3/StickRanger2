@@ -28,8 +28,7 @@ export {gameInit as Init, toggleFullscreen as full_screen};
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 432;
 
-let iterIdxTemp_1, iterIdxTemp_2,
-    userSaveCode, // ca
+let userSaveCode, // ca
     userSaveKey = [0, 0, 0, 0, 0, 0, 0, 0], // da
     isMinimalTitleMode, // ea
     canvasImageBuffer = new Sprite,
@@ -150,9 +149,9 @@ let partyMemberCount = 1,
     forgePreviewItemIdx = -1, // Zb
     itemForgeLvls = Array(256);
 
-for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemForgeLvls[iterIdxTemp_1] = 0;
+for (let _i = 0; 256 > _i; _i++) itemForgeLvls[_i] = 0;
 let itemIsNew = Array(256); // ac, 
-for (iterIdxTemp_1 = 0; 256 > iterIdxTemp_1; iterIdxTemp_1++) itemIsNew[iterIdxTemp_1] = 0;
+for (let _i = 0; 256 > _i; _i++) itemIsNew[_i] = 0;
 
 
 function resetGameProgress() { // bc
@@ -195,143 +194,146 @@ let inventoryItemLists = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     []
 ];
-iterIdxTemp_1 = 0;
-const itemNameCol = iterIdxTemp_1++, // item display name shown in inventory/equipment UI.
-    itemDropIconCol = iterIdxTemp_1++, // item icon/category used by accessory bonus checks.
-    itemHeadwearType = iterIdxTemp_1++, // encoded sprite tile used for the item icon.
-    itemAppearanceCol = iterIdxTemp_1++, // item appearance/class flag used by the UI.
-    itemRangeTypeCol = iterIdxTemp_1++, // Oc, weapon range bucket: short, middle, or long.
-    itemSpriteSourceXCol = iterIdxTemp_1++, // sprite sheet source X for the item icon.
-    itemLimbSelectionCol = iterIdxTemp_1++, // Qc, limb selection code used to remap the stored limb descriptor.
-    itemProjectileDrawWidthCol = iterIdxTemp_1++, // Rc, projectile sprite draw width.
-    itemProjectileDrawHeightCol = iterIdxTemp_1++, // Sc, projectile sprite draw height.
-    itemProjectileShapeModeCol = iterIdxTemp_1++, // Tc, projectile shape/collision mode used when spawning and resolving hits.
-    itemHitCountStatCol = iterIdxTemp_1++, // Uc, number of hits the projectile can apply; the UI shows all or N hit.
-    itemAtkMinCol = iterIdxTemp_1++, // Vc, lower attack value shown in the item’s AT min-max range.
-    itemAtkMaxCol = iterIdxTemp_1++, // Wc, upper attack value shown in the item’s AT min-max range.
-    itemProjectileCountCol = iterIdxTemp_1++, // Xc, per-attack projectile count; feeds atkCountArray and the *N attack UI.
-    itemProjectileSpeedCol = iterIdxTemp_1++, // Yc, projectile launch speed; scales shot velocity before each spawnProjectile() call.
-    itemAgilityCol = iterIdxTemp_1++, // Zc, hero agility stat; copied into heroAgiValues and shown as AGI.
-    itemRangeCol = iterIdxTemp_1++, // $c, hero range stat; copied into heroRangeValues and shown as RANGE.
-    projectileEffectWidthCol = iterIdxTemp_1++, // ad, projectile effect hitbox width.
-    projectileEffectHeightCol = iterIdxTemp_1++, // bd, projectile effect hitbox height.
-    projectileDelayRangeCol = iterIdxTemp_1++, // cd, random projectile spawn delay range.
-    projectileNoDamageFramesCol = iterIdxTemp_1++, // dd, frames a projectile can’t deal damage after spawn.
-    projectileStartAnimFrameCol = iterIdxTemp_1++, // ed, projectile's initial animation frame.
-    projectileLifetimeCol = iterIdxTemp_1++, // fd, projectile lifetime (frames) used for lifespan and alpha fade.
-    projectileTargetIndexCol = iterIdxTemp_1++, // gd, projectile target/mode index: 0=default, -1=special, >0 = index into entity limb/slot for homing/anchoring.
-    projectileAccelerationCol = iterIdxTemp_1++, // hd, projectile acceleration / gravity magnitude (from item stat), used to influence projectile velocity each frame.
-    projectileSpeedScaleCol = iterIdxTemp_1++, // id, projectile velocity scale / speed multiplier (percent-like), applied each frame as .01 * value to scale projectile velocity.
-    projectileAuxStatCol = iterIdxTemp_1++, // jd, auxiliary projectile stat passed into spawnProjectile; current code does not read the matching projectile slot later.
-    projectileCollisionModeCol = iterIdxTemp_1++, // kd, projectile wall-collision mode: 0 stop, 2 slide, 3 bounce, 4 clamp.
-    attackCooldownCol = iterIdxTemp_1++, // ld, cooldown in frames before the next attack or passive emit can fire.
-    projectileAuxParamCol = iterIdxTemp_1++, // md, auxiliary projectile parameter stored on spawn; current projectile logic does not read it.
-    itemProjectileMaxTargetsCol = iterIdxTemp_1++, // nd, projectile max-target count; 2 falls back to the upper byte of itemProjectileDamageMinCol.
-    itemProjectileDamageMinCol = iterIdxTemp_1++, // od, projectile minimum damage; its upper byte is reused by itemProjectileMaxTargetsCol when needed.
-    itemProjectileDamageMaxCol = iterIdxTemp_1++, // pd, projectile maximum damage.
-    itemProjectileEffectTypeCol = iterIdxTemp_1++, // qd, projectile effect/damage mode.
-    projectileEffectTypeCol = iterIdxTemp_1++, // rd, effect type used by projectile hit logic; controls whether a hit applies direct damage or a status effect.
-    projectileEffectDurationCol = iterIdxTemp_1++, // sd, effect duration in frames used by projectile hit logic.
-    itemElementTypeCol = iterIdxTemp_1++, // td, item element code; the UI renders it as physical, fire, ice, lightning, or poison.
-    itemIceBonusPercentCol = iterIdxTemp_1++, // ud, ice-specific percent bonus shown for ice-element gear.
-    itemChargeEmitValueCol = iterIdxTemp_1++, // vd, shared charge/emit stat shown as CHARGE for arms and EMIT for emit gear.
-    itemForgeMaxLevelCol = iterIdxTemp_1++, // wd, highest forge level the item can reach.
-    itemForgeCostPerLevelCol = iterIdxTemp_1++, // xd, gold cost per forge level used by the upgrade panel.
-    itemStatModifyingBaseCol = iterIdxTemp_1++; // base column for item stat modifier pairs.
-iterIdxTemp_1++;
-iterIdxTemp_1++;
-iterIdxTemp_1++;
-iterIdxTemp_1++;
-iterIdxTemp_1++;
-const itemProjectileParam1Col = iterIdxTemp_1++, // zd, projectile config parameter; read into ic and forwarded into spawnProjectile().
-    itemAttackModeCol = iterIdxTemp_1++, // attack mode code; drives the *N attack UI and the special 10/11/20 cases.
-    itemProjectileParam2Col = iterIdxTemp_1++, // Bd, projectile config parameter; read into kc and forwarded into spawnProjectile().
-    itemProjectileParam3Col = iterIdxTemp_1++, // Cd, projectile config parameter; read into Sf and forwarded into spawnProjectile().
-    itemAttackPowerCol = iterIdxTemp_1++, // Ed, attack power / shot strength; shown in the AT ... *N > UI and used in the forge preview.
-    itemProjectileTemplateCol = iterIdxTemp_1++, // Fd, nested projectile/item template reference; the attack code dereferences selectedItem = selectedItem[Fd] before spawning.
+
+let ENUM_ITEM_COUNT = 0;
+const itemNameCol = ENUM_ITEM_COUNT++, // item display name shown in inventory/equipment UI.
+    itemDropIconCol = ENUM_ITEM_COUNT++, // item icon/category used by accessory bonus checks.
+    itemHeadwearType = ENUM_ITEM_COUNT++, // encoded sprite tile used for the item icon.
+    itemAppearanceCol = ENUM_ITEM_COUNT++, // item appearance/class flag used by the UI.
+    itemRangeTypeCol = ENUM_ITEM_COUNT++, // Oc, weapon range bucket: short, middle, or long.
+    itemSpriteSourceXCol = ENUM_ITEM_COUNT++, // sprite sheet source X for the item icon.
+    itemLimbSelectionCol = ENUM_ITEM_COUNT++, // Qc, limb selection code used to remap the stored limb descriptor.
+    itemProjectileDrawWidthCol = ENUM_ITEM_COUNT++, // Rc, projectile sprite draw width.
+    itemProjectileDrawHeightCol = ENUM_ITEM_COUNT++, // Sc, projectile sprite draw height.
+    itemProjectileShapeModeCol = ENUM_ITEM_COUNT++, // Tc, projectile shape/collision mode used when spawning and resolving hits.
+    itemHitCountStatCol = ENUM_ITEM_COUNT++, // Uc, number of hits the projectile can apply; the UI shows all or N hit.
+    itemAtkMinCol = ENUM_ITEM_COUNT++, // Vc, lower attack value shown in the item’s AT min-max range.
+    itemAtkMaxCol = ENUM_ITEM_COUNT++, // Wc, upper attack value shown in the item’s AT min-max range.
+    itemProjectileCountCol = ENUM_ITEM_COUNT++, // Xc, per-attack projectile count; feeds atkCountArray and the *N attack UI.
+    itemProjectileSpeedCol = ENUM_ITEM_COUNT++, // Yc, projectile launch speed; scales shot velocity before each spawnProjectile() call.
+    itemAgilityCol = ENUM_ITEM_COUNT++, // Zc, hero agility stat; copied into heroAgiValues and shown as AGI.
+    itemRangeCol = ENUM_ITEM_COUNT++, // $c, hero range stat; copied into heroRangeValues and shown as RANGE.
+    projectileEffectWidthCol = ENUM_ITEM_COUNT++, // ad, projectile effect hitbox width.
+    projectileEffectHeightCol = ENUM_ITEM_COUNT++, // bd, projectile effect hitbox height.
+    projectileDelayRangeCol = ENUM_ITEM_COUNT++, // cd, random projectile spawn delay range.
+    projectileNoDamageFramesCol = ENUM_ITEM_COUNT++, // dd, frames a projectile can’t deal damage after spawn.
+    projectileStartAnimFrameCol = ENUM_ITEM_COUNT++, // ed, projectile's initial animation frame.
+    projectileLifetimeCol = ENUM_ITEM_COUNT++, // fd, projectile lifetime (frames) used for lifespan and alpha fade.
+    projectileTargetIndexCol = ENUM_ITEM_COUNT++, // gd, projectile target/mode index: 0=default, -1=special, >0 = index into entity limb/slot for homing/anchoring.
+    projectileAccelerationCol = ENUM_ITEM_COUNT++, // hd, projectile acceleration / gravity magnitude (from item stat), used to influence projectile velocity each frame.
+    projectileSpeedScaleCol = ENUM_ITEM_COUNT++, // id, projectile velocity scale / speed multiplier (percent-like), applied each frame as .01 * value to scale projectile velocity.
+    projectileAuxStatCol = ENUM_ITEM_COUNT++, // jd, auxiliary projectile stat passed into spawnProjectile; current code does not read the matching projectile slot later.
+    projectileCollisionModeCol = ENUM_ITEM_COUNT++, // kd, projectile wall-collision mode: 0 stop, 2 slide, 3 bounce, 4 clamp.
+    attackCooldownCol = ENUM_ITEM_COUNT++, // ld, cooldown in frames before the next attack or passive emit can fire.
+    projectileAuxParamCol = ENUM_ITEM_COUNT++, // md, auxiliary projectile parameter stored on spawn; current projectile logic does not read it.
+    itemProjectileMaxTargetsCol = ENUM_ITEM_COUNT++, // nd, projectile max-target count; 2 falls back to the upper byte of itemProjectileDamageMinCol.
+    itemProjectileDamageMinCol = ENUM_ITEM_COUNT++, // od, projectile minimum damage; its upper byte is reused by itemProjectileMaxTargetsCol when needed.
+    itemProjectileDamageMaxCol = ENUM_ITEM_COUNT++, // pd, projectile maximum damage.
+    itemProjectileEffectTypeCol = ENUM_ITEM_COUNT++, // qd, projectile effect/damage mode.
+    projectileEffectTypeCol = ENUM_ITEM_COUNT++, // rd, effect type used by projectile hit logic; controls whether a hit applies direct damage or a status effect.
+    projectileEffectDurationCol = ENUM_ITEM_COUNT++, // sd, effect duration in frames used by projectile hit logic.
+    itemElementTypeCol = ENUM_ITEM_COUNT++, // td, item element code; the UI renders it as physical, fire, ice, lightning, or poison.
+    itemIceBonusPercentCol = ENUM_ITEM_COUNT++, // ud, ice-specific percent bonus shown for ice-element gear.
+    itemChargeEmitValueCol = ENUM_ITEM_COUNT++, // vd, shared charge/emit stat shown as CHARGE for arms and EMIT for emit gear.
+    itemForgeMaxLevelCol = ENUM_ITEM_COUNT++, // wd, highest forge level the item can reach.
+    itemForgeCostPerLevelCol = ENUM_ITEM_COUNT++, // xd, gold cost per forge level used by the upgrade panel.
+    itemStatModifyingBaseCol = ENUM_ITEM_COUNT++; // base column for item stat modifier pairs.
+
+ENUM_ITEM_COUNT++;
+ENUM_ITEM_COUNT++;
+ENUM_ITEM_COUNT++;
+ENUM_ITEM_COUNT++;
+ENUM_ITEM_COUNT++;
+const itemProjectileParam1Col = ENUM_ITEM_COUNT++, // zd, projectile config parameter; read into ic and forwarded into spawnProjectile().
+    itemAttackModeCol = ENUM_ITEM_COUNT++, // attack mode code; drives the *N attack UI and the special 10/11/20 cases.
+    itemProjectileParam2Col = ENUM_ITEM_COUNT++, // Bd, projectile config parameter; read into kc and forwarded into spawnProjectile().
+    itemProjectileParam3Col = ENUM_ITEM_COUNT++, // Cd, projectile config parameter; read into Sf and forwarded into spawnProjectile().
+    itemAttackPowerCol = ENUM_ITEM_COUNT++, // Ed, attack power / shot strength; shown in the AT ... *N > UI and used in the forge preview.
+    itemProjectileTemplateCol = ENUM_ITEM_COUNT++, // Fd, nested projectile/item template reference; the attack code dereferences selectedItem = selectedItem[Fd] before spawning.
     
-    itemProjectileAux1Col = iterIdxTemp_1++, // Gd, nested projectile/item template reference; the attack code dereferences selectedItem = selectedItem[Fd] before spawning.
-    itemProjectileAux2Col = iterIdxTemp_1++, // Hd, auxiliary projectile config value; same pattern as Gd, forwarded into spawnProjectile() and stored on the projectile state.
+    itemProjectileAux1Col = ENUM_ITEM_COUNT++, // Gd, nested projectile/item template reference; the attack code dereferences selectedItem = selectedItem[Fd] before spawning.
+    itemProjectileAux2Col = ENUM_ITEM_COUNT++, // Hd, auxiliary projectile config value; same pattern as Gd, forwarded into spawnProjectile() and stored on the projectile state.
     
-    itemAuxValueACol = iterIdxTemp_1++, // Id, auxiliary item parameter forwarded into projectile spawn (unknown semantic).
-    itemAuxValueBCol = iterIdxTemp_1++, // Jd, auxiliary item parameter forwarded into projectile spawn.
+    itemAuxValueACol = ENUM_ITEM_COUNT++, // Id, auxiliary item parameter forwarded into projectile spawn (unknown semantic).
+    itemAuxValueBCol = ENUM_ITEM_COUNT++, // Jd, auxiliary item parameter forwarded into projectile spawn.
     
-    itemAuxValueCCol = iterIdxTemp_1++, // Kd, auxiliary item parameter forwarded into projectile spawn.
-    itemDisplayStatACol = iterIdxTemp_1++, // Ld, item display/forge stat column used in AT UI calculations.
-    itemAuxValueDCol = iterIdxTemp_1++, // Md, auxiliary item parameter forwarded into projectile spawn.
-    itemProjectileFlagCol = iterIdxTemp_1++, // Nd, small integer flag stored on projectile state and used in hit/draw logic.
-    itemProjectileParamTimeCol = iterIdxTemp_1++, // Od, time/auxiliary numeric parameter stored on projectile state and used during updates.
-    itemHitCountCol = iterIdxTemp_1++, // Pd, number-of-hits stat for the item; influences UI (all / N hit) and projectile behavior.
-    itemProjectileEffectModeCol = iterIdxTemp_1++, // Sd, projectile effect/damage-mode code read from the item row and forwarded into projectile hit logic.
-    itemStatACol = iterIdxTemp_1++, // Td, stat index used with getModifiedStatVal() for display and calculations.
+    itemAuxValueCCol = ENUM_ITEM_COUNT++, // Kd, auxiliary item parameter forwarded into projectile spawn.
+    itemDisplayStatACol = ENUM_ITEM_COUNT++, // Ld, item display/forge stat column used in AT UI calculations.
+    itemAuxValueDCol = ENUM_ITEM_COUNT++, // Md, auxiliary item parameter forwarded into projectile spawn.
+    itemProjectileFlagCol = ENUM_ITEM_COUNT++, // Nd, small integer flag stored on projectile state and used in hit/draw logic.
+    itemProjectileParamTimeCol = ENUM_ITEM_COUNT++, // Od, time/auxiliary numeric parameter stored on projectile state and used during updates.
+    itemHitCountCol = ENUM_ITEM_COUNT++, // Pd, number-of-hits stat for the item; influences UI (all / N hit) and projectile behavior.
+    itemProjectileEffectModeCol = ENUM_ITEM_COUNT++, // Sd, projectile effect/damage-mode code read from the item row and forwarded into projectile hit logic.
+    itemStatACol = ENUM_ITEM_COUNT++, // Td, stat index used with getModifiedStatVal() for display and calculations.
 
-    itemExtraStatCol1 = iterIdxTemp_1++, // Ud, auxiliary item stat forwarded into projectile/item logic.
-    itemExtraStatCol2 = iterIdxTemp_1++, // Vd, auxiliary item stat forwarded into projectile/item logic 
+    itemExtraStatCol1 = ENUM_ITEM_COUNT++, // Ud, auxiliary item stat forwarded into projectile/item logic.
+    itemExtraStatCol2 = ENUM_ITEM_COUNT++, // Vd, auxiliary item stat forwarded into projectile/item logic 
 
-    itemSpawnTargetRangeCol = iterIdxTemp_1++, // Wd, range/index used to locate nearest party member / spawn target; forwarded into spawn logic.
+    itemSpawnTargetRangeCol = ENUM_ITEM_COUNT++, // Wd, range/index used to locate nearest party member / spawn target; forwarded into spawn logic.
 
-    itemExtraParamACol = iterIdxTemp_1++, // Xd, auxiliary item parameter passed to spawn logic.
-    itemExtraParamBCol = iterIdxTemp_1++, // Yd, auxiliary item parameter passed to spawn logic.
-    itemExtraParamCCol = iterIdxTemp_1++; // Zd, trailing auxiliary item parameter forwarded into spawn logic.
-iterIdxTemp_1 = 6;
+    itemExtraParamACol = ENUM_ITEM_COUNT++, // Xd, auxiliary item parameter passed to spawn logic.
+    itemExtraParamBCol = ENUM_ITEM_COUNT++, // Yd, auxiliary item parameter passed to spawn logic.
+    itemExtraParamCCol = ENUM_ITEM_COUNT++; // Zd, trailing auxiliary item parameter forwarded into spawn logic.
 
-const itemSpriteLocYCol = iterIdxTemp_1++, // item sprite source Y/index used by draw routines (sprite-sheet source Y).
-    heroHealthModifierCol = iterIdxTemp_1++, // percent HP modifier applied to hero max-HP (from equipped item).
-    heroDefenseModifierCol = iterIdxTemp_1++, // flat defense bonus applied to hero (added to melee/projectile defense arrays).
-    heroMagicDefModifierCol = iterIdxTemp_1++, // percent magic-resist modifier applied to hero (from equipped item).
-    heroDodgeModifierCol = iterIdxTemp_1++; // dodge chance bonus (flat) applied to hero when item is equipped.
-iterIdxTemp_1 = 6;
-iterIdxTemp_1++;
+let ENUM_MODIFIER_COUNT = 6;
+const itemSpriteLocYCol = ENUM_MODIFIER_COUNT++, // item sprite source Y/index used by draw routines (sprite-sheet source Y).
+    heroHealthModifierCol = ENUM_MODIFIER_COUNT++, // percent HP modifier applied to hero max-HP (from equipped item).
+    heroDefenseModifierCol = ENUM_MODIFIER_COUNT++, // flat defense bonus applied to hero (added to melee/projectile defense arrays).
+    heroMagicDefModifierCol = ENUM_MODIFIER_COUNT++, // percent magic-resist modifier applied to hero (from equipped item).
+    heroDodgeModifierCol = ENUM_MODIFIER_COUNT++; // dodge chance bonus (flat) applied to hero when item is equipped.
 
-const accessoryTempIdxCol = iterIdxTemp_1++, // accessory template id column - identifies the accessory effect/type equipped (used by equip checks).
+let ENUM_ACCESSORY_PREFIX_COUNT = 6;
+ENUM_ACCESSORY_PREFIX_COUNT++;
+const accessoryTempIdxCol = ENUM_ACCESSORY_PREFIX_COUNT++, // accessory template id column - identifies the accessory effect/type equipped (used by equip checks).
 
-    accessoryPrimaryPrefixCol = iterIdxTemp_1++, // accessory primary label prefix (string) - drawn before primary value in the accessory UI.
-    accessoryPrimaryValueCol = iterIdxTemp_1++, // accessory primary level/value column (int) - numeric primary level summed for accessory bonuses.
-    accessoryPrimarySuffixCol = iterIdxTemp_1++, // accessory primary label suffix (string) - drawn after primary value in the accessory UI.
+    accessoryPrimaryPrefixCol = ENUM_ACCESSORY_PREFIX_COUNT++, // accessory primary label prefix (string) - drawn before primary value in the accessory UI.
+    accessoryPrimaryValueCol = ENUM_ACCESSORY_PREFIX_COUNT++, // accessory primary level/value column (int) - numeric primary level summed for accessory bonuses.
+    accessoryPrimarySuffixCol = ENUM_ACCESSORY_PREFIX_COUNT++, // accessory primary label suffix (string) - drawn after primary value in the accessory UI.
 
-    accessorySecondaryLabelPrefixCol = iterIdxTemp_1++, // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
-    accessorySecondaryValueCol = iterIdxTemp_1++, // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
-    accessorySecondaryLabelSuffixCol = iterIdxTemp_1++; // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
+    accessorySecondaryLabelPrefixCol = ENUM_ACCESSORY_PREFIX_COUNT++, // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
+    accessorySecondaryValueCol = ENUM_ACCESSORY_PREFIX_COUNT++, // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
+    accessorySecondaryLabelSuffixCol = ENUM_ACCESSORY_PREFIX_COUNT++; // accessory secondary label prefix (string) - prefix text for the accessory secondary stat label.
 
-iterIdxTemp_1 = 1;
-const accessoryArmsBonusCol0 = iterIdxTemp_1++, // ARMS accessory bonus effect column (grants "ARMS Lv +" for ring-type accessories; counted by heroHasAccessoryEffect/countAccessoryLvlBonuses)
-    accessoryChargeBonusCol = iterIdxTemp_1++, // CHARGE accessory bonus effect column (grants "CHARGE Lv +" for amulet-type accessories; counted by heroHasAccessoryEffect/countAccessoryLvlBonuses)
-    accessoryArmsBonusCol1 = iterIdxTemp_1++, // Secondary ARMS accessory bonus effect column (used by multi-effect accessories like Master Ring; supports primary/secondary sums via sumAccessorySecondaryValues)
-    accessoryEffectAtkBonusCol = iterIdxTemp_1++, // oe, returns/identifies the accessory effect that boosts weapon attack; used with heroHasAccessoryEffect and countAccessoryLvlBonuses.
-    accessoryEffectAgiPenaltyCol = iterIdxTemp_1++, // pe, identifies an accessory effect that reduces hero agility (AGI) by accessory level.
-    accessoryEffectRangeAndCountCol = iterIdxTemp_1++, // qe, accessory effect that increases attack range (for certain item appearances) and contributes to item secondary values (range/count bonuses).
-    accessoryEffectEmitFullChargeChance_duringChargeCol = iterIdxTemp_1++, // re, accessory effect that gives a chance (per accessory level) to immediately fill the emit gauge while the hero is charging.
-    accessoryEffectEmitFullChargeChance_onFireCol = iterIdxTemp_1++, // se, accessory effect that gives a chance (per accessory level) to immediately refill the emit gauge when an emit completes/fires.
-    accessoryEffectEmitMaxReductionCol = iterIdxTemp_1++, // te, accessory effect that reduces the hero's maximum emit value (lowers required charge), applied per accessory level.
-    accessoryEffectMultiShotIncreaseCol = iterIdxTemp_1++; // ue, accessory effect that increases the attack shot count / multiple-shot count by accessory levels.
-iterIdxTemp_1++;
-iterIdxTemp_1++;
-iterIdxTemp_1++;
-iterIdxTemp_1++;
-const accessoryDodgeChanceCol = iterIdxTemp_1++, // accessory effect that grants a flat dodge-chance bonus per accessory level.
-    accessoryEffectPhysicalProcChanceCol = iterIdxTemp_1++, // we, accessory effect that gives a chance (per accessory level) to multiply physical weapon ATK by the accessory's secondary value (physical proc/crit).
-    accessoryEffectFireStatBonusCol = iterIdxTemp_1++, // xe, accessory effect that adds its primary value to the item's fire-related stat (applied when item element == fire).
-    accessoryEffectIceStatBonusCol = iterIdxTemp_1++, // ye, accessory effect that adds its primary value to the item's ice-related stat (applied when item element == ice).
-    accessoryEffectLightningMaxAtkPercentCol = iterIdxTemp_1++, // ze, accessory effect that increases the max ATK percent for lightning-element items (applies only to maxAtk).
-    accessoryEffectLightningElemBonusCol = iterIdxTemp_1++, // Ae, accessory effect that modifies lightning-element item behavior (e.g., increments selectedItemIdx for certain attack modes / forge interactions).
-    accessoryEffectPoisonAtkPercentCol = iterIdxTemp_1++, // Be, accessory effect that increases ATK percent for poison-element items (applies to min/max ATK).
-    accessoryRewardValueBonusCol = iterIdxTemp_1++, // Ce, accessory effect that increases party reward value percent (adds to stage reward value).
-    accessoryDropChanceBonusCol = iterIdxTemp_1++, // Ee, accessory effect that increases party drop chance percent.
-    accessoryEnemyHpBonusCol = iterIdxTemp_1++, // Fe, accessory effect that increases enemy HP percent (used to scale stage enemy HP).
-    accessoryFireAtkPercentCol = iterIdxTemp_1++, // Ge, accessory effect that increases min/max ATK percent for fire-element items.
-    accessoryIceAtkPercentCol = iterIdxTemp_1++, // He, accessory effect that increases min/max ATK percent for ice-element items.
-    accessoryEffectPoisonStatBonusCol = iterIdxTemp_1++, // Ie, accessory effect that adds a (large) amount to an item stat when element == poison (applied as +60 * level in code).
-    accessoryMultiShotSpreadDivisorCol = iterIdxTemp_1++, // Je, accessory effect that reduces multi-shot angular spread (divides the shot-step We when present).
-    accessoryMeleeDefenceCol = iterIdxTemp_1++, // accessory effect that grants flat melee/proj defense per level (added to hero melee/proj defense arrays).
-    accessoryMagicDefenseCol = iterIdxTemp_1++, // accessory effect that grants flat magic-defense percent per level (added to hero magic defense).
-    accessoryComboMaxIncreaseCol = iterIdxTemp_1++, // Me, accessory effect that increases the combo/charge max (Vg) by 60 per accessory level (affects combo bar max).
-    accessoryChargeValueBonusCol = iterIdxTemp_1++, // Ne, accessory effect that increases hero charge/emit-value (adds to heroChargeValues when present).
-    accessoryHealthBonusCol = iterIdxTemp_1++, // accessory effect that multiplies party max HP by a percent per accessory level.
-    accessoryJointStepDividerCol = iterIdxTemp_1++, // Pe, accessory effect that alters joint/body step smoothing (used to divide the per-joint stepWithVerticalBias step amount when present).
-    accessoryMagicDamageReductionCol = iterIdxTemp_1++, // Qe, accessory effect that subtracts a flat amount from incoming magic-damage (attackType == 1).
-    accessoryStunChanceReductionCol = iterIdxTemp_1++, // Re, accessory effect that reduces the "skip/chance" parameter hi[...] applied on attackType==2 (reduces skip/stun probability or similar).
-    accessoryDamageNegationChanceCol = iterIdxTemp_1++, // Se, accessory effect that gives a random chance to fully negate certain attacks (attackType == 3 branch).
-    accessoryDebuffDurationReductionCol = iterIdxTemp_1++; // Te, accessory effect that reduces debuff/duration timers (subtracts from dh[...] when attackType==4).
+let ENUM_ACCESSORY_PROPS_COUNT = 1;
+const accessoryArmsBonusCol0 = ENUM_ACCESSORY_PROPS_COUNT++, // ARMS accessory bonus effect column (grants "ARMS Lv +" for ring-type accessories; counted by heroHasAccessoryEffect/countAccessoryLvlBonuses)
+    accessoryChargeBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // CHARGE accessory bonus effect column (grants "CHARGE Lv +" for amulet-type accessories; counted by heroHasAccessoryEffect/countAccessoryLvlBonuses)
+    accessoryArmsBonusCol1 = ENUM_ACCESSORY_PROPS_COUNT++, // Secondary ARMS accessory bonus effect column (used by multi-effect accessories like Master Ring; supports primary/secondary sums via sumAccessorySecondaryValues)
+    accessoryEffectAtkBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // oe, returns/identifies the accessory effect that boosts weapon attack; used with heroHasAccessoryEffect and countAccessoryLvlBonuses.
+    accessoryEffectAgiPenaltyCol = ENUM_ACCESSORY_PROPS_COUNT++, // pe, identifies an accessory effect that reduces hero agility (AGI) by accessory level.
+    accessoryEffectRangeAndCountCol = ENUM_ACCESSORY_PROPS_COUNT++, // qe, accessory effect that increases attack range (for certain item appearances) and contributes to item secondary values (range/count bonuses).
+    accessoryEffectEmitFullChargeChance_duringChargeCol = ENUM_ACCESSORY_PROPS_COUNT++, // re, accessory effect that gives a chance (per accessory level) to immediately fill the emit gauge while the hero is charging.
+    accessoryEffectEmitFullChargeChance_onFireCol = ENUM_ACCESSORY_PROPS_COUNT++, // se, accessory effect that gives a chance (per accessory level) to immediately refill the emit gauge when an emit completes/fires.
+    accessoryEffectEmitMaxReductionCol = ENUM_ACCESSORY_PROPS_COUNT++, // te, accessory effect that reduces the hero's maximum emit value (lowers required charge), applied per accessory level.
+    accessoryEffectMultiShotIncreaseCol = ENUM_ACCESSORY_PROPS_COUNT++; // ue, accessory effect that increases the attack shot count / multiple-shot count by accessory levels.
+
+ENUM_ACCESSORY_PROPS_COUNT++;
+ENUM_ACCESSORY_PROPS_COUNT++;
+ENUM_ACCESSORY_PROPS_COUNT++;
+ENUM_ACCESSORY_PROPS_COUNT++;
+const accessoryDodgeChanceCol = ENUM_ACCESSORY_PROPS_COUNT++, // accessory effect that grants a flat dodge-chance bonus per accessory level.
+    accessoryEffectPhysicalProcChanceCol = ENUM_ACCESSORY_PROPS_COUNT++, // we, accessory effect that gives a chance (per accessory level) to multiply physical weapon ATK by the accessory's secondary value (physical proc/crit).
+    accessoryEffectFireStatBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // xe, accessory effect that adds its primary value to the item's fire-related stat (applied when item element == fire).
+    accessoryEffectIceStatBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // ye, accessory effect that adds its primary value to the item's ice-related stat (applied when item element == ice).
+    accessoryEffectLightningMaxAtkPercentCol = ENUM_ACCESSORY_PROPS_COUNT++, // ze, accessory effect that increases the max ATK percent for lightning-element items (applies only to maxAtk).
+    accessoryEffectLightningElemBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // Ae, accessory effect that modifies lightning-element item behavior (e.g., increments selectedItemIdx for certain attack modes / forge interactions).
+    accessoryEffectPoisonAtkPercentCol = ENUM_ACCESSORY_PROPS_COUNT++, // Be, accessory effect that increases ATK percent for poison-element items (applies to min/max ATK).
+    accessoryRewardValueBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // Ce, accessory effect that increases party reward value percent (adds to stage reward value).
+    accessoryDropChanceBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // Ee, accessory effect that increases party drop chance percent.
+    accessoryEnemyHpBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // Fe, accessory effect that increases enemy HP percent (used to scale stage enemy HP).
+    accessoryFireAtkPercentCol = ENUM_ACCESSORY_PROPS_COUNT++, // Ge, accessory effect that increases min/max ATK percent for fire-element items.
+    accessoryIceAtkPercentCol = ENUM_ACCESSORY_PROPS_COUNT++, // He, accessory effect that increases min/max ATK percent for ice-element items.
+    accessoryEffectPoisonStatBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // Ie, accessory effect that adds a (large) amount to an item stat when element == poison (applied as +60 * level in code).
+    accessoryMultiShotSpreadDivisorCol = ENUM_ACCESSORY_PROPS_COUNT++, // Je, accessory effect that reduces multi-shot angular spread (divides the shot-step We when present).
+    accessoryMeleeDefenceCol = ENUM_ACCESSORY_PROPS_COUNT++, // accessory effect that grants flat melee/proj defense per level (added to hero melee/proj defense arrays).
+    accessoryMagicDefenseCol = ENUM_ACCESSORY_PROPS_COUNT++, // accessory effect that grants flat magic-defense percent per level (added to hero magic defense).
+    accessoryComboMaxIncreaseCol = ENUM_ACCESSORY_PROPS_COUNT++, // Me, accessory effect that increases the combo/charge max (Vg) by 60 per accessory level (affects combo bar max).
+    accessoryChargeValueBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // Ne, accessory effect that increases hero charge/emit-value (adds to heroChargeValues when present).
+    accessoryHealthBonusCol = ENUM_ACCESSORY_PROPS_COUNT++, // accessory effect that multiplies party max HP by a percent per accessory level.
+    accessoryJointStepDividerCol = ENUM_ACCESSORY_PROPS_COUNT++, // Pe, accessory effect that alters joint/body step smoothing (used to divide the per-joint stepWithVerticalBias step amount when present).
+    accessoryMagicDamageReductionCol = ENUM_ACCESSORY_PROPS_COUNT++, // Qe, accessory effect that subtracts a flat amount from incoming magic-damage (attackType == 1).
+    accessoryStunChanceReductionCol = ENUM_ACCESSORY_PROPS_COUNT++, // Re, accessory effect that reduces the "skip/chance" parameter hi[...] applied on attackType==2 (reduces skip/stun probability or similar).
+    accessoryDamageNegationChanceCol = ENUM_ACCESSORY_PROPS_COUNT++, // Se, accessory effect that gives a random chance to fully negate certain attacks (attackType == 3 branch).
+    accessoryDebuffDurationReductionCol = ENUM_ACCESSORY_PROPS_COUNT++; // Te, accessory effect that reduces debuff/duration timers (subtracts from dh[...] when attackType==4).
 
 
 function getItemModifierAmount(itemIdx, columnIdx) { // Ue
@@ -443,7 +445,7 @@ function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     itemList[partyEquipmentTable[partyIdx][4]][accessoryTempIdxCol] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][accessorySecondaryValueCol]);
     return c
 }
-let itemList = Array(256);
+const itemList = Array(256);
 itemList[0] = ["NONE", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[1] = ["NG", 0, 1, 0, 0, 8947848, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 itemList[2] = ["gold", 1, 0, 0, 0, 16777215, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -588,7 +590,7 @@ itemList[139] = ["Giant Amulet", 8, 144, 30, 0, 16711782, 16764057, accessoryHea
 let badgeCount = 128,
     badgeList = Array(badgeCount),
     badgeCounterArray = Array(badgeCount);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < badgeCount; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
+for (let _i = 0; _i < badgeCount; _i++) badgeCounterArray[_i] = 0;
 let badgePopupTimer = 0, // bf
     lastCompletedBadgeIdx = 0, // cf
     badgeIndicesByStage = [ // df
@@ -717,7 +719,7 @@ function IncrementBadgeCount(badgeIndex) {
 
 let shrineRewardClaimSlotCount = 10, // Ec
     shrineRewardClaimed = Array(shrineRewardClaimSlotCount);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < shrineRewardClaimSlotCount; iterIdxTemp_1++) badgeCounterArray[iterIdxTemp_1] = 0;
+for (let _i = 0; _i < shrineRewardClaimSlotCount; _i++) badgeCounterArray[_i] = 0;
 let shrineRewardOptions = [
     ["Gold Shower", 15],
     ["Clear Status", 30],
@@ -1718,8 +1720,8 @@ function drawGameUI() {
     var p = [12, 12, 12, 8, 16, 5, 19, 9, 14, 9, 14],
         t = [6, 10, 14, 13, 13, 13, 13, 18, 17, 21, 21],
         l = Array(11);
-    for (iterIdxTemp_1 = 0; 11 > iterIdxTemp_1; iterIdxTemp_1++)
-        l[iterIdxTemp_1] = new Vec2();
+    for (let _i = 0; 11 > _i; _i++)
+        l[_i] = new Vec2();
 
     for (hidx = 0; hidx < partyMemberCount; hidx++) { // draw party
         drawRect(f + hidx * d, g, 24, 24, 0); // bg behind hero
@@ -2595,39 +2597,39 @@ function drawGameUI() {
 let areUpperJointsDisabled = 1, // rig mode flag
     heroJointPositionsByHero = Array(4); // O, current joint positions for each hero.
 
-    for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJointPositionsByHero[iterIdxTemp_1] = Array(21);
+    for (let _i = 0; 4 > _i; _i++) heroJointPositionsByHero[_i] = Array(21);
 
 let heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions used for collision resolution and drag selection.
 
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJointPrevPositionsByHero[iterIdxTemp_1] = Array(21);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) heroJointPositionsByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++) heroJointPrevPositionsByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (let _i = 0; 4 > _i; _i++) heroJointPrevPositionsByHero[_i] = Array(21);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 21 > _j; _j++) heroJointPositionsByHero[_i][_j] = new Vec2;
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 21 > _j; _j++) heroJointPrevPositionsByHero[_i][_j] = new Vec2;
 
 let heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
 
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint5HistoryByHero[iterIdxTemp_1] = Array(16);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint5HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (let _i = 0; 4 > _i; _i++) heroJoint5HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint5HistoryByHero[_i][_j] = new Vec2;
 
 let heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
 
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint3HistoryByHero[iterIdxTemp_1] = Array(16);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint3HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (let _i = 0; 4 > _i; _i++) heroJoint3HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint3HistoryByHero[_i][_j] = new Vec2;
 
 let heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
 
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint6HistoryByHero[iterIdxTemp_1] = Array(16);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint6HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (let _i = 0; 4 > _i; _i++) heroJoint6HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint6HistoryByHero[_i][_j] = new Vec2;
 
 let heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
 
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroJoint4HistoryByHero[iterIdxTemp_1] = Array(16);
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 16 > iterIdxTemp_2; iterIdxTemp_2++) heroJoint4HistoryByHero[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (let _i = 0; 4 > _i; _i++) heroJoint4HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint4HistoryByHero[_i][_j] = new Vec2;
 
 let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
     heroAttackTrailTimerByHero = Array(4), // Sh, hero attack trail timer per hero.
@@ -2639,7 +2641,7 @@ let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index p
     ], // Th, grouped joint-history buffers used for attack-trail drawing.
     heroAimPosByHero = Array(4); // Uh, stored hero aim position per hero.
 
-for (iterIdxTemp_1 = 0; 4 > iterIdxTemp_1; iterIdxTemp_1++) heroAimPosByHero[iterIdxTemp_1] = new Vec2;
+for (let _i = 0; 4 > _i; _i++) heroAimPosByHero[_i] = new Vec2;
 
 let heroAttackLineTimer = Array(4),
     heroUpperJointMode = new Int32Array(4), // Wh, per-hero rig mode flag that switches between normal and upper-joint-disabled updates.
@@ -3969,17 +3971,18 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
 }
 const stageCount = 32,
     stageListArray = Array(stageCount);
-iterIdxTemp_1 = 0;
-const stageNameCol = iterIdxTemp_1++,
-    stageTilesetIdxCol = iterIdxTemp_1++,
-    stageUIBgColorCol = iterIdxTemp_1++,
-    stageReturnCost = iterIdxTemp_1++, // stageAttr3, gold cost to return/warp to the village
-    stageExitTopIdx = iterIdxTemp_1++, // stageAttr4, stage index to go to when exiting off the top edge
-    stageExitBottomIdx = iterIdxTemp_1++, // stageAttr5, stage index to go to when exiting off the bottom edge
-    stageExitLeftIdx = iterIdxTemp_1++, // stageAttr6, stage index to go to when exiting off the left edge
-    stageExitRightIdx = iterIdxTemp_1++, // stageAttr7, stage index to go to when exiting off the right edge
-    stageSpawnChance = iterIdxTemp_1++, // stageAttr8, stage spawn chance/intensity (higher -> more frequent ambient spawns)
-    stageSpawnGroupsStartIdx = iterIdxTemp_1++; // stageAttr9, index where this row's spawn-group definitions begin (groups of 7 values)
+let ENUM_STAGE_PROPS_COUNT = 0;
+const stageNameCol = ENUM_STAGE_PROPS_COUNT++,
+    stageTilesetIdxCol = ENUM_STAGE_PROPS_COUNT++,
+    stageUIBgColorCol = ENUM_STAGE_PROPS_COUNT++,
+    stageReturnCost = ENUM_STAGE_PROPS_COUNT++, // stageAttr3, gold cost to return/warp to the village
+    stageExitTopIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr4, stage index to go to when exiting off the top edge
+    stageExitBottomIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr5, stage index to go to when exiting off the bottom edge
+    stageExitLeftIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr6, stage index to go to when exiting off the left edge
+    stageExitRightIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr7, stage index to go to when exiting off the right edge
+    stageSpawnChance = ENUM_STAGE_PROPS_COUNT++, // stageAttr8, stage spawn chance/intensity (higher -> more frequent ambient spawns)
+    stageSpawnGroupsStartIdx = ENUM_STAGE_PROPS_COUNT++; // stageAttr9, index where this row's spawn-group definitions begin (groups of 7 values)
+
 stageListArray[0] = ["", 0, 13407305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 stageListArray[1] = ["Village", 0, 13407305, 0, 0, 0, 0, 2, 10, 0, 0, 0, 0, 0, 0, 0];
 stageListArray[2] = ["Cave 1", 0, 13407305, 1, 0, 0, 1, 3, 10, 0, 5, 10, 11, 40, 63, 41, 0, 5, 10, 5, 34, 45, 34, 1, 2, 0, 5, 34, 45, 34, 1, 8, 30, 8, 26, 46, 26, 2, 3, 5, 50, 22, 60, 22, 2, 5, 10, 32, 8, 74, 9, 3, 1, 1, 4, 13, 11, 13, 5, 15, 30, 50, 25, 62, 28];
@@ -4002,7 +4005,7 @@ stageListArray[18] = ["Limestone cave 6", 2, 8686715, 15, 19, 17, 0, 0, 50, 77, 
 stageListArray[19] = ["Limestone cave 7", 2, 8686715, 16, 0, 18, 20, 0, 50, 84, 20, 0, 10, 36, 18, 36, 84, 10, 0, 29, 38, 34, 38, 85, 1, 0, 63, 28, 63, 28, 85, 1, 0, 13, 25, 13, 25];
 stageListArray[20] = ["Limestone cave 8", 2, 8686715, 17, 0, 15, 0, 19, 50, 0, 0, 0, 0, 0, 0, 0];
 let isStageReachedArray = Array(stageCount);
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < stageCount; iterIdxTemp_1++) isStageReachedArray[iterIdxTemp_1] = 0;
+for (let _i = 0; _i < stageCount; _i++) isStageReachedArray[_i] = 0;
 let stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
     /** array of lists of enemy ids indexed by stage number */
     bestiaryPageItems = [
@@ -4673,57 +4676,59 @@ function updateStageTick() { // xg
         } else 18 == currentStage ? (6 > totalSpawnedCountByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = randInt(3), spawnEnemy(a[b], 42, 83, 9), activeSpawnCountByGroup[9]++, totalSpawnedCountByGroup[9]++), 9 > totalSpawnedCountByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60) && (c = randIntRange(8, 23), spawnEnemy(c, 10, 83, 10), activeSpawnCountByGroup[10]++,
             totalSpawnedCountByGroup[10]++), !isBadgeIncompleteForCurrentStage(71) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 2 || IncrementBadgeCount(71), !isBadgeIncompleteForCurrentStage(72) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (totalSpawnedCountByGroup[7] < 20 * (35 - activeSpawnCountByGroup[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == stageTileData[d][c] && (19 == totalSpawnedCountByGroup[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), activeSpawnCountByGroup[7]++, totalSpawnedCountByGroup[7]++)), 1 > totalSpawnedCountByGroup[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), activeSpawnCountByGroup[4]++, totalSpawnedCountByGroup[4]++), 1 == stageEventFlagArray[1] && (fillStageTilesRect(47, 15, 50, 15, 24), fillStageTilesRect(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == stageEventFlagArray[4] ? fillStageTilesRect(70, 34, 70, 34, 63) : 55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (fillStageTilesRect(70, 34, 70, 34, 63), spawnDrop(564, 276, 3, 4, 0)))
 }
-iterIdxTemp_1 = 0;
-    
+
+let ENUM_ENEMY_PROPS_COUNT = 0;    
 const // 0-10
-    enemyLevelCol = iterIdxTemp_1++, // Enemy level used for bestiary display and EXP scaling.
-    enemyBehaviorIdxCol = iterIdxTemp_1++, // Dispatch-table index for the enemy update behavior.
-    enemyShapeParamACol = iterIdxTemp_1++, // Shape parameter used by multi-part enemies; some behaviors treat it as a segment count.
-    enemyShapeParamBCol = iterIdxTemp_1++, // Secondary shape parameter used by multi-part enemies; some behaviors treat it as a span or max count.
-    enemySpriteIndexCol = iterIdxTemp_1++, // Sprite sheet index used to pick the enemy art.
-    enemyDrawScaleCol = iterIdxTemp_1++, // Draw scale multiplier used for the enemy sprite and hitbox math.
-    enemyPrimaryTintCol = iterIdxTemp_1++, // Primary tint color used by the enemy renderer.
-    enemySecondaryTintCol = iterIdxTemp_1++, // Secondary tint color used by the enemy renderer.
-    enemyAccentTintCol = iterIdxTemp_1++, // Accent tint color used by the enemy renderer.
-    enemyHealthCol = iterIdxTemp_1++, // health column used for the LP display and health bar.
-    enemyProjectileAttachModeCol = iterIdxTemp_1++, // Attachment mode for the spawned projectile; remapped to -1/0/1 before spawn.
-    enemyProjectileVisualPackCol = iterIdxTemp_1++, // Packed projectile visual mode; splits into tint mode and solid or blend mode.
+    enemyLevelCol = ENUM_ENEMY_PROPS_COUNT++, // Enemy level used for bestiary display and EXP scaling.
+    enemyBehaviorIdxCol = ENUM_ENEMY_PROPS_COUNT++, // Dispatch-table index for the enemy update behavior.
+    enemyShapeParamACol = ENUM_ENEMY_PROPS_COUNT++, // Shape parameter used by multi-part enemies; some behaviors treat it as a segment count.
+    enemyShapeParamBCol = ENUM_ENEMY_PROPS_COUNT++, // Secondary shape parameter used by multi-part enemies; some behaviors treat it as a span or max count.
+    enemySpriteIndexCol = ENUM_ENEMY_PROPS_COUNT++, // Sprite sheet index used to pick the enemy art.
+    enemyDrawScaleCol = ENUM_ENEMY_PROPS_COUNT++, // Draw scale multiplier used for the enemy sprite and hitbox math.
+    enemyPrimaryTintCol = ENUM_ENEMY_PROPS_COUNT++, // Primary tint color used by the enemy renderer.
+    enemySecondaryTintCol = ENUM_ENEMY_PROPS_COUNT++, // Secondary tint color used by the enemy renderer.
+    enemyAccentTintCol = ENUM_ENEMY_PROPS_COUNT++, // Accent tint color used by the enemy renderer.
+    enemyHealthCol = ENUM_ENEMY_PROPS_COUNT++, // health column used for the LP display and health bar.
+    enemyProjectileAttachModeCol = ENUM_ENEMY_PROPS_COUNT++, // Attachment mode for the spawned projectile; remapped to -1/0/1 before spawn.
+    enemyProjectileVisualPackCol = ENUM_ENEMY_PROPS_COUNT++, // Packed projectile visual mode; splits into tint mode and solid or blend mode.
 
     // 12-38: Projectile template arguments forwarded unchanged into spawnProjectile.
-    enemyPArg0Col = iterIdxTemp_1++,  enemyPArg1Col = iterIdxTemp_1++,  enemyPArg2Col = iterIdxTemp_1++,  enemyPArg3Col = iterIdxTemp_1++,
-    enemyPArg4Col = iterIdxTemp_1++,  enemyPArg5Col = iterIdxTemp_1++,  enemyPArg6Col = iterIdxTemp_1++,  enemyPArg7Col = iterIdxTemp_1++,
-    enemyPArg8Col = iterIdxTemp_1++,  enemyPArg9Col = iterIdxTemp_1++,  enemyPArg10Col = iterIdxTemp_1++, enemyPArg11Col = iterIdxTemp_1++,
-    enemyPArg12Col = iterIdxTemp_1++, enemyPArg13Col = iterIdxTemp_1++, enemyPArg14Col = iterIdxTemp_1++, enemyPArg15Col = iterIdxTemp_1++,
-    enemyPArg16Col = iterIdxTemp_1++, enemyPArg17Col = iterIdxTemp_1++, enemyPArg18Col = iterIdxTemp_1++, enemyPArg19Col = iterIdxTemp_1++,
-    enemyPArg20Col = iterIdxTemp_1++, enemyPArg21Col = iterIdxTemp_1++, enemyPArg22Col = iterIdxTemp_1++, enemyPArg23Col = iterIdxTemp_1++,
-    enemyPArg24Col = iterIdxTemp_1++, enemyPArg25Col = iterIdxTemp_1++, enemyPArg26Col = iterIdxTemp_1++,
+    enemyPArg0Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg1Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg2Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg3Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg4Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg5Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg6Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg7Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg8Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg9Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg10Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg11Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg12Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg13Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg14Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg15Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg16Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg17Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg18Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg19Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg20Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg21Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg22Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg23Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg24Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg25Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg26Col = ENUM_ENEMY_PROPS_COUNT++,
 
     // 39-44
-    enemyPhysResistPctCol = iterIdxTemp_1++, // Physical resistance percentage shown in RES and applied as flat damage reduction.
-    enemyFireResistPctCol = iterIdxTemp_1++, // Fire resistance percentage shown in RES and applied to percentage damage reduction.
-    enemyIceResistPctCol = iterIdxTemp_1++, // Ice resistance percentage shown in RES and applied to percentage damage reduction.
-    enemyLightResistPctCol = iterIdxTemp_1++, // Light resistance percentage shown in RES and applied to percentage damage reduction.
-    enemyPoisonResistPctCol = iterIdxTemp_1++, // Poison resistance percentage shown in RES and applied to DoT damage reduction.
-    enemyFreezeResistPctCol = iterIdxTemp_1++, // Freeze resistance percentage used by freeze status duration reduction.
+    enemyPhysResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Physical resistance percentage shown in RES and applied as flat damage reduction.
+    enemyFireResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Fire resistance percentage shown in RES and applied to percentage damage reduction.
+    enemyIceResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Ice resistance percentage shown in RES and applied to percentage damage reduction.
+    enemyLightResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Light resistance percentage shown in RES and applied to percentage damage reduction.
+    enemyPoisonResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Poison resistance percentage shown in RES and applied to DoT damage reduction.
+    enemyFreezeResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Freeze resistance percentage used by freeze status duration reduction.
 
     // 45-62: Projectile template arguments forwarded unchanged into spawnProjectile.
-    enemyPArg27Col = iterIdxTemp_1++, enemyPArg28Col = iterIdxTemp_1++, enemyPArg29Col = iterIdxTemp_1++, enemyPArg30Col = iterIdxTemp_1++,
-    enemyPArg31Col = iterIdxTemp_1++, enemyPArg32Col = iterIdxTemp_1++, enemyPArg33Col = iterIdxTemp_1++, enemyPArg34Col = iterIdxTemp_1++,
-    enemyPArg35Col = iterIdxTemp_1++, enemyPArg36Col = iterIdxTemp_1++, enemyPArg37Col = iterIdxTemp_1++, enemyPArg38Col = iterIdxTemp_1++,
-    enemyPArg39Col = iterIdxTemp_1++, enemyPArg40Col = iterIdxTemp_1++, enemyPArg41Col = iterIdxTemp_1++, enemyPArg42Col = iterIdxTemp_1++,
-    enemyPArg43Col = iterIdxTemp_1++, enemyPArg44Col = iterIdxTemp_1++,
+    enemyPArg27Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg28Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg29Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg30Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg31Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg32Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg33Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg34Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg35Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg36Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg37Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg38Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg39Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg40Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg41Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg42Col = ENUM_ENEMY_PROPS_COUNT++,
+    enemyPArg43Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg44Col = ENUM_ENEMY_PROPS_COUNT++,
 
     // 63-67
-    enemySecondaryProjectileEnabledCol = iterIdxTemp_1++, // Secondary projectile template flag; nonzero spawns the variant projectile set.
-    enemyExpRewardCol = iterIdxTemp_1++, // EXP reward granted on death.
-    enemyGoldRewardCol = iterIdxTemp_1++, // Gold reward granted on death and bestiary unlock.
-    enemyBestiaryUnlockCostCol = iterIdxTemp_1++, // Bestiary unlock cost shown before the enemy entry is revealed.
-    enemyDropTableStartIdxCol = iterIdxTemp_1++, // Base index of the four-slot death drop table; read as item and probability pairs.
-    enemyTypeCount = 128,
+    enemySecondaryProjectileEnabledCol = ENUM_ENEMY_PROPS_COUNT++, // Secondary projectile template flag; nonzero spawns the variant projectile set.
+    enemyExpRewardCol = ENUM_ENEMY_PROPS_COUNT++, // EXP reward granted on death.
+    enemyGoldRewardCol = ENUM_ENEMY_PROPS_COUNT++, // Gold reward granted on death and bestiary unlock.
+    enemyBestiaryUnlockCostCol = ENUM_ENEMY_PROPS_COUNT++, // Bestiary unlock cost shown before the enemy entry is revealed.
+    enemyDropTableStartIdxCol = ENUM_ENEMY_PROPS_COUNT++; // Base index of the four-slot death drop table; read as item and probability pairs.
 
+
+let enemyTypeCount = 128,
     enemyCatalog = Array(enemyTypeCount),
     bestiaryEntryState = Array(enemyTypeCount); // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
-for (iterIdxTemp_1 = 0; iterIdxTemp_1 < enemyTypeCount; iterIdxTemp_1++) bestiaryEntryState[iterIdxTemp_1] = 0;
+for (let _i = 0; _i < enemyTypeCount; _i++) bestiaryEntryState[_i] = 0;
+
 enemyCatalog[0] = [1, 0, 0, 0, 0, 1, 3394611, 3355443, 0, 30, 1, 0, 2, 0, 4294967091, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 1, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 7, 10, 9, 10, 0, 0, 71, 1E3];
 enemyCatalog[1] = [2, 0, 0, 0, 0, 1, 3394815, 3355545, 0, 60, 1, 0, 2, 0, 4294967295, 2, 16, 16, 32, 32, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 2, 3, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 5, 20, 10, 30, 0, 0, 71, 1E3];
 enemyCatalog[2] = [3, 0, 0, 0, 0, 1, 13369344, 3342336, 0, 90, 0, 2, 0, 2, 4288217088, 1, 16, 16, 8, 8, 0, 0, 20, 10, 0, 100, 0, 0, 0, 0, 3, 5, 1, 10, 50, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 1, 10, 6, 30, 28, 5, 0, 0, 71, 1E3];
@@ -4831,16 +4836,17 @@ const // Dispatch-table indices
 
 let enemyJointPosArray = Array(999), // Q, 
     enemyPrevJointPosArray = Array(999); // Z, 
-for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) enemyPrevJointPosArray[iterIdxTemp_1] = Array(21);
-for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++) enemyJointPosArray[iterIdxTemp_1] = Array(21);
 
-for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyJointPosArray[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (let _i = 0; 999 > _i; _i++) enemyPrevJointPosArray[_i] = Array(21);
+for (let _i = 0; 999 > _i; _i++) enemyJointPosArray[_i] = Array(21);
 
-for (iterIdxTemp_1 = 0; 999 > iterIdxTemp_1; iterIdxTemp_1++)
-    for (iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyPrevJointPosArray[iterIdxTemp_1][iterIdxTemp_2] = new Vec2;
+for (let _i = 0; 999 > _i; _i++)
+    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
+        enemyJointPosArray[_i][iterIdxTemp_2] = new Vec2;
+
+for (let _i = 0; 999 > _i; _i++)
+    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
+        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new Vec2;
 
 let enemyTypeArray = new Int32Array(999), // 
     enemyUpdateFuncIdxArray = new Int32Array(999),
@@ -6278,9 +6284,9 @@ let projectileCount = 0,
     projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
     projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
     projectilePosition = Array(1E3);                    // jl, projectile position Vec2 — world position when free, local offset when attached.
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectilePosition[iterIdxTemp_1] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) projectilePosition[_i] = new Vec2;
 let projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) projectileVelocity[iterIdxTemp_1] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) projectileVelocity[_i] = new Vec2;
 let projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
     projectileDrawMode = new Int32Array(1E3),           // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
     projectileSpriteTileIndex = new Int32Array(1E3),    // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
@@ -6827,9 +6833,9 @@ function drawProjectiles() { // Eg
 }
 let popupCount = 0, // aj
     popupPos = Array(1E3); // rm
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) popupPos[iterIdxTemp_1] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new Vec2;
 let popupVel = Array(1E3); // sm
-for (iterIdxTemp_1 = 0; 1E3 > iterIdxTemp_1; iterIdxTemp_1++) popupVel[iterIdxTemp_1] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new Vec2;
 let popupValue = Array(1E3), // tm
     popupLife = new Int32Array(1E3), // um
     popupColor = new Int32Array(1E3); // vm
@@ -6901,9 +6907,9 @@ function drawPopups() { // Fg
 }
 let dropCount = 0, // ym
     dropPos = Array(100); // zm
-for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) dropPos[iterIdxTemp_1] = new Vec2;
+for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new Vec2;
 let dropVel = Array(100); // Am
-for (iterIdxTemp_1 = 0; 100 > iterIdxTemp_1; iterIdxTemp_1++) dropVel[iterIdxTemp_1] = new Vec2;
+for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new Vec2;
 let dropType = new Int32Array(100), // Bm, in id
     dropValue = new Int32Array(100), // Cm, value/amount
     dropMeta = new Int32Array(100), // Dm, rarity/state
@@ -7051,7 +7057,7 @@ let copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 3
     //89, 77, 82, 103, 117, 50, 53, 66, 106, 111, 75),
     inverseCodingCharTable = [];
 
-for (iterIdxTemp_1 = 0; 64 > iterIdxTemp_1; iterIdxTemp_1++) inverseCodingCharTable[encodingCharTable[iterIdxTemp_1]] = iterIdxTemp_1;
+for (let _i = 0; 64 > _i; _i++) inverseCodingCharTable[encodingCharTable[_i]] = _i;
 let hostnameCheckIdx = 0,
     targetHostname = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
     frameBufferArray = new Int32Array(276480),
@@ -7561,6 +7567,7 @@ function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
 function toggleFullscreen() {
     domDocument.fullscreenEnabled && (domDocument.fullscreenElement ? domDocument.exitFullscreen() : canvasElement.requestFullscreen())
 }
+
 let isMouseClicked = false,
     isMouseReleased = false,
     wasMouseDown = false,

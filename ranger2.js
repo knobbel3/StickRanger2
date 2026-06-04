@@ -89,7 +89,7 @@ var partyMemberCount = 1,
     heroChargeValues = [0, 0, 0, 0],
     heroEmitCooldown = [0, 0, 0, 0], // cb
 
-    stageEventFlagArray = [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    stageEventFlags = [0, 0, 0, 0, 0, 0, 0, 0, 0],
     collectedStageFlagsCount = 0, // eb
     stageFlagsSetCount = 0, // hb
 
@@ -163,7 +163,7 @@ function resetGameProgress() { // bc
         partyLP[a] = 50, 
         partyMaxLP[a] = 50, 
         heroEmitCurrent[a] = 0;
-    for (a = 0; 9 > a; a++) stageEventFlagArray[a] = 0;
+    for (a = 0; 9 > a; a++) stageEventFlags[a] = 0;
     for (b = stageFlagsSetCount = collectedStageFlagsCount = 0; b < partyStats.length; b++)
         for (a = 0; 4 > a; a++) partyStats[b][a] = 0;
     for (a = 0; 4 > a; a++)
@@ -783,7 +783,7 @@ function saveGame() {
     for (b = gameSaveBuffer[a++] = 0; 256 > b; b++) gameSaveBuffer[a++] = itemForgeLvls[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = 10;
-    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = stageEventFlagArray[b];
+    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = stageEventFlags[b];
     gameSaveBuffer[a++] = collectedStageFlagsCount;
     gameSaveBuffer[a++] = stageCount >> 6 & 63;
     gameSaveBuffer[a++] = stageCount >> 0 & 63;
@@ -807,7 +807,7 @@ function saveGame() {
     f = 4;
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
-    for (b = 0; b < f; b++) gameSaveBuffer[a++] = stageEventFlagArray[b];
+    for (b = 0; b < f; b++) gameSaveBuffer[a++] = stageEventFlags[b];
 
     let gameSaveHash = 0;
     for (b = 3; b < a; b++) gameSaveHash += gameSaveBuffer[b];
@@ -887,7 +887,7 @@ function loadGame(saveString) {
 
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; 9 > b; b++) stageEventFlagArray[b] = gameSaveBuffer[p++];
+    for (b = 0; 9 > b; b++) stageEventFlags[b] = gameSaveBuffer[p++];
     collectedStageFlagsCount = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
@@ -908,7 +908,7 @@ function loadGame(saveString) {
     for (b = 0; b < g; b++) shrineRewardClaimed[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) stageEventFlagArray[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) stageEventFlags[b] = gameSaveBuffer[p++];
     return 0;
 }
 var partyChecksum = 0,
@@ -953,7 +953,7 @@ function updatePartyChecksum() {
             c = hashAdjust(c, partyEquipmentTable[a][b]);
 
     for (a = 0; 256 > a; a++) c = hashAdjust(c, itemForgeLvls[a]);
-    for (a = 0; 9 > a; a++) c = hashAdjust(c, stageEventFlagArray[a]);
+    for (a = 0; 9 > a; a++) c = hashAdjust(c, stageEventFlags[a]);
     c = hashAdjust(c, collectedStageFlagsCount);
     for (a = 0; a < stageCount; a++) c = hashAdjust(c, isStageReachedArray[a]);
     for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, bestiaryEntryState[a]);
@@ -1606,7 +1606,7 @@ function updatePartyStats() {
             heroHasAccessoryEffect(hidx, accessoryEnemyHpBonusCol) && (partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, accessoryEnemyHpBonusCol)),
             heroHasAccessoryEffect(hidx, accessoryComboMaxIncreaseCol) && (comboWindowMaxFrames += 60 * countAccessoryLvlBonuses(hidx, accessoryComboMaxIncreaseCol));
     comboWindowTimer = clamp(comboWindowTimer, 0, comboWindowMaxFrames);
-    for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlagArray[hidx] && stageFlagsSetCount++
+    for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
 }
 
 
@@ -2573,7 +2573,7 @@ function drawGameUI() {
                     partyStats[b][hidx] = 0;
         } else if (2 == c) {
             shrineRewardClaimed[c] = 1;
-            stageEventFlagArray[3] = 1;
+            stageEventFlags[3] = 1;
             collectedStageFlagsCount++;
         } else if (3 == c){
             for (shrineRewardClaimed[c] = 1, hidx = 0; 2 > hidx; hidx++){
@@ -4371,8 +4371,8 @@ function updateStageEdgeSpawns() { // wg
                 }
             }
             if (19 == currentStage) {
-                if (0 == stageEventFlagArray[1]) {
-                    stageEventFlagArray[1] = 1;
+                if (0 == stageEventFlags[1]) {
+                    stageEventFlags[1] = 1;
                 }
             }
             spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215);

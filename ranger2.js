@@ -6027,7 +6027,7 @@ function drawEnemies() { // Cg
         if (enemyAuxStateArray[enemyIdx] > 0){
             enemyAuxStateArray[enemyIdx]--;
             if (enemyHealthArray[enemyIdx] > 0) {
-                drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+                let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
                 drawRect(floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale, 14 * drawScale, 1, 10027008);
                 drawRect(
                     floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale,

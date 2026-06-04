@@ -2922,225 +2922,222 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
     let projDir = new Vec2(),
         selectedItemIdx = partyEquipmentTable[heroIdx][itemSlot],
         selectedItem = itemList[selectedItemIdx],
-        t = selectedItem[itemLimbSelectionCol];
-    switch (t) {
+        limbSel = selectedItem[itemLimbSelectionCol];
+    switch (limbSel) {
         case 0:
-            t = -1;
+            limbSel = -1;
             break;
         case 1:
-            t = limbDesc;
+            limbSel = limbDesc;
             break;
         case 2:
-            t = limbDesc & 65280 | 1;
+            limbSel = limbDesc & 65280 | 1;
             break;
         case 3:
-            t = limbDesc & 65280 | limbDesc >> 8;
+            limbSel = limbDesc & 65280 | limbDesc >> 8;
             break;
         case 5:
-            t = 257;
+            limbSel = 257;
             break;
     }
-    var l = selectedItem[itemProjectileDrawWidthCol],
-        n = selectedItem[itemProjectileDrawHeightCol],
-        w = selectedItem[itemProjectileShapeModeCol],
-        B = selectedItem[projectileEffectWidthCol],
-        M = selectedItem[projectileEffectHeightCol],
-        J = selectedItem[projectileDelayRangeCol],
-        y = selectedItem[projectileNoDamageFramesCol],
-        x = selectedItem[projectileStartAnimFrameCol],
-        K = selectedItem[projectileLifetimeCol],
-        ba = selectedItem[projectileTargetIndexCol],
-        U = getModifiedStatVal(heroIdx, selectedItemIdx, projectileAccelerationCol),
-        na = getModifiedStatVal(heroIdx, selectedItemIdx, projectileSpeedScaleCol),
-        Fa = getModifiedStatVal(heroIdx, selectedItemIdx, projectileAuxStatCol),
-        Ga = selectedItem[projectileCollisionModeCol],
-        Ca = getModifiedStatVal(heroIdx, selectedItemIdx, attackCooldownCol);
+    let pwidth = selectedItem[itemProjectileDrawWidthCol],
+        pheight = selectedItem[itemProjectileDrawHeightCol],
+        pshape = selectedItem[itemProjectileShapeModeCol],
+        pewidth = selectedItem[projectileEffectWidthCol],
+        peheight = selectedItem[projectileEffectHeightCol],
+        pdelr = selectedItem[projectileDelayRangeCol],
+        pnodmg = selectedItem[projectileNoDamageFramesCol],
+        panim = selectedItem[projectileStartAnimFrameCol],
+        plife = selectedItem[projectileLifetimeCol],
+        ptarg = selectedItem[projectileTargetIndexCol],
+        pacelMod = getModifiedStatVal(heroIdx, selectedItemIdx, projectileAccelerationCol),
+        pspdMod = getModifiedStatVal(heroIdx, selectedItemIdx, projectileSpeedScaleCol),
+        pauxMod = getModifiedStatVal(heroIdx, selectedItemIdx, projectileAuxStatCol),
+        pcol = selectedItem[projectileCollisionModeCol],
+        pcdMod = getModifiedStatVal(heroIdx, selectedItemIdx, attackCooldownCol);
+
     if (heroHasAccessoryEffect(heroIdx, accessoryEffectRangeAndCountCol) && (4 == selectedItem[itemAppearanceCol] || 5 == selectedItem[itemAppearanceCol])) {
-        Ca += sumAccessorySecondaryValues(heroIdx, accessoryEffectRangeAndCountCol);
+        pcdMod += sumAccessorySecondaryValues(heroIdx, accessoryEffectRangeAndCountCol);
     }
-    var ua = selectedItem[projectileAuxParamCol],
-        fb = selectedItem[itemProjectileMaxTargetsCol];
-    if (2 == fb) {
-        fb = limbDesc >> 8;
+    let paux = selectedItem[projectileAuxParamCol],
+        pmaxtarg = selectedItem[itemProjectileMaxTargetsCol];
+    if (2 == pmaxtarg) {
+        pmaxtarg = limbDesc >> 8;
     }
     limbDesc = selectedItem[itemProjectileDamageMinCol];
 
-    var ob = selectedItem[itemProjectileDamageMaxCol],
-        Bb = selectedItem[itemProjectileEffectTypeCol],
-        gc = selectedItem[projectileEffectTypeCol],
-        Qb = selectedItem[projectileEffectDurationCol],
-        Rb = getModifiedStatVal(heroIdx, selectedItemIdx, itemHitCountStatCol),
-        gb = minAtkArray[4 * itemSlot + heroIdx],
-        jb = maxAtkArray[4 * itemSlot + heroIdx];
+    let itemdmgMax = selectedItem[itemProjectileDamageMaxCol],
+        itempEffect = selectedItem[itemProjectileEffectTypeCol],
+        projEffect = selectedItem[projectileEffectTypeCol],
+        projEffectDur = selectedItem[projectileEffectDurationCol],
+        itemHitCountMod = getModifiedStatVal(heroIdx, selectedItemIdx, itemHitCountStatCol),
+        minAtk = minAtkArray[4 * itemSlot + heroIdx],
+        maxAtk = maxAtkArray[4 * itemSlot + heroIdx];
     if (heroHasAccessoryEffect(heroIdx, accessoryEffectPhysicalProcChanceCol) && 0 == selectedItem[itemElementTypeCol] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, accessoryEffectPhysicalProcChanceCol)) {
-        gb = floor(gb * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
-        jb = floor(jb * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
+        minAtk = floor(minAtk * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
+        maxAtk = floor(maxAtk * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
     }
     itemSlot = atkCountArray[4 * itemSlot + heroIdx];
-    var La = selectedItem[itemProjectileSpeedCol],
-        hc = selectedItem[itemElementTypeCol],
-        Ib = getModifiedStatVal(heroIdx, selectedItemIdx, itemIceBonusPercentCol);
+    let itemProjSpd = selectedItem[itemProjectileSpeedCol],
+        itemEType = selectedItem[itemElementTypeCol],
+        itemBonus = getModifiedStatVal(heroIdx, selectedItemIdx, itemIceBonusPercentCol);
     if (heroHasAccessoryEffect(heroIdx, accessoryEffectFireStatBonusCol)) {
         if (1 == selectedItem[itemElementTypeCol]) {
-            Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectFireStatBonusCol);
+            itemBonus += countAccessoryLvlBonuses(heroIdx, accessoryEffectFireStatBonusCol);
         }
     }
     if (heroHasAccessoryEffect(heroIdx, accessoryEffectIceStatBonusCol)) {
         if (2 == selectedItem[itemElementTypeCol]) {
-            Ib += countAccessoryLvlBonuses(heroIdx, accessoryEffectIceStatBonusCol);
+            itemBonus += countAccessoryLvlBonuses(heroIdx, accessoryEffectIceStatBonusCol);
         }
     }
     if (heroHasAccessoryEffect(heroIdx, accessoryEffectPoisonStatBonusCol)) {
         if (4 == selectedItem[itemElementTypeCol]) {
-            Ib += 60 * countAccessoryLvlBonuses(heroIdx, accessoryEffectPoisonStatBonusCol);
+            itemBonus += 60 * countAccessoryLvlBonuses(heroIdx, accessoryEffectPoisonStatBonusCol);
         }
     }
-    var ic = selectedItem[itemProjectileParam1Col],
-        jc = selectedItem[itemAttackModeCol],
-        kc = selectedItem[itemProjectileParam2Col],
-        lc = selectedItem[itemProjectileAux1Col],
-        mc = selectedItem[itemProjectileAux2Col],
-        nc = selectedItem[itemAuxValueACol],
-        oc = selectedItem[itemAuxValueBCol],
-        pc = selectedItem[itemAuxValueCCol],
-        qc = selectedItem[itemDisplayStatACol],
-        rc = selectedItem[itemAuxValueDCol],
-        sc = selectedItem[itemProjectileFlagCol],
-        tc = selectedItem[itemProjectileParamTimeCol],
-        uc = selectedItem[itemHitCountCol],
-        vc = selectedItem[itemProjectileEffectModeCol],
-        wc = getModifiedStatVal(heroIdx, selectedItemIdx, itemStatACol),
-        xc = selectedItem[itemExtraStatCol1],
-        yc = selectedItem[itemExtraStatCol2],
-        zc = selectedItem[itemSpawnTargetRangeCol],
-        Qd = selectedItem[itemExtraParamACol],
-        Qf = selectedItem[itemExtraParamBCol],
-        Rf = selectedItem[itemExtraParamCCol],
-        Sf = selectedItem[itemProjectileParam3Col];
+    let itemProjParam1 = selectedItem[itemProjectileParam1Col],
+        itemAtkMode = selectedItem[itemAttackModeCol],
+        itemProjParam2 = selectedItem[itemProjectileParam2Col],
+        itemProjAux1 = selectedItem[itemProjectileAux1Col],
+        itemProjAux2 = selectedItem[itemProjectileAux2Col],
+        itemAuxA = selectedItem[itemAuxValueACol],
+        itemAuxB = selectedItem[itemAuxValueBCol],
+        itemAuxC = selectedItem[itemAuxValueCCol],
+        itemDispA = selectedItem[itemDisplayStatACol],
+        itemAuxD = selectedItem[itemAuxValueDCol],
+        itemProjFlag = selectedItem[itemProjectileFlagCol],
+        itemProjParamTime = selectedItem[itemProjectileParamTimeCol],
+        itemHCount = selectedItem[itemHitCountCol],
+        itemProjEffect = selectedItem[itemProjectileEffectModeCol],
+        itemStatAMod = getModifiedStatVal(heroIdx, selectedItemIdx, itemStatACol),
+        itemExt1 = selectedItem[itemExtraStatCol1],
+        itemExt2 = selectedItem[itemExtraStatCol2],
+        itemSpwnRange = selectedItem[itemSpawnTargetRangeCol],
+        itemExtA = selectedItem[itemExtraParamACol],
+        itemExtB = selectedItem[itemExtraParamBCol],
+        itemExtC = selectedItem[itemExtraParamCCol],
+        itemProjParam3 = selectedItem[itemProjectileParam3Col];
 
     selectedItemIdx = getModifiedStatVal(heroIdx, selectedItemIdx, itemAttackPowerCol);
     if (heroHasAccessoryEffect(heroIdx, accessoryEffectLightningElemBonusCol)) {
-        if (3 == selectedItem[itemElementTypeCol]) {
-            if (20 == selectedItem[itemAttackModeCol]) {
-                selectedItemIdx += countAccessoryLvlBonuses(heroIdx, accessoryEffectLightningElemBonusCol);
-            }
+        if (3 == selectedItem[itemElementTypeCol] && 20 == selectedItem[itemAttackModeCol]) {
+            selectedItemIdx += countAccessoryLvlBonuses(heroIdx, accessoryEffectLightningElemBonusCol);    
         }
     }
 
     selectedItem = selectedItem[itemProjectileTemplateCol];
-    let Ac = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].x;
-    let Rg = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].y;
+    let jointX = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].x;
+    let jointY = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].y;
 
-    if (l == 0) return;
-    if (1 == l) {
-        for (l = 0; l < itemSlot; l++) {
-            targetEnemyIdx = randFloatRange(-n, n);
-            let Dd = -w,
-                Rd = 0,
-                De = -.1 * La;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca,
-                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc,
-                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd,
-                Qf, Rf, Sf, selectedItemIdx, selectedItem
+    if (pwidth == 0) return;
+    if (1 == pwidth) {
+        for (pwidth = 0; pwidth < itemSlot; pwidth++) {
+            let spawnX = randFloatRange(-pheight, pheight);
+            let spawnY = -pshape,
+                velX = 0,
+                velY = -.1 * itemProjSpd;
+            spawnProjectile(heroIdx, limbSel, spawnX, spawnY, velX, velY, pewidth, peheight, pdelr, pnodmg, panim, plife, ptarg, pacelMod, pspdMod, pauxMod, pcol, pcdMod,
+                paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect, projEffect, projEffectDur, 0, itemHitCountMod, minAtk, maxAtk, itemEType, itemBonus, itemProjParam1, itemAtkMode, itemProjParam2,
+                itemProjAux1, itemProjAux2, itemAuxA, itemAuxB, itemAuxC, itemDispA, itemAuxD, itemProjFlag, itemProjParamTime, itemHCount, itemProjEffect, itemStatAMod, itemExt1, itemExt2, itemSpwnRange, itemExtA,
+                itemExtB, itemExtC, itemProjParam3, selectedItemIdx, selectedItem
             );
         }
-    } else if (2 == l) {
-        let dirX = Ac - originX;
+    } else if (2 == pwidth) {
+        let dirX = jointX - originX;
         dirX /= abs(dirX);
-        for (l = 0; l < itemSlot; l++) {
-            targetEnemyIdx = originX + dirX * n;
-            let Dd = originY + randFloatRange(-w, w);
-            let Rd = dirX * La * .1;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, 0, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca,
-                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc,
-                kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc,
-                zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+        for (pwidth = 0; pwidth < itemSlot; pwidth++) {
+            let spawnX = originX + dirX * pheight;
+            let spawn = originY + randFloatRange(-pshape, pshape);
+            let velX = dirX * itemProjSpd * .1;
+            spawnProjectile(heroIdx, limbSel, spawnX, spawn, velX, 0, pewidth, peheight, pdelr, pnodmg, panim, plife, ptarg, pacelMod, pspdMod, pauxMod, pcol, pcdMod,
+                paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect, projEffect, projEffectDur, 0, itemHitCountMod, minAtk, maxAtk, itemEType, itemBonus, itemProjParam1, itemAtkMode,
+                itemProjParam2, itemProjAux1, itemProjAux2, itemAuxA, itemAuxB, itemAuxC, itemDispA, itemAuxD, itemProjFlag, itemProjParamTime, itemHCount, itemProjEffect, itemStatAMod, itemExt1, itemExt2,
+                itemSpwnRange, itemExtA, itemExtB, itemExtC, itemProjParam3, selectedItemIdx, selectedItem
             );
         }
-    } else if (3 == l) {
-        Vec2Set(projDir, Ac - originX, Rg - originY);
-        var We = 0 < n ? n - 1 : 16;
+    } else if (3 == pwidth) {
+        Vec2Set(projDir, jointX - originX, jointY - originY);
+        let We = 0 < pheight ? pheight - 1 : 16;
         if (heroHasAccessoryEffect(heroIdx, accessoryMultiShotSpreadDivisorCol)) {
             We = floor(We / countAccessoryLvlBonuses(heroIdx, accessoryMultiShotSpreadDivisorCol));
         }
-        Ac = floor(512 * Vec2Angle(projDir) / TAU);
-        Ac -= floor((itemSlot - 1) * We / 2);
-        for (l = 0; l < itemSlot; l++) {
-            projDir.x = rotationLUT[Ac & 511][0];
-            projDir.y = -rotationLUT[Ac & 511][1];
-            targetEnemyIdx = originX + projDir.x * w;
-            let Dd = originY + projDir.y * w;
-            let Rd = projDir.x * La * .1;
-            let De = projDir.y * La * .1;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga, Ca,
-                ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc,
-                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc, yc, zc, Qd,
-                Qf, Rf, Sf, selectedItemIdx, selectedItem
+        jointX = floor(512 * Vec2Angle(projDir) / TAU);
+        jointX -= floor((itemSlot - 1) * We / 2);
+        for (pwidth = 0; pwidth < itemSlot; pwidth++) {
+            projDir.x = rotationLUT[jointX & 511][0];
+            projDir.y = -rotationLUT[jointX & 511][1];
+            let spawnX = originX + projDir.x * pshape;
+            let spawnY = originY + projDir.y * pshape;
+            let velX = projDir.x * itemProjSpd * .1;
+            let velY = projDir.y * itemProjSpd * .1;
+            spawnProjectile(heroIdx, limbSel, spawnX, spawnY, velX, velY, pewidth, peheight, pdelr, pnodmg, panim, plife, ptarg, pacelMod, pspdMod, pauxMod, pcol, pcdMod,
+                paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect, projEffect, projEffectDur, 0, itemHitCountMod, minAtk, maxAtk, itemEType, itemBonus, itemProjParam1, itemAtkMode, itemProjParam2,
+                itemProjAux1, itemProjAux2, itemAuxA, itemAuxB, itemAuxC, itemDispA, itemAuxD, itemProjFlag, itemProjParamTime, itemHCount, itemProjEffect, itemStatAMod, itemExt1, itemExt2, itemSpwnRange, itemExtA,
+                itemExtB, itemExtC, itemProjParam3, selectedItemIdx, selectedItem
             );
-            Ac += We;
+            jointX += We;
         }
-    } else if (4 == l) {
-        Vec2Set(projDir, Ac - originX, Rg - originY - 5);
-        La = Vec2Mag(projDir) / (.1 * La);
-        limbDesc = 2E4 / (La * La);
-        for (l = 0; l < itemSlot; l++) {
-            Vec2Set(projDir, Ac - originX, Rg - 5 - originY);
+    } else if (4 == pwidth) {
+        Vec2Set(projDir, jointX - originX, jointY - originY - 5);
+        itemProjSpd = Vec2Mag(projDir) / (.1 * itemProjSpd);
+        limbDesc = 2E4 / (itemProjSpd * itemProjSpd);
+        for (pwidth = 0; pwidth < itemSlot; pwidth++) {
+            Vec2Set(projDir, jointX - originX, jointY - 5 - originY);
             if (1 < itemSlot) {
-                We = 0 < n ? n : itemSlot + 4;
-                w = randInt(512);
-                targetEnemyIdx = randFloat(We);
-                {
-                    projDir.x += rotationLUT[w][0] * targetEnemyIdx;
-                    projDir.y += rotationLUT[w][1] * targetEnemyIdx;
-                }
+                let _a = 0 < pheight ? pheight : itemSlot + 4;
+                pshape = randInt(512);
+                let spawnX = randFloat(_a);
+                projDir.x += rotationLUT[pshape][0] * spawnX;
+                projDir.y += rotationLUT[pshape][1] * spawnX;
             };
-            targetEnemyIdx = originX;
-            let Dd = originY;
-            let Rd = projDir.x / La;
-            let De = (projDir.y - .5 * La * La * limbDesc * .01) / La;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na,
-                Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb,
-                jb, hc, Ib, ic, jc, kc, lc, mc, nc, oc, pc, qc, rc,
-                sc, tc, uc, vc, wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+            let spawnX = originX;
+            let spawnY = originY;
+            let velX = projDir.x / itemProjSpd;
+            let velY = (projDir.y - .5 * itemProjSpd * itemProjSpd * limbDesc * .01) / itemProjSpd;
+            spawnProjectile(heroIdx, limbSel, spawnX, spawnY, velX, velY, pewidth, peheight, pdelr, pnodmg, panim, plife, ptarg, pacelMod, pspdMod,
+                pauxMod, pcol, pcdMod, paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect, projEffect, projEffectDur, 0, itemHitCountMod, minAtk,
+                maxAtk, itemEType, itemBonus, itemProjParam1, itemAtkMode, itemProjParam2, itemProjAux1, itemProjAux2, itemAuxA, itemAuxB, itemAuxC, itemDispA, itemAuxD,
+                itemProjFlag, itemProjParamTime, itemHCount, itemProjEffect, itemStatAMod, itemExt1, itemExt2, itemSpwnRange, itemExtA, itemExtB, itemExtC, itemProjParam3, selectedItemIdx, selectedItem
             );
         }
-    } else if (5 == l) {
-        Ac = 256 + 256 * heroBodyDrawStateByHero[heroIdx][2];
-        We = floor(512 / itemSlot);
-        for (l = 0; l < itemSlot; l++) {
-            projDir.x = rotationLUT[Ac & 511][0];
-            projDir.y = -rotationLUT[Ac & 511][1];
-            targetEnemyIdx = 0 + projDir.x * n;
-            let Dd = 0 + projDir.y * n;
-            if (-1 == t) {
-                targetEnemyIdx += originX;
-                Dd += originY;
+    } else if (5 == pwidth) {
+        jointX = 256 + 256 * heroBodyDrawStateByHero[heroIdx][2];
+        let _a = floor(512 / itemSlot);
+        for (pwidth = 0; pwidth < itemSlot; pwidth++) {
+            projDir.x = rotationLUT[jointX & 511][0];
+            projDir.y = -rotationLUT[jointX & 511][1];
+            let spawnX = 0 + projDir.x * pheight;
+            let spawnY = 0 + projDir.y * pheight;
+            if (-1 == limbSel) {
+                spawnX += originX;
+                spawnY += originY;
             }
-            w = Math.sqrt(n * La * .01);
-            let Rd = projDir.y * w,
-                De = -projDir.x * w;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K,
-                ba, U, na, Fa, Ga, Ca, ua, fb, limbDesc, ob, Bb,
-                gc, Qb, 0, Rb, gb, jb, hc, Ib, ic, jc, kc,
-                lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc,
-                wc, xc, yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+            pshape = Math.sqrt(pheight * itemProjSpd * .01);
+            let velX = projDir.y * pshape,
+                velY = -projDir.x * pshape;
+            spawnProjectile(heroIdx, limbSel, spawnX, spawnY, velX, velY, pewidth, peheight, pdelr, pnodmg, panim, plife,
+                ptarg, pacelMod, pspdMod, pauxMod, pcol, pcdMod, paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect,
+                projEffect, projEffectDur, 0, itemHitCountMod, minAtk, maxAtk, itemEType, itemBonus, itemProjParam1, itemAtkMode, itemProjParam2,
+                itemProjAux1, itemProjAux2, itemAuxA, itemAuxB, itemAuxC, itemDispA, itemAuxD, itemProjFlag, itemProjParamTime, itemHCount, itemProjEffect,
+                itemStatAMod, itemExt1, itemExt2, itemSpwnRange, itemExtA, itemExtB, itemExtC, itemProjParam3, selectedItemIdx, selectedItem
             );
-            Ac += We;
+            jointX += _a;
         }
-    } else if (6 == l) {
+    } else if (6 == pwidth) {
         originX = floor(512 / itemSlot);
-        w = floor(randFloat(originX));
-        for (l = 0; l < itemSlot; l++) {
-            targetEnemyIdx = Ac + rotationLUT[w][0] * n;
-            let Dd = Rg + rotationLUT[w][1] * n;
-            let Rd = rotationLUT[w][0] * La * .1;
-            let De = rotationLUT[w][1] * La * .1;
-            spawnProjectile(heroIdx, t, targetEnemyIdx, Dd, Rd, De, B, M, J, y, x, K, ba, U, na, Fa, Ga,
-                Ca, ua, fb, limbDesc, ob, Bb, gc, Qb, 0, Rb, gb, jb, hc, Ib, ic,
-                jc, kc, lc, mc, nc, oc, pc, qc, rc, sc, tc, uc, vc, wc, xc,
-                yc, zc, Qd, Qf, Rf, Sf, selectedItemIdx, selectedItem
+        pshape = floor(randFloat(originX));
+        for (pwidth = 0; pwidth < itemSlot; pwidth++) {
+            let spawnX = jointX + rotationLUT[pshape][0] * pheight;
+            let spawnY = jointY + rotationLUT[pshape][1] * pheight;
+            let velX = rotationLUT[pshape][0] * itemProjSpd * .1;
+            let velY = rotationLUT[pshape][1] * itemProjSpd * .1;
+            spawnProjectile(heroIdx, limbSel, spawnX, spawnY, velX, velY, pewidth, peheight, pdelr, pnodmg, panim, plife, ptarg, pacelMod, pspdMod, pauxMod, pcol,
+                pcdMod, paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect, projEffect, projEffectDur, 0, itemHitCountMod, minAtk, maxAtk, itemEType, itemBonus, itemProjParam1,
+                itemAtkMode, itemProjParam2, itemProjAux1, itemProjAux2, itemAuxA, itemAuxB, itemAuxC, itemDispA, itemAuxD, itemProjFlag, itemProjParamTime, itemHCount, itemProjEffect, itemStatAMod, itemExt1,
+                itemExt2, itemSpwnRange, itemExtA, itemExtB, itemExtC, itemProjParam3, selectedItemIdx, selectedItem
             );
-            w += originX;
+            pshape += originX;
         }
     }
 }

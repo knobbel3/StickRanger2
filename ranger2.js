@@ -2100,54 +2100,52 @@ function drawGameUI() {
                     }
                 }
 
-            } else {
-                if (20 > itemList[c][itemAppearanceCol]) {
-                    if (gameFontMed.a = 4, 0 == itemList[c][itemForgeMaxLevelCol]) {
-                        drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol], -1, 0);
-                    } else {
-                        drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0);
-                        d = 1;
-                        {
-                            hidx = getItemStatWithForge(c, heroHealthModifierCol);
-                            if (0 < hidx) {
-                                drawText(gameFontMed, _ox, _oy + 12 * d, "LP +" + hidx, 16777215, 0);
-                                d++;
-                            }
-                        }
-                        hidx = getItemStatWithForge(c, heroDefenseModifierCol);
-                        if (0 < hidx) {
-                            drawText(gameFontMed, _ox, _oy + 12 * d, "DF +" + hidx, 16777215, 0);
-                            d++;
-                        }
-                        hidx = getItemStatWithForge(c, heroMagicDefModifierCol);
-                        if (0 < hidx) {
-                            drawText(gameFontMed, _ox, _oy + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0);
-                            d++;
-                        }
-                        hidx = getItemStatWithForge(c, heroDodgeModifierCol);
-                        if (0 < hidx) {
-                            drawText(gameFontMed, _ox, _oy + 12 * d, "DODGE +" + hidx, 16777215, 0);
-                        }
-                    }
-                } else {
-                    gameFontMed.a = 4;
+            } else if (20 > itemList[c][itemAppearanceCol]) {
+                if (gameFontMed.a = 4, 0 == itemList[c][itemForgeMaxLevelCol]) {
                     drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol], -1, 0);
-                    if (0 != itemList[c][accessoryPrimaryValueCol]) {
-                        drawText(gameFontMed, _ox, _oy + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0);
+                } else {
+                    drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol] + " Lv" + itemForgeLvls[c], -1, 0);
+                    d = 1;
+                    {
+                        hidx = getItemStatWithForge(c, heroHealthModifierCol);
+                        if (0 < hidx) {
+                            drawText(gameFontMed, _ox, _oy + 12 * d, "LP +" + hidx, 16777215, 0);
+                            d++;
+                        }
                     }
-                    if (0 != itemList[c][accessorySecondaryValueCol]) {
-                        drawText(gameFontMed, _ox, _oy + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0);
+                    hidx = getItemStatWithForge(c, heroDefenseModifierCol);
+                    if (0 < hidx) {
+                        drawText(gameFontMed, _ox, _oy + 12 * d, "DF +" + hidx, 16777215, 0);
+                        d++;
+                    }
+                    hidx = getItemStatWithForge(c, heroMagicDefModifierCol);
+                    if (0 < hidx) {
+                        drawText(gameFontMed, _ox, _oy + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0);
+                        d++;
+                    }
+                    hidx = getItemStatWithForge(c, heroDodgeModifierCol);
+                    if (0 < hidx) {
+                        drawText(gameFontMed, _ox, _oy + 12 * d, "DODGE +" + hidx, 16777215, 0);
                     }
                 }
+            
+            } else {
+                gameFontMed.a = 4;
+                drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][itemNameCol], -1, 0);
+                if (0 != itemList[c][accessoryPrimaryValueCol]) {
+                    drawText(gameFontMed, _ox, _oy + 12, itemList[c][accessoryPrimaryPrefixCol] + itemList[c][accessoryPrimaryValueCol] + itemList[c][accessoryPrimarySuffixCol], 16777215, 0);
+                }
+                if (0 != itemList[c][accessorySecondaryValueCol]) {
+                    drawText(gameFontMed, _ox, _oy + 24, itemList[c][accessorySecondaryLabelPrefixCol] + itemList[c][accessorySecondaryValueCol] + itemList[c][accessorySecondaryLabelSuffixCol], 16777215, 0);
+                }
             }
+            
         }
 
         forgePreviewItemIdx = -1;
         k = inventoryTabIdx;
-        if (drawCancelButton(_ox + 188, _oy + 4)) {
-            if (isMouseClicked) {
-                inventoryUIVisible = false;
-            }
+        if (drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked) {
+            inventoryUIVisible = false;
         }
         for (hidx = 0; 28 > hidx; hidx++) {
             c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + hidx];
@@ -2159,13 +2157,12 @@ function drawGameUI() {
                 h = itemList[c][itemHeadwearType];
                 if (2 == inventoryTabIdx) {
                     drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol], true);
+                } else if (3 == inventoryTabIdx || 4 == inventoryTabIdx) {
+                    drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]);
                 } else {
-                    if (3 == inventoryTabIdx || 4 == inventoryTabIdx) {
-                        drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][itemSpriteSourceXCol], itemList[c][itemSpriteLocYCol]);
-                    } else {
-                        drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]);
-                    }
+                    drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][itemSpriteSourceXCol]);
                 }
+                
                 spriteAltRenderFlag = 0;
             }
             if (hidx == inventorySlotIdx) {
@@ -2181,41 +2178,35 @@ function drawGameUI() {
                     h = -1;
                     if (partyEquipmentTable[0][k] == c) {
                         h = 0;
-                    } else {
-                        if (partyEquipmentTable[1][k] == c) {
-                            h = 1;
-                        } else {
-                            if (partyEquipmentTable[2][k] == c) {
-                                h = 2;
-                            } else {
-                                if (partyEquipmentTable[3][k] == c) {
-                                    h = 3;
-                                }
-                            }
-                        }
+                    } else if (partyEquipmentTable[1][k] == c) {
+                        h = 1;
+                    } else if (partyEquipmentTable[2][k] == c) {
+                        h = 2;
+                    } else if (partyEquipmentTable[3][k] == c) {
+                        h = 3;
                     }
+
                     if (0 != itemForgeLvls[c]) {
                         if (-1 == h) {
                             drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
                             if (isMouseReleased) {
                                 partyEquipmentTable[selectingHero][k] = c;
                             }
+                        } else if (h == selectingHero) {
+                            drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+                                0);
+                            if (isMouseReleased) {
+                                partyEquipmentTable[selectingHero][k] = 0;
+                            }
                         } else {
-                            if (h == selectingHero) {
-                                drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
-                                    0);
-                                if (isMouseReleased) {
-                                    partyEquipmentTable[selectingHero][k] = 0;
-                                }
-                            } else {
-                                drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0);
-                                drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
-                                if (isMouseReleased) {
-                                    partyEquipmentTable[h][k] = 0;
-                                    partyEquipmentTable[selectingHero][k] = c;
-                                }
+                            drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0);
+                            drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
+                            if (isMouseReleased) {
+                                partyEquipmentTable[h][k] = 0;
+                                partyEquipmentTable[selectingHero][k] = c;
                             }
                         }
+                        
                     }
                 }
                 if (isMouseReleased) {
@@ -2228,18 +2219,12 @@ function drawGameUI() {
             if (0 != c) {
                 if (partyEquipmentTable[0][k] == c) {
                     drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1);
-                } else {
-                    if (partyEquipmentTable[1][k] == c) {
-                        drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1);
-                    } else {
-                        if (partyEquipmentTable[2][k] == c) {
-                            drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1);
-                        } else {
-                            if (partyEquipmentTable[3][k] == c) {
-                                drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1);
-                            }
-                        }
-                    }
+                } else if (partyEquipmentTable[1][k] == c) {
+                    drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1);
+                } else if (partyEquipmentTable[2][k] == c) {
+                    drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1);
+                } else if (partyEquipmentTable[3][k] == c) {
+                    drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1);
                 }
             }
         }
@@ -2383,15 +2368,11 @@ function drawGameUI() {
                 drawEnemyStatic(c, b + 12, d + 20, 2);
             }
         }
-        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215)) {
-            if (isMouseClicked) {
-                currentBestiaryPage--;
-            }
+        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked) {
+            currentBestiaryPage--;
         }
-        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215)) {
-            if (isMouseClicked) {
-                currentBestiaryPage++;
-            }
+        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked) {
+            currentBestiaryPage++;    
         }
         currentBestiaryPage = wrapStageIndex(currentBestiaryPage);
         drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
@@ -2403,10 +2384,8 @@ function drawGameUI() {
         let f = 434;
         let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4)) {
-            if (isMouseClicked) {
-                badgesUIVisible = false;
-            }
+        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+            badgesUIVisible = false;
         }
         if (0 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) 
             drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
@@ -2494,27 +2473,25 @@ function drawGameUI() {
         }
         h = stageListArray[currentStage][stageReturnCost];
         if (drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h)) {
-            if (h <= partyGold) {
-                if (isMouseClicked) {
-                    partyGold = clamp(partyGold - h, 0, 9999999);
-                    if (1 == currentStage) {
-                        gameScreenState = 0;
-                    } else {
-                        screenFadeFactor = 0;
-                        gameScreenState = 10;
-                        currentStage = 1;
-                        partySpawnXByHero[0] = 20;
-                        partySpawnXByHero[1] = 28;
-                        partySpawnXByHero[2] = 36;
-                        partySpawnXByHero[3] = 44;
-                        partySpawnYByHero[0] = 40;
-                        partySpawnYByHero[1] = 40;
-                        partySpawnYByHero[2] = 40;
-                        partySpawnYByHero[3] = 40;
-                    }
-                    saveGame();
-                    optionsUIVisible = false;
+            if (h <= partyGold && isMouseClicked) {
+                partyGold = clamp(partyGold - h, 0, 9999999);
+                if (1 == currentStage) {
+                    gameScreenState = 0;
+                } else {
+                    screenFadeFactor = 0;
+                    gameScreenState = 10;
+                    currentStage = 1;
+                    partySpawnXByHero[0] = 20;
+                    partySpawnXByHero[1] = 28;
+                    partySpawnXByHero[2] = 36;
+                    partySpawnXByHero[3] = 44;
+                    partySpawnYByHero[0] = 40;
+                    partySpawnYByHero[1] = 40;
+                    partySpawnYByHero[2] = 40;
+                    partySpawnYByHero[3] = 40;
                 }
+                saveGame();
+                optionsUIVisible = false;
             }
         }
     }
@@ -2522,16 +2499,12 @@ function drawGameUI() {
         f = 224;
         g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4)) {
-            if (isMouseClicked) {
-                shrineUIVisible = false;
-            }
+        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+            shrineUIVisible = false;
         }
         for (hidx = h = 0; hidx < badgeList.length; hidx++)
-            if (badgeList[hidx]) {
-                if (badgeCounterArray[hidx] == badgeList[hidx][4]) {
-                    h++;
-                }
+            if (badgeList[hidx] && badgeCounterArray[hidx] == badgeList[hidx][4]) {
+                h++;
             }
         gameFontMed.a = 3;
         drawText(gameFontMed, f + 27, g + 6, "Achievement Medal", 16777215, 0);
@@ -2554,16 +2527,13 @@ function drawGameUI() {
             if (1 == shrineRewardClaimed[hidx]) {
                 drawRect(b - 1, d + 5, 10, 10, 0);
                 drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168);
-            } else {
-                if (buttonCheck(b + 14, d, 20, 20)) {
-                    fillEmptyPixelsRect(b + 14, d, 20, 20, 6684672);
-                    if (shrineRewardOptions[hidx][1] <= h) {
-                        if (isMouseClicked) {
-                            c = hidx;
-                        }
-                    }
+            } else if (buttonCheck(b + 14, d, 20, 20)) {
+                fillEmptyPixelsRect(b + 14, d, 20, 20, 6684672);
+                if (shrineRewardOptions[hidx][1] <= h && isMouseClicked) {
+                    c = hidx;
                 }
             }
+            
             gameFontMed.a = 3;
             gameFontMed.b = 1;
             drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);

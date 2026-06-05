@@ -8311,30 +8311,38 @@ function drawSpriteSheetPartCentered(spriteSheet, x, y, drawWidth, drawHeight, s
 
 // whiteRCol: replacement color (integer) written when the source pixel equals white (0xFFFFFF / 16777215)
 // grayRCol: replacement color (integer) written when the source pixel equals gray marker (0x666666 / 6710886).
-function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, whiteRCol, grayRCol, copySource) { // Qg
+function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, whiteRCol, grayRCol, copySource) {
+    // Qg
     let w = spriteSheet.g,
         B, M, J, y, x;
     sourceWidth = ~~((sourceWidth << 8) / drawWidth);
     sourceHeight = ~~((sourceHeight << 8) / drawHeight);
     sourceX <<= 8;
     sourceY <<= 8;
-    0 > _px && (sourceX += ~~(sourceWidth * -_px));
-    0 > _py && (sourceY += ~~(sourceHeight * -_py));
+    if (0 > _px) {
+        sourceX += ~~(sourceWidth * -_px);
+    }
+    if (0 > _py) {
+        sourceY += ~~(sourceHeight * -_py);
+    }
     drawWidth = 640 < _px + drawWidth ? 640 : ~~(_px + drawWidth);
     drawHeight = 432 < _py + drawHeight ? 432 : ~~(_py + drawHeight);
     _px = 0 > _px ? 0 : ~~_px;
     _py = 0 > _py ? 0 : ~~_py;
     M = 640 * _py + _px;
     for (J = 640 - (drawWidth - _px); _py < drawHeight; _py++, M += J, sourceY += sourceHeight)
-        for (y = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, B = _px; B < drawWidth; B++, M++, y += sourceWidth)
-            x = w[y >> 8],
-                -1 != x && (
-                    16777215 == x
-                        ? frameBufferArray[M] = whiteRCol
-                        : 6710886 == x
-                            ? frameBufferArray[M] = grayRCol
-                            : copySource && (frameBufferArray[M] = x)
-                )
+        for (y = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, B = _px; B < drawWidth; B++, M++, y += sourceWidth) {
+            x = w[y >> 8];
+            if (-1 != x) {
+                if (16777215 == x) {
+                    frameBufferArray[M] = whiteRCol;
+                } else if (6710886 == x) {
+                    frameBufferArray[M] = grayRCol;
+                } else if (copySource) {
+                    frameBufferArray[M] = x;
+                }
+            }
+        }
 }
 
 function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY, srcHeight, replaceColW, replaceColAlt, blendAmount) {

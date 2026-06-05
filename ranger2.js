@@ -8337,7 +8337,8 @@ function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawH
                 )
 }
 
-function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY, srcHeight, replaceColW, replaceColAlt, blendAmount) { // fl
+function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY, srcHeight, replaceColW, replaceColAlt, blendAmount) {
+    // fl
     centerX -= dstWidth >> 1;
     centerY -= dstHeight >> 1;
     let l, n = enemySpriteSheet.g,
@@ -8346,16 +8347,43 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
     srcHeight = ~~((srcHeight << 8) / dstHeight);
     srcX <<= 8;
     srcY <<= 8;
-    0 > centerX && (srcX += ~~(l * -centerX));
-    0 > centerY && (srcY += ~~(srcHeight * -centerY));
+    if (0 > centerX) {
+        srcX += ~~(l * -centerX);
+    }
+    if (0 > centerY) {
+        srcY += ~~(srcHeight * -centerY);
+    }
     dstWidth = 640 < centerX + dstWidth ? 640 : ~~(centerX + dstWidth);
     dstHeight = 432 < centerY + dstHeight ? 432 : ~~(centerY + dstHeight);
     centerX = 0 > centerX ? 0 : ~~centerX;
     centerY = 0 > centerY ? 0 : ~~centerY;
     B = 640 * centerY + centerX;
     for (M = 640 - (dstWidth - centerX); centerY < dstHeight; centerY++, B += M, srcY += srcHeight)
-        for (J = ((srcY >> 8) * enemySpriteSheet.h << 8) + srcX, w = centerX; w < dstWidth; w++, B++, J += l) y = n[J >> 8], -1 != y && (255 == blendAmount ? frameBufferArray[B] = 16777215 == y ? replaceColW : replaceColAlt : (16777215 == y ? (y = frameBufferArray[B] >> 16 & 255, x = (((replaceColW >> 16 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((replaceColW >> 8 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] & 255, y = (((replaceColW & 255) - y) * blendAmount >> 8) + y) : (y = frameBufferArray[B] >> 16 &
-            255, x = (((replaceColAlt >> 16 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((replaceColAlt >> 8 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] & 255, y = (((replaceColAlt & 255) - y) * blendAmount >> 8) + y), frameBufferArray[B] = x << 16 | K << 8 | y))
+        for (J = ((srcY >> 8) * enemySpriteSheet.h << 8) + srcX, w = centerX; w < dstWidth; w++, B++, J += l) {
+            y = n[J >> 8];
+            if (-1 != y) {
+                if (255 == blendAmount) {
+                    frameBufferArray[B] = 16777215 == y ? replaceColW : replaceColAlt;
+                } else {
+                    if (16777215 == y) {
+                        y = frameBufferArray[B] >> 16 & 255;
+                        x = (((replaceColW >> 16 & 255) - y) * blendAmount >> 8) + y;
+                        y = frameBufferArray[B] >> 8 & 255;
+                        K = (((replaceColW >> 8 & 255) - y) * blendAmount >> 8) + y;
+                        y = frameBufferArray[B] & 255;
+                        y = (((replaceColW & 255) - y) * blendAmount >> 8) + y;
+                    } else {
+                        y = frameBufferArray[B] >> 16 & 255;
+                        x = (((replaceColAlt >> 16 & 255) - y) * blendAmount >> 8) + y;
+                        y = frameBufferArray[B] >> 8 & 255;
+                        K = (((replaceColAlt >> 8 & 255) - y) * blendAmount >> 8) + y;
+                        y = frameBufferArray[B] & 255;
+                        y = (((replaceColAlt & 255) - y) * blendAmount >> 8) + y;
+                    }
+                    frameBufferArray[B] = x << 16 | K << 8 | y;
+                }
+            }
+        }
 }
 
 function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tintColor) {

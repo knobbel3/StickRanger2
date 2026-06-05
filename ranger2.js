@@ -4075,110 +4075,75 @@ function loadLevelData(a) {
                 let k1 = _isPixelSolid(pd);
                 let k2 = _isPixelSolid(pl);
                 let k3 = _isPixelSolid(pr);
-                
-                k0 || !k1 || k2 || !k3 
-                ? k0 || !k1 || !k2 || !k3 
-                ? k0 || !k1 || !k2 || k3 
-                ? !k0 || !k1 || k2 || !k3 
-                ? k0 && k1 && k2 && k3 
-                ? stageTileData[b][a] = 9 
-                : !k0 || !k1 || !k2 || k3 
-                ? !k0 || k1 || k2 || !k3 
-                ? !k0 || k1 || !k2 || !k3 
-                ? !k0 || k1 || !k2 || k3 
-                ? k0 || k1 || k2 || k3 
-                ? k0 || !k1 || k2 || k3 
-                ? !k0 || k1 || k2 || k3 
-                ? k0 || k1 || k2 || !k3 
-                ? k0 || k1 || !k2 || k3 
-                ? k0 || k1 || !k2 || !k3 
-                ? !k0 || !k1 || k2 || k3 || (stageTileData[b][a] = 19) 
-                : stageTileData[b][a] = 11
-                : stageTileData[b][a] = 7 
-                : stageTileData[b][a] = 6 
-                : stageTileData[b][a] = 5 
-                : stageTileData[b][a] = 4 
-                : stageTileData[b][a] = 3 
-                : stageTileData[b][a] = 18 
-                : stageTileData[b][a] = 17 
-                : stageTileData[b][a] = 16 
-                : stageTileData[b][a] = 10 
-                : stageTileData[b][a] = 8 
-                : stageTileData[b][a] = 2 
-                : stageTileData[b][a] = 1 
-                : stageTileData[b][a] = 0
+                const table = [3, 5, 4, 19, 4, 19, 4, 19, 2, 10, 2, 10, 2, 10, 2, 10];
+
+                const idx =
+                    (k0 ? 1 : 0) |
+                    (k1 ? 2 : 0) |
+                    (k2 ? 4 : 0) |
+                    (k3 ? 8 : 0);
+
+                stageTileData[b][a] = table[idx];
             } else {
-                (12303291 == spriteData[d]) 
-                ? stageTileData[b][a] = 12 
-                : 11184810 == spriteData[d] 
-                ? stageTileData[b][a] = 13 
-                : 10066329 == spriteData[d] 
-                ? stageTileData[b][a] = 14 
-                : 6684774 == spriteData[d] 
-                ? stageTileData[b][a] = 20 
-                : 6697728 == spriteData[d] 
-                ? stageTileData[b][a] = 24 
-                : 10053171 == spriteData[d] 
-                ? stageTileData[b][a] = 25 
-                : 13408614 == spriteData[d] 
-                ? stageTileData[b][a] = 26 
-                : 16764057 == spriteData[d] && 0 == spriteData[pl] 
-                ? stageTileData[b][a] = 27 
-                : 16764057 == spriteData[d] && 21913 == spriteData[pl] 
-                ? stageTileData[b][a] = 29 
-                : 16764057 == spriteData[d] && 0 != spriteData[pl] 
-                ? stageTileData[b][a] = 28 
-                : 21913 == spriteData[d] && 0 == spriteData[pu] 
-                ? stageTileData[b][a] = 30 
-                : 21913 == spriteData[d] && 0 != spriteData[pu] 
-                ? stageTileData[b][a] = 31 
-                : 3355392 == spriteData[d] 
-                ? stageTileData[b][a] = 32 
-                : 6710835 == spriteData[d] 
-                ? stageTileData[b][a] = 33 
-                : 10066278 == spriteData[d] 
-                ? stageTileData[b][a] = 34 
-                : 13421721 == spriteData[d] 
-                ? stageTileData[b][a] = 35 
-                : 10053120 == spriteData[d] && 10053120 == spriteData[pd] 
-                ? stageTileData[b][a] = 36 
-                : 16724736 == spriteData[d] && 16724736 != spriteData[pu] 
-                ? stageTileData[b][a] = 37 
-                : 3355494 == spriteData[d] && 3355494 != spriteData[pu] 
-                ? stageTileData[b][a] = 38 
-                : 16776960 == spriteData[d] 
-                ? stageTileData[b][a] = 39 
-                : 3368448 == spriteData[d] 
-                ? stageTileData[b][a] = 40 
-                : 6723891 == spriteData[d] 
-                ? stageTileData[b][a] = 41 
-                : 10079334 == spriteData[d] 
-                ? stageTileData[b][a] = 42 
-                : 10053120 == spriteData[d] && 10053120 != spriteData[pd] 
-                ? stageTileData[b][a] = 44 
-                : 16724736 == spriteData[d] && 16724736 == spriteData[pu] 
-                ? stageTileData[b][a] = 45 
-                : 3355494 == spriteData[d] && 3355494 == spriteData[pu] 
-                ? stageTileData[b][a] = 46 
-                : 6710784 == spriteData[d] 
-                ? stageTileData[b][a] = 47 
-                : 16724940 == spriteData[d] 
-                ? stageTileData[b][a] = 48 
-                : 13056 == spriteData[d] 
-                ? stageTileData[b][a] = 49 
-                : 51 == spriteData[d] 
-                ? stageTileData[b][a] = 50 
-                : 10040064 == spriteData[d] 
-                ? stageTileData[b][a] = 51 
-                : 10066431 == spriteData[d] && 10066431 == spriteData[pd] 
-                ? stageTileData[b][a] = 52 
-                : 16737792 == spriteData[d] && 16737792 != spriteData[pu] 
-                ? stageTileData[b][a] = 53 
-                : 16763904 == spriteData[d] 
-                ? stageTileData[b][a] = 55 
-                : 10066431 == spriteData[d] && 10066431 == spriteData[pu] 
-                ? stageTileData[b][a] = 60 
-                : 16737792 == spriteData[d] && 16737792 == spriteData[pu] && (stageTileData[b][a] = 61)
+                const stageTable = {
+                    12303291 : 12,
+                    11184810 : 13,
+                    10066329 : 14,
+                    6684774 : 20,
+                    6697728 : 24,
+                    10053171 : 25,
+                    13408614 : 26,
+                    3355392 : 32,
+                    6710835 : 33,
+                    10066278 : 34,
+                    13421721 : 35,
+                    16776960 : 39,
+                    3368448 : 40,
+                    6723891 : 41,
+                    10079334 : 42,
+                    6710784 : 47,
+                    16724940 : 48,
+                    13056 : 49,
+                    51 : 50,
+                    10040064 : 51,
+                    16763904 : 55,
+                }
+
+                if (stageTable[d]) {
+                    stageTileData[d] = stageTable[d];
+                }
+
+                if(16764057 == spriteData[d] && 0 == spriteData[pl]) {
+                    stageTileData[b][a] = 27;
+                } else if(16764057 == spriteData[d] && 21913 == spriteData[pl]) {
+                    stageTileData[b][a] = 29;
+                } else if(16764057 == spriteData[d] && 0 != spriteData[pl]) {
+                    stageTileData[b][a] = 28;
+                } else if(21913 == spriteData[d] && 0 == spriteData[pu]) {
+                    stageTileData[b][a] = 30;
+                } else if(21913 == spriteData[d] && 0 != spriteData[pu]) {
+                    stageTileData[b][a] = 31;
+                } else if(10053120 == spriteData[d] && 10053120 == spriteData[pd]) {
+                    stageTileData[b][a] = 36;
+                } else if(16724736 == spriteData[d] && 16724736 != spriteData[pu]) {
+                    stageTileData[b][a] = 37;
+                } else if(3355494 == spriteData[d] && 3355494 != spriteData[pu]) {
+                    stageTileData[b][a] = 38;
+                } else if(10053120 == spriteData[d] && 10053120 != spriteData[pd]) {
+                    stageTileData[b][a] = 44;
+                } else if(16724736 == spriteData[d] && 16724736 == spriteData[pu]) {
+                    stageTileData[b][a] = 45;
+                } else if(3355494 == spriteData[d] && 3355494 == spriteData[pu]) {
+                    stageTileData[b][a] = 46;
+                } else if(10066431 == spriteData[d] && 10066431 == spriteData[pd]) {
+                    stageTileData[b][a] = 52;
+                } else if(16737792 == spriteData[d] && 16737792 != spriteData[pu]) {
+                    stageTileData[b][a] = 53;
+                } else if(10066431 == spriteData[d] && 10066431 == spriteData[pu]) {
+                    stageTileData[b][a] = 60;
+                } else if(16737792 == spriteData[d] && 16737792 == spriteData[pu]) {
+                    stageTileData[b][a] = 61;
+                }
             }
         }
     }

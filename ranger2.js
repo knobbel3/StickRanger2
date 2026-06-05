@@ -12,15 +12,10 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { CanvasState } from "./game/global_states.js";
+import { CanvasState, GameState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
-export {gameInit as Init, toggleFullscreen as full_screen};
 
-function LogMsg(a) {
-    try {
-        console.log(a)
-    } catch (b) { }
-}
+export {gameInit as Init, toggleFullscreen as full_screen};
 // mainWindow.Init = gameInit;
 // mainWindow.full_screen = toggleFullscreen;
 
@@ -34,25 +29,6 @@ CanvasState.element.ontouchend = onTouchEnd;
 CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
-
-
-let userSaveCode, // ca
-    userSaveKey = [0, 0, 0, 0, 0, 0, 0, 0], // da
-    isMinimalTitleMode; // ea
-let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
-    requestAnimCallCount = 0, // Vm, counts active requestAnimationFrame callbacks (incremented each anim callback; reset on timing jumps).
-    lastAnimFrameBucket = 0,  // Zm, last rounded animation-frame bucket (stores previous a to detect/skip duplicate callbacks).
-    frameCountThisSecond = 0, // Ym
-    currentFPS = 0,
-    frameInteval = 20, // en, in milliseconds
-    timestampAnim = Date.now(),
-    lastTimestamp = timestampAnim, // Xm
-    nextFrameTime = timestampAnim + frameInteval, // fn
-    secondWindowDeadline = timestampAnim, // gn
-    totalFrames = 0; // $m
-let gameInitStage = 0;
-let isCanvasFocused = false;
-let hostNameUnchecked = 1;
 
 // rendering maybe
 let frameBufferArray = new Int32Array(276480),
@@ -80,6 +56,24 @@ let titleSprite = new Sprite,
     itemsSpriteSheet = new Sprite,
     effectSpriteSheet = new Sprite,
     medalSpriteSheet = new Sprite;
+
+// text rendering / fonts
+const charKerningBefore = [
+    [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
+    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
+]; // jn
+const charKerningAfter = [
+    [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
+]; // kn
+
+let gameFont = new GameFont;
+let gameFontSmall = new GameFont;
+let gameFontMed = new GameFont;
 
 for (let _i = 0; 3 > _i; _i++) tilesetSprites[_i] = new Sprite;
 
@@ -511,25 +505,6 @@ for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
 
 
 
-// text rendering / fonts
-const charKerningBefore = [
-    [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
-    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
-]; // jn
-const charKerningAfter = [
-    [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
-]; // kn
-
-let gameFont = new GameFont;
-let gameFontSmall = new GameFont;
-let gameFontMed = new GameFont;
-
-
 // rendering params maybe
 let screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
     isSolidRender = 0,
@@ -737,7 +712,7 @@ function saveGame() {
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = RMath.randInt(64);
     gameSaveBuffer[a++] = RMath.randInt(64);
-    for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = userSaveKey[b];
+    for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = GameState.userSaveKey[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = currentStage >> 6 & 63;
     gameSaveBuffer[a++] = currentStage >> 0 & 63;
@@ -863,7 +838,7 @@ function loadGame(saveString) {
     for (b = 3; b < c; b++) d += gameSaveBuffer[b];
     if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4; // load err
     for (b = 0; 8 > b; b++)
-        if (gameSaveBuffer[b + 5] != userSaveKey[b]) return 5; // user err
+        if (gameSaveBuffer[b + 5] != GameState.userSaveKey[b]) return 5; // user err
     resetGameProgress();
 
     let p = 16 + 3*4;
@@ -956,17 +931,17 @@ function updatePartyChecksum() {
 
 function gameInit(a, b) {
     let _t0;
-    console.log(`gameInit(${a}, ${b}) ${gameInitStage}`);
-    if (0 == gameInitStage) {
+    console.log(`gameInit(${a}, ${b}) ${GameState.gameInitStage}`);
+    if (0 == GameState.gameInitStage) {
         if (a != null) {
-            userSaveCode = a;
+            GameState.userSaveCode = a;
         } else {
-            userSaveCode = "";
+            GameState.userSaveCode = "";
         }
-        isMinimalTitleMode = "0" == b ? true : false;
-        if (8 == userSaveCode.length)
-            for (_t0 = 0; 8 > _t0; _t0++) userSaveKey[_t0] = Consts.inverseCodingCharTable[userSaveCode[_t0]];
-        LogMsg(Consts.copyrightText2); // Copyright text
+        GameState.isMinimalTitleMode = "0" == b ? true : false;
+        if (8 == GameState.userSaveCode.length)
+            for (_t0 = 0; 8 > _t0; _t0++) GameState.userSaveKey[_t0] = Consts.inverseCodingCharTable[GameState.userSaveCode[_t0]];
+        console.log(Consts.copyrightText2); // Copyright text
         CanvasState.element.width = 640;
         CanvasState.element.height = 432;
 
@@ -1048,9 +1023,9 @@ function gameInit(a, b) {
         // } else {
         //     gameInitStage++;
         // }
-        gameInitStage++;
+        GameState.gameInitStage++;
     }
-    if (1 == gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
+    if (1 == GameState.gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
         loadSprite(gameFont.i);
         loadSprite(gameFontSmall.i);
         loadSprite(gameFontMed.i);
@@ -1065,10 +1040,10 @@ function gameInit(a, b) {
         if (uncheckedSpriteCount.value > 0) { // restart
             setTimeout(gameInit, computeFrameDelay());
         } else {
-            gameInitStage++;
+            GameState.gameInitStage++;
         }
     }
-    if (2 == gameInitStage) {
+    if (2 == GameState.gameInitStage) {
         if (window.localStorage) {
             _t0 = window.localStorage.getItem("ranger2");
             gameSaveString = _t0 ?? "";
@@ -1153,7 +1128,7 @@ function drawCanvas() {
         let b = 26;
         let d = 350;
         let f = 125;
-        let h = (isMinimalTitleMode ? 0 : 125) << 8 + ((b < 0) ? h += ~~(p * -b) : 0);
+        let h = (GameState.isMinimalTitleMode ? 0 : 125) << 8 + ((b < 0) ? h += ~~(p * -b) : 0);
         let k = ~~(89600 / d);
         let p = ~~(32E3 / f);
         let g = (a < 0) ? ~~(k * -a) : 0;
@@ -1215,7 +1190,7 @@ function drawCanvas() {
         }
         
         if (drawIconButton(608, 312, 8, "IMPORT", 16777215)) {
-            if (8 != userSaveCode.length) {
+            if (8 != GameState.userSaveCode.length) {
                 drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
             } else if (isMouseClicked) {
                 if (a = promptInput("Import Game Data", "")) {
@@ -1225,7 +1200,7 @@ function drawCanvas() {
             }
         }
         if (drawIconButton(608, 352, 9, "EXPORT", 16777215)) {
-            if (8 != userSaveCode.length) {
+            if (8 != GameState.userSaveCode.length) {
                 drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
             } else if (isMouseClicked) {
                 promptInput("Export Game Data", gameSaveString);
@@ -2574,7 +2549,7 @@ function drawGameUI() {
     }
     gameFontSmall.a = 2;
     drawScaledTintedText(gameFontSmall, 476, 421, Consts.copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
-    drawScaledTintedText(gameFontSmall, 607, 421, "" + currentFPS + Consts.fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    drawScaledTintedText(gameFontSmall, 607, 421, "" + GameState.currentFPS + Consts.fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
 }
 
 
@@ -7486,23 +7461,24 @@ function canvasDrawImage(_canvas, _dx, _dy) {
 
 
 function setupAnimRequest() {
-    if (requestAnim) {
-        requestAnim(setupAnimRequest);
-        requestAnimCallCount++;
-        timestampAnim = Date.now();
-        var a = RMath.floor(60 * (timestampAnim - lastTimestamp) / 1E3 + .5);
+    let requestAnim = requestAnimationFrame || mozRequestAnimationFrame || webkitRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
+    if (GameState.requestAnim) {
+        GameState.requestAnim(setupAnimRequest);
+        GameState.requestAnimCallCount++;
+        GameState.timestampAnim = Date.now();
+        var a = RMath.floor(60 * (GameState.timestampAnim - GameState.lastTimestamp) / 1E3 + .5);
         if (0 > a || 60 <= a) {
-            requestAnimCallCount = 0;
-            currentFPS = frameCountThisSecond;
-            frameCountThisSecond = 0;
-            lastTimestamp = timestampAnim;
+            GameState.requestAnimCallCount = 0;
+            GameState.currentFPS = GameState.frameCountThisSecond;
+            GameState.frameCountThisSecond = 0;
+            GameState.lastTimestamp = GameState.timestampAnim;
             a = 0;
-        } else if (a == lastAnimFrameBucket) {
+        } else if (a == GameState.lastAnimFrameBucket) {
             return;
         }
-        frameCountThisSecond++;
-        lastAnimFrameBucket = a;
-        totalFrames++;
+        GameState.frameCountThisSecond++;
+        GameState.lastAnimFrameBucket = a;
+        GameState.totalFrames++;
     }
     isMouseClicked = 0 == wasMouseDown && 1 == isMouseDown;
     isMouseReleased = 1 == wasMouseDown && 0 == isMouseDown;
@@ -7540,14 +7516,14 @@ function setupAnimRequest() {
         }
     }
     canvasDrawImage(CanvasState.canvasImage, 0, 0);
-    requestAnim || setTimeout(setupAnimRequest, computeFrameDelay());
+    GameState.requestAnim || setTimeout(setupAnimRequest, computeFrameDelay());
 }
 
 /** Checks hostname */
 function hostnameCheck() {
     if (Consts.hostname.length != Consts.targetHostname.length) 
         return true;
-    for (hostNameUnchecked = 0; Consts.hostnameCheckIdx < Consts.hostname.length; Consts.hostnameCheckIdx++)
+    for (GameState.hostNameUnchecked = 0; Consts.hostnameCheckIdx < Consts.hostname.length; Consts.hostnameCheckIdx++)
         if (Consts.hostname[Consts.hostnameCheckIdx] != Consts.targetHostname[Consts.hostnameCheckIdx]) 
             return true;
     return false
@@ -7556,13 +7532,13 @@ function hostnameCheck() {
 
 
 function computeFrameDelay() { // ag
-    timestampAnim = Date.now();
-    let a = RMath.clamp(nextFrameTime - timestampAnim, 5, frameInteval);
-    frameCountThisSecond++;
-    totalFrames++;
-    nextFrameTime += frameInteval;
-    if (timestampAnim + a >= secondWindowDeadline || timestampAnim < lastTimestamp) currentFPS = frameCountThisSecond, frameCountThisSecond = 0, nextFrameTime = timestampAnim + frameInteval, secondWindowDeadline = timestampAnim + 1E3;
-    lastTimestamp = timestampAnim;
+    GameState.timestampAnim = Date.now();
+    let a = RMath.clamp(GameState.nextFrameTime - GameState.timestampAnim, 5, GameState.frameInteval);
+    GameState.frameCountThisSecond++;
+    GameState.totalFrames++;
+    GameState.nextFrameTime += GameState.frameInteval;
+    if (GameState.timestampAnim + a >= GameState.secondWindowDeadline || GameState.timestampAnim < GameState.lastTimestamp) GameState.currentFPS = GameState.frameCountThisSecond, GameState.frameCountThisSecond = 0, GameState.nextFrameTime = GameState.timestampAnim + GameState.frameInteval, GameState.secondWindowDeadline = GameState.timestampAnim + 1E3;
+    GameState.lastTimestamp = GameState.timestampAnim;
     return a
 }
 
@@ -8108,19 +8084,19 @@ function onTouchStart(a) {
 };
 
 function onContextMenu() {
-    if (isCanvasFocused) return false
+    if (GameState.isCanvasFocused) return false
 };
 
 function onMouseDown(mouseState) {
     onMouseMove(mouseState);
-    isCanvasFocused = false;
+    GameState.isCanvasFocused = false;
 
     const insideCanvas =
         mouseXRel >= 0 && mouseXRel < Consts.CANVAS_WIDTH &&
         mouseYRel >= 0 && mouseYRel < Consts.CANVAS_HEIGHT;
 
     if (insideCanvas) {
-        isCanvasFocused = true;
+        GameState.isCanvasFocused = true;
         if (mouseState.button === 0) {
             isMouseDown = true;
         }
@@ -8175,7 +8151,7 @@ function onKeyDown(a) {
         keyHeld[b] = true;
         keyPressPending[b] = true;
     }
-    if (0 != b && isCanvasFocused) return false;
+    if (0 != b && GameState.isCanvasFocused) return false;
 };
 
 function onKeyUp(a) {
@@ -8188,7 +8164,7 @@ function onKeyUp(a) {
     if (0 <= b && 256 > b) {
         keyHeld[b] = false;
     }
-    if (0 != b && isCanvasFocused) return false;
+    if (0 != b && GameState.isCanvasFocused) return false;
 };
 
 

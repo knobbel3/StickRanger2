@@ -10,6 +10,8 @@ import * as RMath from "./game/math.js";
 import { badgeCount, badgeList } from "./game/badge_list.js";
 import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
+import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
+import { GameFont } from "./game/font.js";
 
 export {gameInit as Init, toggleFullscreen as full_screen};
 
@@ -22,6 +24,8 @@ let canvasElement = document.getElementById("cv"),
     canvasImage = context2d.createImageData(640, 432),
     canvasBuffer = new Uint32Array(canvasImage.data.buffer);
 
+
+
 function LogMsg(a) {
     try {
         console.log(a)
@@ -29,6 +33,17 @@ function LogMsg(a) {
 }
 // mainWindow.Init = gameInit;
 // mainWindow.full_screen = toggleFullscreen;
+
+document.onmousemove = onMouseMove;
+document.onmousedown = onMouseDown;
+document.onmouseup = onMouseUp;
+document.oncontextmenu = onContextMenu;
+canvasElement.ontouchstart = onTouchStart;
+canvasElement.ontouchmove = onTouchMove;
+canvasElement.ontouchend = onTouchEnd;
+canvasElement.ontouchcancel = onTouchCancel;
+document.onkeydown = onKeyDown; 
+document.onkeyup = onKeyUp; 
 
 
 let userSaveCode, // ca
@@ -170,8 +185,7 @@ let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFram
     totalFrames = 0; // $m
 
 let hostNameUnchecked = 1;
-// for sprites
-let uncheckedSpriteCount = 0;
+
 
 let inventoryItemLists = [
     [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -502,7 +516,6 @@ let copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp",
     dataPath = "./data/",
     fpsName = "fps",
     canvasTag = "canvas",
-    name2d = "2d",
     hostnameCheckIdx = 0,
     targetHostname = "dan-ball.jp";
 
@@ -1078,7 +1091,7 @@ function gameInit(a, b) {
         loadSprite(itemsSpriteSheet);
         loadSprite(effectSpriteSheet);
         loadSprite(medalSpriteSheet);
-        if (uncheckedSpriteCount > 0) { // restart
+        if (uncheckedSpriteCount.value > 0) { // restart
             setTimeout(gameInit, computeFrameDelay());
         } else {
             gameInitStage++;
@@ -3897,7 +3910,7 @@ function loadLevelData(a) {
         currentLevelSprite.f("m" + a + ".png");
     }
     loadSprite(currentLevelSprite); // check if loaded sprite is valid
-    if (uncheckedSpriteCount) return false;
+    if (uncheckedSpriteCount.value) return false;
     lastStageIdx = currentStage;
     isStageReachedArray[currentStage] = 1;
     stageHeight = currentLevelSprite.i;
@@ -8109,8 +8122,25 @@ function toggleFullscreen() {
 }
 
 
-document.onmousemove = onMouseMove;
-document.onmousedown = function (mouseState) {
+function onTouchStart(a) {
+    handleTouch(a);
+    if (1 == activeTouchCount) {
+        isMouseDown = true;
+        mouseXCurrent = mouseXRel;
+        mouseYCurrent = mouseYRel;
+    } else if (2 == activeTouchCount) {
+        isMouseDown = false;
+        mouseXCurrent = mouseXRel;
+        mouseYCurrent = mouseYRel;
+    }
+    return false;
+};
+
+function onContextMenu() {
+    if (isCanvasFocused) return false
+};
+
+function onMouseDown(mouseState) {
     onMouseMove(mouseState);
     isCanvasFocused = false;
 
@@ -8131,7 +8161,7 @@ document.onmousedown = function (mouseState) {
     // ) return false
 };
 
-document.onmouseup = function (mouseState) {
+function onMouseUp(mouseState) {
     onMouseMove(mouseState);
     if (mouseState.button === 0) {
         isMouseDown = false;
@@ -8139,30 +8169,12 @@ document.onmouseup = function (mouseState) {
     //0 == mouseState.button && (isMouseDown = false)
 };
 
-document.oncontextmenu = function () {
-    if (isCanvasFocused) return false
-};
-
-canvasElement.ontouchstart = function(a) {
-    handleTouch(a);
-    if (1 == activeTouchCount) {
-        isMouseDown = true;
-        mouseXCurrent = mouseXRel;
-        mouseYCurrent = mouseYRel;
-    } else if (2 == activeTouchCount) {
-        isMouseDown = false;
-        mouseXCurrent = mouseXRel;
-        mouseYCurrent = mouseYRel;
-    }
-    return false;
-};
-
-canvasElement.ontouchmove = function(a) {
+function onTouchMove(a) {
     handleTouch(a);
     return false;
 };
 
-canvasElement.ontouchend = function(a) {
+function onTouchEnd(a) {
     handleTouch(a);
     if (0 == activeTouchCount) {
         isMouseDown = false;
@@ -8175,13 +8187,13 @@ canvasElement.ontouchend = function(a) {
     }
     return false;
 };
-canvasElement.ontouchcancel = function() {
+
+function onTouchCancel() {
     activeTouchCount = 0;
     isMouseDown = false;
 };
 
-
-document.onkeydown = function(a) {
+function onKeyDown(a) {
     var b = a.keyCode;
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);
@@ -8195,8 +8207,7 @@ document.onkeydown = function(a) {
     if (0 != b && isCanvasFocused) return false;
 };
 
-
-document.onkeyup = function(a) {
+function onKeyUp(a) {
     var b = a.keyCode;
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);
@@ -8333,78 +8344,4 @@ function drawButtonBoldedText(x, y, w, h, text) {
         return true;
     }
     return false;
-};
-
-
-
-function Sprite() {
-    /** Image object */
-    this.a = 0; // image
-    /** image path */
-    this.b = "";
-    /** is image ready */
-    this.c = 0;
-    /** image data */
-    this.g = 0;
-    /** width */
-    this.i = 0;
-    /** height */
-    this.h = 0;
-}
-
-function spriteCreateBuffer(sprite, width, height) {
-    sprite.h = width;
-    sprite.i = height;
-    for (width = 0; 16 > width; width++);
-    sprite.g = new Int32Array(sprite.h * sprite.i)
-}
-
-/** load  */
-Sprite.prototype.f = function (path) {
-    if (this.b != path) {
-        uncheckedSpriteCount++;
-        this.b = path;
-        this.a = new Image;
-        this.a.src = dataPath + path;
-        delete this.g;
-        this.c = 0
-        this.g = 0
-    }
-};
-
-function loadSprite(sprite) {
-    if (!sprite.c && sprite.a.complete) {
-        uncheckedSpriteCount--;
-        var imgWidth = sprite.a.width,
-            imgHeight = sprite.a.height;
-        if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", "ERROR";
-        var d = document.createElement(canvasTag);
-        d.width = imgWidth;
-        d.height = imgHeight;
-        d = d.getContext(name2d);
-        d.drawImage(sprite.a, 0, 0);
-        d = d.getImageData(0, 0, imgWidth, imgHeight).data;
-        spriteCreateBuffer(sprite, imgWidth, imgHeight);
-        imgWidth = 0;
-        for (imgHeight = d.length; imgWidth < imgHeight; imgWidth += 4)
-            sprite.g[imgWidth >> 2] = 0 == d[imgWidth + 3]
-                ? -1
-                : d[imgWidth + 0] << 16 | d[imgWidth + 1] << 8 | d[imgWidth + 2];
-        delete sprite.a;
-        sprite.c = 1
-    }
-}
-
-function GameFont() {
-    this.i = new Sprite;
-    this.a = 0
-    this.b = 0
-    this.j = 0
-    this.c = 0
-}
-GameFont.prototype.f = function (a, b, c) {
-    this.i.f(a);
-    this.c = b;
-    this.j = c;
-    this.a = this.b = 0
 };

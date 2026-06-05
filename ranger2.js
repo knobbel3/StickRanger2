@@ -8012,15 +8012,26 @@ function drawText(_font, px, py, text, color, outlineColor) {
         K = text.length;
     for (h = 0; h < K; h++, px += _font.c + _font.b) {
         k = text.charCodeAt(h) - 32;
-        0 != _font.a && (px -= charKerningBefore[_font.a - 1][k]);
+        if (0 != _font.a) {
+            px -= charKerningBefore[_font.a - 1][k];
+        }
         l = 640 * py + px;
         n = k * _font.c;
         for (t = _font.j; 0 < t; t--, l += B, n += M)
-            for (p = _font.c; 0 < p; p--, l++, n++) w = J[n], w == y ? frameBufferArray[l] = color : w == x && (frameBufferArray[l] = outlineColor);
-        0 != _font.a && (px -= charKerningAfter[_font.a - 1][k])
+            for (p = _font.c; 0 < p; p--, l++, n++) {
+                w = J[n];
+                if (w == y) {
+                    frameBufferArray[l] = color;
+                } else if (w == x) {
+                    frameBufferArray[l] = outlineColor;
+                }
+            }
+        if (0 != _font.a) {
+            px -= charKerningAfter[_font.a - 1][k];
+        }
     }
     _font.b = 0;
-    _font.a = 0
+    _font.a = 0;
 }
 
 function drawTextCentered(font, x, y, text, color, outlineColor) {

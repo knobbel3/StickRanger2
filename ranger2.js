@@ -8274,35 +8274,126 @@ function drawRectCentered(x, y, w, h, color) {
 }
 
 function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor) {
-    var l = spriteSheet.g,
-        n, w, B, M;
+    var l = spriteSheet.g, n, w, B, M;
     sourceWidth = ~~((sourceWidth << 8) / drawWidth);
     sourceHeight = ~~((sourceHeight << 8) / drawHeight);
     sourceX <<= 8;
     sourceY <<= 8;
-    0 > _x && (sourceX += ~~(sourceWidth * -_x));
-    0 > _y && (sourceY += ~~(sourceHeight * -_y));
+    if (0 > _x) {
+        sourceX += ~~(sourceWidth * -_x);
+    }
+    if (0 > _y) {
+        sourceY += ~~(sourceHeight * -_y);
+    }
     drawWidth = 640 < _x + drawWidth ? 640 : ~~(_x + drawWidth);
     drawHeight = 432 < _y + drawHeight ? 432 : ~~(_y + drawHeight);
     _x = 0 > _x ? 0 : ~~_x;
     _y = 0 > _y ? 0 : ~~_y;
     w = 640 * _y + _x;
     B = 640 - (drawWidth - _x);
-    var J, y, x, K = tintColor >> 24 & 255,
-        ba = tintColor >> 16 & 255,
-        U = tintColor >> 8 & 255,
-        na = tintColor & 255;
-    if (!spriteAltRenderFlag)
-        for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight)
-            for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) tintColor = l[M >> 8], -1 != tintColor && (J = ba * (tintColor >> 16 & 255) >> 8, y = U * (tintColor >> 8 & 255) >> 8, x = na * (tintColor & 255) >> 8, 0 == isSolidRender ? frameBufferArray[w] = J << 16 | y << 8 | x : 1 == isSolidRender ? (tintColor = frameBufferArray[w] >> 16 & 255, J = ((J - tintColor) * K >> 8) + tintColor, tintColor = frameBufferArray[w] >> 8 & 255, y =
-                ((y - tintColor) * K >> 8) + tintColor, tintColor = frameBufferArray[w] & 255, x = ((x - tintColor) * K >> 8) + tintColor, frameBufferArray[w] = J << 16 | y << 8 | x) : 2 == isSolidRender && (J = (frameBufferArray[w] >> 16 & 255) + (J * K >> 8), 255 < J && (J = 255), y = (frameBufferArray[w] >> 8 & 255) + (y * K >> 8), 255 < y && (y = 255), x = (frameBufferArray[w] & 255) + (x * K >> 8), 255 < x && (x = 255), frameBufferArray[w] = J << 16 | y << 8 | x));
-    else if (1 == spriteAltRenderFlag)
-        for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight)
-            for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) tintColor = l[M >> 8], 0 != tintColor && (tintColor = (tintColor & 255) * K >> 8, 1 == isSolidRender ? (J = frameBufferArray[w] >> 16 & 255, J = ((ba - J) * tintColor >> 8) + J, y = frameBufferArray[w] >> 8 & 255, y = ((U - y) * tintColor >> 8) + y, x = frameBufferArray[w] & 255, x = ((na - x) * tintColor >> 8) + x, frameBufferArray[w] = J << 16 | y << 8 | x) : 2 == isSolidRender ? (J = (frameBufferArray[w] >> 16 & 255) + (ba * tintColor >> 8), 255 < J && (J = 255), y = (frameBufferArray[w] >> 8 &
-                255) + (U * tintColor >> 8), 255 < y && (y = 255), x = (frameBufferArray[w] & 255) + (na * tintColor >> 8), 255 < x && (x = 255), frameBufferArray[w] = J << 16 | y << 8 | x) : 3 == isSolidRender && (J = (frameBufferArray[w] >> 16 & 255) - (ba * tintColor >> 8), 0 > J && (J = 0), y = (frameBufferArray[w] >> 8 & 255) - (U * tintColor >> 8), 0 > y && (y = 0), x = (frameBufferArray[w] & 255) - (na * tintColor >> 8), 0 > x && (x = 0), frameBufferArray[w] = J << 16 | y << 8 | x));
-    else if (2 == spriteAltRenderFlag)
-        for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight)
-            for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) tintColor = l[M >> 8], 0 >= tintColor || (J = tintColor >> 16 & 255, y = tintColor >> 8 & 255, x = tintColor & 255, frameBufferArray[w] = J == y && y == x ? ba * J >> 8 << 16 | U * y >> 8 << 8 | na * x >> 8 : tintColor)
+    var J, y, x,
+        K = tintColor >> 24 & 255, ba = tintColor >> 16 & 255, U = tintColor >> 8 & 255, na = tintColor & 255;
+    if (!spriteAltRenderFlag) {
+        for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight) {
+            for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) {
+                tintColor = l[M >> 8];
+            if (-1 != tintColor) {
+                J = ba * (tintColor >> 16 & 255) >> 8;
+                y = U * (tintColor >> 8 & 255) >> 8;
+                x = na * (tintColor & 255) >> 8;
+                if (0 == isSolidRender) {
+                    frameBufferArray[w] = J << 16 | y << 8 | x;
+                } else if (1 == isSolidRender) {
+                    tintColor = frameBufferArray[w] >> 16 & 255;
+                    J = ((J - tintColor) * K >> 8) + tintColor;
+                    tintColor = frameBufferArray[w] >> 8 & 255;
+                    y = ((y - tintColor) * K >> 8) + tintColor;
+                    tintColor = frameBufferArray[w] & 255;
+                    x = ((x - tintColor) * K >> 8) + tintColor;
+                    frameBufferArray[w] = J << 16 | y << 8 | x;
+                } else if (2 == isSolidRender) {
+                    J = (frameBufferArray[w] >> 16 & 255) + (J * K >> 8);
+                    if (255 < J) {
+                        if (J = 255) {
+                            y = (frameBufferArray[w] >> 8 & 255) + (y * K >> 8);
+                            if (255 < y) {
+                                if (y = 255) {
+                                    x = (frameBufferArray[w] & 255) + (x * K >> 8);
+                                    if (255 < x) {
+                                        if (x = 255) {
+                                            frameBufferArray[w] = J << 16 | y << 8 | x;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            }
+        }
+    } else if (1 == spriteAltRenderFlag) {
+        for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight) {
+            for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) {
+                tintColor = l[M >> 8];
+                if (0 != tintColor) {
+                    tintColor = (tintColor & 255) * K >> 8;
+                    if (1 == isSolidRender) {
+                        J = frameBufferArray[w] >> 16 & 255;
+                        J = ((ba - J) * tintColor >> 8) + J;
+                        y = frameBufferArray[w] >> 8 & 255;
+                        y = ((U - y) * tintColor >> 8) + y;
+                        x = frameBufferArray[w] & 255;
+                        x = ((na - x) * tintColor >> 8) + x;
+                        frameBufferArray[w] = J << 16 | y << 8 | x;
+                    } else if (2 == isSolidRender) {
+                        J = (frameBufferArray[w] >> 16 & 255) + (ba * tintColor >> 8);
+                        if (255 < J) {
+                            J = 255;
+                        }
+                        y = (frameBufferArray[w] >> 8 & 255) + (U * tintColor >> 8);
+                        if (255 < y) {
+                            y = 255;
+                        }
+                        x = (frameBufferArray[w] & 255) + (na * tintColor >> 8);
+                        if (255 < x) {
+                            x = 255;
+                        }
+                        frameBufferArray[w] = J << 16 | y << 8 | x;
+                    } else if (3 == isSolidRender) {
+                        J = (frameBufferArray[w] >> 16 & 255) - (ba * tintColor >> 8);
+                        if (0 > J) {
+                            if (J = 0) {
+                                y = (frameBufferArray[w] >> 8 & 255) - (U * tintColor >> 8);
+                                if (0 > y) {
+                                    if (y = 0) {
+                                        x = (frameBufferArray[w] & 255) - (na * tintColor >> 8);
+                                        if (0 > x) {
+                                            if (x = 0) {
+                                                frameBufferArray[w] = J << 16 | y << 8 | x;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else if (2 == spriteAltRenderFlag) {
+        for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight) {
+            for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) {
+                tintColor = l[M >> 8];
+                if (0 < tintColor) {
+                    J = tintColor >> 16 & 255;
+                    y = tintColor >> 8 & 255;
+                    x = tintColor & 255;
+                    frameBufferArray[w] = J == y && y == x ? ba * J >> 8 << 16 | U * y >> 8 << 8 | na * x >> 8 : tintColor;
+                }
+            }
+        }
+    }
 }
 
 function drawSpriteSheetPartCentered(spriteSheet, x, y, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor) {

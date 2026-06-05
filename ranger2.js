@@ -8376,32 +8376,50 @@ function handleTouch(a) {
     a = a.touches;
     console.log(a);
     activeTouchCount = a.length;
-    1 == activeTouchCount
-        ? (mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f),
-            mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f))
-        : 2 == activeTouchCount && (mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f),
-            mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f),
-            rectHeight = floor((a[1].clientY - clientRect.top - rectHeight) / f),
-            mouseXRel = floor((mouseXRel + floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2),
-            mouseYRel = floor((mouseYRel + rectHeight) / 2))
+    if (1 == activeTouchCount) {
+        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
+    } else if (2 == activeTouchCount) {
+        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
+        rectHeight = floor((a[1].clientY - clientRect.top - rectHeight) / f);
+        mouseXRel = floor((mouseXRel + floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2);
+        mouseYRel = floor((mouseYRel + rectHeight) / 2);
+    }
 }
-canvasElement.ontouchstart = function (a) {
+canvasElement.ontouchstart = function(a) {
     handleTouch(a);
-    1 == activeTouchCount ? (isMouseDown = true, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == activeTouchCount && (isMouseDown = false, mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
-    return false
+    if (1 == activeTouchCount) {
+        isMouseDown = true;
+        mouseXCurrent = mouseXRel;
+        mouseYCurrent = mouseYRel;
+    } else if (2 == activeTouchCount) {
+        isMouseDown = false;
+        mouseXCurrent = mouseXRel;
+        mouseYCurrent = mouseYRel;
+    }
+    return false;
 };
-canvasElement.ontouchmove = function (a) {
+canvasElement.ontouchmove = function(a) {
     handleTouch(a);
-    return false
+    return false;
 };
-canvasElement.ontouchend = function (a) {
+canvasElement.ontouchend = function(a) {
     handleTouch(a);
-    0 == activeTouchCount ? isMouseDown = false : 1 == activeTouchCount ? (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel) : 2 == activeTouchCount && (mouseXCurrent = mouseXRel, mouseYCurrent = mouseYRel);
-    return false
+    if (0 == activeTouchCount) {
+        isMouseDown = false;
+    } else if (1 == activeTouchCount) {
+        mouseXCurrent = mouseXRel;
+        mouseYCurrent = mouseYRel;
+    } else if (2 == activeTouchCount) {
+        mouseXCurrent = mouseXRel;
+        mouseYCurrent = mouseYRel;
+    }
+    return false;
 };
-canvasElement.ontouchcancel = function () {
+canvasElement.ontouchcancel = function() {
     activeTouchCount = 0;
-    isMouseDown = false
+    isMouseDown = false;
 };
 let keyJustPressed = Array(256), // Jf
     keyPressPending = Array(256), // Kf
@@ -8409,22 +8427,32 @@ let keyJustPressed = Array(256), // Jf
     keyMapNoShift = Array(256), // Mf
     keyMapShift = Array(256); // Nf
 
-domDocument.onkeydown = function (a) {
+domDocument.onkeydown = function(a) {
     var b = a.keyCode;
-    65 <= b & 90 >= b
-        ? a.shiftKey || (b += 32)
-        : b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
-
-    0 <= b && 256 > b && (keyHeld[b] = true, keyPressPending[b] = true);
-    if (0 != b && isCanvasFocused) return false
+    if (65 <= b & 90 >= b) {
+        a.shiftKey || (b += 32);
+    } else {
+        b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
+    }
+    if (0 <= b && 256 > b) {
+        keyHeld[b] = true;
+        keyPressPending[b] = true;
+    }
+    if (0 != b && isCanvasFocused) return false;
 };
 
 
-domDocument.onkeyup = function (a) {
+domDocument.onkeyup = function(a) {
     var b = a.keyCode;
-    65 <= b & 90 >= b ? a.shiftKey || (b += 32) : b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
-    0 <= b && 256 > b && (keyHeld[b] = false);
-    if (0 != b && isCanvasFocused) return false
+    if (65 <= b & 90 >= b) {
+        a.shiftKey || (b += 32);
+    } else {
+        b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
+    }
+    if (0 <= b && 256 > b) {
+        keyHeld[b] = false;
+    }
+    if (0 != b && isCanvasFocused) return false;
 };
 
 let isCanvasFocused = false;

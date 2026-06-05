@@ -1,6 +1,6 @@
 export const ItemProps = Object.freeze({
     Name: 0, // item display name shown in inventory/equipment UI.
-    DropIcon: 1, // item icon/category used by accessory bonus checks.
+    DropIconCol: 1, // item icon/category used by accessory bonus checks.
     HeadwearType: 2, // encoded sprite tile used for the item icon.
     Appearance: 3, // item appearance/class flag used by the UI.
     RangeType: 4, // Oc, weapon range bucket: short, middle, or long.
@@ -26,13 +26,13 @@ export const ItemProps = Object.freeze({
     ProjectileAcceleration: 24, // hd, projectile acceleration / gravity magnitude (from item stat), used to influence projectile velocity each frame.
     ProjectileSpeedScale: 25, // id, projectile velocity scale / speed multiplier (percent-like), applied each frame as .01 * value to scale projectile velocity.
     ProjectileAuxStat: 26, // jd, auxiliary projectile stat passed into spawnProjectile; current code does not read the matching projectile slot later.
-    projectileCollisionMode: 27, // kd, projectile wall-collision mode: 0 stop, 2 slide, 3 bounce, 4 clamp.
+    ProjectileCollisionMode: 27, // kd, projectile wall-collision mode: 0 stop, 2 slide, 3 bounce, 4 clamp.
     AttackCooldown: 28, // ld, cooldown in frames before the next attack or passive emit can fire.
     ProjectileAuxParam: 29, // md, auxiliary projectile parameter stored on spawn; current projectile logic does not read it.
-    ProjectileMaxTargets: 30, // nd, projectile max-target count; 2 falls back to the upper byte of itemProjectileDamageMinCol.
-    ProjectileDamageMin: 31, // od, projectile minimum damage; its upper byte is reused by itemProjectileMaxTargetsCol when needed.
-    ProjectileDamageMax: 32, // pd, projectile maximum damage.
-    ProjectileEffectType: 33, // qd, projectile effect/damage mode.
+    ItemProjectileMaxTargets: 30, // nd, projectile max-target count; 2 falls back to the upper byte of itemProjectileDamageMinCol.
+    ItemProjectileDamageMin: 31, // od, projectile minimum damage; its upper byte is reused by itemProjectileMaxTargetsCol when needed.
+    ItemProjectileDamageMax: 32, // pd, projectile maximum damage.
+    ItemProjectileEffectType: 33, // qd, projectile effect/damage mode.
     ProjectileEffectType: 34, // rd, effect type used by projectile hit logic; controls whether a hit applies direct damage or a status effect.
     ProjectileEffectDuration: 35, // sd, effect duration in frames used by projectile hit logic.
     ElementType: 36, // td, item element code; the UI renders it as physical, fire, ice, lightning, or poison.
@@ -68,13 +68,14 @@ export const ItemProps = Object.freeze({
 });
 
 
-export const ItemModifiers = Object.freeze({
+export const ModifierColumns = Object.freeze({
     itemSpriteLocY: 6, // item sprite source Y/index used by draw routines (sprite-sheet source Y).
     heroHealthModifier: 7, // percent HP modifier applied to hero max-HP (from equipped item).
     heroDefenseModifier: 8, // flat defense bonus applied to hero (added to melee/projectile defense arrays).
     heroMagicDefModifier: 9, // percent magic-resist modifier applied to hero (from equipped item).
     heroDodgeModifier: 10 // dodge chance bonus (flat) applied to hero when item is equipped.
 });
+
 
 export const AccessoryPrefixes = Object.freeze({
     TempIdx: 7, // accessory template id column - identifies the accessory effect/type equipped (used by equip checks).
@@ -85,6 +86,7 @@ export const AccessoryPrefixes = Object.freeze({
     SecondaryValue: 12, // accessory secondary value column (int) - numeric secondary value for accessory bonuses.
     SecondaryLabelSuffix: 13 // accessory secondary label suffix (string) - prefix text for the accessory secondary stat label.
 });
+
 
 export const AccessoryProps = Object.freeze({
     ArmsBonus0: 1, // ARMS accessory bonus effect column (grants "ARMS Lv +" for ring-type accessories; counted by heroHasAccessoryEffect/countAccessoryLvlBonuses)
@@ -123,128 +125,128 @@ export const AccessoryProps = Object.freeze({
     DebuffDurationReduction: 38 // Te, accessory effect that reduces debuff/duration timers (subtracts from dh[...] when attackType==4).
 });
 
+/*
+const {
+    itemNameCol,
+    itemDropIconCol,
+    itemHeadwearType,
+    itemAppearanceCol,
+    itemRangeTypeCol,
+    itemSpriteSourceXCol,
+    itemLimbSelectionCol,
+    itemProjectileDrawWidthCol,
+    itemProjectileDrawHeightCol,
+    itemProjectileShapeModeCol,
+    itemHitCountStatCol,
+    itemAtkMinCol,
+    itemAtkMaxCol,
+    itemProjectileCountCol,
+    itemProjectileSpeedCol,
+    itemAgilityCol,
+    itemRangeCol,
+    projectileEffectWidthCol,
+    projectileEffectHeightCol,
+    projectileDelayRangeCol,
+    projectileNoDamageFramesCol,
+    projectileStartAnimFrameCol,
+    projectileLifetimeCol,
+    projectileTargetIndexCol,
+    projectileAccelerationCol,
+    projectileSpeedScaleCol,
+    projectileAuxStatCol,
+    projectileCollisionModeCol,
+    attackCooldownCol,
+    projectileAuxParamCol,
+    itemProjectileMaxTargetsCol,
+    itemProjectileDamageMinCol,
+    itemProjectileDamageMaxCol,
+    itemProjectileEffectTypeCol,
+    projectileEffectTypeCol,
+    projectileEffectDurationCol,
+    itemElementTypeCol,
+    itemIceBonusPercentCol,
+    itemChargeEmitValueCol,
+    itemForgeMaxLevelCol,
+    itemForgeCostPerLevelCol,
+    itemStatModifyingBaseCol,
+    itemProjectileParam1Col,
+    itemAttackModeCol,
+    itemProjectileParam2Col,
+    itemProjectileParam3Col,
+    itemAttackPowerCol,
+    itemProjectileTemplateCol,
+    itemProjectileAux1Col,
+    itemProjectileAux2Col,
+    itemAuxValueACol,
+    itemAuxValueBCol,
+    itemAuxValueCCol,
+    itemDisplayStatACol,
+    itemAuxValueDCol,
+    itemProjectileFlagCol,
+    itemProjectileParamTimeCol,
+    itemHitCountCol,
+    itemProjectileEffectModeCol,
+    itemStatACol,
+    itemExtraStatCol1,
+    itemExtraStatCol2,
+    itemSpawnTargetRangeCol,
+    itemExtraParamACol,
+    itemExtraParamBCol,
+    itemExtraParamCCol
+} = ItemColumns;
 
 const {
-    ArmsBonus0: accessoryArmsBonusCol0,
-    ChargeBonus: accessoryChargeBonusCol,
-    ArmsBonus1: accessoryArmsBonusCol1,
-    EffectAtkBonus: accessoryEffectAtkBonusCol,
-    EffectAgiPenalty: accessoryEffectAgiPenaltyCol,
-    EffectRangeAndCount: accessoryEffectRangeAndCountCol,
-    EffectEmitFullChargeChance_duringCharge: accessoryEffectEmitFullChargeChance_duringChargeCol,
-    EffectEmitFullChargeChance_onFire: accessoryEffectEmitFullChargeChance_onFireCol,
-    EffectEmitMaxReduction: accessoryEffectEmitMaxReductionCol,
-    EffectMultiShotIncrease: accessoryEffectMultiShotIncreaseCol,
-    DodgeChance: accessoryDodgeChanceCol,
-    EffectPhysicalProcChance: accessoryEffectPhysicalProcChanceCol,
-    EffectFireStatBonus: accessoryEffectFireStatBonusCol,
-    EffectIceStatBonus: accessoryEffectIceStatBonusCol,
-    EffectLightningMaxAtkPercent: accessoryEffectLightningMaxAtkPercentCol,
-    EffectLightningElemBonus: accessoryEffectLightningElemBonusCol,
-    EffectPoisonAtkPercent: accessoryEffectPoisonAtkPercentCol,
-    RewardValueBonus: accessoryRewardValueBonusCol,
-    DropChanceBonus: accessoryDropChanceBonusCol,
-    EnemyHpBonus: accessoryEnemyHpBonusCol,
-    FireAtkPercent: accessoryFireAtkPercentCol,
-    IceAtkPercent: accessoryIceAtkPercentCol,
-    EffectPoisonStatBonus: accessoryEffectPoisonStatBonusCol,
-    MultiShotSpreadDivisor: accessoryMultiShotSpreadDivisorCol,
-    MeleeDefence: accessoryMeleeDefenceCol,
-    MagicDefense: accessoryMagicDefenseCol,
-    ComboMaxIncrease: accessoryComboMaxIncreaseCol,
-    ChargeValueBonus: accessoryChargeValueBonusCol,
-    HealthBonus: accessoryHealthBonusCol,
-    JointStepDivider: accessoryJointStepDividerCol,
-    MagicDamageReduction: accessoryMagicDamageReductionCol,
-    StunChanceReduction: accessoryStunChanceReductionCol,
-    DamageNegationChance: accessoryDamageNegationChanceCol,
-    DebuffDurationReduction: accessoryDebuffDurationReductionCol
-} = AccessoryProps;
-
-
-const {
-    TempIdx: accessoryTempIdxCol,
-    PrimaryPrefix: accessoryPrimaryPrefixCol,
-    PrimaryValue: accessoryPrimaryValueCol,
-    PrimarySuffix: accessoryPrimarySuffixCol,
-    SecondaryLabelPrefix: accessorySecondaryLabelPrefixCol,
-    SecondaryValue: accessorySecondaryValueCol,
-    SecondaryLabelSuffix: accessorySecondaryLabelSuffixCol
-} = AccessoryPrefixes;
+    accessoryArmsBonusCol0,
+    accessoryChargeBonusCol,
+    accessoryArmsBonusCol1,
+    accessoryEffectAtkBonusCol,
+    accessoryEffectAgiPenaltyCol,
+    accessoryEffectRangeAndCountCol,
+    accessoryEffectEmitFullChargeChance_duringChargeCol,
+    accessoryEffectEmitFullChargeChance_onFireCol,
+    accessoryEffectEmitMaxReductionCol,
+    accessoryEffectMultiShotIncreaseCol,
+    accessoryDodgeChanceCol,
+    accessoryEffectPhysicalProcChanceCol,
+    accessoryEffectFireStatBonusCol,
+    accessoryEffectIceStatBonusCol,
+    accessoryEffectLightningMaxAtkPercentCol,
+    accessoryEffectLightningElemBonusCol,
+    accessoryEffectPoisonAtkPercentCol,
+    accessoryRewardValueBonusCol,
+    accessoryDropChanceBonusCol,
+    accessoryEnemyHpBonusCol,
+    accessoryFireAtkPercentCol,
+    accessoryIceAtkPercentCol,
+    accessoryEffectPoisonStatBonusCol,
+    accessoryMultiShotSpreadDivisorCol,
+    accessoryMeleeDefenceCol,
+    accessoryMagicDefenseCol,
+    accessoryComboMaxIncreaseCol,
+    accessoryChargeValueBonusCol,
+    accessoryHealthBonusCol,
+    accessoryJointStepDividerCol,
+    accessoryMagicDamageReductionCol,
+    accessoryStunChanceReductionCol,
+    accessoryDamageNegationChanceCol,
+    accessoryDebuffDurationReductionCol
+} = AccessoryPropColumns;
 
 const {
-    itemSpriteLocY: itemSpriteLocYCol,
-    heroHealthModifier: heroHealthModifierCol,
-    heroDefenseModifier: heroDefenseModifierCol,
-    heroMagicDefModifier: heroMagicDefModifierCol,
-    heroDodgeModifier: heroDodgeModifierCol
-} = ItemModifiers;
+    accessoryTempIdxCol,
+    accessoryPrimaryPrefixCol,
+    accessoryPrimaryValueCol,
+    accessoryPrimarySuffixCol,
+    accessorySecondaryLabelPrefixCol,
+    accessorySecondaryValueCol,
+    accessorySecondaryLabelSuffixCol
+} = AccessoryPrefixColumns;
 
 const {
-    Name: itemNameCol,
-    DropIcon: itemDropIconCol,
-    HeadwearType: itemHeadwearType,
-    Appearance: itemAppearanceCol,
-    RangeType: itemRangeTypeCol,
-    SpriteSourceX: itemSpriteSourceXCol,
-    LimbSelection: itemLimbSelectionCol,
-    ProjectileDrawWidth: itemProjectileDrawWidthCol,
-    ProjectileDrawHeight: itemProjectileDrawHeightCol,
-    ProjectileShapeMode: itemProjectileShapeModeCol,
-    HitCountStat: itemHitCountStatCol,
-    AtkMin: itemAtkMinCol,
-    AtkMax: itemAtkMaxCol,
-    ProjectileCount: itemProjectileCountCol,
-    ProjectileSpeed: itemProjectileSpeedCol,
-    Agility: itemAgilityCol,
-    Range: itemRangeCol,
-    ProjectileEffectWidth: projectileEffectWidthCol,
-    ProjectileEffectHeight: projectileEffectHeightCol,
-    ProjectileDelayRange: projectileDelayRangeCol,
-    ProjectileNoDamageFrames: projectileNoDamageFramesCol,
-    ProjectileStartAnimFrame: projectileStartAnimFrameCol,
-    ProjectileLifetime: projectileLifetimeCol,
-    ProjectileTargetIndex: projectileTargetIndexCol,
-    ProjectileAcceleration: projectileAccelerationCol,
-    ProjectileSpeedScale: projectileSpeedScaleCol,
-    ProjectileAuxStat: projectileAuxStatCol,
-    projectileCollisionMode: projectileCollisionModeCol,
-    AttackCooldown: attackCooldownCol,
-    ProjectileAuxParam: projectileAuxParamCol,
-    ProjectileMaxTargets: itemProjectileMaxTargetsCol,
-    ProjectileDamageMin: itemProjectileDamageMinCol,
-    ProjectileDamageMax: itemProjectileDamageMaxCol,
-    ProjectileEffectType: itemProjectileEffectTypeCol,
-    ProjectileEffectType: projectileEffectTypeCol,
-    ProjectileEffectDuration: projectileEffectDurationCol,
-    ElementType: itemElementTypeCol,
-    IceBonusPercent: itemIceBonusPercentCol,
-    ChargeEmitValue: itemChargeEmitValueCol,
-    ForgeMaxLevel: itemForgeMaxLevelCol,
-    ForgeCostPerLevel: itemForgeCostPerLevelCol,
-    StatModifyingBase: itemStatModifyingBaseCol,
-    ProjectileParam1: itemProjectileParam1Col,
-    AttackMode: itemAttackModeCol,
-    ProjectileParam2: itemProjectileParam2Col,
-    ProjectileParam3: itemProjectileParam3Col,
-    AttackPower: itemAttackPowerCol,
-    ProjectileTemplate: itemProjectileTemplateCol,
-    ProjectileAux1: itemProjectileAux1Col,
-    ProjectileAux2: itemProjectileAux2Col,
-    AuxValueA: itemAuxValueACol,
-    AuxValueB: itemAuxValueBCol,
-    AuxValueC: itemAuxValueCCol,
-    DisplayStatA: itemDisplayStatACol,
-    AuxValueD: itemAuxValueDCol,
-    ProjectileFlag: itemProjectileFlagCol,
-    ProjectileParamTime: itemProjectileParamTimeCol,
-    HitCount: itemHitCountCol,
-    ProjectileEffectMode: itemProjectileEffectModeCol,
-    StatA: itemStatACol,
-    ExtraStat1: itemExtraStatCol1,
-    ExtraStat2: itemExtraStatCol2,
-    SpawnTargetRange: itemSpawnTargetRangeCol,
-    ExtraParamA: itemExtraParamACol,
-    ExtraParamB: itemExtraParamBCol,
-    ExtraParamC: itemExtraParamCCol
-} = ItemProps;
+    itemSpriteLocYCol,
+    heroHealthModifierCol,
+    heroDefenseModifierCol,
+    heroMagicDefModifierCol,
+    heroDodgeModifierCol
+} = ModifierColumns;
+*/

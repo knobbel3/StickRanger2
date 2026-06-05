@@ -2,6 +2,8 @@
  The games source code use is permission :-)
 */
 
+import * as RMath from "./game/math.js";
+
 let domDocument = document,
     mainWindow = window,
     canvasElement = domDocument.getElementById("cv"),
@@ -342,7 +344,6 @@ function getItemModifierAmount(itemIdx, columnIdx) { // Ue
     return 0
 }
 
-
 function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
     var c = 0;
     if (0 == _columnIdx) {
@@ -360,7 +361,7 @@ function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
     if (0 != c) {
         var d = itemForgeLvls[_itemIdx] - 1;
         _itemIdx == forgePreviewItemIdx && d++;
-        return itemList[_itemIdx][_columnIdx] + floor(itemList[_itemIdx][_columnIdx] * d * c / 100);
+        return itemList[_itemIdx][_columnIdx] + RMath.floor(itemList[_itemIdx][_columnIdx] * d * c / 100);
     }
     return itemList[_itemIdx][_columnIdx];
 }
@@ -417,7 +418,7 @@ function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
         if (heroHasAccessoryEffect(heroIdx, accessoryArmsBonusCol1) && 4 == itemList[itemIdx][itemDropIconCol])
             f += sumAccessorySecondaryValues(heroIdx, accessoryArmsBonusCol1);
 
-        return itemList[itemIdx][columnIdx] + floor(itemList[itemIdx][columnIdx] * f * d / 100)
+        return itemList[itemIdx][columnIdx] + RMath.floor(itemList[itemIdx][columnIdx] * f * d / 100)
     }
     return itemList[itemIdx][columnIdx]
 }
@@ -742,8 +743,8 @@ function saveGame() {
     gameSaveBuffer[a++] = 1;
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = 0;
-    gameSaveBuffer[a++] = randInt(64);
-    gameSaveBuffer[a++] = randInt(64);
+    gameSaveBuffer[a++] = RMath.randInt(64);
+    gameSaveBuffer[a++] = RMath.randInt(64);
     for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = userSaveKey[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = currentStage >> 6 & 63;
@@ -824,8 +825,8 @@ function saveGame() {
             for (f = 0; b < a && 63 != f && c == gameSaveBuffer[b]; b++) f++;
             saveLoadCodecScratchBuffer[gameSaveHash++] = f
         }
-    a = randInt(64);
-    f = randInt(64);
+    a = RMath.randInt(64);
+    f = RMath.randInt(64);
     gameSaveString = "";
     c = a + gameSaveHash & 63;
     for (b = 0; b < gameSaveHash; b++) {
@@ -932,7 +933,7 @@ function hashAdjust(a, b) {
 
 function updatePartyChecksum() {
     var a, b, c;
-    basePartyChecksum = c = floor(randFloat(1024));
+    basePartyChecksum = c = RMath.floor(RMath.randFloat(1024));
     c = hashAdjust(c, 0);
     c = hashAdjust(c, currentStage);
     c = hashAdjust(c, partyMemberCount);
@@ -984,15 +985,7 @@ function gameInit(a, b) {
         LogMsg(copyrightText2); // Copyright text
         canvasElement.width = 640;
         canvasElement.height = 432;
-        for (_t0 = 0; 513 > _t0; _t0++) rotationLUT[_t0] = new Float32Array(2);
-        for (_t0 = 0; 512 > _t0; _t0++) {
-            var _t1 = TAU * _t0 / 512; // 360 * c / 512 * PI / 180;
-            rotationLUT[_t0][0] = Math.cos(_t1);
-            rotationLUT[_t0][1] = Math.sin(_t1);
-        }
-        // at c = 512
-        rotationLUT[_t0][0] = rotationLUT[0][0];
-        rotationLUT[_t0][1] = rotationLUT[0][1];
+
         for (_t0 = 0; 256 > _t0; _t0++) {
             keyJustPressed[_t0] = false;
             keyPressPending[_t0] = false;
@@ -1048,15 +1041,9 @@ function gameInit(a, b) {
             frameBufferArray[_t0] = 0;
         
         // uncheckedSpriteCount is incremented
-        for (_t0 = 0; 1024 > _t0; _t0++) randLUT[_t0] = _t0 / 1024;
-        for (_t0 = 0; 1024 > _t0; _t0++) {
-            _t1 = floor(1024 * rand());
-            _t2 = randLUT[_t0];
-            randLUT[_t0] = randLUT[_t1];
-            randLUT[_t1] = _t2;
-        }
-        randSeed = floor(1024 * rand()) & 1023;
-        randSeedStep = floor(512 * rand()) | 1;
+        RMath.InitStates();
+        RMath.setRandSeed(RMath.floor(1024 * RMath.rand()) & 1023);
+        RMath.setRandSeedStep(RMath.floor(512 * RMath.rand()) | 1);
         // clear frame buffer
         gameFont.f("font.png", 8, 12);
         gameFontSmall.f("font_s.png", 5, 7);
@@ -1107,7 +1094,7 @@ function gameInit(a, b) {
         gameLoadStatusCode = loadGame(gameSaveString);
         statusDuration = 100;
 
-
+        let _t1;
         itemHashTable = Array(256);
         for (_t0 = 0; 256 > _t0; _t0++) {
             itemHashTable[_t0] = 0;
@@ -1348,15 +1335,15 @@ function drawCanvas() {
         if (11 == gameScreenState) {
             c = 255;
             if (50 < screenStateTimer) {
-                c = 255 - floor(255 * (screenStateTimer - 50) / 20);
+                c = 255 - RMath.floor(255 * (screenStateTimer - 50) / 20);
             }
             drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
-            a = -1E3 + floor(500 * screenStateTimer / 20);
+            a = -1E3 + RMath.floor(500 * screenStateTimer / 20);
             drawLine(a, 164, a + 1E3, 164, 8421504);
-            a = 640 - floor(500 * screenStateTimer / 20);
+            a = 640 - RMath.floor(500 * screenStateTimer / 20);
             drawLine(a, 193, a + 1E3, 193, 8421504);
             screenStateTimer++;
-            screenFadeFactor = clamp(screenStateTimer / 30, 0, 1);
+            screenFadeFactor = RMath.clamp(screenStateTimer / 30, 0, 1);
             if (70 <= screenStateTimer) {
                 screenFadeFactor = 1;
                 screenStateTimer = 0;
@@ -1369,11 +1356,11 @@ function drawCanvas() {
                 screenStateTimer = 0;
                 gameScreenState = 30;
                 comboMultBonus = comboCount = comboWindowTimer = 0;
-                c = floor(partyGold / 10 / partyMemberCount);
+                c = RMath.floor(partyGold / 10 / partyMemberCount);
                 if (0 < c) {
                     for (a = 0; a < partyMemberCount; a++)
                         spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, -c, 60, 16776960);
-                    partyGold = clamp(partyGold - c * partyMemberCount, 0, 9999999);
+                    partyGold = RMath.clamp(partyGold - c * partyMemberCount, 0, 9999999);
                 }
                 for (a = 0; a < partyMemberCount; a++) {
                     partyLP[a] = 1;
@@ -1405,7 +1392,7 @@ function drawCanvas() {
 
         } else if (13 == gameScreenState) {
             screenStateTimer++;
-            screenFadeFactor = clamp(1 - screenStateTimer / 20, 0, 1);
+            screenFadeFactor = RMath.clamp(1 - screenStateTimer / 20, 0, 1);
             if (20 == screenStateTimer) {
                 screenFadeFactor = 0;
                 gameScreenState = 10;
@@ -1415,7 +1402,7 @@ function drawCanvas() {
             }
         } else if (30 == gameScreenState) {
             100 > screenStateTimer && screenStateTimer++;
-            c = floor(255 * screenStateTimer / 100);
+            c = RMath.floor(255 * screenStateTimer / 100);
             drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24);
             if (100 == screenStateTimer && isMouseClicked) {
                 for (a = 0; 4 > a; a++) {
@@ -1443,36 +1430,36 @@ function drawCanvas() {
         a = badgeList[lastCompletedBadgeIdx][3];
         drawSpriteSheetPartTintedScaled(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true);
         b = 440;
-        a = min(120 - badgePopupTimer - 0, 4);
+        a = RMath.min(120 - badgePopupTimer - 0, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0);
         }
-        a = min(120 - badgePopupTimer - 2, 4);
+        a = RMath.min(120 - badgePopupTimer - 2, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0);
         }
-        a = min(120 - badgePopupTimer - 4, 4);
+        a = RMath.min(120 - badgePopupTimer - 4, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0);
         }
         b = 438;
-        a = min(120 - badgePopupTimer - 6, 4);
+        a = RMath.min(120 - badgePopupTimer - 6, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0);
         }
-        a = min(120 - badgePopupTimer - 8, 4);
+        a = RMath.min(120 - badgePopupTimer - 8, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0);
         }
-        a = min(120 - badgePopupTimer - 10, 4);
+        a = RMath.min(120 - badgePopupTimer - 10, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0);
         }
-        a = min(120 - badgePopupTimer - 12, 4);
+        a = RMath.min(120 - badgePopupTimer - 12, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0);
         }
-        a = min(120 - badgePopupTimer - 14, 4);
+        a = RMath.min(120 - badgePopupTimer - 14, 4);
         if (0 < a) {
             drawText(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0);
         }
@@ -1482,7 +1469,7 @@ function drawCanvas() {
     if (statusDuration > 0) {
         statusDuration--;
         if (10 > statusDuration)
-            c = floor(255 * statusDuration / 10);
+            c = RMath.floor(255 * statusDuration / 10);
         else {
             c = 255;
             drawScaledTintedText(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
@@ -1490,7 +1477,7 @@ function drawCanvas() {
     } else if (gameSaveStatusDuration > 0) {
         gameSaveStatusDuration--;
         if (10 > gameSaveStatusDuration)
-            c = floor(255 * gameSaveStatusDuration / 10);
+            c = RMath.floor(255 * gameSaveStatusDuration / 10);
         else {
             c = 255;
             drawScaledTintedText(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);
@@ -1537,22 +1524,22 @@ function updatePartyStats() {
         iceAtkBonusPercent[hidx] = partyElem_vals[hidx];
         lightningAtkBonusPercent[hidx] = partyElem_vals[hidx];
         poisonAtkBonusPercent[hidx] = partyElem_vals[hidx];
-        partyMaxLP[hidx] = floor((50 + headgearHpPercent) * (100 + partyMaxLPBonus_vals[hidx]) / 100);
+        partyMaxLP[hidx] = RMath.floor((50 + headgearHpPercent) * (100 + partyMaxLPBonus_vals[hidx]) / 100);
 
         if (heroHasAccessoryEffect(hidx, accessoryHealthBonusCol))
-            partyMaxLP[hidx] = floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, accessoryHealthBonusCol)) / 100);
+            partyMaxLP[hidx] = RMath.floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, accessoryHealthBonusCol)) / 100);
 
-        partyLP[hidx] = clamp(partyLP[hidx], 0, partyMaxLP[hidx]);
+        partyLP[hidx] = RMath.clamp(partyLP[hidx], 0, partyMaxLP[hidx]);
 
         heroChargeValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], itemChargeEmitValueCol);
         if (heroHasAccessoryEffect(hidx, accessoryChargeValueBonusCol) && 0 < heroChargeValues[hidx])
-            heroChargeValues[hidx] = max(heroChargeValues[hidx] + countAccessoryLvlBonuses(hidx, accessoryChargeValueBonusCol), 1);
+            heroChargeValues[hidx] = RMath.max(heroChargeValues[hidx] + countAccessoryLvlBonuses(hidx, accessoryChargeValueBonusCol), 1);
 
         heroEmitValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], itemChargeEmitValueCol);
         if (heroHasAccessoryEffect(hidx, accessoryEffectEmitMaxReductionCol) && 0 < heroEmitValues[hidx])
-            heroEmitValues[hidx] = max(heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, accessoryEffectEmitMaxReductionCol), 1);
+            heroEmitValues[hidx] = RMath.max(heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, accessoryEffectEmitMaxReductionCol), 1);
 
-        heroEmitCurrent[hidx] = clamp(heroEmitCurrent[hidx], 0, heroEmitValues[hidx]);
+        heroEmitCurrent[hidx] = RMath.clamp(heroEmitCurrent[hidx], 0, heroEmitValues[hidx]);
     }
 
     // weapons 
@@ -1565,30 +1552,30 @@ function updatePartyStats() {
                 let c = 4 * heroItem + hidx;
                 minAtkArray[c] = getModifiedStatVal(hidx, itemIdx, itemAtkMinCol);
                 maxAtkArray[c] = getModifiedStatVal(hidx, itemIdx, itemAtkMaxCol);
-                minAtkArray[c] = floor(minAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
-                maxAtkArray[c] = floor(maxAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
-                minAtkArray[c] = floor(minAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
-                maxAtkArray[c] = floor(maxAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
+                minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
+                maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
+                minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
+                maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
 
                 if (heroHasAccessoryEffect(hidx, accessoryEffectAtkBonusCol)) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectAtkBonusCol)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectAtkBonusCol)) / 100);
+                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectAtkBonusCol)) / 100);
+                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectAtkBonusCol)) / 100);
                 }
                 if (heroHasAccessoryEffect(hidx, accessoryFireAtkPercentCol) && 1 == g) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryFireAtkPercentCol)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryFireAtkPercentCol)) / 100);
+                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryFireAtkPercentCol)) / 100);
+                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryFireAtkPercentCol)) / 100);
                 }
                 if (heroHasAccessoryEffect(hidx, accessoryIceAtkPercentCol) && 2 == g) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryIceAtkPercentCol)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryIceAtkPercentCol)) / 100);
+                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryIceAtkPercentCol)) / 100);
+                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryIceAtkPercentCol)) / 100);
                 }
 
                 if (heroHasAccessoryEffect(hidx, accessoryEffectLightningMaxAtkPercentCol) && 3 == g)
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectLightningMaxAtkPercentCol)) / 100);
+                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectLightningMaxAtkPercentCol)) / 100);
 
                 if (heroHasAccessoryEffect(hidx, accessoryEffectPoisonAtkPercentCol) && 4 == g) {
-                    minAtkArray[c] = floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectPoisonAtkPercentCol)) / 100);
-                    maxAtkArray[c] = floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectPoisonAtkPercentCol)) / 100);
+                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectPoisonAtkPercentCol)) / 100);
+                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, accessoryEffectPoisonAtkPercentCol)) / 100);
                 }
 
                 atkCountArray[c] = getModifiedStatVal(hidx, itemIdx, itemProjectileCountCol);
@@ -1610,7 +1597,7 @@ function updatePartyStats() {
             heroHasAccessoryEffect(hidx, accessoryDropChanceBonusCol) && (partyDropChanceBonusPercent += countAccessoryLvlBonuses(hidx, accessoryDropChanceBonusCol)),
             heroHasAccessoryEffect(hidx, accessoryEnemyHpBonusCol) && (partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, accessoryEnemyHpBonusCol)),
             heroHasAccessoryEffect(hidx, accessoryComboMaxIncreaseCol) && (comboWindowMaxFrames += 60 * countAccessoryLvlBonuses(hidx, accessoryComboMaxIncreaseCol));
-    comboWindowTimer = clamp(comboWindowTimer, 0, comboWindowMaxFrames);
+    comboWindowTimer = RMath.clamp(comboWindowTimer, 0, comboWindowMaxFrames);
     for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
 }
 
@@ -1628,7 +1615,7 @@ function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // 
             }
             if (_x != inventoryItemLists.length) {
                 inventoryTabIdx = _x;
-                inventoryPageIdx = floor(h / 28);
+                inventoryPageIdx = RMath.floor(h / 28);
                 inventorySlotIdx = h % 28;
             }
         } else if (isMouseClicked) {
@@ -1675,13 +1662,13 @@ function drawGameUI() {
     drawText(gameFont, f, g, "LV " + partyLevel, 16777215, 0);
     if (99 > partyLevel) {
         var p = LevelExpThresholds[partyLevel - 1];
-        drawText(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + floor(100 * (partyEXPAccum - p) / (LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0);
+        drawText(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + RMath.floor(100 * (partyEXPAccum - p) / (LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0);
     } else drawText(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(MAX)", 16777215, 0);
     drawText(gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
 
     drawRect(f + 264, g, 90, 11, 2236962); // combo bar bg
-    drawRect(f + 264, g, floor(90 * comboWindowTimer / comboWindowMaxFrames), 11, 12281344); // combo bar fg
-    p = 10 + floor(comboCount / 10);
+    drawRect(f + 264, g, RMath.floor(90 * comboWindowTimer / comboWindowMaxFrames), 11, 12281344); // combo bar fg
+    p = 10 + RMath.floor(comboCount / 10);
     h = "CB " + comboCount;
     gameFontMed.a = 4;
     drawText(gameFontMed, f + 265, g + 2, h, 12281344, 0); // combo count 
@@ -1695,8 +1682,8 @@ function drawGameUI() {
         if (comboWindowTimer == 0) {
             if (comboCount >= 4) {
                 comboPopupTimer = 60;
-                comboGoldPayoutPerHero = floor((comboCount * p / 10 + partyMemberCount - 1) / partyMemberCount);
-                partyGold = clamp(partyGold + comboGoldPayoutPerHero * partyMemberCount, 0, 9999999);
+                comboGoldPayoutPerHero = RMath.floor((comboCount * p / 10 + partyMemberCount - 1) / partyMemberCount);
+                partyGold = RMath.clamp(partyGold + comboGoldPayoutPerHero * partyMemberCount, 0, 9999999);
                 if (isBadgeIncompleteForCurrentStage(1) && 100 <= comboCount) {
                     IncrementBadgeCount(1);
                 }
@@ -1723,7 +1710,7 @@ function drawGameUI() {
         t = [6, 10, 14, 13, 13, 13, 13, 18, 17, 21, 21],
         l = Array(11);
     for (let _i = 0; 11 > _i; _i++)
-        l[_i] = new Vec2();
+        l[_i] = new RMath.Vec2();
 
     for (hidx = 0; hidx < partyMemberCount; hidx++) { // draw party
         drawRect(f + hidx * d, g, 24, 24, 0); // bg behind hero
@@ -1747,10 +1734,10 @@ function drawGameUI() {
 
         drawText(gameFontSmall, f + hidx * d + 28, g, "P" + (hidx + 1), 3355443, -1);
         drawRect(f + hidx * d + 28, g + 8, 48, 7, 1114112);
-        drawRect(f + hidx * d + 28, g + 8, floor(48 * partyLP[hidx] / partyMaxLP[hidx]), 7, 10027008);
+        drawRect(f + hidx * d + 28, g + 8, RMath.floor(48 * partyLP[hidx] / partyMaxLP[hidx]), 7, 10027008);
         drawText(gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
         drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
-        drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / max(heroEmitValues[hidx], 1), 5, 221);
+        drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / RMath.max(heroEmitValues[hidx], 1), 5, 221);
         if (buttonCheck(f + hidx * d, g, 24, 24)) {
             fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608);
 
@@ -1765,7 +1752,7 @@ function drawGameUI() {
         for (b = 0; 5 > b; b++) {
             c = partyEquipmentTable[hidx][b];
             k = f + hidx * d + b % 3 * 20;
-            var n = g + 28 + 20 * floor(b / 3);
+            var n = g + 28 + 20 * RMath.floor(b / 3);
             drawRect(k, n, 16, 16, 0);
             if (0 != c) {
                 spriteAltRenderFlag = 2;
@@ -1850,7 +1837,7 @@ function drawGameUI() {
                     spawnPopup(436, 380, 0, stageFlagsSetCount - collectedStageFlagsCount, 60, 65280);
                 }
                 collectedStageFlagsCount = stageFlagsSetCount;
-                partyGold = clamp(partyGold - c, 0, 9999999);
+                partyGold = RMath.clamp(partyGold - c, 0, 9999999);
             }
         }
         gameFont.a = 1;
@@ -2043,7 +2030,7 @@ function drawGameUI() {
                     forgePreviewItemIdx = c;
                     if (isMouseClicked) {
                         forgePreviewItemIdx = -1;
-                        partyGold = clamp(partyGold - h, 0, 9999999);
+                        partyGold = RMath.clamp(partyGold - h, 0, 9999999);
                         itemForgeLvls[c]++;
                     }
                 }
@@ -2276,7 +2263,7 @@ function drawGameUI() {
             inventoryPageIdx++;
         }
         h = ~~(inventoryItemLists[inventoryTabIdx].length / 28);
-        inventoryPageIdx = clamp(inventoryPageIdx, 0, h - 1);
+        inventoryPageIdx = RMath.clamp(inventoryPageIdx, 0, h - 1);
         drawTextCentered(gameFontSmall, _ox + 96, _oy + 209, "" + (inventoryPageIdx + 1) + "/" + h, 3355443, -1);
     }
 
@@ -2287,7 +2274,7 @@ function drawGameUI() {
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
             bestiaryUIVisible = false;
         }
-        bestiaryEnemySelection = clamp(bestiaryEnemySelection, 0, bestiaryPageItems[currentBestiaryPage].length - 1);
+        bestiaryEnemySelection = RMath.clamp(bestiaryEnemySelection, 0, bestiaryPageItems[currentBestiaryPage].length - 1);
         let c = bestiaryPageItems[currentBestiaryPage][bestiaryEnemySelection];
 
         if (0 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
@@ -2296,7 +2283,7 @@ function drawGameUI() {
             if (0 == bestiaryEntryState[c]) {
                 h = enemyCatalog[c][enemyBestiaryUnlockCostCol];
                 if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold && isMouseClicked) {
-                    partyGold = clamp(partyGold - h, 0, 9999999);
+                    partyGold = RMath.clamp(partyGold - h, 0, 9999999);
                     bestiaryEntryState[c] = 1;
                 }
             } else {
@@ -2332,7 +2319,7 @@ function drawGameUI() {
                 if (1 == bestiaryEntryState[c]) {
                     h = enemyCatalog[c][enemyBestiaryUnlockCostCol];
                     if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked) {
-                        partyGold = clamp(partyGold - h, 0, 9999999);
+                        partyGold = RMath.clamp(partyGold - h, 0, 9999999);
                         bestiaryEntryState[c] = 2;
                     }
                 } else {
@@ -2502,7 +2489,7 @@ function drawGameUI() {
         h = stageListArray[currentStage][stageReturnCost];
         if (drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h)) {
             if (h <= partyGold && isMouseClicked) {
-                partyGold = clamp(partyGold - h, 0, 9999999);
+                partyGold = RMath.clamp(partyGold - h, 0, 9999999);
                 if (1 == currentStage) {
                     gameScreenState = 0;
                 } else {
@@ -2568,9 +2555,9 @@ function drawGameUI() {
         }
         if (!c)
             for (shrineRewardClaimed[c] = 1, shrineUIVisible = false, hidx = 0; 100 > hidx;) {
-                f = randIntRange(2, 78);
-                g = randIntRange(1, 44);
-                25 >= stageTileData[g][f] || (h = floor(100 * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
+                f = RMath.randIntRange(2, 78);
+                g = RMath.randIntRange(1, 44);
+                25 >= stageTileData[g][f] || (h = RMath.floor(100 * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         } else if (1 == c)
             for (shrineRewardClaimed[c] = 1, hidx = 0; 4 > hidx; hidx++)
                 for (b = 0; b < partyStats.length; b++) {
@@ -2605,33 +2592,33 @@ let heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions use
 
 for (let _i = 0; 4 > _i; _i++) heroJointPrevPositionsByHero[_i] = Array(21);
 for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 21 > _j; _j++) heroJointPositionsByHero[_i][_j] = new Vec2;
+    for (let _j = 0; 21 > _j; _j++) heroJointPositionsByHero[_i][_j] = new RMath.Vec2;
 for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 21 > _j; _j++) heroJointPrevPositionsByHero[_i][_j] = new Vec2;
+    for (let _j = 0; 21 > _j; _j++) heroJointPrevPositionsByHero[_i][_j] = new RMath.Vec2;
 
 let heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
 
 for (let _i = 0; 4 > _i; _i++) heroJoint5HistoryByHero[_i] = Array(16);
 for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint5HistoryByHero[_i][_j] = new Vec2;
+    for (let _j = 0; 16 > _j; _j++) heroJoint5HistoryByHero[_i][_j] = new RMath.Vec2;
 
 let heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
 
 for (let _i = 0; 4 > _i; _i++) heroJoint3HistoryByHero[_i] = Array(16);
 for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint3HistoryByHero[_i][_j] = new Vec2;
+    for (let _j = 0; 16 > _j; _j++) heroJoint3HistoryByHero[_i][_j] = new RMath.Vec2;
 
 let heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
 
 for (let _i = 0; 4 > _i; _i++) heroJoint6HistoryByHero[_i] = Array(16);
 for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint6HistoryByHero[_i][_j] = new Vec2;
+    for (let _j = 0; 16 > _j; _j++) heroJoint6HistoryByHero[_i][_j] = new RMath.Vec2;
 
 let heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
 
 for (let _i = 0; 4 > _i; _i++) heroJoint4HistoryByHero[_i] = Array(16);
 for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint4HistoryByHero[_i][_j] = new Vec2;
+    for (let _j = 0; 16 > _j; _j++) heroJoint4HistoryByHero[_i][_j] = new RMath.Vec2;
 
 let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
     heroAttackTrailTimerByHero = Array(4), // Sh, hero attack trail timer per hero.
@@ -2643,7 +2630,7 @@ let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index p
     ], // Th, grouped joint-history buffers used for attack-trail drawing.
     heroAimPosByHero = Array(4); // Uh, stored hero aim position per hero.
 
-for (let _i = 0; 4 > _i; _i++) heroAimPosByHero[_i] = new Vec2;
+for (let _i = 0; 4 > _i; _i++) heroAimPosByHero[_i] = new RMath.Vec2;
 
 let heroAttackLineTimer = Array(4),
     heroUpperJointMode = new Int32Array(4), // Wh, per-hero rig mode flag that switches between normal and upper-joint-disabled updates.
@@ -2688,7 +2675,7 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     spawnX *= 8;
     spawnY *= 8;
     for (let d = 0; 21 > d; d++) {
-        Vec2Set(heroJointPositionsByHero[heroIdx][d], spawnX + randFloat(4), spawnY + randFloat(4));
+        RMath.Vec2Set(heroJointPositionsByHero[heroIdx][d], spawnX + RMath.randFloat(4), spawnY + RMath.randFloat(4));
         heroJointPrevPositionsByHero[heroIdx][d].set(heroJointPositionsByHero[heroIdx][d]);
     }
     for (let d = 0; 16 > d; d++) { 
@@ -2699,7 +2686,7 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     }
     heroPoseTrailWriteIdxByHero[heroIdx] = 0;
     heroAttackTrailTimerByHero[heroIdx] = 0;
-    Vec2Set(heroAimPosByHero[heroIdx], 320, 240);
+    RMath.Vec2Set(heroAimPosByHero[heroIdx], 320, 240);
     heroAttackLineTimer[heroIdx] = 0;
     heroUpperJointMode[heroIdx] = 0;
     heroPoseAgeFrames[heroIdx] = 0;
@@ -2719,15 +2706,15 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
 
 
 function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
-    var c = new Vec2();
-    Vec2Sub(c, heroJointPositionsByHero[_entityIdx][_jointIdx], heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
+    var c = new RMath.Vec2();
+    RMath.Vec2Sub(c, heroJointPositionsByHero[_entityIdx][_jointIdx], heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
     heroJointPositionsByHero[_entityIdx][_jointIdx].set(heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
-    var d = (Vec2Mag(c) >> 2) + 1;
-    Vec2Scale(c, 1 / d);
+    var d = (RMath.Vec2Mag(c) >> 2) + 1;
+    RMath.Vec2Scale(c, 1 / d);
     var f, g;
     g = getStageTileAt(heroJointPositionsByHero[_entityIdx][_jointIdx].x, heroJointPositionsByHero[_entityIdx][_jointIdx].y);
     if (31 == g) {
-        Vec2Scale(c, .95);
+        RMath.Vec2Scale(c, .95);
         heroTileContactFlags[_entityIdx] |= 2;
     }
     for (var h = 0; h < d; h++) {
@@ -2766,8 +2753,8 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
         h = _cy - _halfH - 10;
     _halfW = _cx + _halfW + 5;
     _halfH = _cy + _halfH + 10;
-    var k, p = new Vec2(),
-        t = new Vec2(),
+    var k, p = new RMath.Vec2(),
+        t = new RMath.Vec2(),
         l, n, w = 1E3,
         B = -1;
     _modelFlag = 0 == _modelFlag ? 29 : 23;
@@ -2777,10 +2764,10 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
             if (!(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h)) {
                 t.x = k.x - _cx;
                 t.y = k.y - _cy;
-                l = Vec2Mag(t);
+                l = RMath.Vec2Mag(t);
                 k = (l >> 3) + 1;
-                Vec2Scale(t, 1 / k);
-                Vec2Set(p, _cx, _cy);
+                RMath.Vec2Scale(t, 1 / k);
+                RMath.Vec2Set(p, _cx, _cy);
                 for (var J = 0; J <= k; J++) {
                     n = getStageTileAt(p.x, p.y);
                     if (0 <= n && n <= _modelFlag) break;
@@ -2807,38 +2794,38 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
     var l = _cx - _h - 10;
     _w = _cy + _w + 5;
     _h = _cx + _h + 10;
-    for (var n, w = new Vec2(), B = new Vec2(), M, J, y = -1, x = 0; x < partyMemberCount; x++) {
+    for (var n, w = new RMath.Vec2(), B = new RMath.Vec2(), M, J, y = -1, x = 0; x < partyMemberCount; x++) {
         if (heroUpperJointMode[x] != areUpperJointsDisabled) {
             n = heroJointPositionsByHero[x][2];
             if (!(n.x > _w || n.x < __unused || n.y > _h || n.y < l)) {
                 B.x = n.x - _cy;
                 B.y = n.y - _cx;
-                n = Vec2Mag(B);
+                n = RMath.Vec2Mag(B);
                 M = (n >> 3) + 1;
-                Vec2Scale(B, 1 / M);
-                Vec2Set(w, _cy, _cx);
+                RMath.Vec2Scale(B, 1 / M);
+                RMath.Vec2Set(w, _cy, _cx);
                 for (n = 0; n <= M; n++) {
                     J = getStageTileAt(w.x, w.y);
                     if (0 <= J && 29 >= J) break;
                     w.add(B);
                 }
                 if (!(n <= M)) {
-                    y = dmgMin + floor(randFloat(dmgMax - dmgMin + 1));
+                    y = dmgMin + RMath.floor(RMath.randFloat(dmgMax - dmgMin + 1));
                     M = 0 == heroBodyDrawStateByHero[x][2] ? 1 : -1;
                     J = 16711680;
                     heroHitFlashTimer[x] = 2;
                     if (0 == attackType) {
-                        y = max(y - heroMeleeDefensesFlatArray[x], 1);
+                        y = RMath.max(y - heroMeleeDefensesFlatArray[x], 1);
                     } else {
                         if (6 == attackType) {
-                            y = max(y - heroProjDefenseFlatArray[x], 1);
+                            y = RMath.max(y - heroProjDefenseFlatArray[x], 1);
                         } else {
                             if (1 <= attackType) {
-                                y = max(floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1);
+                                y = RMath.max(RMath.floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1);
                             }
                         }
                     }
-                    if (randFloat(100) < heroDodgeChanceArray[x]) {
+                    if (RMath.randFloat(100) < heroDodgeChanceArray[x]) {
                         y = 0;
                         J = 16744576;
                         heroHitFlashTimer[x] = 0;
@@ -2846,19 +2833,19 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                     if (1 == attackType) {
                         if (heroHasAccessoryEffect(x,
                                 accessoryMagicDamageReductionCol)) {
-                            y = max(y - countAccessoryLvlBonuses(x, accessoryMagicDamageReductionCol), 1);
+                            y = RMath.max(y - countAccessoryLvlBonuses(x, accessoryMagicDamageReductionCol), 1);
                         }
                     }
                     if (2 == attackType) {
                         heroSkipTimer[x] = 120;
                         heroSkipChancePercent[x] = auxValue;
                         if (heroHasAccessoryEffect(x, accessoryStunChanceReductionCol)) {
-                            heroSkipChancePercent[x] = max(floor(heroSkipChancePercent[x] * (100 - countAccessoryLvlBonuses(x, accessoryStunChanceReductionCol)) / 100), 0);
+                            heroSkipChancePercent[x] = RMath.max(RMath.floor(heroSkipChancePercent[x] * (100 - countAccessoryLvlBonuses(x, accessoryStunChanceReductionCol)) / 100), 0);
                         }
                     } else
                     if (3 == attackType) {
                         if (heroHasAccessoryEffect(x, accessoryDamageNegationChanceCol)) {
-                            if (randFloat(100) < countAccessoryLvlBonuses(x, accessoryDamageNegationChanceCol)) {
+                            if (RMath.randFloat(100) < countAccessoryLvlBonuses(x, accessoryDamageNegationChanceCol)) {
                                 y = 0;
                                 J = 16744576;
                                 heroHitFlashTimer[x] = 0;
@@ -2869,12 +2856,12 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                         heroTimedDamageTimer[x] = auxValue;
                         heroTimedDamageAmount[x] = y;
                         if (heroHasAccessoryEffect(x, accessoryDebuffDurationReductionCol)) {
-                            heroTimedDamageTimer[x] = max(heroTimedDamageTimer[x] - 60 * countAccessoryLvlBonuses(x, accessoryDebuffDurationReductionCol), 0);
+                            heroTimedDamageTimer[x] = RMath.max(heroTimedDamageTimer[x] - 60 * countAccessoryLvlBonuses(x, accessoryDebuffDurationReductionCol), 0);
                         }
                         y = x;
                         continue;
                     } else if (5 == attackType) {
-                        heroStatusTintTimer[x] = floor(auxValue / 10);
+                        heroStatusTintTimer[x] = RMath.floor(auxValue / 10);
                     }
                     if (isBadgeIncompleteForCurrentStage(43)) {
                         if (1 == attackType) {
@@ -2889,9 +2876,9 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                     spawnPopup(heroJointPositionsByHero[x][0].x, heroJointPositionsByHero[x][0].y, M, y, 60, J);
                     stage_partyDamageTaken += y;
                     if (0 > partyLP[x])
-                        for (y = max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++)
+                        for (y = RMath.max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++)
                             if (x != n) {
-                                partyLP[n] = clamp(partyLP[n] - y, 0, partyMaxLP[n]);
+                                partyLP[n] = RMath.clamp(partyLP[n] - y, 0, partyMaxLP[n]);
                                 spawnPopup(heroJointPositionsByHero[n][0].x, heroJointPositionsByHero[n][0].y, M, y, 60, J);
                                 stage_partyDamageTaken += y;
                             }
@@ -2906,14 +2893,14 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
 
 
 function pickHeroJointUnderMouse() { // vi
-    var a = new Vec2(),
+    var a = new RMath.Vec2(),
         b, c;
     if (-1 == draggedHeroIndex) {
         if (isMouseClicked && !clickInUI) {
             b = 20;
             a.x = mouseXCurrent - heroJointPrevPositionsByHero[selectingHero][0].x;
             a.y = mouseYCurrent - (heroJointPrevPositionsByHero[selectingHero][0].y - 8);
-            c = Vec2Mag(a);
+            c = RMath.Vec2Mag(a);
             if (20 > c) {
                 if (c < b) {
                     b = c;
@@ -2926,7 +2913,7 @@ function pickHeroJointUnderMouse() { // vi
                     for (var f = 0; 10 > f; f++) {
                         a.x = mouseXCurrent - heroJointPrevPositionsByHero[d][f].x;
                         a.y = mouseYCurrent - heroJointPrevPositionsByHero[d][f].y;
-                        c = Vec2Mag(a);
+                        c = RMath.Vec2Mag(a);
                         if (20 > c) {
                             if (c < b) {
                                 b = c;
@@ -2947,7 +2934,7 @@ function pickHeroJointUnderMouse() { // vi
 
 function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
     console.log(`spawnHeroAttackPattern(${heroIdx}, ${limbDesc}, ${itemSlot}, ${originX}, ${originY}, ${targetEnemyIdx})`);
-    let projDir = new Vec2(),
+    let projDir = new RMath.Vec2(),
         selectedItemIdx = partyEquipmentTable[heroIdx][itemSlot],
         selectedItem = itemList[selectedItemIdx],
         limbSel = selectedItem[itemLimbSelectionCol];
@@ -3001,9 +2988,9 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         itemHitCountMod = getModifiedStatVal(heroIdx, selectedItemIdx, itemHitCountStatCol),
         minAtk = minAtkArray[4 * itemSlot + heroIdx],
         maxAtk = maxAtkArray[4 * itemSlot + heroIdx];
-    if (heroHasAccessoryEffect(heroIdx, accessoryEffectPhysicalProcChanceCol) && 0 == selectedItem[itemElementTypeCol] && randFloat(100) < countAccessoryLvlBonuses(heroIdx, accessoryEffectPhysicalProcChanceCol)) {
-        minAtk = floor(minAtk * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
-        maxAtk = floor(maxAtk * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
+    if (heroHasAccessoryEffect(heroIdx, accessoryEffectPhysicalProcChanceCol) && 0 == selectedItem[itemElementTypeCol] && RMath.randFloat(100) < countAccessoryLvlBonuses(heroIdx, accessoryEffectPhysicalProcChanceCol)) {
+        minAtk = RMath.floor(minAtk * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
+        maxAtk = RMath.floor(maxAtk * (100 + sumAccessorySecondaryValues(heroIdx, accessoryEffectPhysicalProcChanceCol)) / 100);
     }
     itemSlot = atkCountArray[4 * itemSlot + heroIdx];
     let itemProjSpd = selectedItem[itemProjectileSpeedCol],
@@ -3061,7 +3048,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
     if (pwidth == 0) return;
     if (1 == pwidth) {
         for (pwidth = 0; pwidth < itemSlot; pwidth++) {
-            let spawnX = randFloatRange(-pheight, pheight);
+            let spawnX = RMath.randFloatRange(-pheight, pheight);
             let spawnY = -pshape,
                 velX = 0,
                 velY = -.1 * itemProjSpd;
@@ -3073,10 +3060,10 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         }
     } else if (2 == pwidth) {
         let dirX = jointX - originX;
-        dirX /= abs(dirX);
+        dirX /= RMath.abs(dirX);
         for (pwidth = 0; pwidth < itemSlot; pwidth++) {
             let spawnX = originX + dirX * pheight;
-            let spawn = originY + randFloatRange(-pshape, pshape);
+            let spawn = originY + RMath.randFloatRange(-pshape, pshape);
             let velX = dirX * itemProjSpd * .1;
             spawnProjectile(heroIdx, limbSel, spawnX, spawn, velX, 0, pewidth, peheight, pdelr, pnodmg, panim, plife, ptarg, pacelMod, pspdMod, pauxMod, pcol, pcdMod,
                 paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect, projEffect, projEffectDur, 0, itemHitCountMod, minAtk, maxAtk, itemEType, itemBonus, itemProjParam1, itemAtkMode,
@@ -3085,16 +3072,16 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             );
         }
     } else if (3 == pwidth) {
-        Vec2Set(projDir, jointX - originX, jointY - originY);
+        RMath.Vec2Set(projDir, jointX - originX, jointY - originY);
         let We = 0 < pheight ? pheight - 1 : 16;
         if (heroHasAccessoryEffect(heroIdx, accessoryMultiShotSpreadDivisorCol)) {
-            We = floor(We / countAccessoryLvlBonuses(heroIdx, accessoryMultiShotSpreadDivisorCol));
+            We = RMath.floor(We / countAccessoryLvlBonuses(heroIdx, accessoryMultiShotSpreadDivisorCol));
         }
-        jointX = floor(512 * Vec2Angle(projDir) / TAU);
-        jointX -= floor((itemSlot - 1) * We / 2);
+        jointX = RMath.floor(512 * RMath.Vec2Angle(projDir) / RMath.TAU);
+        jointX -= RMath.floor((itemSlot - 1) * We / 2);
         for (pwidth = 0; pwidth < itemSlot; pwidth++) {
-            projDir.x = rotationLUT[jointX & 511][0];
-            projDir.y = -rotationLUT[jointX & 511][1];
+            projDir.x = RMath.rotationLUT[jointX & 511][0];
+            projDir.y = -RMath.rotationLUT[jointX & 511][1];
             let spawnX = originX + projDir.x * pshape;
             let spawnY = originY + projDir.y * pshape;
             let velX = projDir.x * itemProjSpd * .1;
@@ -3107,17 +3094,17 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             jointX += We;
         }
     } else if (4 == pwidth) {
-        Vec2Set(projDir, jointX - originX, jointY - originY - 5);
-        itemProjSpd = Vec2Mag(projDir) / (.1 * itemProjSpd);
+        RMath.Vec2Set(projDir, jointX - originX, jointY - originY - 5);
+        itemProjSpd = RMath.Vec2Mag(projDir) / (.1 * itemProjSpd);
         limbDesc = 2E4 / (itemProjSpd * itemProjSpd);
         for (pwidth = 0; pwidth < itemSlot; pwidth++) {
-            Vec2Set(projDir, jointX - originX, jointY - 5 - originY);
+            RMath.Vec2Set(projDir, jointX - originX, jointY - 5 - originY);
             if (1 < itemSlot) {
                 let _a = 0 < pheight ? pheight : itemSlot + 4;
-                pshape = randInt(512);
-                let spawnX = randFloat(_a);
-                projDir.x += rotationLUT[pshape][0] * spawnX;
-                projDir.y += rotationLUT[pshape][1] * spawnX;
+                pshape = RMath.randInt(512);
+                let spawnX = RMath.randFloat(_a);
+                projDir.x += RMath.rotationLUT[pshape][0] * spawnX;
+                projDir.y += RMath.rotationLUT[pshape][1] * spawnX;
             };
             let spawnX = originX;
             let spawnY = originY;
@@ -3131,10 +3118,10 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         }
     } else if (5 == pwidth) {
         jointX = 256 + 256 * heroBodyDrawStateByHero[heroIdx][2];
-        let _a = floor(512 / itemSlot);
+        let _a = RMath.floor(512 / itemSlot);
         for (pwidth = 0; pwidth < itemSlot; pwidth++) {
-            projDir.x = rotationLUT[jointX & 511][0];
-            projDir.y = -rotationLUT[jointX & 511][1];
+            projDir.x = RMath.rotationLUT[jointX & 511][0];
+            projDir.y = -RMath.rotationLUT[jointX & 511][1];
             let spawnX = 0 + projDir.x * pheight;
             let spawnY = 0 + projDir.y * pheight;
             if (-1 == limbSel) {
@@ -3153,13 +3140,13 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
             jointX += _a;
         }
     } else if (6 == pwidth) {
-        originX = floor(512 / itemSlot);
-        pshape = floor(randFloat(originX));
+        originX = RMath.floor(512 / itemSlot);
+        pshape = RMath.floor(RMath.randFloat(originX));
         for (pwidth = 0; pwidth < itemSlot; pwidth++) {
-            let spawnX = jointX + rotationLUT[pshape][0] * pheight;
-            let spawnY = jointY + rotationLUT[pshape][1] * pheight;
-            let velX = rotationLUT[pshape][0] * itemProjSpd * .1;
-            let velY = rotationLUT[pshape][1] * itemProjSpd * .1;
+            let spawnX = jointX + RMath.rotationLUT[pshape][0] * pheight;
+            let spawnY = jointY + RMath.rotationLUT[pshape][1] * pheight;
+            let velX = RMath.rotationLUT[pshape][0] * itemProjSpd * .1;
+            let velY = RMath.rotationLUT[pshape][1] * itemProjSpd * .1;
             spawnProjectile(heroIdx, limbSel, spawnX, spawnY, velX, velY, pewidth, peheight, pdelr, pnodmg, panim, plife, ptarg, pacelMod, pspdMod, pauxMod, pcol,
                 pcdMod, paux, pmaxtarg, limbDesc, itemdmgMax, itempEffect, projEffect, projEffectDur, 0, itemHitCountMod, minAtk, maxAtk, itemEType, itemBonus, itemProjParam1,
                 itemAtkMode, itemProjParam2, itemProjAux1, itemProjAux2, itemAuxA, itemAuxB, itemAuxC, itemDispA, itemAuxD, itemProjFlag, itemProjParamTime, itemHCount, itemProjEffect, itemStatAMod, itemExt1,
@@ -3234,24 +3221,24 @@ function updatePartyMemberAI(memberIdx) { // Di
             heroJointPositionsByHero[memberIdx][0].y -= .25;
             heroJointPositionsByHero[memberIdx][1].y -= .25;
         }
-        heroJointPositionsByHero[memberIdx][0].x += randFloatRange(-.25, .25);
-        heroJointPositionsByHero[memberIdx][0].y += randFloatRange(-.25, .25);
-        heroJointPositionsByHero[memberIdx][1].x += randFloatRange(-.25, .25);
-        heroJointPositionsByHero[memberIdx][1].y += randFloatRange(-.25, .25);
+        heroJointPositionsByHero[memberIdx][0].x += RMath.randFloatRange(-.25, .25);
+        heroJointPositionsByHero[memberIdx][0].y += RMath.randFloatRange(-.25, .25);
+        heroJointPositionsByHero[memberIdx][1].x += RMath.randFloatRange(-.25, .25);
+        heroJointPositionsByHero[memberIdx][1].y += RMath.randFloatRange(-.25, .25);
     }
 }
 
 
 function updatePlayerParty() {
-    var a, b, c, d, f = new Vec2(),
-        g = new Vec2(),
-        h = new Vec2();
+    var a, b, c, d, f = new RMath.Vec2(),
+        g = new RMath.Vec2(),
+        h = new RMath.Vec2();
     pickHeroJointUnderMouse();
     for (a = 0; a < partyMemberCount; a++) {
-        if (0 < heroTimedDamageTimer[a] && (heroTimedDamageTimer[a]--, d = floor(heroTimedDamageAmount[a] / 60), b = heroTimedDamageAmount[a] - 60 * d, randFloat(60) < b && (d += 1), partyLP[a] -= d, stage_partyDamageTaken += d, 0 > partyLP[a]))
-            for (c = 0 == heroBodyDrawStateByHero[a][2] ? 1 : -1, d = max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
+        if (0 < heroTimedDamageTimer[a] && (heroTimedDamageTimer[a]--, d = RMath.floor(heroTimedDamageAmount[a] / 60), b = heroTimedDamageAmount[a] - 60 * d, RMath.randFloat(60) < b && (d += 1), partyLP[a] -= d, stage_partyDamageTaken += d, 0 > partyLP[a]))
+            for (c = 0 == heroBodyDrawStateByHero[a][2] ? 1 : -1, d = RMath.max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
                 if (a != b) {
-                    partyLP[b] = clamp(partyLP[b] - d, 0, partyMaxLP[b]);
+                    partyLP[b] = RMath.clamp(partyLP[b] - d, 0, partyMaxLP[b]);
                     spawnPopup(heroJointPositionsByHero[b][0].x, heroJointPositionsByHero[b][0].y, c, d, 60, 16711680);
                     stage_partyDamageTaken += d;
                 }
@@ -3259,7 +3246,7 @@ function updatePlayerParty() {
 
         if (0 < heroStatusTintTimer[a]) heroStatusTintTimer[a]--;
         else {
-            if (0 < heroSkipTimer[a] && (heroSkipTimer[a]--, randFloat(100) < heroSkipChancePercent[a])) continue;
+            if (0 < heroSkipTimer[a] && (heroSkipTimer[a]--, RMath.randFloat(100) < heroSkipChancePercent[a])) continue;
             heroPoseAgeFrames[a]++;
             if (heroUpperJointMode[a] == areUpperJointsDisabled)
                 for (b = 0; 11 > b; b++) stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
@@ -3286,15 +3273,15 @@ function updatePlayerParty() {
             for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
             if (0 == d && heroUpperJointMode[a] != areUpperJointsDisabled)
                 for (heroUpperJointMode[a] = areUpperJointsDisabled, b = heroAttackCooldownFrames[a] = 0; 11 > b; b++) {
-                    heroJointPositionsByHero[a][b].x += randFloatRange(-2, 2);
+                    heroJointPositionsByHero[a][b].x += RMath.randFloatRange(-2, 2);
                     heroJointPositionsByHero[a][b].y +=
-                        randFloatRange(-1, -3);
+                        RMath.randFloatRange(-1, -3);
                 }
             if (heroUpperJointMode[a] != areUpperJointsDisabled) {
                 if (1 == currentStage) {
                     if (partyLP[a] < partyMaxLP[a]) {
-                        if (1 > randFloat(100)) {
-                            partyLP[a] = clamp(partyLP[a] + 5, 0, partyMaxLP[a]);
+                        if (1 > RMath.randFloat(100)) {
+                            partyLP[a] = RMath.clamp(partyLP[a] + 5, 0, partyMaxLP[a]);
                             spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, 5, 60, 65280);
                         }
                     }
@@ -3322,7 +3309,7 @@ function updatePlayerParty() {
                 }
                 if (0 < heroAttackCooldownFrames[a]) heroAttackCooldownFrames[a]--;
                 else if (draggedHeroIndex != a && 0 != b && -1 != c) {
-                    heroAttackCooldownFrames[a] = heroAgiValues[a] + randIntRange(-1, 1);
+                    heroAttackCooldownFrames[a] = heroAgiValues[a] + RMath.randIntRange(-1, 1);
                     heroBodyDrawStateByHero[a][2] = d < enemyJointPosArray[c][enemyTargetJointIdx].x ? 1 : 0;
                     k = 0;
                     if (-1 == heroEmitValues[a]) {
@@ -3331,10 +3318,10 @@ function updatePlayerParty() {
                         attackWeaponSlotIdx[a] = 0;
                     } else {
                         if (heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a]) {
-                            heroEmitCurrent[a] = clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]);
+                            heroEmitCurrent[a] = RMath.clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]);
                             attackWeaponSlotIdx[a] = 0;
                             if (heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_duringChargeCol)) {
-                                if (100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol)) {
+                                if (100 * RMath.rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_duringChargeCol)) {
                                     heroEmitCurrent[a] = heroEmitValues[a];
                                 }
                             }
@@ -3343,7 +3330,7 @@ function updatePlayerParty() {
                             attackWeaponSlotIdx[a] = 1;
                             b = itemList[partyEquipmentTable[a][1]][itemAppearanceCol];
                             if (heroHasAccessoryEffect(a, accessoryEffectEmitFullChargeChance_onFireCol)) {
-                                if (100 * rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol)) {
+                                if (100 * RMath.rand() < countAccessoryLvlBonuses(a, accessoryEffectEmitFullChargeChance_onFireCol)) {
                                     heroEmitCurrent[a] = heroEmitValues[a];
                                 }
                             }
@@ -3351,19 +3338,19 @@ function updatePlayerParty() {
                     }
                     if (0 != b)
                         if (3 == b) {
-                            Vec2Sub(g, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][5]);
-                            Vec2Sub(h, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][6]);
+                            RMath.Vec2Sub(g, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][5]);
+                            RMath.Vec2Sub(h, enemyJointPosArray[c][enemyTargetJointIdx], heroJointPositionsByHero[a][6]);
                             if (g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y) {
-                                Vec2Norm(g);
-                                Vec2Scale(g, 3);
+                                RMath.Vec2Norm(g);
+                                RMath.Vec2Scale(g, 3);
                                 heroJointPositionsByHero[a][5].add(g);
                                 heroJointPositionsByHero[a][4].sub(g);
                                 f.set(heroJointPositionsByHero[a][5]);
                                 k = 1283;
                                 attackTrailSideIdx[a] = 0;
                             } else {
-                                Vec2Norm(h);
-                                Vec2Scale(h, 3);
+                                RMath.Vec2Norm(h);
+                                RMath.Vec2Scale(h, 3);
                                 heroJointPositionsByHero[a][6].add(h);
                                 heroJointPositionsByHero[a][3].sub(h);
                                 f.set(heroJointPositionsByHero[a][6]);
@@ -3496,8 +3483,8 @@ function updatePlayerParty() {
             if (0 == heroAttackCooldownFrames[a]) {
                 f.set(heroJointPositionsByHero[a][1]);
                 f.x += 0 == heroBodyDrawStateByHero[a][2] ? -50 : 50;
-                Vec2Scale(f, .1);
-                Vec2Scale(heroAimPosByHero[a], .9);
+                RMath.Vec2Scale(f, .1);
+                RMath.Vec2Scale(heroAimPosByHero[a], .9);
                 heroAimPosByHero[a].add(f);
             }
             if (0 < heroAttackLineTimer[a]) {
@@ -3506,17 +3493,17 @@ function updatePlayerParty() {
             if (heroTileContactFlags[a] & 2) {
                 if (0 == heroTileEffectLatch[a])
                     for (heroTileEffectLatch[a] = 1, b = 0; 11 > b; b++) {
-                        d = clamp(heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3;
-                        c = clamp(heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3;
+                        d = RMath.clamp(heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3;
+                        c = RMath.clamp(heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3;
                         if (30 == stageTileData[c][d]) {
                             spawnProjectile(a, -1, heroJointPositionsByHero[a][b].x, heroJointPositionsByHero[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         }
                     }
-                d = clamp(heroJointPositionsByHero[a][0].x, 0, 8 * stageWidth - 1) >> 3;
-                c = clamp(heroJointPositionsByHero[a][0].y, 0, 8 * stageHeight - 1) >> 3;
+                d = RMath.clamp(heroJointPositionsByHero[a][0].x, 0, 8 * stageWidth - 1) >> 3;
+                c = RMath.clamp(heroJointPositionsByHero[a][0].y, 0, 8 * stageHeight - 1) >> 3;
                 if (31 == stageTileData[c][d]) {
-                    if (1 > randFloat(50)) {
-                        b = randFloatRange(-1, 2);
+                    if (1 > RMath.randFloat(50)) {
+                        b = RMath.randFloatRange(-1, 2);
                         spawnProjectile(a, -1, heroJointPositionsByHero[a][0].x + b, heroJointPositionsByHero[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                     }
                 }
@@ -3558,8 +3545,8 @@ function updatePlayerParty() {
 
 
 function drawPlayerParty() {
-    var a, b, c, d, f, g, h = new Vec2(),
-        k = new Vec2();
+    var a, b, c, d, f, g, h = new RMath.Vec2(),
+        k = new RMath.Vec2();
     for (a = 0; a < partyMemberCount; a++) {
         d = 15908203;
         f = 16777215;
@@ -3582,7 +3569,7 @@ function drawPlayerParty() {
             f = 16711680;
         }
         spriteAltRenderFlag = isSolidRender = 1;
-        for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, floor(heroJointPositionsByHero[a][c].x), floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
+        for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, RMath.floor(heroJointPositionsByHero[a][c].x), RMath.floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         isSolidRender = spriteAltRenderFlag = 0;
         drawHero(a, heroJointPositionsByHero[a], heroBodyDrawStateByHero[a][0], heroBodyDrawStateByHero[a][1], d, f, heroUpperJointMode[a]);
         if (0 < heroAttackTrailTimerByHero[a]) {
@@ -3601,13 +3588,13 @@ function drawPlayerParty() {
                     b - 1 & 15;
                 h.x = t[a][l].x - g[a][l].x;
                 h.y = t[a][l].y - g[a][l].y;
-                Vec2Norm(h);
-                Vec2Scale(h, c);
+                RMath.Vec2Norm(h);
+                RMath.Vec2Scale(h, c);
                 k.x = t[a][n].x - g[a][n].x;
                 k.y = t[a][n].y - g[a][n].y;
-                Vec2Norm(k);
-                Vec2Scale(k, c);
-                g = floor(f * (12 - b) / 12);
+                RMath.Vec2Norm(k);
+                RMath.Vec2Scale(k, c);
+                g = RMath.floor(f * (12 - b) / 12);
                 isSolidRender = p;
                 var w = t[a][l].x + h.x,
                     B = t[a][l].y + h.y,
@@ -3673,7 +3660,7 @@ function drawPlayerParty() {
                 M = t >> 8 & 255;
                 J = t & 255;
                 for (l = U; l < n; l++)
-                    for (0 > scanlineMinX[l] && (scanlineMinX[l] = 0), 640 <= scanlineMaxX[l] && (scanlineMaxX[l] = 639), U = 640 * l + scanlineMinX[l], y = U + (scanlineMaxX[l] - scanlineMinX[l]), x = 640 * l + scanlineMinX[l + 1], K = x + (scanlineMaxX[l + 1] - scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = min(y - 1, K)); U <= y; U++)
+                    for (0 > scanlineMinX[l] && (scanlineMinX[l] = 0), 640 <= scanlineMaxX[l] && (scanlineMaxX[l] = 639), U = 640 * l + scanlineMinX[l], y = U + (scanlineMaxX[l] - scanlineMinX[l]), x = 640 * l + scanlineMinX[l + 1], K = x + (scanlineMaxX[l + 1] - scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = RMath.min(y - 1, K)); U <= y; U++)
                         if (0 == isSolidRender) {
                             frameBufferArray[U] = t;
                         } else {
@@ -3711,35 +3698,35 @@ function drawPlayerParty() {
             d = ~~heroJointPositionsByHero[a][0].x + 0;
             f = ~~heroJointPositionsByHero[a][0].y - 7;
             if (5 > levelUpPopupTimer) {
-                g = floor(255 * levelUpPopupTimer / 5);
+                g = RMath.floor(255 * levelUpPopupTimer / 5);
             } else {
                 g = 255;
             }
-            c = min(60 - levelUpPopupTimer - 0, 4);
+            c = RMath.min(60 - levelUpPopupTimer - 0, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
-            c = min(60 - levelUpPopupTimer - 3, 4);
+            c = RMath.min(60 - levelUpPopupTimer - 3, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
-            c = min(60 - levelUpPopupTimer - 6, 4);
+            c = RMath.min(60 - levelUpPopupTimer - 6, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
-            c = min(60 - levelUpPopupTimer - 9, 4);
+            c = RMath.min(60 - levelUpPopupTimer - 9, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
-            c = min(60 - levelUpPopupTimer - 12, 4);
+            c = RMath.min(60 - levelUpPopupTimer - 12, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
-            c = min(60 - levelUpPopupTimer - 15, 4);
+            c = RMath.min(60 - levelUpPopupTimer - 15, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
-            c = min(60 - levelUpPopupTimer - 18, 4);
+            c = RMath.min(60 - levelUpPopupTimer - 18, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
@@ -3749,32 +3736,32 @@ function drawPlayerParty() {
             d = ~~heroJointPositionsByHero[a][0].x + 0 - 2;
             f = ~~heroJointPositionsByHero[a][0].y - 7;
             if (5 > stageClearPopupTimer) {
-                g = floor(255 * stageClearPopupTimer / 5);
+                g = RMath.floor(255 * stageClearPopupTimer / 5);
             } else {
                 g = 255;
             }
-            c = min(60 - stageClearPopupTimer - 0, 4);
+            c = RMath.min(60 - stageClearPopupTimer - 0, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
-            c = min(60 - stageClearPopupTimer - 3, 4);
+            c = RMath.min(60 - stageClearPopupTimer - 3, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
-            c = min(60 - stageClearPopupTimer - 6, 4);
+            c = RMath.min(60 - stageClearPopupTimer - 6, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
-            c = min(60 - stageClearPopupTimer - 9, 4);
+            c = RMath.min(60 - stageClearPopupTimer - 9, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 4, f -
                     2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
-            c = min(60 - stageClearPopupTimer - 12, 4);
+            c = RMath.min(60 - stageClearPopupTimer - 12, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
-            c = min(60 - stageClearPopupTimer - 15, 4);
+            c = RMath.min(60 - stageClearPopupTimer - 15, 4);
             if (0 < c) {
                 gameFontSmall.b = -1;
                 drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + stageClearBaseGoldPerHero, 255, 255, 255, g, 34, 34, 34, g, 5, 7);
@@ -3784,32 +3771,32 @@ function drawPlayerParty() {
             d = ~~heroJointPositionsByHero[a][0].x + 0 - 2;
             f = ~~heroJointPositionsByHero[a][0].y - 7;
             if (5 > comboPopupTimer) {
-                g = floor(255 * comboPopupTimer / 5);
+                g = RMath.floor(255 * comboPopupTimer / 5);
             } else {
                 g = 255;
             }
-            c = min(60 - comboPopupTimer - 0, 4);
+            c = RMath.min(60 - comboPopupTimer - 0, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
-            c = min(60 - comboPopupTimer - 3, 4);
+            c = RMath.min(60 - comboPopupTimer - 3, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
-            c = min(60 - comboPopupTimer - 6, 4);
+            c = RMath.min(60 - comboPopupTimer - 6, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
-            c = min(60 - comboPopupTimer - 9, 4);
+            c = RMath.min(60 - comboPopupTimer - 9, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 4, f -
                     2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
-            c = min(60 - comboPopupTimer - 12, 4);
+            c = RMath.min(60 - comboPopupTimer - 12, 4);
             if (0 < c) {
                 drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
-            c = min(60 - comboPopupTimer - 15, 4);
+            c = RMath.min(60 - comboPopupTimer - 15, 4);
             if (0 < c) {
                 gameFontSmall.b = -1;
                 drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + comboGoldPayoutPerHero, 255, 128, 0, g, 48, 24, 0, g, 5, 7);
@@ -3908,7 +3895,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
             );
     }
 
-    var baseDrawPos = new Vec2();
+    var baseDrawPos = new RMath.Vec2();
 
     for (let toolIdx = 0; toolIdx < 2; toolIdx++) {
         let p = partyEquipmentTable[heroIdx][toolIdx ? d : c];
@@ -3922,14 +3909,14 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 drawRectCentered(t.x, t.y, 3, 3, p);
                 break;
             case 2:
-                Vec2Sub(baseDrawPos, t, l);
-                Vec2Norm(baseDrawPos);
+                RMath.Vec2Sub(baseDrawPos, t, l);
+                RMath.Vec2Norm(baseDrawPos);
                 if (noUpperJoints == 2) {
                     drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 7 * baseDrawPos.x, l.y + 7 * baseDrawPos.y, p);
                 } else {
                     drawLine(l.x + 2 * baseDrawPos.x, l.y + 2 * baseDrawPos.y, l.x + 10 * baseDrawPos.x, l.y + 10 * baseDrawPos.y, p);
                 }
-                Vec2Rotate(baseDrawPos);
+                RMath.Vec2Rotate(baseDrawPos);
                 drawLine(t.x - 2 * baseDrawPos.x, t.y - 2 * baseDrawPos.y, t.x + 2 * baseDrawPos.x, t.y + 2 * baseDrawPos.y, p);
                 
                 break;
@@ -3941,8 +3928,8 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                         drawLine(t.x + 3, t.y + 3, t.x - 9, t.y - 9, p);
                     }
                 } else {
-                    Vec2Sub(baseDrawPos, heroAimPosByHero[heroIdx], t);
-                    Vec2Norm(baseDrawPos);
+                    RMath.Vec2Sub(baseDrawPos, heroAimPosByHero[heroIdx], t);
+                    RMath.Vec2Norm(baseDrawPos);
                     if (0 < heroAttackLineTimer[heroIdx] && attackTrailSideIdx[heroIdx] == toolIdx) {
                         drawLine(t.x - 5 * baseDrawPos.x, t.y - 5 * baseDrawPos.y, heroAimPosByHero[heroIdx].x, heroAimPosByHero[heroIdx].y, p);
                     } else {
@@ -3951,8 +3938,8 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 }
                 break;
             case 4:
-                Vec2Sub(baseDrawPos, t, l);
-                Vec2Norm(baseDrawPos);
+                RMath.Vec2Sub(baseDrawPos, t, l);
+                RMath.Vec2Norm(baseDrawPos);
                 if (2 == noUpperJoints) {
                     drawLine(l.x, l.y, l.x + 4 * baseDrawPos.x, l.y + 4 * baseDrawPos.y, p);
                 } else {
@@ -4226,8 +4213,8 @@ function loadLevelData(a) {
         let p = stageListArray[currentStage][a + 5];
         let t = stageListArray[currentStage][a + 6];
         for (let b = 0; b < d; b++) {
-            let h = randIntRange(k, p + 1);
-            let g = randIntRange(f, t + 1);
+            let h = RMath.randIntRange(k, p + 1);
+            let g = RMath.randIntRange(f, t + 1);
 
             if (stageTileData[g][h] > 25) {
                 spawnEnemy(h, g, c, (a - stageSpawnGroupsStartIdx) / 7);
@@ -4246,8 +4233,8 @@ function loadLevelData(a) {
 
 
 function getStageTileAt(x, y) { // ri
-    x = clamp(x, 0, 8 * stageWidth - 1) >> 3; // divide by 8
-    y = clamp(y, 0, 8 * stageHeight - 1) >> 3;
+    x = RMath.clamp(x, 0, 8 * stageWidth - 1) >> 3; // divide by 8
+    y = RMath.clamp(y, 0, 8 * stageHeight - 1) >> 3;
     return stageTileData[y][x]
 }
 
@@ -4299,9 +4286,9 @@ function updateStageEdgeSpawns() { // wg
             k = stageListArray[currentStage][b + 6];
         if (!(c <= totalSpawnedCountByGroup[(b - stageSpawnGroupsStartIdx) / 7])) {
             if (activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7] < f) {
-                if (1E3 * rand() < stageListArray[currentStage][stageSpawnChance]) {
-                    c = randIntRange(g, h + 1);
-                    d = randIntRange(d, k + 1);
+                if (1E3 * RMath.rand() < stageListArray[currentStage][stageSpawnChance]) {
+                    c = RMath.randIntRange(g, h + 1);
+                    d = RMath.randIntRange(d, k + 1);
                     if (!25 >= stageTileData[d][c]) {
                         spawnEnemy(c, d, a, (b - stageSpawnGroupsStartIdx) / 7);
                         activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]++;
@@ -4327,13 +4314,13 @@ function updateStageEdgeSpawns() { // wg
         }
     if (!d && 0 == stageClearBaseGoldPerHero) {
         for (a = 0; 20 > a; a++) stageClearBaseGoldPerHero += totalSpawnedCountByGroup[a];
-        stageClearBaseGoldPerHero = floor((stageClearBaseGoldPerHero + partyMemberCount - 1) / partyMemberCount);
+        stageClearBaseGoldPerHero = RMath.floor((stageClearBaseGoldPerHero + partyMemberCount - 1) / partyMemberCount);
         if (0 < stageClearBaseGoldPerHero) {
             b = 100 + comboMultBonus;
             comboMultBonus += stageClearBaseGoldPerHero;
-            stageClearBaseGoldPerHero = floor(stageClearBaseGoldPerHero * b / 100);
+            stageClearBaseGoldPerHero = RMath.floor(stageClearBaseGoldPerHero * b / 100);
             stageClearPopupTimer = 60;
-            partyGold = clamp(partyGold + stageClearBaseGoldPerHero * partyMemberCount, 0, 9999999);
+            partyGold = RMath.clamp(partyGold + stageClearBaseGoldPerHero * partyMemberCount, 0, 9999999);
             if (isBadgeIncompleteForCurrentStage(0)) {
                 IncrementBadgeCount(0);
             }
@@ -4406,9 +4393,9 @@ function updateStageEdgeSpawns() { // wg
                 }
             }
             spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215);
-            let popupText = floor(gameFrameCounter / 3600) + ":" + floor(gameFrameCounter % 3600 / 60) + "." + gameFrameCounter % 60;
+            let popupText = RMath.floor(gameFrameCounter / 3600) + ":" + RMath.floor(gameFrameCounter % 3600 / 60) + "." + gameFrameCounter % 60;
             if (3600 > gameFrameCounter) {
-                popupText = floor(gameFrameCounter / 60) + "." + gameFrameCounter % 60;
+                popupText = RMath.floor(gameFrameCounter / 60) + "." + gameFrameCounter % 60;
             }
             spawnPopup(320, 223, 0, popupText, 300, 16777215);
         }
@@ -4460,19 +4447,19 @@ function drawGameStage() {
             }
     if (1 == currentStage) {
         if (1 == isStageReachedArray[6]) {
-            b = 184 + randFloatRange(4, 28);
-            c = 192 + randFloatRange(3, 7);
+            b = 184 + RMath.randFloatRange(4, 28);
+            c = 192 + RMath.randFloatRange(3, 7);
             spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     } else
     if (6 == currentStage) {
-        b = 304 + randFloatRange(4, 28);
-        c = 192 + randFloatRange(3, 7);
+        b = 304 + RMath.randFloatRange(4, 28);
+        c = 192 + RMath.randFloatRange(3, 7);
         spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     } else
     if (14 == currentStage) {
-        b = 2 * rotationLUT[gameFrameCounter >> 2 & 511][0];
-        c = 2 * rotationLUT[gameFrameCounter >> 2 & 511][1];
+        b = 2 * RMath.rotationLUT[gameFrameCounter >> 2 & 511][0];
+        c = 2 * RMath.rotationLUT[gameFrameCounter >> 2 & 511][1];
         spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     } else
@@ -4483,7 +4470,7 @@ function drawGameStage() {
     } else
     if (18 == currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
-            for (h = 0; h < partyMemberCount && !(b = clamp(heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = clamp(heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
+            for (h = 0; h < partyMemberCount && !(b = RMath.clamp(heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = RMath.clamp(heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
             h == partyMemberCount || gameFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
@@ -4504,8 +4491,8 @@ function initStageState() { // cj
     if (17 == currentStage) {
         b = partyGold % 100;
         for (a = 0; a < b;) {
-            c = ~~randFloatRange(27, 70);
-            d = randFloat(2.1);
+            c = ~~RMath.randFloatRange(27, 70);
+            d = RMath.randFloat(2.1);
             d = 3 + ~~(d * d * d);
             if (32 == stageTileData[d][c]) {
                 fillStageTilesRect(c, d, c, d, 39);
@@ -4538,15 +4525,15 @@ function updateStageTick() { // xg
         l = 0;
     gameFrameCounter++;
     if (-1 != draggedHeroIndex) {
-        b = clamp(heroJointPositionsByHero[draggedHeroIndex][2].x, 0, 8 * stageWidth - 1) >> 3;
-        f = clamp(heroJointPositionsByHero[draggedHeroIndex][2].y, 0, 8 * stageHeight - 1) >> 3;
+        b = RMath.clamp(heroJointPositionsByHero[draggedHeroIndex][2].x, 0, 8 * stageWidth - 1) >> 3;
+        f = RMath.clamp(heroJointPositionsByHero[draggedHeroIndex][2].y, 0, 8 * stageHeight - 1) >> 3;
     }
 
-    g = clamp(heroJointPositionsByHero[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
-    h = clamp(heroJointPositionsByHero[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
+    g = RMath.clamp(heroJointPositionsByHero[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
+    h = RMath.clamp(heroJointPositionsByHero[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
     for (a = 0; a < partyMemberCount; a++) {
-        c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-        d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+        c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+        d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
         if (k > c) {
             k = c;
         }
@@ -4563,18 +4550,18 @@ function updateStageTick() { // xg
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
-        var n = clamp(mouseXCurrent + c[a] >> 3, 0, stageWidth - 1),
-            w = clamp(mouseYCurrent + d[a] >> 3, 0, stageHeight - 1);
+        var n = RMath.clamp(mouseXCurrent + c[a] >> 3, 0, stageWidth - 1),
+            w = RMath.clamp(mouseYCurrent + d[a] >> 3, 0, stageHeight - 1);
         if (isMouseClicked) {
             if (39 == stageTileData[w][n]) {
                 fillStageTilesRect(n, w, n, w, 32);
                 a = 1;
-                if (1 > randFloat(200)) {
+                if (1 > RMath.randFloat(200)) {
                     a = 100;
-                } else if (1 > randFloat(14)) {
+                } else if (1 > RMath.randFloat(14)) {
                     a = 7;
                 }
-                a = floor(a * (100 + partyRewardValueBonusPercent) / 100);
+                a = RMath.floor(a * (100 + partyRewardValueBonusPercent) / 100);
                 spawnDrop(8 * n +
                     4, 8 * w + 4, 2, a, 0);
                 if (isBadgeIncompleteForCurrentStage(3)) {
@@ -4602,7 +4589,7 @@ function updateStageTick() { // xg
                 if (11 == currentStage) {
                     c = 8 * n + 4 - mouseXCurrent;
                     d = 8 * w + 4 - mouseYCurrent;
-                    if (abs(c) >= abs(d)) {
+                    if (RMath.abs(c) >= RMath.abs(d)) {
                         if (0 < c && 32 == stageTileData[w][n + 1]) {
                             fillStageTilesRect(n + 1, w, n + 1, w, 47);
                             fillStageTilesRect(n, w, n, w, 32);
@@ -4622,8 +4609,8 @@ function updateStageTick() { // xg
                         --w;
                     }
                     if (isBadgeIncompleteForCurrentStage(44)) {
-                        c = abs(64 - n);
-                        d = abs(11 - w);
+                        c = RMath.abs(64 - n);
+                        d = RMath.abs(11 - w);
                         spawnPopup(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431);
                         if (0 ==
                             c && 0 == d) {
@@ -4698,8 +4685,8 @@ function updateStageTick() { // xg
             }
             if (isBadgeIncompleteForCurrentStage(7)) {
                 for (a = b = 0; a < partyMemberCount; a++) {
-                    c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                    d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                    c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                    d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                     if (8 <= c && 15 >= c && 19 <= d && 21 >= d) {
                         b |= 1;
                     }
@@ -4725,7 +4712,7 @@ function updateStageTick() { // xg
         }
         if (2 == partyMemberCount && 0 == totalSpawnedCountByGroup[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
             for (a = 0; 20 > a; a++) {
-                spawnEnemy(randIntRange(56, 76), randIntRange(33, 38), 5, 0);
+                spawnEnemy(RMath.randIntRange(56, 76), RMath.randIntRange(33, 38), 5, 0);
                 activeSpawnCountByGroup[0]++;
                 totalSpawnedCountByGroup[0]++;
             }
@@ -4758,8 +4745,8 @@ function updateStageTick() { // xg
         if (3 == partyMemberCount && 0 == activeSpawnCountByGroup[0] && 0 == activeSpawnCountByGroup[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 2 || IncrementBadgeCount(16),
             !isBadgeIncompleteForCurrentStage(17) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
             for (a = b = 0; a < partyMemberCount; a++) {
-                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (56 <= c && 59 >= c && 39 <= d && 41 >= d) {
                     b++;
                 }
@@ -4788,7 +4775,7 @@ function updateStageTick() { // xg
                 totalSpawnedCountByGroup[1]++;
             } else {
                 for (5 == c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) {
-                    spawnEnemy(randIntRange(56, 69), randIntRange(42, 43), c, 1);
+                    spawnEnemy(RMath.randIntRange(56, 69), RMath.randIntRange(42, 43), c, 1);
                     activeSpawnCountByGroup[1]++;
                     totalSpawnedCountByGroup[1]++;
                 }
@@ -4807,7 +4794,7 @@ function updateStageTick() { // xg
         }
         if (1 == totalSpawnedCountByGroup[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
             for (a = 0; 15 > a; a++) {
-                spawnEnemy(randIntRange(61, 76), 21, 28, 9);
+                spawnEnemy(RMath.randIntRange(61, 76), 21, 28, 9);
                 activeSpawnCountByGroup[9]++;
                 totalSpawnedCountByGroup[9]++;
             }
@@ -4825,18 +4812,18 @@ function updateStageTick() { // xg
             }
         }
     } else if (8 == currentStage) {
-        if (30 > totalSpawnedCountByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > randFloat(60)) {
+        if (30 > totalSpawnedCountByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > RMath.randFloat(60)) {
             a = [5, 18, 3, 20];
             g = [18, 16, 21, 22];
-            b = randInt(4);
+            b = RMath.randInt(4);
             spawnEnemy(a[b], g[b], 32, 3);
             activeSpawnCountByGroup[3]++;
             totalSpawnedCountByGroup[3]++;
         }
         if (isBadgeIncompleteForCurrentStage(27)) {
             for (a = 0; a < partyMemberCount; a++) {
-                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (2 <= c && 15 >= c && 29 <= d && 36 >= d) {
                     stageConditionMask = 1;
                 }
@@ -4862,7 +4849,7 @@ function updateStageTick() { // xg
             }
         if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && 500 > enemyHealthArray[b])
             for (enemyHealthArray[b] += 1500, enemyPoseTrailWriteIdxArray[b]--, c = 2 * (19 - enemyPoseTrailWriteIdxArray[b] + 1), a = 0; a < c; a++) {
-                spawnEnemy(randIntRange(25, 57), randIntRange(25, 39), 35, 1);
+                spawnEnemy(RMath.randIntRange(25, 57), RMath.randIntRange(25, 39), 35, 1);
                 activeSpawnCountByGroup[1]++;
                 totalSpawnedCountByGroup[1]++;
             }
@@ -4879,8 +4866,8 @@ function updateStageTick() { // xg
         if (isBadgeIncompleteForCurrentStage(33)) {
             for (a =
                 b = 0; a < partyMemberCount; a++) {
-                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (26 == stageTileData[d][c]) {
                     b++;
                 }
@@ -4897,14 +4884,14 @@ function updateStageTick() { // xg
     } else if (10 == currentStage) {
         if (25 >= totalSpawnedCountByGroup[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
             for (a = 0; 15 > a; a++) {
-                spawnEnemy(randIntRange(32, 53), randIntRange(33, 34), 37, 0);
+                spawnEnemy(RMath.randIntRange(32, 53), RMath.randIntRange(33, 34), 37, 0);
                 activeSpawnCountByGroup[0]++;
                 totalSpawnedCountByGroup[0]++;
             }
-        if (40 > totalSpawnedCountByGroup[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > randFloat(60)) {
+        if (40 > totalSpawnedCountByGroup[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > RMath.randFloat(60)) {
             a = [24, 25, 29, 30];
             g = [4, 4, 3, 3];
-            b = randInt(4);
+            b = RMath.randInt(4);
             spawnEnemy(a[b], g[b], 41, 4);
             activeSpawnCountByGroup[4]++;
             totalSpawnedCountByGroup[4]++;
@@ -4971,17 +4958,17 @@ function updateStageTick() { // xg
         }
     } else if (15 == currentStage) {
         if (60 > totalSpawnedCountByGroup[1] && 42 <= g && 67 >= g &&
-            18 <= h && 24 >= h && 4 > randFloat(60)) {
+            18 <= h && 24 >= h && 4 > RMath.randFloat(60)) {
             a = [44, 45, 46, 66];
             g = [24, 24, 24, 24];
-            b = randInt(4);
+            b = RMath.randInt(4);
             spawnEnemy(a[b], g[b], 60, 1);
             activeSpawnCountByGroup[1]++;
             totalSpawnedCountByGroup[1]++;
         }
         if (0 == activeSpawnCountByGroup[5] && totalSpawnedCountByGroup[6] < 150 - (totalSpawnedCountByGroup[0] - activeSpawnCountByGroup[0])) {
-            c = randIntRange(15, 65);
-            d = randIntRange(1, 18);
+            c = RMath.randIntRange(15, 65);
+            d = RMath.randIntRange(1, 18);
             if (25 < stageTileData[d][c]) {
                 spawnEnemy(c, d, 59, 6);
                 activeSpawnCountByGroup[6]++;
@@ -5013,8 +5000,8 @@ function updateStageTick() { // xg
             b = 67;
         }
         if (0 < b && 100 > totalSpawnedCountByGroup[11]) {
-            c = randIntRange(4, 59);
-            d = randIntRange(30, 33);
+            c = RMath.randIntRange(4, 59);
+            d = RMath.randIntRange(30, 33);
             if (25 < stageTileData[d][c]) {
                 spawnEnemy(c, d, b, 11);
                 activeSpawnCountByGroup[11]++;
@@ -5023,8 +5010,8 @@ function updateStageTick() { // xg
         }
         if (60 > totalSpawnedCountByGroup[12] && 70 <= g && 76 >= g &&
             34 <= h && 41 >= h) {
-            c = randIntRange(5, 70);
-            d = randIntRange(42, 43);
+            c = RMath.randIntRange(5, 70);
+            d = RMath.randIntRange(42, 43);
             if (25 < stageTileData[d][c]) {
                 spawnEnemy(c, d, 68, 12);
                 activeSpawnCountByGroup[12]++;
@@ -5037,11 +5024,11 @@ function updateStageTick() { // xg
                 b = a;
             }
         if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && enemyHealthArray[b] < 1E4 * (enemyPoseTrailWriteIdxArray[b] - 10) - 5E3)
-            for (enemyPoseTrailWriteIdxArray[b]--, t = min(256, 1 << 20 - enemyPoseTrailWriteIdxArray[b]), a = 0; a < t; a++) {
+            for (enemyPoseTrailWriteIdxArray[b]--, t = RMath.min(256, 1 << 20 - enemyPoseTrailWriteIdxArray[b]), a = 0; a < t; a++) {
                 g = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].x;
                 h = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].y;
-                c = .5 * rotationLUT[512 * a / t][0];
-                d = .5 * -rotationLUT[512 * a / t][1];
+                c = .5 * RMath.rotationLUT[512 * a / t][0];
+                d = .5 * -RMath.rotationLUT[512 * a / t][1];
                 spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
         if (0 == stageEventFlagArray[0] && 0 == activeSpawnCountByGroup[10]) {
@@ -5058,8 +5045,8 @@ function updateStageTick() { // xg
         !isBadgeIncompleteForCurrentStage(62) || 0 != activeSpawnCountByGroup[10] || stageConditionMask & 1 || IncrementBadgeCount(62);
         if (isBadgeIncompleteForCurrentStage(63)) {
             for (a = 0; a < partyMemberCount; a++) {
-                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (58 <= c && 76 >= c && 36 <= d && 42 >= d) {
                     stageEncounterCounter = 1;
                 }
@@ -5090,22 +5077,22 @@ function updateStageTick() { // xg
     } else if (18 == currentStage) {
         if (6 > totalSpawnedCountByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h) {
             a = [29, 44, 59];
-            b = randInt(3);
+            b = RMath.randInt(3);
             spawnEnemy(a[b], 42, 83, 9);
             activeSpawnCountByGroup[9]++;
             totalSpawnedCountByGroup[9]++;
         }
-        if (9 > totalSpawnedCountByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60)) {
-            c = randIntRange(8, 23);
+        if (9 > totalSpawnedCountByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > RMath.randFloat(60)) {
+            c = RMath.randIntRange(8, 23);
             spawnEnemy(c, 10, 83, 10);
             activeSpawnCountByGroup[10]++;
             totalSpawnedCountByGroup[10]++;
         }!isBadgeIncompleteForCurrentStage(71) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 2 || IncrementBadgeCount(71);
         !isBadgeIncompleteForCurrentStage(72) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 1 || IncrementBadgeCount(72);
     } else if (19 == currentStage) {
-        if (totalSpawnedCountByGroup[7] < 20 * (35 - activeSpawnCountByGroup[6]) && 15 > randFloat(60)) {
-            c = randIntRange(19, 59);
-            d = randIntRange(26, 33);
+        if (totalSpawnedCountByGroup[7] < 20 * (35 - activeSpawnCountByGroup[6]) && 15 > RMath.randFloat(60)) {
+            c = RMath.randIntRange(19, 59);
+            d = RMath.randIntRange(26, 33);
             if (33 == stageTileData[d][c]) {
                 if (19 == totalSpawnedCountByGroup[7] % 20) {
                     spawnEnemy(c, d, 89, 7);
@@ -5300,11 +5287,11 @@ for (let _i = 0; 999 > _i; _i++) enemyJointPosArray[_i] = Array(21);
 
 for (let _i = 0; 999 > _i; _i++)
     for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyJointPosArray[_i][iterIdxTemp_2] = new Vec2;
+        enemyJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
 
 for (let _i = 0; 999 > _i; _i++)
     for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new Vec2;
+        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
 
 let enemyTypeArray = new Int32Array(999), // 
     enemyUpdateFuncIdxArray = new Int32Array(999),
@@ -5353,7 +5340,7 @@ function spawnEnemy(gridX, gridY, enemyType, d) {
         gridX *= 8;
         gridY *= 8;
         for (var f = 0; 21 > f; f++)
-            Vec2Set(enemyJointPosArray[enemyCount][f], gridX + randFloat(1), gridY + randFloat(1)),
+            RMath.Vec2Set(enemyJointPosArray[enemyCount][f], gridX + RMath.randFloat(1), gridY + RMath.randFloat(1)),
                 enemyPrevJointPosArray[enemyCount][f].set(enemyJointPosArray[enemyCount][f]);
 
         enemyTypeArray[enemyCount] = enemyType;
@@ -5400,11 +5387,11 @@ function deleteEnemy(enemyIdx) {
 
 
 function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
-    let d = new Vec2();
-    Vec2Sub(d, enemyJointPosArray[enemyIdx][jointIdx], enemyPrevJointPosArray[enemyIdx][jointIdx]);
+    let d = new RMath.Vec2();
+    RMath.Vec2Sub(d, enemyJointPosArray[enemyIdx][jointIdx], enemyPrevJointPosArray[enemyIdx][jointIdx]);
     enemyJointPosArray[enemyIdx][jointIdx].set(enemyPrevJointPosArray[enemyIdx][jointIdx]);
-    let f = (Vec2Mag(d) >> 2) + 1;
-    Vec2Scale(d, 1 / f);
+    let f = (RMath.Vec2Mag(d) >> 2) + 1;
+    RMath.Vec2Scale(d, 1 / f);
     for (let g, h, k = 0; k < f; k++) {
         g = enemyJointPosArray[enemyIdx][jointIdx].y + d.y;
         h = getStageTileAt(enemyJointPosArray[enemyIdx][jointIdx].x, g);
@@ -5450,8 +5437,8 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
         g = cy - ry;
     rx = cx + rx;
     ry = cy + ry; 
-    let t = new Vec2();
-    let l = new Vec2();
+    let t = new RMath.Vec2();
+    let l = new RMath.Vec2();
     let n = 1E3;
     let w = -1;
     for (let _i = 0; _i < enemyCount; _i++)
@@ -5464,10 +5451,10 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
             if (!(p.x - h > rx || p.x + h < f || p.y - k > ry || p.y + k < g)) {
                 l.x = p.x - cx;
                 l.y = p.y - cy;
-                k = Vec2Mag(l);
+                k = RMath.Vec2Mag(l);
                 h = (k >> 3) + 1;
-                Vec2Scale(l, 1 / h);
-                Vec2Set(t, cx, cy);
+                RMath.Vec2Scale(l, 1 / h);
+                RMath.Vec2Set(t, cx, cy);
                 for (var M = 0; M <= h; M++) {
                     p = getStageTileAt(t.x, t.y);
                     if (0 <= p && 29 >= p) break;
@@ -5516,8 +5503,8 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
  */
 function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
     let n = -1,
-        w, B, M, J, y, x, K = new Vec2(),
-        ba = new Vec2(),
+        w, B, M, J, y, x, K = new RMath.Vec2(),
+        ba = new RMath.Vec2(),
         U, na;
     width *= .5;
     height *= .5;
@@ -5527,12 +5514,12 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
         M = centerPos.x + width;
         J = centerPos.y + height;
     } else if (1 == shapeMode) {
-        Vec2Norm(directionVec);
-        Vec2Scale(directionVec, height);
-        w = min(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
-        B = min(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
-        M = max(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
-        J = max(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
+        RMath.Vec2Norm(directionVec);
+        RMath.Vec2Scale(directionVec, height);
+        w = RMath.min(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+        B = RMath.min(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
+        M = RMath.max(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+        J = RMath.max(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
     }
     
 
@@ -5547,9 +5534,9 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                 if (0 == shapeMode) {
                     ba.x = x.x - centerPos.x;
                     ba.y = x.y - centerPos.y;
-                    U = Vec2Mag(ba);
+                    U = RMath.Vec2Mag(ba);
                     U = (U >> 3) + 1;
-                    Vec2Scale(ba, 1 / U);
+                    RMath.Vec2Scale(ba, 1 / U);
                     K.set(centerPos);
                     for (var Fa = 0; Fa <= U; Fa++) {
                         na = getStageTileAt(K.x, K.y);
@@ -5560,10 +5547,10 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                 } else if (1 == shapeMode) {
                     ba.x = 2 * directionVec.x;
                     ba.y = 2 * directionVec.y;
-                    U = Vec2Mag(ba);
+                    U = RMath.Vec2Mag(ba);
                     U = (U >> 3) + 1;
-                    Vec2Scale(ba, 1 / U);
-                    Vec2Sub(K, centerPos, directionVec);
+                    RMath.Vec2Scale(ba, 1 / U);
+                    RMath.Vec2Sub(K, centerPos, directionVec);
                     for (Fa = 0; Fa <= U; Fa++) {
                         na = getStageTileAt(K.x, K.y);
                         if (0 <= na && 29 >= na) break;
@@ -5576,35 +5563,35 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                     if (Fa < U + 2) continue;
                 }
                 if (0 == applyFlag) {
-                    n = damageMin + floor(randFloat(damageMax - damageMin + 1));
+                    n = damageMin + RMath.floor(RMath.randFloat(damageMax - damageMin + 1));
                     if (4 == effectType) {
-                        enemyDmgPerFrameArray[height] = max(
+                        enemyDmgPerFrameArray[height] = RMath.max(
                             enemyDmgPerFrameArray[height],
-                            max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100))
+                            RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100))
                         );
-                        enemyDmgDurationLeftArray[height] = max(
+                        enemyDmgDurationLeftArray[height] = RMath.max(
                             enemyDmgDurationLeftArray[height],
-                            effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100)
+                            effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100)
                         );
                     } else {
                         if (0 == effectType) {
-                            n = max(1, n - enemyCatalog[enemyTypeArray[height]][enemyPhysResistPctCol]);
+                            n = RMath.max(1, n - enemyCatalog[enemyTypeArray[height]][enemyPhysResistPctCol]);
                         } else if (1 == effectType) {
-                            n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyFireResistPctCol] / 100));
+                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyFireResistPctCol] / 100));
                         } else if (2 == effectType) {
-                            n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100));
+                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100));
                         } else {
-                            3 == effectType && (n = max(1, n - floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100)));
+                            3 == effectType && (n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100)));
                         }
-                        enemyHealthArray[height] = max(enemyHealthArray[height] - n, 0);
+                        enemyHealthArray[height] = RMath.max(enemyHealthArray[height] - n, 0);
                         spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
                         stage_totalDamageDealt += n;
                     }
                     if (2 == effectType) {
-                        enemySkipDurationLeftArray[height] = 120 - floor(120 * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
-                        enemyUpdateSkipProbArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
+                        enemySkipDurationLeftArray[height] = 120 - RMath.floor(120 * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
+                        enemyUpdateSkipProbArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
                     } else {
-                        5 == effectType && (enemyFreezeTimerArray[height] = effectDuration - floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyFreezeResistPctCol] / 100));
+                        5 == effectType && (enemyFreezeTimerArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyFreezeResistPctCol] / 100));
                     }
 
                     enemyAuxStateArray[height] = 120;
@@ -5622,7 +5609,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
 
 
 function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
-    let itemPos = new Vec2(),
+    let itemPos = new RMath.Vec2(),
         itemIdx = enemyTypeArray[enemyIdx] + lootVariant,
         selectedItem = enemyCatalog[itemIdx];
     lootVariant = -enemyIdx - 1;
@@ -5636,7 +5623,7 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     }
     
     let _s0 = selectedItem[enemyProjectileVisualPackCol] % 100,
-        _s1 = floor(selectedItem[enemyProjectileVisualPackCol] / 100),
+        _s1 = RMath.floor(selectedItem[enemyProjectileVisualPackCol] / 100),
         _p0 = selectedItem[enemyPArg0Col],
         _p1 = selectedItem[enemyPArg1Col],
         _p2 = selectedItem[enemyPArg2Col],
@@ -5689,7 +5676,7 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     
     if (0 < enemyActionCooldownTimerArray[enemyIdx]) {
         enemyActionCooldownTimerArray[enemyIdx]--;
-    } else if (!(randFloat(1E3) >= _p23)) {
+    } else if (!(RMath.randFloat(1E3) >= _p23)) {
         enemyActionCooldownTimerArray[enemyIdx] = _p22;
         let pVelY;
         if (0 == _s0) {
@@ -5717,16 +5704,16 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
             }
         } else if (3 == _s0 || 6 == _s0) {
             if (3 == _s0) {
-                Vec2Set(itemPos, heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x, heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y);
+                RMath.Vec2Set(itemPos, heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x, heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y);
             } else if (6 == _s0) {
-                Vec2Set(itemPos, 0, -1);
+                RMath.Vec2Set(itemPos, 0, -1);
             }
             itemIdx = (0 < _s1) ? _s1 : 16;
-            enemyIdx = floor(512 * Vec2Angle(itemPos) / TAU);
-            enemyIdx -= floor((_p20 - 1) * itemIdx / 2);
+            enemyIdx = RMath.floor(512 * RMath.Vec2Angle(itemPos) / RMath.TAU);
+            enemyIdx -= RMath.floor((_p20 - 1) * itemIdx / 2);
             for (_s0 = 0; _s0 < _p20; _s0++) {
-                itemPos.x = rotationLUT[enemyIdx & 511][0];
-                itemPos.y = -rotationLUT[enemyIdx & 511][1];
+                itemPos.x = RMath.rotationLUT[enemyIdx & 511][0];
+                itemPos.y = -RMath.rotationLUT[enemyIdx & 511][1];
                 _p22 = _px + 10 * itemPos.x;
                 _p23 = _py + 10 * itemPos.y;
                 _p24 = itemPos.x * _p21 * .1;
@@ -5740,13 +5727,13 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
             } 
         } else if (4 == _s0) {
             for (_s0 = 0; _s0 < _p20; _s0++) {
-                Vec2Set(itemPos, heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][0].x, heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][0].y);
+                RMath.Vec2Set(itemPos, heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][0].x, heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][0].y);
                 itemIdx = 0 < _s1 ? _s1 - 1 : _p20;
                 if (0 < _p20) {
-                    _p24 = floor(randFloat(512));
-                    itemIdx = randFloat(10) * itemIdx;
-                    itemPos.x += rotationLUT[_p24][0] * itemIdx;
-                    itemPos.y += rotationLUT[_p24][1] * itemIdx;
+                    _p24 = RMath.floor(RMath.randFloat(512));
+                    itemIdx = RMath.randFloat(10) * itemIdx;
+                    itemPos.x += RMath.rotationLUT[_p24][0] * itemIdx;
+                    itemPos.y += RMath.rotationLUT[_p24][1] * itemIdx;
                 }
                 _p22 = _px;
                 _p23 = _py;
@@ -5760,8 +5747,8 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
             } 
         } else if (5 == _s0) {
             for (_s0 = 0; _s0 < _p20; _s0++) {
-                _p22 = _px + randFloatRange(-_p24, _p24);
-                _p23 = _py + randFloatRange(-_p24, 0);
+                _p22 = _px + RMath.randFloatRange(-_p24, _p24);
+                _p23 = _py + RMath.randFloatRange(-_p24, 0);
                 spawnProjectile(
                     lootVariant, k, _p22, _p23, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
                     0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, 
@@ -5771,8 +5758,8 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
             } 
         } else if (7 == _s0) {
             for (_s0 = 0; _s0 < _p20; _s0++) {
-                _p22 = floor(_px / 8);
-                _p23 = floor(_py / 8);
+                _p22 = RMath.floor(_px / 8);
+                _p23 = RMath.floor(_py / 8);
                 spawnEnemy(_p22, _p23, itemIdx + _p18, 0);
             }
         }
@@ -5782,17 +5769,17 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
 
 
 function onEnemyDeath(_enemyIdx) { // cl
-    let lvlDiff = abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyLevelCol] - partyLevel);
-    let expRewardValue = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyExpRewardCol] * (100 + partyEnemyHpBonusPercent) / 100);
+    let lvlDiff = RMath.abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyLevelCol] - partyLevel);
+    let expRewardValue = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyExpRewardCol] * (100 + partyEnemyHpBonusPercent) / 100);
     if (stageMaxEnemyLevel + 10 <= partyLevel) {
         expRewardValue = 0;
     } else if (10 > lvlDiff) {
-        expRewardValue = floor(expRewardValue * (10 - lvlDiff) / 10);
+        expRewardValue = RMath.floor(expRewardValue * (10 - lvlDiff) / 10);
     } else {
         expRewardValue = 1;
     }
 
-    partyEXPAccum = clamp(partyEXPAccum + expRewardValue, 0, 9999999);
+    partyEXPAccum = RMath.clamp(partyEXPAccum + expRewardValue, 0, 9999999);
     if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
         partyLevel++;
         for (let _i = 0; 4 > _i; _i++) partySP[_i] += 2;
@@ -5801,19 +5788,19 @@ function onEnemyDeath(_enemyIdx) { // cl
     for (let _dropIdx = enemyDropTableStartIdxCol; _dropIdx < enemyDropTableStartIdxCol + 8; _dropIdx += 2) {
         let itemIdx = enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx];
         if (0 != itemIdx) {
-            let randComp = floor(100 * (100 + partyDropChanceBonusPercent) / 100);
+            let randComp = RMath.floor(100 * (100 + partyDropChanceBonusPercent) / 100);
             if (2 == itemIdx) {
-                itemIdx = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * (100 + partyRewardValueBonusPercent) / 100);
+                itemIdx = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * (100 + partyRewardValueBonusPercent) / 100);
                 spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, itemIdx, 0);
-            } else if (rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * 100 < randComp) {
+            } else if (RMath.rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * 100 < randComp) {
                 if (1 > itemForgeLvls[itemIdx] && isDropTypeAbsent(itemIdx)) {
                     spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, itemIdx, 1, 0);    
                 }
             }
         }
     }
-    let val = floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyGoldRewardCol] * (100 + partyRewardValueBonusPercent) / 100);
-    if (1 > 3 * rand()) {
+    let val = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyGoldRewardCol] * (100 + partyRewardValueBonusPercent) / 100);
+    if (1 > 3 * RMath.rand()) {
         spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, val, 0);
     }
     if (30 != gameScreenState) {
@@ -5830,7 +5817,7 @@ function onEnemyDeath(_enemyIdx) { // cl
             if (isBadgeIncompleteForCurrentStage(8) && 1800 > gameFrameCounter) {
                 IncrementBadgeCount(8);
             }
-            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
         }
 
         if (15 == enemyTypeArray[_enemyIdx]) {
@@ -5839,7 +5826,7 @@ function onEnemyDeath(_enemyIdx) { // cl
                 if (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrameCount) {
                     IncrementBadgeCount(9);    
                 }
-                spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + floor(consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431);
+                spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + RMath.floor(consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431);
             }
         }
     }
@@ -5848,7 +5835,7 @@ function onEnemyDeath(_enemyIdx) { // cl
             if (isBadgeIncompleteForCurrentStage(18) && 1200 > gameFrameCounter) {
                 IncrementBadgeCount(18);
             }
-            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
         }
     }
     if (isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[_enemyIdx]) {
@@ -5861,14 +5848,14 @@ function onEnemyDeath(_enemyIdx) { // cl
         if (isBadgeIncompleteForCurrentStage(49) && 1500 > gameFrameCounter) {
             IncrementBadgeCount(49);    
         }
-        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
     }
     !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[_enemyIdx] && 57 != enemyTypeArray[_enemyIdx] && 58 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(52);
     if (63 == enemyTypeArray[_enemyIdx]) {
         if (isBadgeIncompleteForCurrentStage(58) && 3600 > gameFrameCounter) {
             IncrementBadgeCount(58);
         }
-        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
     }
     if (isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(69);
@@ -5881,10 +5868,10 @@ function updateEnemies() {
     for (enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
         if (0 < enemyDmgDurationLeftArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) {
             enemyDmgDurationLeftArray[enemyIdx]--;
-            var b = floor(enemyDmgPerFrameArray[enemyIdx] / 60),
+            var b = RMath.floor(enemyDmgPerFrameArray[enemyIdx] / 60),
                 c = enemyDmgPerFrameArray[enemyIdx] - 60 * b;
-            randFloat(60) < c && (b += 1);
-            enemyHealthArray[enemyIdx] = max(enemyHealthArray[enemyIdx] - b, 0);
+            RMath.randFloat(60) < c && (b += 1);
+            enemyHealthArray[enemyIdx] = RMath.max(enemyHealthArray[enemyIdx] - b, 0);
             stage_totalDamageDealt += b
         }
         if (0 < enemyFreezeTimerArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) // effect type 5 in al
@@ -5893,7 +5880,7 @@ function updateEnemies() {
             // if (0 < Gk[enemyIdx] && 0 < enemyHealthArray[enemyIdx] && (Gk[enemyIdx]--, randFloat(100) < Hk[enemyIdx])) continue;
             if (0 < enemySkipDurationLeftArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) { // effect type 2
                 enemySkipDurationLeftArray[enemyIdx]--;
-                if (randFloat(100) < enemyUpdateSkipProbArray[enemyIdx])
+                if (RMath.randFloat(100) < enemyUpdateSkipProbArray[enemyIdx])
                     continue;
             }
             enemyIdx = enemyDispatchTable[enemyUpdateFuncIdxArray[enemyIdx]](enemyIdx)
@@ -5909,14 +5896,14 @@ function enemySlimeBehavior(enemyIdx) {
         enemyJointPosArray[enemyIdx][0].x += 4;
         enemyJointPosArray[enemyIdx][0].y += 6;
         for (b = 0; 1 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
+        enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
     } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .03, .99);
-        if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2) && 5 > randFloat(100)) {
-            enemyJointPosArray[enemyIdx][0].x += randFloat(1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? -.2 : .2);
-            if (enemyJointPosArray[enemyIdx][0].y -= randFloat(.5)) {
-                if (1 > randFloat(100)) {
-                    enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
+        if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2) && 5 > RMath.randFloat(100)) {
+            enemyJointPosArray[enemyIdx][0].x += RMath.randFloat(1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? -.2 : .2);
+            if (enemyJointPosArray[enemyIdx][0].y -= RMath.randFloat(.5)) {
+                if (1 > RMath.randFloat(100)) {
+                    enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
                 }
             }
         }
@@ -5925,8 +5912,8 @@ function enemySlimeBehavior(enemyIdx) {
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 1 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.3, .3);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.3, .3);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
         for (b = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = enemyJointPosArray[enemyIdx][0].x;
@@ -5967,11 +5954,11 @@ function enemyBoxSnakeBehavior(enemyIdx) {
             if (-1 != d) {
                 b = heroJointPositionsByHero[d][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1;
             } else {
-                b = randSelect(-1, 1);
+                b = RMath.randSelect(-1, 1);
             }
-            if (10 > randFloat(100)) {
-                enemyJointPosArray[enemyIdx][0].x += randFloatRange(.4, .6) * b;
-                enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1.5, -2);
+            if (10 > RMath.randFloat(100)) {
+                enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(.4, .6) * b;
+                enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1.5, -2);
             }
         }
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
@@ -5981,8 +5968,8 @@ function enemyBoxSnakeBehavior(enemyIdx) {
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 3 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
         moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
         b = enemyTileContactFlagsArray[enemyIdx];
@@ -6007,7 +5994,7 @@ function enemyBoxSnakeBehavior(enemyIdx) {
 
 
 function enemyBatBehavior(enemyIdx) {
-    var b, c = new Vec2();
+    var b, c = new RMath.Vec2();
     b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         enemyJointPosArray[enemyIdx][0].x += 4;
@@ -6034,28 +6021,28 @@ function enemyBatBehavior(enemyIdx) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4], 0, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
-        Vec2Set(c, 0, 0);
+        RMath.Vec2Set(c, 0, 0);
         var d = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x,
             enemyJointPosArray[enemyIdx][0].y, 150, 150, 0);
         if (-1 != d) {
-            Vec2Sub(c, heroJointPositionsByHero[d][2], enemyJointPosArray[enemyIdx][0]);
-            d = Vec2Norm(c);
+            RMath.Vec2Sub(c, heroJointPositionsByHero[d][2], enemyJointPosArray[enemyIdx][0]);
+            d = RMath.Vec2Norm(c);
             d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] - 10;
             if (0 > d) {
-                Vec2Scale(c, -.05);
+                RMath.Vec2Scale(c, -.05);
             } else {
-                Vec2Scale(c, .05);
+                RMath.Vec2Scale(c, .05);
             }
         }
         enemyJointPosArray[enemyIdx][0].add(c);
-        if (10 > randFloat(100)) {
-            enemyJointPosArray[enemyIdx][0].x += randFloatRange(-1, 1);
-            enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1, 1);
+        if (10 > RMath.randFloat(100)) {
+            enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(-1, 1);
+            enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1, 1);
         }
-        enemyJointPosArray[enemyIdx][2].x += randFloatRange(0, -.1);
-        enemyJointPosArray[enemyIdx][3].x += randFloatRange(0, -.1);
-        enemyJointPosArray[enemyIdx][5].x += randFloatRange(0, .1);
-        enemyJointPosArray[enemyIdx][6].x += randFloatRange(0, .1);
+        enemyJointPosArray[enemyIdx][2].x += RMath.randFloatRange(0, -.1);
+        enemyJointPosArray[enemyIdx][3].x += RMath.randFloatRange(0, -.1);
+        enemyJointPosArray[enemyIdx][5].x += RMath.randFloatRange(0, .1);
+        enemyJointPosArray[enemyIdx][6].x += RMath.randFloatRange(0, .1);
         c = .5;
         d = 6 * b;
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 3 * b, c, c);
@@ -6070,8 +6057,8 @@ function enemyBatBehavior(enemyIdx) {
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 7 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
         for (b = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, 1);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
@@ -6099,15 +6086,15 @@ function enemyBatBehavior(enemyIdx) {
 
 
 function enemyDragonBehavior(enemyIdx) {
-    var b, c, d, f = new Vec2();
+    var b, c, d, f = new RMath.Vec2();
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) 
         enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
     else if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
         for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
-        Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
-        Vec2Norm(f);
-        Vec2Scale(f, .008);
+        RMath.Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
+        RMath.Vec2Norm(f);
+        RMath.Vec2Scale(f, .008);
         b = enemyJointPosArray[enemyIdx][0].x;
         c = enemyJointPosArray[enemyIdx][0].y;
         d = getStageTileAt(b - 24, c);
@@ -6118,9 +6105,9 @@ function enemyDragonBehavior(enemyIdx) {
         if (28 >= d || 24 > c) f.y += .03;
         d = getStageTileAt(b, c + 24);
         if (28 >= d || c > 8 * stageHeight - 24) f.y -= .03;
-        if (3 > randFloat(100)) {
-            f.x += randFloatRange(-.1, .1);
-            f.y += randFloatRange(-.1, .1);
+        if (3 > RMath.randFloat(100)) {
+            f.x += RMath.randFloatRange(-.1, .1);
+            f.y += RMath.randFloatRange(-.1, .1);
         }
         enemyJointPosArray[enemyIdx][0].add(f);
         f = .013;
@@ -6131,8 +6118,8 @@ function enemyDragonBehavior(enemyIdx) {
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
         for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
@@ -6187,12 +6174,12 @@ function enemyStickmanBehavior(enemyIdx) {
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .1, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .1, .99);
         }
-        if (50 > randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
+        if (50 > RMath.randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
             var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
             if (-1 != c) {
                 enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
-            } else if (10 > randFloat(100)) {
-                enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
+            } else if (10 > RMath.randFloat(100)) {
+                enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
             }
             var d = c = 1,
                 f = 0;
@@ -6203,25 +6190,25 @@ function enemyStickmanBehavior(enemyIdx) {
             }
             if (1 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 if (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x) {
-                    enemyJointPosArray[enemyIdx][10].x += randFloat(-c);
+                    enemyJointPosArray[enemyIdx][10].x += RMath.randFloat(-c);
                     enemyJointPosArray[enemyIdx][10].y += -d;
                 } else {
-                    enemyJointPosArray[enemyIdx][9].x += randFloat(-c);
+                    enemyJointPosArray[enemyIdx][9].x += RMath.randFloat(-c);
                     enemyJointPosArray[enemyIdx][9].y += -d;
                 }
-                enemyJointPosArray[enemyIdx][5].x += randFloat(-f);
-                enemyJointPosArray[enemyIdx][6].x += randFloat(-f);
+                enemyJointPosArray[enemyIdx][5].x += RMath.randFloat(-f);
+                enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(-f);
             } else {
                 if (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x) {
                     enemyJointPosArray[enemyIdx][9].x +=
-                        randFloat(c);
+                        RMath.randFloat(c);
                     enemyJointPosArray[enemyIdx][9].y += -d;
                 } else {
-                    enemyJointPosArray[enemyIdx][10].x += randFloat(c);
+                    enemyJointPosArray[enemyIdx][10].x += RMath.randFloat(c);
                     enemyJointPosArray[enemyIdx][10].y += -d;
                 }
-                enemyJointPosArray[enemyIdx][5].x += randFloat(f);
-                enemyJointPosArray[enemyIdx][6].x += randFloat(f);
+                enemyJointPosArray[enemyIdx][5].x += RMath.randFloat(f);
+                enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(f);
             }
         }
         c = .5;
@@ -6250,8 +6237,8 @@ function enemyStickmanBehavior(enemyIdx) {
         if (0 >= enemyHealthArray[enemyIdx]) {
             enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             for (b = enemyDeathTimerArray[enemyIdx] = 0; 11 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
             onEnemyDeath(enemyIdx);
         }
@@ -6276,7 +6263,7 @@ function enemyStickmanBehavior(enemyIdx) {
 function enemyTreeBehavior(enemyIdx) {
     var b;
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx])
-        for (enemyPoseTrailWriteIdxArray[enemyIdx] = floor(randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] + 2)), b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
+        for (enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.floor(RMath.randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] + 2)), b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
             enemyJointPosArray[enemyIdx][b].x += 4;
             enemyJointPosArray[enemyIdx][b].y += 4;
             enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
@@ -6289,9 +6276,9 @@ function enemyTreeBehavior(enemyIdx) {
             for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .04, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], -1, .99);
         }
-        if (10 > randFloat(100)) {
-            b = floor(randFloat(enemyPoseTrailWriteIdxArray[enemyIdx] - 1));
-            enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5);
+        if (10 > RMath.randFloat(100)) {
+            b = RMath.floor(RMath.randFloat(enemyPoseTrailWriteIdxArray[enemyIdx] - 1));
+            enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
         }
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 8, .2, .2);
         for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 2; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], 6, .2, .2);
@@ -6300,8 +6287,8 @@ function enemyTreeBehavior(enemyIdx) {
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
         for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = .5 * (enemyJointPosArray[enemyIdx][0].x + enemyJointPosArray[enemyIdx][enemyPoseTrailWriteIdxArray[enemyIdx] - 1].x);
@@ -6342,11 +6329,11 @@ function enemyHangingTreeBehavior(enemyIdx) {
             if (-1 != b) {
                 c = heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1;
             } else {
-                c = randSelect(-1, 1);
+                c = RMath.randSelect(-1, 1);
             }
-            if (10 > randFloat(100)) {
-                enemyJointPosArray[enemyIdx][0].x += randFloatRange(.4, .6) * c;
-                enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1.5, -2);
+            if (10 > RMath.randFloat(100)) {
+                enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(.4, .6) * c;
+                enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1.5, -2);
             }
         }
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
@@ -6356,8 +6343,8 @@ function enemyHangingTreeBehavior(enemyIdx) {
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
             for (b = 0; 3 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
         moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
         b = enemyTileContactFlagsArray[enemyIdx];
@@ -6381,12 +6368,12 @@ function enemyHangingTreeBehavior(enemyIdx) {
 
 
 function enemyUpdateFunc7(enemyIdx) {
-    var b, c, d, f = new Vec2(),
+    var b, c, d, f = new RMath.Vec2(),
         g = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol],
         h = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] * enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         for (b = 0; b < g; b++) {
-            c = 360 * b / g * PI / 180;
+            c = 360 * b / g * RMath.PI / 180;
             enemyJointPosArray[enemyIdx][1 + b].x += Math.cos(c) * h;
             enemyJointPosArray[enemyIdx][1 + b].y += Math.sin(c) * h;
         }
@@ -6399,9 +6386,9 @@ function enemyUpdateFunc7(enemyIdx) {
     } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
         for (b = 1; b <= g; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .99);
-        Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
-        Vec2Norm(f);
-        Vec2Scale(f, .008);
+        RMath.Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
+        RMath.Vec2Norm(f);
+        RMath.Vec2Scale(f, .008);
         b = enemyJointPosArray[enemyIdx][0].x;
         c = enemyJointPosArray[enemyIdx][0].y;
         d = getStageTileAt(b - 16, c);
@@ -6437,15 +6424,15 @@ function enemyUpdateFunc7(enemyIdx) {
         if (30 >= d) {
             f.y -= .05;
         }
-        if (3 > randFloat(100)) {
-            f.x += randFloatRange(-.1, .1);
-            f.y += randFloatRange(-.1, .1);
+        if (3 > RMath.randFloat(100)) {
+            f.x += RMath.randFloatRange(-.1, .1);
+            f.y += RMath.randFloatRange(-.1, .1);
         }
         enemyJointPosArray[enemyIdx][0].add(f);
-        c = 360 / g * PI / 180;
+        c = 360 / g * RMath.PI / 180;
         f.x = Math.cos(0) * h - Math.cos(c) * h;
         f.y = Math.sin(0) * h - Math.sin(c) * h;
-        f = Vec2Mag(f);
+        f = RMath.Vec2Mag(f);
         for (b = 0; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][b + 1], h, 0, .2);
         for (b = 1; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], f, .2, .2);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][1], f, .2, .2);
@@ -6455,8 +6442,8 @@ function enemyUpdateFunc7(enemyIdx) {
         if (0 >= enemyHealthArray[enemyIdx]) {
             enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             for (b = enemyDeathTimerArray[enemyIdx] = 0; b <= g; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
             onEnemyDeath(enemyIdx);
         }
@@ -6508,48 +6495,48 @@ function enemyUpdateFunc8(enemyIdx) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], .8, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], -.1, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], .8, .99);
-        if (50 > randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
+        if (50 > RMath.randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
             var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 500, 25, 0);
             if (-1 != c) {
                 enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
-            } else if (10 > randFloat(100)) {
-                enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
+            } else if (10 > RMath.randFloat(100)) {
+                enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
             }
             if (1 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 if (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x) {
-                    enemyJointPosArray[enemyIdx][6].x += randFloat(-1);
-                    enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(-1);
+                    enemyJointPosArray[enemyIdx][6].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][2].x += randFloat(-1);
-                    enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][2].x += RMath.randFloat(-1);
+                    enemyJointPosArray[enemyIdx][2].y += RMath.randFloatRange(-1, -1);
                 }
                 if (enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x) {
-                    enemyJointPosArray[enemyIdx][8].x += randFloat(-1);
-                    enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][8].x += RMath.randFloat(-1);
+                    enemyJointPosArray[enemyIdx][8].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][4].x += randFloat(-1);
-                    enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][4].x += RMath.randFloat(-1);
+                    enemyJointPosArray[enemyIdx][4].y += RMath.randFloatRange(-1, -1);
                 }
-                if (1 > randFloat(100)) {
+                if (1 > RMath.randFloat(100)) {
                     --enemyJointPosArray[enemyIdx][0].x;
                     enemyJointPosArray[enemyIdx][0].y -= 3;
                 }
             } else {
                 if (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x) {
-                    enemyJointPosArray[enemyIdx][2].x += randFloat(1);
-                    enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][2].x += RMath.randFloat(1);
+                    enemyJointPosArray[enemyIdx][2].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][6].x += randFloat(1);
-                    enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(1);
+                    enemyJointPosArray[enemyIdx][6].y += RMath.randFloatRange(-1, -1);
                 }
                 if (enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x) {
-                    enemyJointPosArray[enemyIdx][4].x += randFloat(1);
-                    enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][4].x += RMath.randFloat(1);
+                    enemyJointPosArray[enemyIdx][4].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][8].x += randFloat(1);
-                    enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1);
+                    enemyJointPosArray[enemyIdx][8].x += RMath.randFloat(1);
+                    enemyJointPosArray[enemyIdx][8].y += RMath.randFloatRange(-1, -1);
                 }
-                if (1 > randFloat(100)) {
+                if (1 > RMath.randFloat(100)) {
                     enemyJointPosArray[enemyIdx][0].x += 1;
                     enemyJointPosArray[enemyIdx][0].y -= 3;
                 }
@@ -6581,8 +6568,8 @@ function enemyUpdateFunc8(enemyIdx) {
             enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             enemyDeathTimerArray[enemyIdx] = 0;
             for (b = 1; 9 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
             onEnemyDeath(enemyIdx);
         }
@@ -6605,10 +6592,10 @@ function enemyUpdateFunc8(enemyIdx) {
 
 
 function enemyUpdateFunc9(enemyIdx) {
-    var b, c = new Vec2(),
+    var b, c = new RMath.Vec2(),
         d = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        if (1 > randFloat(2)) {
+        if (1 > RMath.randFloat(2)) {
             enemyJointPosArray[enemyIdx][0].x += 0;
             enemyJointPosArray[enemyIdx][1].x += 2;
             enemyJointPosArray[enemyIdx][2].x += 4;
@@ -6626,16 +6613,16 @@ function enemyUpdateFunc9(enemyIdx) {
     } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
         for (b = 1; 5 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
-        Vec2Set(c, 0, 0);
+        RMath.Vec2Set(c, 0, 0);
         b = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 150, 50, 0);
         if (-1 != b) {
-            Vec2Sub(c, heroJointPositionsByHero[b][2], enemyJointPosArray[enemyIdx][0]);
-            b = Vec2Norm(c);
+            RMath.Vec2Sub(c, heroJointPositionsByHero[b][2], enemyJointPosArray[enemyIdx][0]);
+            b = RMath.Vec2Norm(c);
             b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] / 2 - 10;
             if (0 > b) {
-                Vec2Scale(c, -.01);
+                RMath.Vec2Scale(c, -.01);
             } else {
-                Vec2Scale(c, .01);
+                RMath.Vec2Scale(c, .01);
             }
         }
         b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
@@ -6658,9 +6645,9 @@ function enemyUpdateFunc9(enemyIdx) {
         if (0 <= b && 23 >= b) {
             c.y -= .03;
         }
-        if (2 > randFloat(100)) {
-            c.x += randFloatRange(-.5, .5);
-            c.y += randFloatRange(-.5, .5);
+        if (2 > RMath.randFloat(100)) {
+            c.x += RMath.randFloatRange(-.5, .5);
+            c.y += RMath.randFloatRange(-.5, .5);
         }
         enemyJointPosArray[enemyIdx][0].add(c);
         c = .1;
@@ -6676,8 +6663,8 @@ function enemyUpdateFunc9(enemyIdx) {
         if (0 >= enemyHealthArray[enemyIdx]) {
             enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             for (b = enemyDeathTimerArray[enemyIdx] = 0; 5 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-2, 2);
-                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 4);
+                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-2, 2);
+                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 4);
             }
             onEnemyDeath(enemyIdx);
         }
@@ -6721,13 +6708,13 @@ function drawEnemies() { // Cg
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             } else {
-                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 15, -15, primTint, secTint, floor(128 * (50 - enemyDeathTimerArray[enemyIdx]) / 50));
+                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 15, -15, primTint, secTint, RMath.floor(128 * (50 - enemyDeathTimerArray[enemyIdx]) / 50));
             }
         } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyBoxSnakeBehaviorIdx) {
             drawRectCentered(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y - 2 * k, 4 * k, 4 * k, accentTint);
             drawRectCentered(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y - 2.5 * k, 5 * k, 5 * k, accentTint);
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                k = max(1, k);
+                k = RMath.max(1, k);
             }
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * k + 1, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
         } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyBatBehaviorIdx) {
@@ -6738,7 +6725,7 @@ function drawEnemies() { // Cg
             drawLine(enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, accentTint);
             drawLine(enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, accentTint);
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                k = max(1, k);
+                k = RMath.max(1, k);
             }
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
         } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyDragonBehaviorIdx) {
@@ -6749,7 +6736,7 @@ function drawEnemies() { // Cg
                 _b = enemyPoseTrailWriteIdxArray[enemyIdx] - 20 - 1;
             }
             for (; _a < _b; _a++) drawLine(enemyJointPosArray[enemyIdx][_a].x, enemyJointPosArray[enemyIdx][_a].y, enemyJointPosArray[enemyIdx][_a + 1].x, enemyJointPosArray[enemyIdx][_a + 1].y, accentTint);
-            drawRectCentered(floor(enemyJointPosArray[enemyIdx][_b].x) + 1, floor(enemyJointPosArray[enemyIdx][_b].y) + 1, floor(2 * k), floor(2 * k), primTint);
+            drawRectCentered(RMath.floor(enemyJointPosArray[enemyIdx][_b].x) + 1, RMath.floor(enemyJointPosArray[enemyIdx][_b].y) + 1, RMath.floor(2 * k), RMath.floor(2 * k), primTint);
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
         } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx || enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
             drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
@@ -6771,7 +6758,7 @@ function drawEnemies() { // Cg
             let leftHanded = enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx ? -2 : 2;
             let startI = 20 >= enemyPoseTrailWriteIdxArray[enemyIdx] ? enemyPoseTrailWriteIdxArray[enemyIdx] - 1 : enemyPoseTrailWriteIdxArray[enemyIdx] - 21;
             for (let _i = startI; 0 < _i; _i--) 
-                drawRectOutlineCentered(floor(enemyJointPosArray[enemyIdx][_i].x), floor(enemyJointPosArray[enemyIdx][_i].y + leftHanded), 5, 5, accentTint);
+                drawRectOutlineCentered(RMath.floor(enemyJointPosArray[enemyIdx][_i].x), RMath.floor(enemyJointPosArray[enemyIdx][_i].y + leftHanded), 5, 5, accentTint);
             if (enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx) {
                 drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             } else {
@@ -6782,7 +6769,7 @@ function drawEnemies() { // Cg
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 drawLine(enemyJointPosArray[enemyIdx][drawScale].x, enemyJointPosArray[enemyIdx][drawScale].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
             }
-            drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[enemyIdx][0].x), floor(enemyJointPosArray[enemyIdx][0].y), floor(16 * k), floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+            drawSpriteSheetPartCentered(enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
         } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc7Idx) {
             let _a = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
             for (let _i = 1; _i < _a; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x - 1, enemyJointPosArray[enemyIdx][_i].y - 1, enemyJointPosArray[enemyIdx][_i + 1].x - 1, enemyJointPosArray[enemyIdx][_i + 1].y - 1, accentTint);
@@ -6802,7 +6789,7 @@ function drawEnemies() { // Cg
             }
             drawLine(enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, secTint);
             drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, secTint);
-            drawSpriteSheetPartCentered(enemySpriteSheet, floor(enemyJointPosArray[enemyIdx][0].x), floor(enemyJointPosArray[enemyIdx][0].y), floor(16 * k), floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+            drawSpriteSheetPartCentered(enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
         } else {
             if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc10Idx) {
                 drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
@@ -6811,7 +6798,7 @@ function drawEnemies() { // Cg
                 drawLine(enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
                 drawRectOutlineCentered(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, 6 * k + 1, 6 * k + 1, accentTint);
                 if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                    k = max(1, k);
+                    k = RMath.max(1, k);
                 }
                 drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             }
@@ -6822,10 +6809,10 @@ function drawEnemies() { // Cg
             enemyAuxStateArray[enemyIdx]--;
             if (enemyHealthArray[enemyIdx] > 0) {
                 let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
-                drawRect(floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale, 14 * drawScale, 1, 10027008);
+                drawRect(RMath.floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale, 14 * drawScale, 1, 10027008);
                 drawRect(
-                    floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale,
-                    floor(14 * drawScale * enemyHealthArray[enemyIdx] / enemyCatalog[enemyTypeArray[enemyIdx]][enemyHealthCol]), 1, 52224
+                    RMath.floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale,
+                    RMath.floor(14 * drawScale * enemyHealthArray[enemyIdx] / enemyCatalog[enemyTypeArray[enemyIdx]][enemyHealthCol]), 1, 52224
                 )
             }
         }
@@ -6839,7 +6826,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         primTint = enemyCatalog[_typeIdx][enemyPrimaryTintCol],
         secTint = enemyCatalog[_typeIdx][enemySecondaryTintCol],
         accentTint = enemyCatalog[_typeIdx][enemyAccentTintCol];
-    _scale = clamp(enemyCatalog[_typeIdx][enemyDrawScaleCol], 1, _scale);
+    _scale = RMath.clamp(enemyCatalog[_typeIdx][enemyDrawScaleCol], 1, _scale);
     let yAnchor = enemySpriteAnchorYBySpriteIndex[spriteIdx],
         posY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         posX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -6895,7 +6882,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawLine(posY[1], posX[1], posY[2], posX[2], accentTint);
         drawLine(posY[2], posX[2], posY[3], posX[3], accentTint);
         drawLine(posY[3], posX[3], posY[4], posX[4], accentTint);
-        drawRectCentered(floor(posY[5]), floor(posX[5]), floor(2 * _scale), floor(2 * _scale), primTint);
+        drawRectCentered(RMath.floor(posY[5]), RMath.floor(posX[5]), RMath.floor(2 * _scale), RMath.floor(2 * _scale), primTint);
         drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
     } else if (behaviorIdx == enemyStickmanBehaviorIdx) {
         posY[0] = _px + 0 * _scale;
@@ -6958,7 +6945,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         for (_px = 1; 6 > _px; _px++) drawLine(posY[_px], posX[_px], posY[_px + 1], posX[_px + 1], secTint);
         drawLine(posY[_px], posX[_px], posY[1], posX[1], secTint);
         drawSpriteSheetPartCentered(
-            enemySpriteSheet, floor(posY[0]), floor(posX[0]), floor(16 * _scale), floor(16 * _scale), 
+            enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
             16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
         );
     } else if (behaviorIdx == enemyUpdateFunc7Idx) {
@@ -6967,7 +6954,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 10 * _scale;
         for (_px = 0; _px < behaviorIdx; _px++) {
-            _py = 360 * _px / behaviorIdx * PI / 180;
+            _py = 360 * _px / behaviorIdx * RMath.PI / 180;
             posY[_px + 1] = posY[0] + Math.cos(_py) * _typeIdx * _scale;
             posX[_px + 1] = posX[0] + Math.sin(_py) * _typeIdx * _scale;
         }
@@ -6994,16 +6981,16 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         posX[7] = _py - 5 * _scale;
         posY[8] = _px + 5 * _scale;
         posX[8] = _py - 0 * _scale;
-        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[1]), floor(posX[1]), secTint);
-        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[3]), floor(posX[3]), secTint);
-        drawLine(floor(posY[1]), floor(posX[1]), floor(posY[2]), floor(posX[2]), secTint);
-        drawLine(floor(posY[3]), floor(posX[3]), floor(posY[4]), floor(posX[4]), secTint);
-        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[5]), floor(posX[5]), secTint);
-        drawLine(floor(posY[0]), floor(posX[0]), floor(posY[7]), floor(posX[7]), secTint);
-        drawLine(floor(posY[5]), floor(posX[5]), floor(posY[6]), floor(posX[6]), secTint);
-        drawLine(floor(posY[7]), floor(posX[7]), floor(posY[8]), floor(posX[8]), secTint);
+        drawLine(RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(posY[1]), RMath.floor(posX[1]), secTint);
+        drawLine(RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(posY[3]), RMath.floor(posX[3]), secTint);
+        drawLine(RMath.floor(posY[1]), RMath.floor(posX[1]), RMath.floor(posY[2]), RMath.floor(posX[2]), secTint);
+        drawLine(RMath.floor(posY[3]), RMath.floor(posX[3]), RMath.floor(posY[4]), RMath.floor(posX[4]), secTint);
+        drawLine(RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(posY[5]), RMath.floor(posX[5]), secTint);
+        drawLine(RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(posY[7]), RMath.floor(posX[7]), secTint);
+        drawLine(RMath.floor(posY[5]), RMath.floor(posX[5]), RMath.floor(posY[6]), RMath.floor(posX[6]), secTint);
+        drawLine(RMath.floor(posY[7]), RMath.floor(posX[7]), RMath.floor(posY[8]), RMath.floor(posX[8]), secTint);
         drawSpriteSheetPartCentered(
-            enemySpriteSheet, floor(posY[0]), floor(posX[0]), floor(16 * _scale), floor(16 * _scale), 
+            enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
             16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
         );
     } else if (behaviorIdx == enemyUpdateFunc10Idx) {
@@ -7045,9 +7032,9 @@ let projectileCount = 0,
     projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
     projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
     projectilePosition = Array(1E3);                    // jl, projectile position Vec2 — world position when free, local offset when attached.
-for (let _i = 0; 1E3 > _i; _i++) projectilePosition[_i] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) projectilePosition[_i] = new RMath.Vec2;
 let projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
-for (let _i = 0; 1E3 > _i; _i++) projectileVelocity[_i] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) projectileVelocity[_i] = new RMath.Vec2;
 let projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
     projectileDrawMode = new Int32Array(1E3),           // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
     projectileSpriteTileIndex = new Int32Array(1E3),    // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
@@ -7123,8 +7110,8 @@ function spawnProjectile(
     if (projectileCount >= 1E3) return;
     projectileOwnerIdx[projectileCount] = _parent;
     projectileJointPair[projectileCount] = jointPair;
-    Vec2Set(projectilePosition[projectileCount], _px, _py);
-    Vec2Set(projectileVelocity[projectileCount], _vx, _vy);
+    RMath.Vec2Set(projectilePosition[projectileCount], _px, _py);
+    RMath.Vec2Set(projectileVelocity[projectileCount], _vx, _vy);
     projectileImpactState[projectileCount] = 0;
     projectileDrawMode[projectileCount] = drawMode;
     projectileSpriteTileIndex[projectileCount] = tileIdx;
@@ -7135,7 +7122,7 @@ function spawnProjectile(
     projectileShapeMode[projectileCount] = shape;
     projectileHitboxWidth[projectileCount] = hitboxWidth;
     projectileHitboxHeight[projectileCount] = hitboxHeight;
-    projectileSpawnDelayFrames[projectileCount] = floor(randFloat(spawnDelay));
+    projectileSpawnDelayFrames[projectileCount] = RMath.floor(RMath.randFloat(spawnDelay));
     projectileHitCooldownFrames[projectileCount] = hitCooldown;
     projectileImpactAge[projectileCount] = impactAge;
     projectileImpactLifetime[projectileCount] = impactLife;
@@ -7241,8 +7228,8 @@ function deleteProjectile(projIdx) { // jm
 function moveProjectileWithCollision(projIdx, vel) { // km
     var c = 0;
     vel.set(projectileVelocity[projIdx]);
-    var d = floor(Vec2Mag(vel) / 4) + 1;
-    Vec2Scale(vel, 1 / d);
+    var d = RMath.floor(RMath.Vec2Mag(vel) / 4) + 1;
+    RMath.Vec2Scale(vel, 1 / d);
     for (var f, g, h = 0; h < d; h++) {
         f = projectilePosition[projIdx].y + vel.y;
         g = getStageTileAt(projectilePosition[projIdx].x, f);
@@ -7284,11 +7271,11 @@ function moveProjectileWithCollision(projIdx, vel) { // km
 
 
 function updateProjectiles() { // Bg
-    let a, b, c, d = new Vec2(),
-        f = new Vec2(),
-        g = new Vec2(),
-        h = new Vec2(),
-        k = new Vec2(),
+    let a, b, c, d = new RMath.Vec2(),
+        f = new RMath.Vec2(),
+        g = new RMath.Vec2(),
+        h = new RMath.Vec2(),
+        k = new RMath.Vec2(),
         p, t, l;
     for (a = 0; a < projectileCount; a++){
         if (-64 > projectilePosition[a].x || 704 < projectilePosition[a].x) {
@@ -7306,16 +7293,16 @@ function updateProjectiles() { // Bg
                 b = 0 <= projectileOwnerIdx[a] ? findEnemyInArea(projectilePosition[a].x, projectilePosition[a].y, b, b) : findNearestPartyMemberInRect(projectilePosition[a].x, projectilePosition[a].y, b, b, 0);
                 if (-1 != b) {
                     if (0 <= projectileOwnerIdx[a]) {
-                        Vec2Sub(d, enemyJointPosArray[b][0], projectilePosition[a]);
+                        RMath.Vec2Sub(d, enemyJointPosArray[b][0], projectilePosition[a]);
                     } else {
-                        Vec2Sub(d, heroJointPositionsByHero[b][0], projectilePosition[a]);
+                        RMath.Vec2Sub(d, heroJointPositionsByHero[b][0], projectilePosition[a]);
                     }
-                    Vec2Norm(d);
-                    b = Vec2Mag(projectileVelocity[a]);
-                    projectileVelocity[a].x = .85 * projectileVelocity[a].x + .15 * d.x + randFloatRange(-.1, .1);
-                    projectileVelocity[a].y = .85 * projectileVelocity[a].y + .15 * d.y + randFloatRange(-.1, .1);
-                    Vec2Norm(projectileVelocity[a]);
-                    Vec2Scale(projectileVelocity[a], max(b, 1));
+                    RMath.Vec2Norm(d);
+                    b = RMath.Vec2Mag(projectileVelocity[a]);
+                    projectileVelocity[a].x = .85 * projectileVelocity[a].x + .15 * d.x + RMath.randFloatRange(-.1, .1);
+                    projectileVelocity[a].y = .85 * projectileVelocity[a].y + .15 * d.y + RMath.randFloatRange(-.1, .1);
+                    RMath.Vec2Norm(projectileVelocity[a]);
+                    RMath.Vec2Scale(projectileVelocity[a], RMath.max(b, 1));
                 }
             }
             if (0 == projectileAttachJointIndex[a]) {
@@ -7327,13 +7314,13 @@ function updateProjectiles() { // Bg
                     c = projectileOwnerIdx[a];
                     l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray;
                     c = 0 <= c ? c : -c - 1;
-                    Vec2Sub(d, projectilePosition[a], l[c][projectileAttachJointIndex[a]]);
+                    RMath.Vec2Sub(d, projectilePosition[a], l[c][projectileAttachJointIndex[a]]);
                 }
-                Vec2Norm(d);
-                Vec2Scale(d, .01 * -projectileAcceleration[a]);
+                RMath.Vec2Norm(d);
+                RMath.Vec2Scale(d, .01 * -projectileAcceleration[a]);
                 projectileVelocity[a].add(d);
             }
-            Vec2Scale(projectileVelocity[a], .01 * projectileVelocityScale[a]);
+            RMath.Vec2Scale(projectileVelocity[a], .01 * projectileVelocityScale[a]);
             b = 0;
             if (0 > projectileJointPair[a]) {
                 b = moveProjectileWithCollision(a, d);
@@ -7350,13 +7337,13 @@ function updateProjectiles() { // Bg
                 l = 0 <= c ? heroJointPositionsByHero : enemyJointPosArray;
                 c = 0 <= c ? c : -c - 1;
                 if (p == t) {
-                    Vec2Add(h, l[c][p], projectilePosition[a]);
+                    RMath.Vec2Add(h, l[c][p], projectilePosition[a]);
                     k.set(projectileVelocity[a]);
                 } else {
-                    Vec2Sub(g, l[c][t], l[c][p]);
-                    Vec2Norm(g);
+                    RMath.Vec2Sub(g, l[c][t], l[c][p]);
+                    RMath.Vec2Norm(g);
                     f.set(g);
-                    Vec2Rotate(f);
+                    RMath.Vec2Rotate(f);
                     h.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + l[c][p].x;
                     h.y = f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + l[c][p].y;
                     k.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y;
@@ -7364,7 +7351,7 @@ function updateProjectiles() { // Bg
                 }
             }
             p = 1;
-            if (1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a] && projectileEffectDuration[a] <= randFloat(60)) {
+            if (1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a] && projectileEffectDuration[a] <= RMath.randFloat(60)) {
                 p = 0;
             }
             if (0 < projectileHitCooldownFrames[a]) {
@@ -7400,22 +7387,22 @@ function updateProjectiles() { // Bg
                 if (1 <= projectileImpactSpawnMode[a] && 9 >= projectileImpactSpawnMode[a]) {
                     for (b = 0; b < projectileChildCount[a]; b++) {
                         if (1 == projectileImpactSpawnMode[a]) {
-                            Vec2Set(d, 0, 0);
+                            RMath.Vec2Set(d, 0, 0);
                         } else if (2 == projectileImpactSpawnMode[a] || 3 == projectileImpactSpawnMode[a]) {
-                            c = floor(randFloat(512));
-                            p = randFloatRange(.1, projectileChildSpeed[a]);
-                            d.x = rotationLUT[c][0] * p;
-                            d.y = rotationLUT[c][1] * p;
+                            c = RMath.floor(RMath.randFloat(512));
+                            p = RMath.randFloatRange(.1, projectileChildSpeed[a]);
+                            d.x = RMath.rotationLUT[c][0] * p;
+                            d.y = RMath.rotationLUT[c][1] * p;
                             if (0 < d.y && 2 == projectileImpactSpawnMode[a]) {
                                 d.y = -d.y;
                             }
                         } else if (4 == projectileImpactSpawnMode[a]) {
-                            Vec2Norm(k);
-                            Vec2Scale(k, randFloatRange(.1, .1 * projectileSpawnParam[a]));
-                            c = floor(randFloat(512));
-                            p = randFloatRange(0, .1 * projectileChildSpeed[a]);
-                            d.x = k.x + rotationLUT[c][0] * p;
-                            d.y = k.y + rotationLUT[c][1] * p;
+                            RMath.Vec2Norm(k);
+                            RMath.Vec2Scale(k, RMath.randFloatRange(.1, .1 * projectileSpawnParam[a]));
+                            c = RMath.floor(RMath.randFloat(512));
+                            p = RMath.randFloatRange(0, .1 * projectileChildSpeed[a]);
+                            d.x = k.x + RMath.rotationLUT[c][0] * p;
+                            d.y = k.y + RMath.rotationLUT[c][1] * p;
                         }
                         spawnProjectile(
                             projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], 
@@ -7429,10 +7416,10 @@ function updateProjectiles() { // Bg
             } else if (-1 != c && 20 <= projectileImpactSpawnMode[a] && 29 >= projectileImpactSpawnMode[a]) {
                 for (b = 0; b < projectileChildCount[a]; b++) {
                     if (20 == projectileImpactSpawnMode[a]) {
-                        c = floor(512 * Vec2Angle(k) / TAU);
-                        c = c + randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]) & 511;
-                        d.x = rotationLUT[c][0] * projectileChildSpeed[a];
-                        d.y = -rotationLUT[c][1] * projectileChildSpeed[a];
+                        c = RMath.floor(512 * RMath.Vec2Angle(k) / RMath.TAU);
+                        c = c + RMath.randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]) & 511;
+                        d.x = RMath.rotationLUT[c][0] * projectileChildSpeed[a];
+                        d.y = -RMath.rotationLUT[c][1] * projectileChildSpeed[a];
                     }
                     spawnProjectile(
                         projectileOwnerIdx[a], -1, h.x, h.y, d.x, d.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a],
@@ -7454,9 +7441,9 @@ function updateProjectiles() { // Bg
                 projectileImpactState[a] = 1;
             }
             if (10 == projectileImpactSpawnMode[a]) {
-                if (randFloat(60) < projectileChildCount[a]) {
-                    Vec2Norm(k);
-                    Vec2Scale(k, .1 * projectileChildSpeed[a]);
+                if (RMath.randFloat(60) < projectileChildCount[a]) {
+                    RMath.Vec2Norm(k);
+                    RMath.Vec2Scale(k, .1 * projectileChildSpeed[a]);
                     spawnProjectile(
                         projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], 
                         projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], 
@@ -7466,13 +7453,13 @@ function updateProjectiles() { // Bg
                     );
                 }
             } else if (11 == projectileImpactSpawnMode[a]) {
-                if (randFloat(60) < projectileChildCount[a]) {
-                    Vec2Norm(k);
-                    p = randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]);
+                if (RMath.randFloat(60) < projectileChildCount[a]) {
+                    RMath.Vec2Norm(k);
+                    p = RMath.randFloatRange(-projectileSpawnParam[a], projectileSpawnParam[a]);
                     h.x += k.x * p;
                     h.y += k.y * p;
-                    Vec2Rotate(k);
-                    Vec2Scale(k, .1 * projectileChildSpeed[a]);
+                    RMath.Vec2Rotate(k);
+                    RMath.Vec2Scale(k, .1 * projectileChildSpeed[a]);
                     spawnProjectile(
                         projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], 
                         projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], 
@@ -7482,11 +7469,11 @@ function updateProjectiles() { // Bg
                     );
                 }
             } else if (12 == projectileImpactSpawnMode[a]) {
-                if (randFloat(60) < projectileChildCount[a]) {
-                    c = floor(randFloat(512));
-                    p = randFloatRange(.1 * projectileSpawnParam[a], .1 * projectileChildSpeed[a]);
-                    k.x = rotationLUT[c][0] * p;
-                    k.y = rotationLUT[c][1] * p;
+                if (RMath.randFloat(60) < projectileChildCount[a]) {
+                    c = RMath.floor(RMath.randFloat(512));
+                    p = RMath.randFloatRange(.1 * projectileSpawnParam[a], .1 * projectileChildSpeed[a]);
+                    k.x = RMath.rotationLUT[c][0] * p;
+                    k.y = RMath.rotationLUT[c][1] * p;
                     spawnProjectile(
                         projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], 
                         projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], 
@@ -7496,12 +7483,12 @@ function updateProjectiles() { // Bg
                     );
                 }
             } else if (13 == projectileImpactSpawnMode[a]) {
-                if (randFloat(60) < projectileSpawnParam[a])
-                    for (c = floor(randFloat(512)), b = 0; b < projectileChildCount[a]; b++) {
-                        c = c + floor(512 / projectileChildCount[a]) & 511;
+                if (RMath.randFloat(60) < projectileSpawnParam[a])
+                    for (c = RMath.floor(RMath.randFloat(512)), b = 0; b < projectileChildCount[a]; b++) {
+                        c = c + RMath.floor(512 / projectileChildCount[a]) & 511;
                         p = .1 * projectileChildSpeed[a];
-                        k.x = rotationLUT[c][0] * p;
-                        k.y = rotationLUT[c][1] * p;
+                        k.x = RMath.rotationLUT[c][0] * p;
+                        k.y = RMath.rotationLUT[c][1] * p;
                         spawnProjectile(
                             projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], 
                             projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], 
@@ -7511,12 +7498,12 @@ function updateProjectiles() { // Bg
                         );
                     }
             } else if (14 == projectileImpactSpawnMode[a]) {
-                if (randFloat(60) < projectileSpawnParam[a] && (c = findEnemyInArea(h.x, h.y, 200, 200), -1 != c))
-                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, Vec2Norm(d), b = 0; b < projectileChildCount[a]; b++) {
-                        c = floor(randFloat(512));
-                        p = .1 * randFloat(projectileChildCount[a] - 1);
-                        k.x = d.x * projectileChildSpeed[a] * .1 + rotationLUT[c][0] * p;
-                        k.y = d.y * projectileChildSpeed[a] * .1 + rotationLUT[c][1] * p;
+                if (RMath.randFloat(60) < projectileSpawnParam[a] && (c = findEnemyInArea(h.x, h.y, 200, 200), -1 != c))
+                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, RMath.Vec2Norm(d), b = 0; b < projectileChildCount[a]; b++) {
+                        c = RMath.floor(RMath.randFloat(512));
+                        p = .1 * RMath.randFloat(projectileChildCount[a] - 1);
+                        k.x = d.x * projectileChildSpeed[a] * .1 + RMath.rotationLUT[c][0] * p;
+                        k.y = d.y * projectileChildSpeed[a] * .1 + RMath.rotationLUT[c][1] * p;
                         spawnProjectile(
                             projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], 
                             projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], 
@@ -7526,9 +7513,9 @@ function updateProjectiles() { // Bg
                         );
                     }
             } else if (15 == projectileImpactSpawnMode[a]) {
-                if (randFloat(60) < projectileChildCount[a]) {
-                    Vec2Norm(k);
-                    Vec2Scale(k, projectileChildSpeed[a]);
+                if (RMath.randFloat(60) < projectileChildCount[a]) {
+                    RMath.Vec2Norm(k);
+                    RMath.Vec2Scale(k, projectileChildSpeed[a]);
                     spawnProjectile(
                         projectileOwnerIdx[a], -1, h.x, h.y, k.x, k.y, projectileTmplSpeed[a], projectileTmplElementType[a], projectileTmplElementBonus[a], projectileTmplParam1[a], 
                         projectileTmplAttackMode[a], projectileTmplParam2[a], projectileTmplAux1[a], projectileTmplAux2[a], projectileTmplAuxValueA[a], projectileTmplAuxValueB[a], 
@@ -7549,7 +7536,7 @@ function updateProjectiles() { // Bg
 function drawProjectiles() {
     // Eg
     var a, b, c, d, 
-    f = new Vec2(), g = new Vec2(), h = new Vec2(), k = new Vec2(), p = new Vec2(), t = new Vec2(), 
+    f = new RMath.Vec2(), g = new RMath.Vec2(), h = new RMath.Vec2(), k = new RMath.Vec2(), p = new RMath.Vec2(), t = new RMath.Vec2(), 
     l, n, w, B;
 
     for (a = 0; a < projectileCount; a++)
@@ -7557,12 +7544,12 @@ function drawProjectiles() {
             b = (projectileSpriteTileIndex[a] & 7) << 4;
             c = projectileSpriteTileIndex[a] >> 3 << 4;
             if (1 == projectileImpactState[a]) {
-                d = floor((projectileTintColor[a] >> 24 & 255) * (projectileImpactLifetime[a] - projectileImpactAge[a]) / projectileImpactLifetime[a]) << 24 | projectileTintColor[a] & 16777215;
+                d = RMath.floor((projectileTintColor[a] >> 24 & 255) * (projectileImpactLifetime[a] - projectileImpactAge[a]) / projectileImpactLifetime[a]) << 24 | projectileTintColor[a] & 16777215;
             } else {
                 d = projectileTintColor[a];
             }
             if (0 < projectileHitCooldownFrames[a]) {
-                d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215;
+                d = RMath.floor((d >> 24 & 255) / 2) << 24 | d & 16777215;
             }
             isSolidRender = projectileSolidRenderMode[a];
             spriteAltRenderFlag = 1;
@@ -7576,13 +7563,13 @@ function drawProjectiles() {
                 B = 0 <= l ? heroJointPositionsByHero : enemyJointPosArray;
                 l = 0 <= l ? l : -l - 1;
                 if (n == w) {
-                    Vec2Add(p, B[l][n], projectilePosition[a]);
+                    RMath.Vec2Add(p, B[l][n], projectilePosition[a]);
                     t.set(projectileVelocity[a]);
                 } else {
-                    Vec2Sub(g, B[l][w], B[l][n]);
-                    Vec2Norm(g);
+                    RMath.Vec2Sub(g, B[l][w], B[l][n]);
+                    RMath.Vec2Norm(g);
                     f.set(g);
-                    Vec2Rotate(f);
+                    RMath.Vec2Rotate(f);
                     p.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + B[l][n].x;
                     p.y = f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + B[l][n].y;
                     t.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y;
@@ -7593,13 +7580,13 @@ function drawProjectiles() {
                 drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
             } else if (1 == projectileDrawMode[a]) {
                 g.set(t);
-                Vec2Norm(g);
+                RMath.Vec2Norm(g);
                 f.set(g);
-                Vec2Rotate(f);
-                Vec2Scale(f, projectileSpriteWidth[a] >> 1);
-                Vec2Scale(g, projectileSpriteHeight[a] >> 1);
-                Vec2Sub(h, g, f);
-                Vec2Add(k, g, f);
+                RMath.Vec2Rotate(f);
+                RMath.Vec2Scale(f, projectileSpriteWidth[a] >> 1);
+                RMath.Vec2Scale(g, projectileSpriteHeight[a] >> 1);
+                RMath.Vec2Sub(h, g, f);
+                RMath.Vec2Add(k, g, f);
                 w = p.x + h.x;
                 B = p.y + h.y;
                 var M = b,
@@ -7661,8 +7648,8 @@ function drawProjectiles() {
                 x = l & 255;
                 for (b = n; b <= c; b++){  
                     l = scanlineMaxX[b] - scanlineMinX[b] + 1;
-                    n = floor((scanlineTexUEnd[b] - scanlineTexUStart[b]) / l);
-                    Fa = floor((scanlineTexVEnd[b] - scanlineTexVStart[b]) / l);
+                    n = RMath.floor((scanlineTexUEnd[b] - scanlineTexUStart[b]) / l);
+                    Fa = RMath.floor((scanlineTexVEnd[b] - scanlineTexVStart[b]) / l);
                     U = scanlineTexUStart[b];
                     na = scanlineTexVStart[b];
                     if (0 > scanlineMinX[b]) {
@@ -7717,7 +7704,7 @@ function drawProjectiles() {
                 l = -projectileOwnerIdx[a] - 1;
                 n = enemyCatalog[enemyTypeArray[l]][enemyBehaviorIdxCol];
                 w = enemyCatalog[enemyTypeArray[l]][enemySpriteIndexCol];
-                l = max(enemyCatalog[enemyTypeArray[l]][enemyDrawScaleCol], 1);
+                l = RMath.max(enemyCatalog[enemyTypeArray[l]][enemyDrawScaleCol], 1);
                 B = 0;
                 if (n == enemySlimeBehaviorIdx || n == enemyBoxSnakeBehaviorIdx) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
                 drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
@@ -7727,9 +7714,9 @@ function drawProjectiles() {
 }
 let popupCount = 0, // aj
     popupPos = Array(1E3); // rm
-for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new RMath.Vec2;
 let popupVel = Array(1E3); // sm
-for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new Vec2;
+for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new RMath.Vec2;
 let popupValue = Array(1E3), // tm
     popupLife = new Int32Array(1E3), // um
     popupColor = new Int32Array(1E3); // vm
@@ -7742,13 +7729,13 @@ function clearPopups() { // wm
 
 function spawnPopup(x, y, vx, vy, life, color) { // Lg
     if (1E3 != popupCount) {
-        x = clamp(x, 16, 623);
-        y = clamp(y, 8, 351);
-        Vec2Set(popupPos[popupCount], x, y);
-        Vec2Set(popupVel[popupCount], vx, -2);
+        x = RMath.clamp(x, 16, 623);
+        y = RMath.clamp(y, 8, 351);
+        RMath.Vec2Set(popupPos[popupCount], x, y);
+        RMath.Vec2Set(popupVel[popupCount], vx, -2);
         if (0 != vx) {
-            popupVel[popupCount].x += randFloatRange(-.2, .2);
-            if (popupVel[popupCount].y += randFloatRange(-.2, .2)) {
+            popupVel[popupCount].x += RMath.randFloatRange(-.2, .2);
+            if (popupVel[popupCount].y += RMath.randFloatRange(-.2, .2)) {
 
                 popupValue[popupCount] = vy;
                 popupLife[popupCount] = life;
@@ -7778,16 +7765,16 @@ function updatePopups() { // Ag
             var b = popupPos[a],
                 c = popupVel[a];
             c.y += 0;
-            Vec2Scale(c, .95);
+            RMath.Vec2Scale(c, .95);
         } else {
             b = popupPos[a];
             c = popupVel[a];
             c.y += .05;
-            Vec2Scale(c, .99);
+            RMath.Vec2Scale(c, .99);
         }
         b.add(c);
-        popupPos[a].x = clamp(popupPos[a].x, 16, 623);
-        popupPos[a].y = clamp(popupPos[a].y, 8, 351);
+        popupPos[a].x = RMath.clamp(popupPos[a].x, 16, 623);
+        popupPos[a].y = RMath.clamp(popupPos[a].y, 8, 351);
         popupLife[a]--;
         if (0 >= popupLife[a]) {
             removePopup(a--);
@@ -7805,7 +7792,7 @@ function drawPopups() { // Fg
             b = popupColor[a] >> 16 & 255;
             c = popupColor[a] >> 8 & 255;
             d = popupColor[a] & 255;
-            f = floor(255 * min(popupLife[a], 20) / 20);
+            f = RMath.floor(255 * RMath.min(popupLife[a], 20) / 20);
             drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7);
         }
 
@@ -7813,9 +7800,9 @@ function drawPopups() { // Fg
 
 let dropCount = 0, // ym
     dropPos = Array(100); // zm
-for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new Vec2;
+for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
 let dropVel = Array(100); // Am
-for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new Vec2;
+for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new RMath.Vec2;
 let dropType = new Int32Array(100), // Bm, in id
     dropValue = new Int32Array(100), // Cm, value/amount
     dropMeta = new Int32Array(100), // Dm, rarity/state
@@ -7830,13 +7817,13 @@ function clearDrops() { // bj
 
 function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
     if (100 != dropCount) {
-        _x = clamp(_x, 16, 623);
-        _y = clamp(_y, 8, 351);
-        Vec2Set(dropPos[dropCount], _x, _y);
+        _x = RMath.clamp(_x, 16, 623);
+        _y = RMath.clamp(_y, 8, 351);
+        RMath.Vec2Set(dropPos[dropCount], _x, _y);
         dropVel[dropCount].x = mouseXCurrent < _x ?
-            randFloatRange(-.5, -1) :
-            randFloatRange(.5, 1);
-        dropVel[dropCount].y = randFloatRange(-1, -2);
+            RMath.randFloatRange(-.5, -1) :
+            RMath.randFloatRange(.5, 1);
+        dropVel[dropCount].y = RMath.randFloatRange(-1, -2);
         dropType[dropCount] = _tidx;
         dropValue[dropCount] = _val;
         dropMeta[dropCount] = _meta;
@@ -7882,8 +7869,8 @@ function updateDrops() { // zg
     // }
     for (a = 0; a < dropCount; a++) {
         dropVel[a].y += .04;
-        Vec2Scale(dropVel[a], .98);
-        c = clamp(dropPos[a].y + dropVel[a].y, 8, 8 * stageHeight + 16 - 1);
+        RMath.Vec2Scale(dropVel[a], .98);
+        c = RMath.clamp(dropPos[a].y + dropVel[a].y, 8, 8 * stageHeight + 16 - 1);
         b = getStageTileAt(dropPos[a].x, c);
         if (!(0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < dropVel[a].y)) {
             dropPos[a].y = c
@@ -7896,14 +7883,14 @@ function updateDrops() { // zg
             }
             removeDrop(a--);
         } else {
-            c = clamp(dropPos[a].x + dropVel[a].x, 16, 623);
+            c = RMath.clamp(dropPos[a].x + dropVel[a].x, 16, 623);
             b = getStageTileAt(c, dropPos[a].y);
             0 <= b && 23 >= b || (dropPos[a].x = c);
             if (100 > dropState[a]) {
                 dropState[a]++;
             } else if (-1 != findNearestPartyMemberInRect(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1)) {
                 if (2 == dropType[a]) {
-                    partyGold = clamp(partyGold + dropValue[a], 0, 9999999);
+                    partyGold = RMath.clamp(partyGold + dropValue[a], 0, 9999999);
                     spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960);
                 } else if (3 == dropType[a]) {
                     stageEventFlagArray[dropValue[a]] = 1;
@@ -7985,7 +7972,7 @@ function setupAnimRequest() {
         requestAnim(setupAnimRequest);
         requestAnimCallCount++;
         timestampAnim = Date.now();
-        var a = floor(60 * (timestampAnim - lastTimestamp) / 1E3 + .5);
+        var a = RMath.floor(60 * (timestampAnim - lastTimestamp) / 1E3 + .5);
         if (0 > a || 60 <= a) {
             requestAnimCallCount = 0;
             currentFPS = frameCountThisSecond;
@@ -8013,8 +8000,8 @@ function setupAnimRequest() {
         keyPressPending[a] = false;
     }
     
-    randSeed = randSeed + floor(1024 * rand()) & 1023;
-    randSeedStep = floor(512 * rand()) | 1;
+    RMath.setRandSeed((RMath.getRandSeed() + RMath.floor(1024 * RMath.rand())) & 1023);
+    RMath.setRandSeedStep(RMath.floor(512 * RMath.rand()) | 1);
 
     drawCanvas();
 
@@ -8063,7 +8050,7 @@ let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFram
 
 function computeFrameDelay() { // ag
     timestampAnim = Date.now();
-    let a = clamp(nextFrameTime - timestampAnim, 5, frameInteval);
+    let a = RMath.clamp(nextFrameTime - timestampAnim, 5, frameInteval);
     frameCountThisSecond++;
     totalFrames++;
     nextFrameTime += frameInteval;
@@ -8265,22 +8252,22 @@ function drawLine(x1, y1, x2, y2, color) {
     x2 -= x1;
     y2 -= y1;
     var g, h;
-    if (abs(x2) >= abs(y2)) {
-        h = floor(abs(x2));
+    if (RMath.abs(x2) >= RMath.abs(y2)) {
+        h = RMath.floor(RMath.abs(x2));
         if (0 != h) {
-            y2 = floor(65536 * y2 / h);
+            y2 = RMath.floor(65536 * y2 / h);
         }
         x2 = 0 <= x2 ? 65536 : -65536;
     } else {
-        h = floor(abs(y2));
+        h = RMath.floor(RMath.abs(y2));
         if (0 != h) {
-            x2 = floor(65536 * x2 / h);
+            x2 = RMath.floor(65536 * x2 / h);
         }
         y2 = 0 <= y2 ? 65536 : -65536;
     }
 
-    x1 = floor(65536 * x1) + 32768;
-    y1 = floor(65536 * y1) + 32768;
+    x1 = RMath.floor(65536 * x1) + 32768;
+    y1 = RMath.floor(65536 * y1) + 32768;
     if (0 == isSolidRender)
         for (; 0 <= h; h--, x1 += x2, y1 += y2)
             0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 || (
@@ -8601,12 +8588,12 @@ function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
 
 function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
     var f, g, h;
-    if (abs(_x1 - _x0) >= abs(_y1 - _y0)) {
+    if (RMath.abs(_x1 - _x0) >= RMath.abs(_y1 - _y0)) {
         _x0 >>= 16;
         _x1 >>= 16;
-        f = abs(_x1 - _x0);
+        f = RMath.abs(_x1 - _x0);
         _x1 = _x0 <= _x1 ? 1 : -1;
-        for (h = floor((_y1 - _y0) / max(f, 1)); 0 <= f; f--, _x0 += _x1, _y0 += h) {
+        for (h = RMath.floor((_y1 - _y0) / RMath.max(f, 1)); 0 <= f; f--, _x0 += _x1, _y0 += h) {
             if (0 == f) {
                 _y0 = _y1;
             }
@@ -8623,8 +8610,8 @@ function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
     } else {
         _y0 >>= 16;
         _y1 >>= 16;
-        f = abs(_y1 - _y0);
-        h = floor((_x1 - _x0) / max(f, 1));
+        f = RMath.abs(_y1 - _y0);
+        h = RMath.floor((_x1 - _x0) / RMath.max(f, 1));
         for (_y1 = _y0 <= _y1 ? 1 : -1; 0 <= f; f--, _x0 += h, _y0 += _y1) {
             if (0 == f) {
                 _x0 = _x1;
@@ -8643,11 +8630,11 @@ function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
 }
 
 function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay1) { // mm
-    var p = (max(abs(_x1 - _x0), abs(_y1 - _y0)) >> 16) + 1;
-    _x1 = floor((_x1 - _x0) / p);
-    _y1 = floor((_y1 - _y0) / p);
-    _ax1 = floor((_ax1 - _ax0) / p);
-    _ay1 = floor((_ay1 - _ay0) / p);
+    var p = (RMath.max(RMath.abs(_x1 - _x0), RMath.abs(_y1 - _y0)) >> 16) + 1;
+    _x1 = RMath.floor((_x1 - _x0) / p);
+    _y1 = RMath.floor((_y1 - _y0) / p);
+    _ax1 = RMath.floor((_ax1 - _ax0) / p);
+    _ay1 = RMath.floor((_ay1 - _ay0) / p);
     for (var t, l, n = 0; n < p; n++, _x0 += _x1, _y0 += _y1, _ax0 += _ax1, _ay0 += _ay1) {
         t = _x0 >> 16;
         l = _y0 >> 16;
@@ -8665,11 +8652,11 @@ function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay
         }
     }
 }
-var scratchVec2 = new Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
+var scratchVec2 = new RMath.Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
 
 function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { // T
-    Vec2Sub(scratchVec2, _a, _b);
-    _targetDist -= Vec2Norm(scratchVec2);
+    RMath.Vec2Sub(scratchVec2, _a, _b);
+    _targetDist -= RMath.Vec2Norm(scratchVec2);
     _weightA *= _targetDist;
     _weightB *= _targetDist;
     _a.x += scratchVec2.x * _weightA;
@@ -8679,10 +8666,10 @@ function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { //
 }
 
 function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
-    Vec2Sub(scratchVec2, _a, _b);
+    RMath.Vec2Sub(scratchVec2, _a, _b);
     _b.set(_a);
     scratchVec2.y += _yBias;
-    Vec2Scale(scratchVec2, _scale);
+    RMath.Vec2Scale(scratchVec2, _scale);
     _a.add(scratchVec2)
 }
 
@@ -8818,10 +8805,10 @@ function onMouseMove(mouseState) {
     var clientRect = canvasElement.getBoundingClientRect(),
         rectWidth = clientRect.right - clientRect.left,
         rectHeight = clientRect.bottom - clientRect.top,
-        f = min(rectWidth / CANVAS_WIDTH, rectHeight / CANVAS_HEIGHT),
-        rectHeight = floor(rectHeight / 2 - CANVAS_HEIGHT * f / 2);
-    mouseXRel = floor((mouseState.clientX - clientRect.left - floor(rectWidth / 2 - CANVAS_WIDTH * f / 2)) / f);
-    mouseYRel = floor((mouseState.clientY - clientRect.top - rectHeight) / f)
+        f = RMath.min(rectWidth / CANVAS_WIDTH, rectHeight / CANVAS_HEIGHT),
+        rectHeight = RMath.floor(rectHeight / 2 - CANVAS_HEIGHT * f / 2);
+    mouseXRel = RMath.floor((mouseState.clientX - clientRect.left - RMath.floor(rectWidth / 2 - CANVAS_WIDTH * f / 2)) / f);
+    mouseYRel = RMath.floor((mouseState.clientY - clientRect.top - rectHeight) / f)
     // LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
 }
 
@@ -8829,21 +8816,21 @@ function handleTouch(a) {
     var clientRect = canvasElement.getBoundingClientRect(),
         rectWidth = clientRect.right - clientRect.left,
         rectHeight = clientRect.bottom - clientRect.top,
-        f = min(rectWidth / 640, rectHeight / 432),
-        rectWidth = floor(rectWidth / 2 - 640 * f / 2),
-        rectHeight = floor(rectHeight / 2 - 432 * f / 2);
+        f = RMath.min(rectWidth / 640, rectHeight / 432),
+        rectWidth = RMath.floor(rectWidth / 2 - 640 * f / 2),
+        rectHeight = RMath.floor(rectHeight / 2 - 432 * f / 2);
     a = a.touches;
     console.log(a);
     activeTouchCount = a.length;
     if (1 == activeTouchCount) {
-        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
-        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
+        mouseXRel = RMath.floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        mouseYRel = RMath.floor((a[0].clientY - clientRect.top - rectHeight) / f);
     } else if (2 == activeTouchCount) {
-        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
-        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
-        rectHeight = floor((a[1].clientY - clientRect.top - rectHeight) / f);
-        mouseXRel = floor((mouseXRel + floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2);
-        mouseYRel = floor((mouseYRel + rectHeight) / 2);
+        mouseXRel = RMath.floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        mouseYRel = RMath.floor((a[0].clientY - clientRect.top - rectHeight) / f);
+        rectHeight = RMath.floor((a[1].clientY - clientRect.top - rectHeight) / f);
+        mouseXRel = RMath.floor((mouseXRel + RMath.floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2);
+        mouseYRel = RMath.floor((mouseYRel + rectHeight) / 2);
     }
 }
 
@@ -8859,138 +8846,13 @@ function promptInput(message, _default) {
     return c
 }
 
-function Vec2() {
-    this.y = this.x = 0
-}
-Vec2.prototype.set = function (a) {
-    this.x = a.x;
-    this.y = a.y;
-    return this
-};
 
-function Vec2Set(v, x, y) {
-    v.x = x;
-    v.y = y
-}
-Vec2.prototype.add = function (a) {
-    this.x += a.x;
-    this.y += a.y;
-    return this
-};
-
-function Vec2Add(a, b, c) {
-    a.x = b.x + c.x;
-    a.y = b.y + c.y
-}
-Vec2.prototype.sub = function (a) {
-    this.x -= a.x;
-    this.y -= a.y;
-    return this
-};
-
-function Vec2Sub(a, b, c) {
-    a.x = b.x - c.x;
-    a.y = b.y - c.y
-}
-
-function Vec2Scale(a, b) {
-    a.x *= b;
-    a.y *= b
-}
-
-function Vec2Rotate(a) {
-    var b = a.x;
-    a.x = a.y;
-    a.y = -b
-}
-
-function Vec2Mag(a) {
-    return Math.sqrt(a.x * a.x + a.y * a.y)
-}
-
-function Vec2Norm(a) {
-    var b = Vec2Mag(a);
-    if (0 == b) return 0;
-    a.x /= b;
-    a.y /= b;
-    return b
-}
-
-function Vec2Angle(a) {
-    var b = Math.acos(a.x / Math.sqrt(a.x * a.x + a.y * a.y));
-    0 < a.y && (b = TAU - b);
-    return b
-}
-var randLUT = new Float32Array(1024),
-    randSeed = 0,
-    randSeedStep = 0;
-
-
-/** Returns a random number between [0, a) */
-function randFloat(a) {
-    randSeed += randSeedStep;
-    randSeed &= 1023;
-    return randLUT[randSeed] * a
-}
-
-/** Returns a random number between [a, b] */
-function randFloatRange(a, b) {
-    randSeed += randSeedStep;
-    randSeed &= 1023;
-    return randLUT[randSeed] * (b - a) + a
-}
-
-/** Randomly selects a or b */
-function randSelect(a, b) {
-    randSeed += randSeedStep;
-    randSeed &= 1023;
-    return .5 > randLUT[randSeed] ? a : b
-}
-
-function randInt(maxInt) {
-    randSeed += randSeedStep;
-    randSeed &= 1023;
-    return ~~(randLUT[randSeed] * maxInt)
-}
-
-function randIntRange(a, b) {
-    randSeed += randSeedStep;
-    randSeed &= 1023;
-    return ~~(randLUT[randSeed] * (b - a) + a)
-}
-
-let rotationLUT = Array(513),
-    PI = 3.1415927,
-    TAU = 6.2831855;
-
-function rand() {
-    return Math.random()
-}
-
-function abs(a) {
-    return 0 > a ? -a : a
-}
-
-function max(a, b) {
-    return a > b ? a : b
-}
-
-function min(a, b) {
-    return a < b ? a : b
-}
-
-function clamp(a, b, c) {
-    return a < b ? b : a > c ? c : a
-}
 
 function wrapStageIndex(a) {
     var b = stageIndexOrder.length - 1;
     return 0 > a ? b : a > b ? 0 : a
 }
 
-function floor(a) {
-    return Math.floor(a)
-}
 
 function drawIconButton(x, y, iconIndex, label, color) {
     isSolidRender = 1;

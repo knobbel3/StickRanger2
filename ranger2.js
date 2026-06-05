@@ -8062,6 +8062,7 @@ function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, 
     x -= text.length * (glyphWidth + font.b) >> 1;
     drawScaledTintedText(font, x, y - (glyphHeight >> 1), text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight)
 }
+
 let screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
     isSolidRender = 0,
     spriteAltRenderFlag = 0; // fh, auxiliary sprite render-mode flag used for temporary tint/alt-draw modes.
@@ -8070,35 +8071,38 @@ function drawLine(x1, y1, x2, y2, color) {
     x2 -= x1;
     y2 -= y1;
     var g, h;
-    abs(x2) >= abs(y2)
-        ? (
-            h = floor(abs(x2)), 0 != h && (y2 = floor(65536 * y2 / h)),
-            x2 = 0 <= x2 ? 65536 : -65536
-        )
-        : (
-            h = floor(abs(y2)),
-            0 != h && (x2 = floor(65536 * x2 / h)),
-            y2 = 0 <= y2 ? 65536 : -65536
-        );
+    if (abs(x2) >= abs(y2)) {
+        h = floor(abs(x2));
+        if (0 != h) {
+            y2 = floor(65536 * y2 / h);
+        }
+        x2 = 0 <= x2 ? 65536 : -65536;
+    } else {
+        h = floor(abs(y2));
+        if (0 != h) {
+            x2 = floor(65536 * x2 / h);
+        }
+        y2 = 0 <= y2 ? 65536 : -65536;
+    }
+
     x1 = floor(65536 * x1) + 32768;
     y1 = floor(65536 * y1) + 32768;
     if (0 == isSolidRender)
         for (; 0 <= h; h--, x1 += x2, y1 += y2)
-            0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 ||
-                (g = 640 * (y1 >> 16) + (x1 >> 16), frameBufferArray[g] = color);
+            0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 || (
+                g = 640 * (y1 >> 16) + (x1 >> 16), frameBufferArray[g] = color);
     else {
         var k = color >> 24 & 255,
             p = (color >> 16 & 255) * k >> 8,
             t = (color >> 8 & 255) * k >> 8;
         color = (color & 255) * k >> 8;
         for (k = 255 - k; 0 <= h; h--, x1 += x2, y1 += y2)
-            0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 ||
-                (
-                    g = 640 * (y1 >> 16) + (x1 >> 16),
-                    frameBufferArray[g] = p + ((frameBufferArray[g] >> 16 & 255) * k >> 8) << 16 |
-                    t + ((frameBufferArray[g] >> 8 & 255) * k >> 8) << 8 |
-                    color + ((frameBufferArray[g] & 255) * k >> 8)
-                )
+            0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 || (
+                g = 640 * (y1 >> 16) + (x1 >> 16),
+                frameBufferArray[g] = p + ((frameBufferArray[g] >> 16 & 255) * k >> 8) << 16 |
+                t + ((frameBufferArray[g] >> 8 & 255) * k >> 8) << 8 |
+                color + ((frameBufferArray[g] & 255) * k >> 8));
+
     }
 }
 

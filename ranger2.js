@@ -6302,15 +6302,26 @@ function enemyHangingTreeBehavior(enemyIdx) {
         enemyJointPosArray[enemyIdx][1].x += 3;
         enemyJointPosArray[enemyIdx][2].x += 4;
         for (b = 0; 3 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
     } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .05, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], .05, .9);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], .05, .9);
-        b = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0); - 1 != b && (enemyJointPosArray[enemyIdx][0].x += heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -.001 : .001);
+        b = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
+        if (-1 != b) {
+            enemyJointPosArray[enemyIdx][0].x += heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -.001 : .001;
+        }
         if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
-            var c = 0; - 1 != b ? c = heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1 : c = randSelect(-1, 1);
-            10 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += randFloatRange(.4, .6) * c, enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1.5, -2))
+            var c = 0;
+            if (-1 != b) {
+                c = heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1;
+            } else {
+                c = randSelect(-1, 1);
+            }
+            if (10 > randFloat(100)) {
+                enemyJointPosArray[enemyIdx][0].x += randFloatRange(.4, .6) * c;
+                enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1.5, -2);
+            }
         }
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 0, 0, .01);
@@ -6318,20 +6329,28 @@ function enemyHangingTreeBehavior(enemyIdx) {
             enemyJointPosArray[enemyIdx][0].y);
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; 3 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
+            for (b = 0; 3 > b; b++) {
+                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.5, .5);
+                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(2, 3);
+            }
         moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
         b = enemyTileContactFlagsArray[enemyIdx];
         moveEnemyJointWithTileCollision(enemyIdx, 1, .5);
         moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
         enemyTileContactFlagsArray[enemyIdx] = b;
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] = 3, onEnemyDeath(enemyIdx))
+        if (0 >= enemyHealthArray[enemyIdx]) {
+            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            onEnemyDeath(enemyIdx);
+        }
     } else {
         for (b = 0; 3 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+            deleteEnemy(enemyIdx--);
+        }
     }
-    return enemyIdx
+    return enemyIdx;
 }
 
 

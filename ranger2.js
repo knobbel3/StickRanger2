@@ -4510,19 +4510,30 @@ function updateStageTick() { // xg
         p = 0,
         t = 59,
         l = 0;
-    gameFrameCounter++; - 1 != draggedHeroIndex && (
-        b = clamp(heroJointPositionsByHero[draggedHeroIndex][2].x, 0, 8 * stageWidth - 1) >> 3,
-        f = clamp(heroJointPositionsByHero[draggedHeroIndex][2].y, 0, 8 * stageHeight - 1) >> 3
-    );
+    gameFrameCounter++;
+    if (-1 != draggedHeroIndex) {
+        b = clamp(heroJointPositionsByHero[draggedHeroIndex][2].x, 0, 8 * stageWidth - 1) >> 3;
+        f = clamp(heroJointPositionsByHero[draggedHeroIndex][2].y, 0, 8 * stageHeight - 1) >> 3;
+    }
+
     g = clamp(heroJointPositionsByHero[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
     h = clamp(heroJointPositionsByHero[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
-    for (a = 0; a < partyMemberCount; a++)
-        c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3,
-            d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3,
-            k > c && (k = c),
-            p < c && (p = c),
-            t > d && (t = d),
-            l < d && (l = d);
+    for (a = 0; a < partyMemberCount; a++) {
+        c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+        d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+        if (k > c) {
+            k = c;
+        }
+        if (p < c) {
+            p = c;
+        }
+        if (t > d) {
+            t = d;
+        }
+        if (l < d) {
+            l = d;
+        }
+    }
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
@@ -4532,149 +4543,570 @@ function updateStageTick() { // xg
             if (39 == stageTileData[w][n]) {
                 fillStageTilesRect(n, w, n, w, 32);
                 a = 1;
-                1 > randFloat(200) ? a = 100 : 1 > randFloat(14) && (a = 7);
+                if (1 > randFloat(200)) {
+                    a = 100;
+                } else if (1 > randFloat(14)) {
+                    a = 7;
+                }
                 a = floor(a * (100 + partyRewardValueBonusPercent) / 100);
                 spawnDrop(8 * n +
                     4, 8 * w + 4, 2, a, 0);
-                isBadgeIncompleteForCurrentStage(3) && IncrementBadgeCount(3);
+                if (isBadgeIncompleteForCurrentStage(3)) {
+                    IncrementBadgeCount(3);
+                }
                 if (13 == currentStage)
-                    for (a = 0; 15 > a; a++) spawnEnemy(n, w, 48, 6), activeSpawnCountByGroup[6]++, totalSpawnedCountByGroup[6]++;
-                19 == currentStage && (spawnEnemy(n, w, 87, 5), activeSpawnCountByGroup[5]++, totalSpawnedCountByGroup[5]++);
-                break
+                    for (a = 0; 15 > a; a++) {
+                        spawnEnemy(n, w, 48, 6);
+                        activeSpawnCountByGroup[6]++;
+                        totalSpawnedCountByGroup[6]++;
+                    }
+                if (19 == currentStage) {
+                    spawnEnemy(n, w, 87, 5);
+                    activeSpawnCountByGroup[5]++;
+                    totalSpawnedCountByGroup[5]++;
+                }
+                break;
             }
             if (47 == stageTileData[w][n]) {
-                2 == currentStage && isBadgeIncompleteForCurrentStage(4) && IncrementBadgeCount(4);
-                11 == currentStage && (c = 8 * n + 4 - mouseXCurrent, d = 8 * w + 4 - mouseYCurrent, abs(c) >= abs(d) ? 0 < c && 32 == stageTileData[w][n + 1] ? (fillStageTilesRect(n + 1, w, n + 1, w, 47), fillStageTilesRect(n, w, n, w, 32), n += 1) : 0 > c && 32 == stageTileData[w][n - 1] && (fillStageTilesRect(n - 1, w, n - 1, w, 47), fillStageTilesRect(n, w, n, w, 32), --n) : 0 < d && 32 == stageTileData[w + 1][n] ? (fillStageTilesRect(n, w + 1, n, w + 1, 47), fillStageTilesRect(n, w, n, w, 32), w += 1) : 0 > d && 32 == stageTileData[w - 1][n] && (fillStageTilesRect(n, w - 1, n, w - 1, 47), fillStageTilesRect(n, w, n, w, 32), --w), isBadgeIncompleteForCurrentStage(44) && (c = abs(64 - n), d = abs(11 - w), spawnPopup(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431), 0 ==
-                    c && 0 == d && IncrementBadgeCount(44)));
-                break
+                if (2 == currentStage) {
+                    if (isBadgeIncompleteForCurrentStage(4)) {
+                        IncrementBadgeCount(4);
+                    }
+                }
+                if (11 == currentStage) {
+                    c = 8 * n + 4 - mouseXCurrent;
+                    d = 8 * w + 4 - mouseYCurrent;
+                    if (abs(c) >= abs(d)) {
+                        if (0 < c && 32 == stageTileData[w][n + 1]) {
+                            fillStageTilesRect(n + 1, w, n + 1, w, 47);
+                            fillStageTilesRect(n, w, n, w, 32);
+                            n += 1;
+                        } else if (0 > c && 32 == stageTileData[w][n - 1]) {
+                            fillStageTilesRect(n - 1, w, n - 1, w, 47);
+                            fillStageTilesRect(n, w, n, w, 32);
+                            --n;
+                        }
+                    } else if (0 < d && 32 == stageTileData[w + 1][n]) {
+                        fillStageTilesRect(n, w + 1, n, w + 1, 47);
+                        fillStageTilesRect(n, w, n, w, 32);
+                        w += 1;
+                    } else if (0 > d && 32 == stageTileData[w - 1][n]) {
+                        fillStageTilesRect(n, w - 1, n, w - 1, 47);
+                        fillStageTilesRect(n, w, n, w, 32);
+                        --w;
+                    }
+                    if (isBadgeIncompleteForCurrentStage(44)) {
+                        c = abs(64 - n);
+                        d = abs(11 - w);
+                        spawnPopup(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431);
+                        if (0 ==
+                            c && 0 == d) {
+                            IncrementBadgeCount(44);
+                        }
+                    }
+                }
+                break;
             }
         }
     }
-    if (1 == currentStage) 12 == gameScreenState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h && (lastStageIdx = 6, partySpawnXByHero[0] = 33, partySpawnYByHero[0] = 24, partySpawnXByHero[1] = 35, partySpawnYByHero[1] = 24, partySpawnXByHero[2] = 44, partySpawnYByHero[2] = 24, partySpawnXByHero[3] = 46, partySpawnYByHero[3] = 24), 12 == gameScreenState && 1 == isStageReachedArray[12] && 1 > h && (lastStageIdx = 12, partySpawnXByHero[0] = 67, partySpawnYByHero[0] = 42, partySpawnXByHero[1] = 69, partySpawnYByHero[1] = 42, partySpawnXByHero[2] = 71, partySpawnYByHero[2] = 42, partySpawnXByHero[3] = 73, partySpawnYByHero[3] = 42);
-    else if (2 != currentStage)
+    if (1 == currentStage) {
+        if (12 == gameScreenState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h) {
+            lastStageIdx = 6;
+            partySpawnXByHero[0] = 33;
+            partySpawnYByHero[0] = 24;
+            partySpawnXByHero[1] = 35;
+            partySpawnYByHero[1] = 24;
+            partySpawnXByHero[2] = 44;
+            partySpawnYByHero[2] = 24;
+            partySpawnXByHero[3] = 46;
+            partySpawnYByHero[3] = 24;
+        }
+        if (12 == gameScreenState && 1 == isStageReachedArray[12] && 1 > h) {
+            lastStageIdx = 12;
+            partySpawnXByHero[0] = 67;
+            partySpawnYByHero[0] = 42;
+            partySpawnXByHero[1] = 69;
+            partySpawnYByHero[1] = 42;
+            partySpawnXByHero[2] = 71;
+            partySpawnYByHero[2] = 42;
+            partySpawnXByHero[3] = 73;
+            partySpawnYByHero[3] = 42;
+        }
+    } else if (2 != currentStage)
         if (3 == currentStage) {
-            1 == partyMemberCount && 0 == activeSpawnCountByGroup[0] && (resetHeroPose(partyMemberCount, 25, 14), partyMemberCount++);
-            2 <= partyMemberCount && (fillStageTilesRect(25, 13, 25, 14, 64), fillStageTilesRect(31, 11, 31, 14, 64));
-            1 == stageEventFlagArray[0] ? fillStageTilesRect(11, 30, 11, 30, 63) : 32 == stageTileData[30][11] ? 0 == activeSpawnCountByGroup[1] && fillStageTilesRect(11, 30, 11, 30, 55) : 55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f && (fillStageTilesRect(11, 30, 11, 30, 63), spawnDrop(92,
-                244, 3, 0, 0));
-            0 == totalSpawnedCountByGroup[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f && (spawnEnemy(14, 41, 15, 2), spawnEnemy(16, 41, 15, 2), spawnEnemy(18, 41, 15, 2), activeSpawnCountByGroup[2] = 3, totalSpawnedCountByGroup[2] = 3);
-            1 == stageEventFlagArray[1] ? fillStageTilesRect(16, 41, 16, 41, 63) : 32 == stageTileData[41][16] ? 0 == activeSpawnCountByGroup[2] && 0 != totalSpawnedCountByGroup[2] && fillStageTilesRect(16, 41, 16, 41, 55) : 55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f && (fillStageTilesRect(16, 41, 16, 41, 63), spawnDrop(132, 332, 3, 1, 0));
+            if (1 == partyMemberCount && 0 == activeSpawnCountByGroup[0]) {
+                resetHeroPose(partyMemberCount, 25, 14);
+                partyMemberCount++;
+            }
+            if (2 <= partyMemberCount) {
+                fillStageTilesRect(25, 13, 25, 14, 64);
+                fillStageTilesRect(31, 11, 31, 14, 64);
+            }
+            if (1 == stageEventFlagArray[0]) {
+                fillStageTilesRect(11, 30, 11, 30, 63);
+            } else if (32 == stageTileData[30][11]) {
+                if (0 == activeSpawnCountByGroup[1]) {
+                    fillStageTilesRect(11, 30, 11, 30, 55);
+                }
+            } else if (55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f) {
+                fillStageTilesRect(11, 30, 11, 30, 63);
+                spawnDrop(92,
+                    244, 3, 0, 0);
+            }
+            if (0 == totalSpawnedCountByGroup[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f) {
+                spawnEnemy(14, 41, 15, 2);
+                spawnEnemy(16, 41, 15, 2);
+                spawnEnemy(18, 41, 15, 2);
+                activeSpawnCountByGroup[2] = 3;
+                totalSpawnedCountByGroup[2] = 3;
+            }
+            if (1 == stageEventFlagArray[1]) {
+                fillStageTilesRect(16, 41, 16, 41, 63);
+            } else if (32 == stageTileData[41][16]) {
+                if (0 == activeSpawnCountByGroup[2] && 0 != totalSpawnedCountByGroup[2]) {
+                    fillStageTilesRect(16, 41, 16, 41, 55);
+                }
+            } else if (55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f) {
+                fillStageTilesRect(16, 41, 16, 41, 63);
+                spawnDrop(132, 332, 3, 1, 0);
+            }
             if (isBadgeIncompleteForCurrentStage(7)) {
-                for (a = b = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 8 <= c && 15 >= c && 19 <= d && 21 >= d && (b |= 1), 19 <= c && 26 >= c && 18 <= d && 20 >= d && (b |= 2);
-                3 == b && IncrementBadgeCount(7)
+                for (a = b = 0; a < partyMemberCount; a++) {
+                    c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                    d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                    if (8 <= c && 15 >= c && 19 <= d && 21 >= d) {
+                        b |= 1;
+                    }
+                    if (19 <= c && 26 >= c && 18 <= d && 20 >= d) {
+                        b |= 2;
+                    }
+                }
+                if (3 == b) {
+                    IncrementBadgeCount(7);
+                }
             }
-            0 != totalSpawnedCountByGroup[2] && consecutiveConditionFrameCount++
+            if (0 != totalSpawnedCountByGroup[2]) {
+                consecutiveConditionFrameCount++;
+            }
         } else if (4 == currentStage) {
-            2 == partyMemberCount && 0 == activeSpawnCountByGroup[1] && 0 != totalSpawnedCountByGroup[1] && (resetHeroPose(partyMemberCount, 55, 40),
-                partyMemberCount++);
-            3 <= partyMemberCount && (fillStageTilesRect(55, 39, 55, 40, 32), fillStageTilesRect(77, 38, 77, 41, 32));
-            if (2 == partyMemberCount && 0 == totalSpawnedCountByGroup[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
-                for (a = 0; 20 > a; a++) spawnEnemy(randIntRange(56, 76), randIntRange(33, 38), 5, 0), activeSpawnCountByGroup[0]++, totalSpawnedCountByGroup[0]++;
-            (3 <= partyMemberCount || 0 == activeSpawnCountByGroup[0] && 0 != totalSpawnedCountByGroup[0]) && 0 == totalSpawnedCountByGroup[1] && (spawnEnemy(65, 35, 16, 1), activeSpawnCountByGroup[1] = 1, totalSpawnedCountByGroup[1] = 1);
-            isBadgeIncompleteForCurrentStage(11) && 0 == activeSpawnCountByGroup[6] && 20 == totalSpawnedCountByGroup[6] && !stageConditionMask && IncrementBadgeCount(11);
-            isBadgeIncompleteForCurrentStage(12) && 0 == activeSpawnCountByGroup[4] && 3 == totalSpawnedCountByGroup[4] && 8 == activeSpawnCountByGroup[3] && IncrementBadgeCount(12);
-            isBadgeIncompleteForCurrentStage(13) && 0 == activeSpawnCountByGroup[1] && 1 == totalSpawnedCountByGroup[1] && 0 == stage_partyDamageTaken && IncrementBadgeCount(13);
-            isBadgeIncompleteForCurrentStage(14) && 9 == lastClearedStageIdx && IncrementBadgeCount(14)
-        } else if (5 == currentStage) {
-            if (3 == partyMemberCount && 0 == activeSpawnCountByGroup[0] && 0 == activeSpawnCountByGroup[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 2 || IncrementBadgeCount(16),
-                !isBadgeIncompleteForCurrentStage(17) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
-                for (a = b = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 56 <= c && 59 >= c && 39 <= d && 41 >= d && b++;
-                4 == b && IncrementBadgeCount(19)
+        if (2 == partyMemberCount && 0 == activeSpawnCountByGroup[1] && 0 != totalSpawnedCountByGroup[1]) {
+            resetHeroPose(partyMemberCount, 55, 40);
+            partyMemberCount++;
+        }
+        if (3 <= partyMemberCount) {
+            fillStageTilesRect(55, 39, 55, 40, 32);
+            fillStageTilesRect(77, 38, 77, 41, 32);
+        }
+        if (2 == partyMemberCount && 0 == totalSpawnedCountByGroup[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
+            for (a = 0; 20 > a; a++) {
+                spawnEnemy(randIntRange(56, 76), randIntRange(33, 38), 5, 0);
+                activeSpawnCountByGroup[0]++;
+                totalSpawnedCountByGroup[0]++;
             }
-        } else if (6 == currentStage) 12 == gameScreenState && 38 <= g && 41 >= g && 24 <= h && 24 >= h && (lastStageIdx = 1, partySpawnXByHero[0] = 18, partySpawnYByHero[0] = 24, partySpawnXByHero[1] = 20, partySpawnYByHero[1] = 24, partySpawnXByHero[2] = 29, partySpawnYByHero[2] = 24, partySpawnXByHero[3] = 31, partySpawnYByHero[3] = 24);
-        else if (7 == currentStage) {
-            if (0 == totalSpawnedCountByGroup[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
-                if (c = 0, 39 == stageTileData[34][75] && c++, 39 == stageTileData[35][72] && c++, 39 == stageTileData[35][74] && c++, 39 == stageTileData[36][75] && c++, 39 == stageTileData[38][76] && c++, 1 == c || 2 == c) spawnEnemy(66, 42, 24, 1), activeSpawnCountByGroup[1]++, totalSpawnedCountByGroup[1]++;
-                else
-                    for (5 ==
-                        c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) spawnEnemy(randIntRange(56, 69), randIntRange(42, 43), c, 1), activeSpawnCountByGroup[1]++, totalSpawnedCountByGroup[1]++;
-            c = 43;
-            d = 30;
-            1 == stageEventFlagArray[2] ? fillStageTilesRect(c, d, c, d, 63) : 32 == stageTileData[d][c] ? 0 == activeSpawnCountByGroup[2] && fillStageTilesRect(c, d, c, d, 55) : 55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1 && (fillStageTilesRect(c, d, c, d, 63), spawnDrop(8 * c + 4, 8 * d + 4, 3, 2, 0));
-            if (1 == totalSpawnedCountByGroup[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
-                for (a = 0; 15 > a; a++) spawnEnemy(randIntRange(61, 76), 21, 28, 9), activeSpawnCountByGroup[9]++, totalSpawnedCountByGroup[9]++;
-            isBadgeIncompleteForCurrentStage(21) && 0 == activeSpawnCountByGroup[2] && 0 == stage_partyDamageTaken && IncrementBadgeCount(21);
-            if (isBadgeIncompleteForCurrentStage(23)) {
-                for (a = b = 0; a < partyMemberCount; a++) 0 < heroSkipTimer[a] && b++;
-                4 == b && IncrementBadgeCount(23)
+        if ((3 <= partyMemberCount || 0 == activeSpawnCountByGroup[0] && 0 != totalSpawnedCountByGroup[0]) && 0 == totalSpawnedCountByGroup[1]) {
+            spawnEnemy(65, 35, 16, 1);
+            activeSpawnCountByGroup[1] = 1;
+            totalSpawnedCountByGroup[1] = 1;
+        }
+        if (isBadgeIncompleteForCurrentStage(11)) {
+            if (0 == activeSpawnCountByGroup[6] && 20 == totalSpawnedCountByGroup[6] && !stageConditionMask) {
+                IncrementBadgeCount(11);
             }
-        } else if (8 == currentStage) {
-            30 > totalSpawnedCountByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > randFloat(60) && (a = [5, 18, 3, 20], g = [18, 16, 21, 22], b = randInt(4), spawnEnemy(a[b], g[b], 32, 3), activeSpawnCountByGroup[3]++, totalSpawnedCountByGroup[3]++);
-            if (isBadgeIncompleteForCurrentStage(27)) {
-                for (a = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 2 <= c && 15 >= c && 29 <= d && 36 >= d && (stageConditionMask = 1);
-                0 != activeSpawnCountByGroup[4] || stageConditionMask || IncrementBadgeCount(27)
+        }
+        if (isBadgeIncompleteForCurrentStage(12)) {
+            if (0 == activeSpawnCountByGroup[4] && 3 == totalSpawnedCountByGroup[4] && 8 == activeSpawnCountByGroup[3]) {
+                IncrementBadgeCount(12);
             }
-            if (isBadgeIncompleteForCurrentStage(28)) {
-                for (a = 0; a < partyMemberCount && 0 == heroTileContactFlags[a]; a++);
-                a == partyMemberCount ? consecutiveConditionFrameCount++ : consecutiveConditionFrameCount = 0;
-                300 <= consecutiveConditionFrameCount && IncrementBadgeCount(28)
+        }
+        if (isBadgeIncompleteForCurrentStage(13)) {
+            if (0 == activeSpawnCountByGroup[1] && 1 == totalSpawnedCountByGroup[1] && 0 == stage_partyDamageTaken) {
+                IncrementBadgeCount(13);
             }
-        } else if (9 == currentStage) {
-            b = -1;
-            for (a = 0; a < enemyCount; a++) 36 == enemyTypeArray[a] && 0 != enemyHealthArray[a] && (b = a);
-            if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && 500 > enemyHealthArray[b])
-                for (enemyHealthArray[b] += 1500, enemyPoseTrailWriteIdxArray[b]--, c = 2 * (19 - enemyPoseTrailWriteIdxArray[b] + 1), a = 0; a < c; a++) spawnEnemy(randIntRange(25, 57), randIntRange(25, 39), 35, 1), activeSpawnCountByGroup[1]++, totalSpawnedCountByGroup[1]++;
-            isBadgeIncompleteForCurrentStage(31) && 0 == activeSpawnCountByGroup[3] && 2 == totalSpawnedCountByGroup[1] && IncrementBadgeCount(31);
-            isBadgeIncompleteForCurrentStage(32) && 100 <= enemyCount && IncrementBadgeCount(32);
-            if (isBadgeIncompleteForCurrentStage(33)) {
-                for (a =
-                    b = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 26 == stageTileData[d][c] && b++;
-                4 == b && IncrementBadgeCount(33)
+        }
+        if (isBadgeIncompleteForCurrentStage(14)) {
+            if (9 == lastClearedStageIdx) {
+                IncrementBadgeCount(14);
             }
-            isBadgeIncompleteForCurrentStage(34) && 10 == lastStageIdx && 1 >= g && 41 <= h && IncrementBadgeCount(34)
-        } else if (10 == currentStage) {
-            if (25 >= totalSpawnedCountByGroup[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
-                for (a = 0; 15 > a; a++) spawnEnemy(randIntRange(32, 53), randIntRange(33, 34), 37, 0), activeSpawnCountByGroup[0]++, totalSpawnedCountByGroup[0]++;
-            40 > totalSpawnedCountByGroup[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > randFloat(60) && (a = [24, 25, 29, 30], g = [4, 4, 3, 3], b = randInt(4), spawnEnemy(a[b], g[b], 41, 4), activeSpawnCountByGroup[4]++, totalSpawnedCountByGroup[4]++);
-            isBadgeIncompleteForCurrentStage(37) && 0 == activeSpawnCountByGroup[1] && activeSpawnCountByGroup[0] == totalSpawnedCountByGroup[0] && IncrementBadgeCount(37);
-            isBadgeIncompleteForCurrentStage(38) && 0 == activeSpawnCountByGroup[3] && 0 == stage_partyDamageTaken && IncrementBadgeCount(38);
-            if (isBadgeIncompleteForCurrentStage(39)) {
-                for (a = b = 0; a < partyMemberCount; a++) 0 < heroTimedDamageTimer[a] && b++;
-                4 == b && IncrementBadgeCount(39)
+        }
+    } else if (5 == currentStage) {
+        if (3 == partyMemberCount && 0 == activeSpawnCountByGroup[0] && 0 == activeSpawnCountByGroup[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 2 || IncrementBadgeCount(16),
+            !isBadgeIncompleteForCurrentStage(17) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
+            for (a = b = 0; a < partyMemberCount; a++) {
+                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                if (56 <= c && 59 >= c && 39 <= d && 41 >= d) {
+                    b++;
+                }
             }
-        } else if (11 == currentStage) isBadgeIncompleteForCurrentStage(41) &&
-            0 == activeSpawnCountByGroup[3] && !stageConditionMask && IncrementBadgeCount(41), isBadgeIncompleteForCurrentStage(42) && 0 == activeSpawnCountByGroup[4] && 0 == stage_partyDamageTaken && IncrementBadgeCount(42);
-        else if (13 == currentStage) 1 == stageEventFlagArray[0] && fillStageTilesRect(77, 20, 77, 24, 31), isBadgeIncompleteForCurrentStage(46) && 0 == activeSpawnCountByGroup[1] && 45 == totalSpawnedCountByGroup[1] && 0 == activeSpawnCountByGroup[6] && 45 == totalSpawnedCountByGroup[6] && IncrementBadgeCount(46), isBadgeIncompleteForCurrentStage(48) && 0 == activeSpawnCountByGroup[5] && 0 == stage_partyDamageTaken && IncrementBadgeCount(48);
-        else if (14 == currentStage) {
-            if (isBadgeIncompleteForCurrentStage(53)) {
-                for (a = 0; a < partyMemberCount && 2 == heroTileContactFlags[a]; a++);
-                a == partyMemberCount ? consecutiveConditionFrameCount++ : consecutiveConditionFrameCount = 0;
-                1800 <= consecutiveConditionFrameCount && IncrementBadgeCount(53)
+            if (4 == b) {
+                IncrementBadgeCount(19);
             }
-            isBadgeIncompleteForCurrentStage(54) && 39 == stageTileData[12][44] && 39 == stageTileData[12][45] && 39 == stageTileData[13][43] && 39 != stageTileData[13][44] && 39 != stageTileData[13][45] && 39 == stageTileData[13][46] && 39 == stageTileData[14][43] && 39 != stageTileData[14][44] && 39 != stageTileData[14][45] && 39 == stageTileData[14][46] && 39 != stageTileData[15][43] && 39 == stageTileData[15][44] && 39 == stageTileData[15][45] && IncrementBadgeCount(54)
-        } else if (15 == currentStage) 60 > totalSpawnedCountByGroup[1] && 42 <= g && 67 >= g &&
-            18 <= h && 24 >= h && 4 > randFloat(60) && (a = [44, 45, 46, 66], g = [24, 24, 24, 24], b = randInt(4), spawnEnemy(a[b], g[b], 60, 1), activeSpawnCountByGroup[1]++, totalSpawnedCountByGroup[1]++), 0 == activeSpawnCountByGroup[5] && totalSpawnedCountByGroup[6] < 150 - (totalSpawnedCountByGroup[0] - activeSpawnCountByGroup[0]) && (c = randIntRange(15, 65), d = randIntRange(1, 18), 25 < stageTileData[d][c] && (spawnEnemy(c, d, 59, 6), activeSpawnCountByGroup[6]++, totalSpawnedCountByGroup[6]++)), isBadgeIncompleteForCurrentStage(57) && 0 == activeSpawnCountByGroup[3] && 0 == stage_partyDamageTaken && IncrementBadgeCount(57), isBadgeIncompleteForCurrentStage(59) && 198 <= activeSpawnCountByGroup[0] + activeSpawnCountByGroup[6] && IncrementBadgeCount(59);
-        else if (16 == currentStage) {
-            f = activeSpawnCountByGroup[0] + activeSpawnCountByGroup[1];
-            k = activeSpawnCountByGroup[2] + activeSpawnCountByGroup[3];
-            p = activeSpawnCountByGroup[4] + activeSpawnCountByGroup[5] + activeSpawnCountByGroup[6] + activeSpawnCountByGroup[7];
-            b = 0;
-            0 == f && 0 < k && 0 < p && (b = 65);
-            0 == k && 0 < f && 0 < p && (b = 66);
-            0 == p && 0 < f && 0 < k && (b = 67);
-            0 < b && 100 > totalSpawnedCountByGroup[11] && (c = randIntRange(4, 59), d = randIntRange(30, 33), 25 < stageTileData[d][c] && (spawnEnemy(c, d, b, 11), activeSpawnCountByGroup[11]++, totalSpawnedCountByGroup[11]++));
-            60 > totalSpawnedCountByGroup[12] && 70 <= g && 76 >= g &&
-                34 <= h && 41 >= h && (c = randIntRange(5, 70), d = randIntRange(42, 43), 25 < stageTileData[d][c] && (spawnEnemy(c, d, 68, 12), activeSpawnCountByGroup[12]++, totalSpawnedCountByGroup[12]++));
-            b = -1;
-            for (a = 0; a < enemyCount; a++) 70 == enemyTypeArray[a] && 0 != enemyHealthArray[a] && (b = a);
-            if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && enemyHealthArray[b] < 1E4 * (enemyPoseTrailWriteIdxArray[b] - 10) - 5E3)
-                for (enemyPoseTrailWriteIdxArray[b]--, t = min(256, 1 << 20 - enemyPoseTrailWriteIdxArray[b]), a = 0; a < t; a++) g = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].x, h = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].y, c = .5 * rotationLUT[512 * a / t][0], d = .5 * -rotationLUT[512 * a / t][1], spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            0 == stageEventFlagArray[0] && 0 == activeSpawnCountByGroup[10] && (stageEventFlagArray[0] = 1);
-            1 == stageEventFlagArray[0] && fillStageTilesRect(2, 20, 2, 24, 31);
-            isBadgeIncompleteForCurrentStage(61) && 0 == activeSpawnCountByGroup[10] &&
-                !stageFlagUseCount && IncrementBadgeCount(61);
-            !isBadgeIncompleteForCurrentStage(62) || 0 != activeSpawnCountByGroup[10] || stageConditionMask & 1 || IncrementBadgeCount(62);
-            if (isBadgeIncompleteForCurrentStage(63)) {
-                for (a = 0; a < partyMemberCount; a++) c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3, d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3, 58 <= c && 76 >= c && 36 <= d && 42 >= d && (stageEncounterCounter = 1);
-                0 != activeSpawnCountByGroup[9] || stageEncounterCounter || IncrementBadgeCount(63)
+        }
+    } else if (6 == currentStage) {
+        if (12 == gameScreenState && 38 <= g && 41 >= g && 24 <= h && 24 >= h) {
+            lastStageIdx = 1;
+            partySpawnXByHero[0] = 18;
+            partySpawnYByHero[0] = 24;
+            partySpawnXByHero[1] = 20;
+            partySpawnYByHero[1] = 24;
+            partySpawnXByHero[2] = 29;
+            partySpawnYByHero[2] = 24;
+            partySpawnXByHero[3] = 31;
+            partySpawnYByHero[3] = 24;
+        }
+    } else if (7 == currentStage) {
+        if (0 == totalSpawnedCountByGroup[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
+            if (c = 0, 39 == stageTileData[34][75] && c++, 39 == stageTileData[35][72] && c++, 39 == stageTileData[35][74] && c++, 39 == stageTileData[36][75] && c++, 39 == stageTileData[38][76] && c++, 1 == c || 2 == c) {
+                spawnEnemy(66, 42, 24, 1);
+                activeSpawnCountByGroup[1]++;
+                totalSpawnedCountByGroup[1]++;
+            } else {
+                for (5 == c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) {
+                    spawnEnemy(randIntRange(56, 69), randIntRange(42, 43), c, 1);
+                    activeSpawnCountByGroup[1]++;
+                    totalSpawnedCountByGroup[1]++;
+                }
             }
-            isBadgeIncompleteForCurrentStage(64) && 0 == p && 0 < f && 0 < k && 100 == activeSpawnCountByGroup[11] && IncrementBadgeCount(64)
-        } else if (17 == currentStage) {
-            for (a = 0; a < partyMemberCount; a++) 0 < heroTimedDamageTimer[a] && (stageConditionMask = 1);
-            isBadgeIncompleteForCurrentStage(66) && 0 == activeSpawnCountByGroup[0] && !stageConditionMask && IncrementBadgeCount(66);
-            isBadgeIncompleteForCurrentStage(68) && 0 == activeSpawnCountByGroup[6] && 5 == activeSpawnCountByGroup[5] && IncrementBadgeCount(68)
-        } else 18 == currentStage ? (6 > totalSpawnedCountByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h && (a = [29, 44, 59], b = randInt(3), spawnEnemy(a[b], 42, 83, 9), activeSpawnCountByGroup[9]++, totalSpawnedCountByGroup[9]++), 9 > totalSpawnedCountByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60) && (c = randIntRange(8, 23), spawnEnemy(c, 10, 83, 10), activeSpawnCountByGroup[10]++,
-            totalSpawnedCountByGroup[10]++), !isBadgeIncompleteForCurrentStage(71) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 2 || IncrementBadgeCount(71), !isBadgeIncompleteForCurrentStage(72) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 1 || IncrementBadgeCount(72)) : 19 == currentStage ? (totalSpawnedCountByGroup[7] < 20 * (35 - activeSpawnCountByGroup[6]) && 15 > randFloat(60) && (c = randIntRange(19, 59), d = randIntRange(26, 33), 33 == stageTileData[d][c] && (19 == totalSpawnedCountByGroup[7] % 20 ? spawnEnemy(c, d, 89, 7) : spawnEnemy(c, d, 84, 7), activeSpawnCountByGroup[7]++, totalSpawnedCountByGroup[7]++)), 1 > totalSpawnedCountByGroup[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h && (spawnEnemy(8, 26, 86, 4), activeSpawnCountByGroup[4]++, totalSpawnedCountByGroup[4]++), 1 == stageEventFlagArray[1] && (fillStageTilesRect(47, 15, 50, 15, 24), fillStageTilesRect(1, 31, 1, 35, 32))) : 20 == currentStage && (1 == stageEventFlagArray[4] ? fillStageTilesRect(70, 34, 70, 34, 63) : 55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f && (fillStageTilesRect(70, 34, 70, 34, 63), spawnDrop(564, 276, 3, 4, 0)))
+        c = 43;
+        d = 30;
+        if (1 == stageEventFlagArray[2]) {
+            fillStageTilesRect(c, d, c, d, 63);
+        } else if (32 == stageTileData[d][c]) {
+            if (0 == activeSpawnCountByGroup[2]) {
+                fillStageTilesRect(c, d, c, d, 55);
+            }
+        } else if (55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1) {
+            fillStageTilesRect(c, d, c, d, 63);
+            spawnDrop(8 * c + 4, 8 * d + 4, 3, 2, 0);
+        }
+        if (1 == totalSpawnedCountByGroup[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
+            for (a = 0; 15 > a; a++) {
+                spawnEnemy(randIntRange(61, 76), 21, 28, 9);
+                activeSpawnCountByGroup[9]++;
+                totalSpawnedCountByGroup[9]++;
+            }
+        if (isBadgeIncompleteForCurrentStage(21)) {
+            if (0 == activeSpawnCountByGroup[2] && 0 == stage_partyDamageTaken) {
+                IncrementBadgeCount(21);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(23)) {
+            for (a = b = 0; a < partyMemberCount; a++)
+                if (0 < heroSkipTimer[a]) {
+                    b++;
+                } if (4 == b) {
+                IncrementBadgeCount(23);
+            }
+        }
+    } else if (8 == currentStage) {
+        if (30 > totalSpawnedCountByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > randFloat(60)) {
+            a = [5, 18, 3, 20];
+            g = [18, 16, 21, 22];
+            b = randInt(4);
+            spawnEnemy(a[b], g[b], 32, 3);
+            activeSpawnCountByGroup[3]++;
+            totalSpawnedCountByGroup[3]++;
+        }
+        if (isBadgeIncompleteForCurrentStage(27)) {
+            for (a = 0; a < partyMemberCount; a++) {
+                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                if (2 <= c && 15 >= c && 29 <= d && 36 >= d) {
+                    stageConditionMask = 1;
+                }
+            }
+            0 != activeSpawnCountByGroup[4] || stageConditionMask || IncrementBadgeCount(27);
+        }
+        if (isBadgeIncompleteForCurrentStage(28)) {
+            for (a = 0; a < partyMemberCount && 0 == heroTileContactFlags[a]; a++);
+            if (a == partyMemberCount) {
+                consecutiveConditionFrameCount++;
+            } else {
+                consecutiveConditionFrameCount = 0;
+            }
+            if (300 <= consecutiveConditionFrameCount) {
+                IncrementBadgeCount(28);
+            }
+        }
+    } else if (9 == currentStage) {
+        b = -1;
+        for (a = 0; a < enemyCount; a++)
+            if (36 == enemyTypeArray[a] && 0 != enemyHealthArray[a]) {
+                b = a;
+            }
+        if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && 500 > enemyHealthArray[b])
+            for (enemyHealthArray[b] += 1500, enemyPoseTrailWriteIdxArray[b]--, c = 2 * (19 - enemyPoseTrailWriteIdxArray[b] + 1), a = 0; a < c; a++) {
+                spawnEnemy(randIntRange(25, 57), randIntRange(25, 39), 35, 1);
+                activeSpawnCountByGroup[1]++;
+                totalSpawnedCountByGroup[1]++;
+            }
+        if (isBadgeIncompleteForCurrentStage(31)) {
+            if (0 == activeSpawnCountByGroup[3] && 2 == totalSpawnedCountByGroup[1]) {
+                IncrementBadgeCount(31);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(32)) {
+            if (100 <= enemyCount) {
+                IncrementBadgeCount(32);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(33)) {
+            for (a =
+                b = 0; a < partyMemberCount; a++) {
+                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                if (26 == stageTileData[d][c]) {
+                    b++;
+                }
+            }
+            if (4 == b) {
+                IncrementBadgeCount(33);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(34)) {
+            if (10 == lastStageIdx && 1 >= g && 41 <= h) {
+                IncrementBadgeCount(34);
+            }
+        }
+    } else if (10 == currentStage) {
+        if (25 >= totalSpawnedCountByGroup[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
+            for (a = 0; 15 > a; a++) {
+                spawnEnemy(randIntRange(32, 53), randIntRange(33, 34), 37, 0);
+                activeSpawnCountByGroup[0]++;
+                totalSpawnedCountByGroup[0]++;
+            }
+        if (40 > totalSpawnedCountByGroup[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > randFloat(60)) {
+            a = [24, 25, 29, 30];
+            g = [4, 4, 3, 3];
+            b = randInt(4);
+            spawnEnemy(a[b], g[b], 41, 4);
+            activeSpawnCountByGroup[4]++;
+            totalSpawnedCountByGroup[4]++;
+        }
+        if (isBadgeIncompleteForCurrentStage(37)) {
+            if (0 == activeSpawnCountByGroup[1] && activeSpawnCountByGroup[0] == totalSpawnedCountByGroup[0]) {
+                IncrementBadgeCount(37);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(38)) {
+            if (0 == activeSpawnCountByGroup[3] && 0 == stage_partyDamageTaken) {
+                IncrementBadgeCount(38);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(39)) {
+            for (a = b = 0; a < partyMemberCount; a++)
+                if (0 < heroTimedDamageTimer[a]) {
+                    b++;
+                } if (4 == b) {
+                IncrementBadgeCount(39);
+            }
+        }
+    } else if (11 == currentStage) {
+        if (isBadgeIncompleteForCurrentStage(41)) {
+            if (0 == activeSpawnCountByGroup[3] && !stageConditionMask) {
+                IncrementBadgeCount(41);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(42)) {
+            if (0 == activeSpawnCountByGroup[4] && 0 == stage_partyDamageTaken) {
+                IncrementBadgeCount(42);
+            }
+        }
+    } else if (13 == currentStage) {
+        if (1 == stageEventFlagArray[0]) {
+            fillStageTilesRect(77, 20, 77, 24, 31);
+        }
+        if (isBadgeIncompleteForCurrentStage(46)) {
+            if (0 == activeSpawnCountByGroup[1] && 45 == totalSpawnedCountByGroup[1] && 0 == activeSpawnCountByGroup[6] && 45 == totalSpawnedCountByGroup[6]) {
+                IncrementBadgeCount(46);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(48)) {
+            if (0 == activeSpawnCountByGroup[5] && 0 == stage_partyDamageTaken) {
+                IncrementBadgeCount(48);
+            }
+        }
+    } else if (14 == currentStage) {
+        if (isBadgeIncompleteForCurrentStage(53)) {
+            for (a = 0; a < partyMemberCount && 2 == heroTileContactFlags[a]; a++);
+            if (a == partyMemberCount) {
+                consecutiveConditionFrameCount++;
+            } else {
+                consecutiveConditionFrameCount = 0;
+            }
+            if (1800 <= consecutiveConditionFrameCount) {
+                IncrementBadgeCount(53);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(54)) {
+            if (39 == stageTileData[12][44] && 39 == stageTileData[12][45] && 39 == stageTileData[13][43] && 39 != stageTileData[13][44] && 39 != stageTileData[13][45] && 39 == stageTileData[13][46] && 39 == stageTileData[14][43] && 39 != stageTileData[14][44] && 39 != stageTileData[14][45] && 39 == stageTileData[14][46] && 39 != stageTileData[15][43] && 39 == stageTileData[15][44] && 39 == stageTileData[15][45]) {
+                IncrementBadgeCount(54);
+            }
+        }
+    } else if (15 == currentStage) {
+        if (60 > totalSpawnedCountByGroup[1] && 42 <= g && 67 >= g &&
+            18 <= h && 24 >= h && 4 > randFloat(60)) {
+            a = [44, 45, 46, 66];
+            g = [24, 24, 24, 24];
+            b = randInt(4);
+            spawnEnemy(a[b], g[b], 60, 1);
+            activeSpawnCountByGroup[1]++;
+            totalSpawnedCountByGroup[1]++;
+        }
+        if (0 == activeSpawnCountByGroup[5] && totalSpawnedCountByGroup[6] < 150 - (totalSpawnedCountByGroup[0] - activeSpawnCountByGroup[0])) {
+            c = randIntRange(15, 65);
+            d = randIntRange(1, 18);
+            if (25 < stageTileData[d][c]) {
+                spawnEnemy(c, d, 59, 6);
+                activeSpawnCountByGroup[6]++;
+                totalSpawnedCountByGroup[6]++;
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(57)) {
+            if (0 == activeSpawnCountByGroup[3] && 0 == stage_partyDamageTaken) {
+                IncrementBadgeCount(57);
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(59)) {
+            if (198 <= activeSpawnCountByGroup[0] + activeSpawnCountByGroup[6]) {
+                IncrementBadgeCount(59);
+            }
+        }
+    } else if (16 == currentStage) {
+        f = activeSpawnCountByGroup[0] + activeSpawnCountByGroup[1];
+        k = activeSpawnCountByGroup[2] + activeSpawnCountByGroup[3];
+        p = activeSpawnCountByGroup[4] + activeSpawnCountByGroup[5] + activeSpawnCountByGroup[6] + activeSpawnCountByGroup[7];
+        b = 0;
+        if (0 == f && 0 < k && 0 < p) {
+            b = 65;
+        }
+        if (0 == k && 0 < f && 0 < p) {
+            b = 66;
+        }
+        if (0 == p && 0 < f && 0 < k) {
+            b = 67;
+        }
+        if (0 < b && 100 > totalSpawnedCountByGroup[11]) {
+            c = randIntRange(4, 59);
+            d = randIntRange(30, 33);
+            if (25 < stageTileData[d][c]) {
+                spawnEnemy(c, d, b, 11);
+                activeSpawnCountByGroup[11]++;
+                totalSpawnedCountByGroup[11]++;
+            }
+        }
+        if (60 > totalSpawnedCountByGroup[12] && 70 <= g && 76 >= g &&
+            34 <= h && 41 >= h) {
+            c = randIntRange(5, 70);
+            d = randIntRange(42, 43);
+            if (25 < stageTileData[d][c]) {
+                spawnEnemy(c, d, 68, 12);
+                activeSpawnCountByGroup[12]++;
+                totalSpawnedCountByGroup[12]++;
+            }
+        }
+        b = -1;
+        for (a = 0; a < enemyCount; a++)
+            if (70 == enemyTypeArray[a] && 0 != enemyHealthArray[a]) {
+                b = a;
+            }
+        if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && enemyHealthArray[b] < 1E4 * (enemyPoseTrailWriteIdxArray[b] - 10) - 5E3)
+            for (enemyPoseTrailWriteIdxArray[b]--, t = min(256, 1 << 20 - enemyPoseTrailWriteIdxArray[b]), a = 0; a < t; a++) {
+                g = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].x;
+                h = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].y;
+                c = .5 * rotationLUT[512 * a / t][0];
+                d = .5 * -rotationLUT[512 * a / t][1];
+                spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+        if (0 == stageEventFlagArray[0] && 0 == activeSpawnCountByGroup[10]) {
+            stageEventFlagArray[0] = 1;
+        }
+        if (1 == stageEventFlagArray[0]) {
+            fillStageTilesRect(2, 20, 2, 24, 31);
+        }
+        if (isBadgeIncompleteForCurrentStage(61)) {
+            if (0 == activeSpawnCountByGroup[10] && !stageFlagUseCount) {
+                IncrementBadgeCount(61);
+            }
+        }
+        !isBadgeIncompleteForCurrentStage(62) || 0 != activeSpawnCountByGroup[10] || stageConditionMask & 1 || IncrementBadgeCount(62);
+        if (isBadgeIncompleteForCurrentStage(63)) {
+            for (a = 0; a < partyMemberCount; a++) {
+                c = clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
+                d = clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                if (58 <= c && 76 >= c && 36 <= d && 42 >= d) {
+                    stageEncounterCounter = 1;
+                }
+            }
+            0 != activeSpawnCountByGroup[9] || stageEncounterCounter || IncrementBadgeCount(63);
+        }
+        if (isBadgeIncompleteForCurrentStage(64)) {
+            if (0 == p && 0 < f && 0 < k && 100 == activeSpawnCountByGroup[11]) {
+                IncrementBadgeCount(64);
+            }
+        }
+    } else if (17 == currentStage) {
+        for (a = 0; a < partyMemberCount; a++) {
+            if (0 < heroTimedDamageTimer[a]) {
+                stageConditionMask = 1;
+            } 
+            if (isBadgeIncompleteForCurrentStage(66)) {
+                if (0 == activeSpawnCountByGroup[0] && !stageConditionMask) {
+                    IncrementBadgeCount(66);
+                }
+            }
+        }
+        if (isBadgeIncompleteForCurrentStage(68)) {
+            if (0 == activeSpawnCountByGroup[6] && 5 == activeSpawnCountByGroup[5]) {
+                IncrementBadgeCount(68);
+            }
+        }
+    } else if (18 == currentStage) {
+        if (6 > totalSpawnedCountByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h) {
+            a = [29, 44, 59];
+            b = randInt(3);
+            spawnEnemy(a[b], 42, 83, 9);
+            activeSpawnCountByGroup[9]++;
+            totalSpawnedCountByGroup[9]++;
+        }
+        if (9 > totalSpawnedCountByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > randFloat(60)) {
+            c = randIntRange(8, 23);
+            spawnEnemy(c, 10, 83, 10);
+            activeSpawnCountByGroup[10]++;
+            totalSpawnedCountByGroup[10]++;
+        }!isBadgeIncompleteForCurrentStage(71) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 2 || IncrementBadgeCount(71);
+        !isBadgeIncompleteForCurrentStage(72) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 1 || IncrementBadgeCount(72);
+    } else if (19 == currentStage) {
+        if (totalSpawnedCountByGroup[7] < 20 * (35 - activeSpawnCountByGroup[6]) && 15 > randFloat(60)) {
+            c = randIntRange(19, 59);
+            d = randIntRange(26, 33);
+            if (33 == stageTileData[d][c]) {
+                if (19 == totalSpawnedCountByGroup[7] % 20) {
+                    spawnEnemy(c, d, 89, 7);
+                } else {
+                    spawnEnemy(c, d, 84, 7);
+                }
+                activeSpawnCountByGroup[7]++;
+                totalSpawnedCountByGroup[7]++;
+            }
+        }
+        if (1 > totalSpawnedCountByGroup[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h) {
+            spawnEnemy(8, 26, 86, 4);
+            activeSpawnCountByGroup[4]++;
+            totalSpawnedCountByGroup[4]++;
+        }
+        if (1 == stageEventFlagArray[1]) {
+            fillStageTilesRect(47, 15, 50, 15, 24);
+            fillStageTilesRect(1, 31, 1, 35, 32);
+        }
+    } else if (20 == currentStage) {
+        if (1 == stageEventFlagArray[4]) {
+            fillStageTilesRect(70, 34, 70, 34, 63);
+        } else if (55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f) {
+            fillStageTilesRect(70, 34, 70, 34, 63);
+            spawnDrop(564, 276, 3, 4, 0);
+        }
+    }
 }
 
 let ENUM_ENEMY_PROPS_COUNT = 0;    

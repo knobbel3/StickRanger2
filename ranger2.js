@@ -6828,7 +6828,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawEnemyScaledSprite(
             _px - 4 * _scale, _py - 11 * _scale, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 
             16 * (spriteIdx >> 3), 16, primTint, secTint, 255
-    );
+        );
     } else if (behaviorIdx == enemyBatBehaviorIdx) {
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 8 * _scale;
@@ -6869,8 +6869,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawLine(posY[1], posX[1], posY[2], posX[2], accentTint);
         drawLine(posY[2], posX[2], posY[3], posX[3], accentTint);
         drawLine(posY[3], posX[3], posY[4], posX[4], accentTint);
-        drawRectCentered(floor(posY[5]),
-            floor(posX[5]), floor(2 * _scale), floor(2 * _scale), primTint);
+        drawRectCentered(floor(posY[5]), floor(posX[5]), floor(2 * _scale), floor(2 * _scale), primTint);
         drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
     } else if (behaviorIdx == enemyStickmanBehaviorIdx) {
         posY[0] = _px + 0 * _scale;
@@ -6901,8 +6900,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawLine(posY[3], posX[3], posY[5], posX[5], accentTint);
         drawLine(posY[4], posX[4], posY[6], posX[6], accentTint);
         drawLine(posY[2], posX[2], posY[7], posX[7], accentTint);
-        drawLine(posY[2], posX[2],
-            posY[8], posX[8], accentTint);
+        drawLine(posY[2], posX[2], posY[8], posX[8], accentTint);
         drawLine(posY[7], posX[7], posY[9], posX[9], accentTint);
         drawLine(posY[8], posX[8], posY[10], posX[10], accentTint);
         drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
@@ -6927,8 +6925,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         posX[3] = _py - 12 * _scale;
         posY[4] = _px + 7 * _scale;
         posX[4] = _py - 2 * _scale;
-        posY[5] =
-            _px - 5 * _scale;
+        posY[5] = _px - 5 * _scale;
         posX[5] = _py - 0 * _scale;
         posY[6] = _px - 12 * _scale;
         posX[6] = _py - 10 * _scale;

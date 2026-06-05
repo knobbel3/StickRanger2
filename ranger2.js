@@ -5883,26 +5883,40 @@ function enemySlimeBehavior(enemyIdx) {
         enemyJointPosArray[enemyIdx][0].x += 4;
         enemyJointPosArray[enemyIdx][0].y += 6;
         for (b = 0; 1 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2)
+        enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
     } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .03, .99);
-        0 < (enemyTileContactFlagsArray[enemyIdx] & 2) && (5 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += randFloat(1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? -.2 : .2), enemyJointPosArray[enemyIdx][0].y -= randFloat(.5)), 1 > randFloat(100) && (enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2)));
+        if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2) && 5 > randFloat(100)) {
+            enemyJointPosArray[enemyIdx][0].x += randFloat(1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? -.2 : .2);
+            if (enemyJointPosArray[enemyIdx][0].y -= randFloat(.5)) {
+                if (1 > randFloat(100)) {
+                    enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
+                }
+            }
+        }
         var d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol]];
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - d * c + 1);
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; 1 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.3, .3), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+            for (b = 0; 1 > b; b++) {
+                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-.3, .3);
+                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+            }
         for (b = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = enemyJointPosArray[enemyIdx][0].x;
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y = enemyJointPosArray[enemyIdx][0].y - d * c + 1;
-        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] = 3, onEnemyDeath(enemyIdx))
+        if (0 >= enemyHealthArray[enemyIdx]) {
+            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            onEnemyDeath(enemyIdx);
+        }
     } else {
-        for (b =
-            0; 1 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = 0; 1 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        50 <= enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        if (50 <= enemyDeathTimerArray[enemyIdx]++) {
+            deleteEnemy(enemyIdx--);
+        }
     }
-    return enemyIdx
+    return enemyIdx;
 }
 
 

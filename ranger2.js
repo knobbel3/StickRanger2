@@ -7426,26 +7426,52 @@ function updateProjectiles() { // Bg
 }
 
 
-function drawProjectiles() { // Eg
-    var a, b, c, d, f = new Vec2,
-        g = new Vec2,
-        h = new Vec2,
-        k = new Vec2,
-        p = new Vec2,
-        t = new Vec2,
-        l, n, w, B;
+function drawProjectiles() {
+    // Eg
+    var a, b, c, d, 
+    f = new Vec2(), g = new Vec2(), h = new Vec2(), k = new Vec2(), p = new Vec2(), t = new Vec2(), 
+    l, n, w, B;
+
     for (a = 0; a < projectileCount; a++)
         if (!(0 < projectileSpawnDelayFrames[a])) {
             b = (projectileSpriteTileIndex[a] & 7) << 4;
             c = projectileSpriteTileIndex[a] >> 3 << 4;
-            1 == projectileImpactState[a] ? d = floor((projectileTintColor[a] >> 24 & 255) * (projectileImpactLifetime[a] - projectileImpactAge[a]) / projectileImpactLifetime[a]) << 24 | projectileTintColor[a] & 16777215 : d = projectileTintColor[a];
-            0 < projectileHitCooldownFrames[a] && (d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215);
+            if (1 == projectileImpactState[a]) {
+                d = floor((projectileTintColor[a] >> 24 & 255) * (projectileImpactLifetime[a] - projectileImpactAge[a]) / projectileImpactLifetime[a]) << 24 | projectileTintColor[a] & 16777215;
+            } else {
+                d = projectileTintColor[a];
+            }
+            if (0 < projectileHitCooldownFrames[a]) {
+                d = floor((d >> 24 & 255) / 2) << 24 | d & 16777215;
+            }
             isSolidRender = projectileSolidRenderMode[a];
             spriteAltRenderFlag = 1;
-            0 > projectileJointPair[a] ? (p.set(projectilePosition[a]), t.set(projectileVelocity[a])) : (l = projectileOwnerIdx[a], n = projectileJointPair[a] >> 8, w = projectileJointPair[a] & 255, B = 0 <= l ? heroJointPositionsByHero : enemyJointPosArray, l = 0 <= l ? l : -l - 1, n == w ? (Vec2Add(p, B[l][n], projectilePosition[a]), t.set(projectileVelocity[a])) : (Vec2Sub(g, B[l][w], B[l][n]), Vec2Norm(g), f.set(g), Vec2Rotate(f), p.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + B[l][n].x, p.y =
-                f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + B[l][n].y, t.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y, t.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y));
-            if (0 == projectileDrawMode[a]) drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
-            else if (1 == projectileDrawMode[a]) {
+            if (0 > projectileJointPair[a]) {
+                p.set(projectilePosition[a]);
+                t.set(projectileVelocity[a]);
+            } else {
+                l = projectileOwnerIdx[a];
+                n = projectileJointPair[a] >> 8;
+                w = projectileJointPair[a] & 255;
+                B = 0 <= l ? heroJointPositionsByHero : enemyJointPosArray;
+                l = 0 <= l ? l : -l - 1;
+                if (n == w) {
+                    Vec2Add(p, B[l][n], projectilePosition[a]);
+                    t.set(projectileVelocity[a]);
+                } else {
+                    Vec2Sub(g, B[l][w], B[l][n]);
+                    Vec2Norm(g);
+                    f.set(g);
+                    Vec2Rotate(f);
+                    p.x = f.x * projectilePosition[a].x + g.x * projectilePosition[a].y + B[l][n].x;
+                    p.y = f.y * projectilePosition[a].x + g.y * projectilePosition[a].y + B[l][n].y;
+                    t.x = f.x * projectileVelocity[a].x + g.x * projectileVelocity[a].y;
+                    t.y = f.y * projectileVelocity[a].x + g.y * projectileVelocity[a].y;
+                }
+            }
+            if (0 == projectileDrawMode[a]) {
+                drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
+            } else if (1 == projectileDrawMode[a]) {
                 g.set(t);
                 Vec2Norm(g);
                 f.set(g);
@@ -7485,8 +7511,7 @@ function drawProjectiles() { // Eg
                 K *= 65535;
                 ba *= 65535;
                 Fa *= 65535;
-                Ga *=
-                    65535;
+                Ga *= 65535;
                 fb *= 65535;
                 ob *= 65535;
                 n = 28311552;
@@ -7514,10 +7539,59 @@ function drawProjectiles() { // Eg
                 J = l >> 16 & 255;
                 y = l >> 8 & 255;
                 x = l & 255;
-                for (b = n; b <= c; b++)
-                    for (l = scanlineMaxX[b] - scanlineMinX[b] + 1, n = floor((scanlineTexUEnd[b] - scanlineTexUStart[b]) / l), Fa = floor((scanlineTexVEnd[b] - scanlineTexVStart[b]) / l), U = scanlineTexUStart[b], na = scanlineTexVStart[b], 0 > scanlineMinX[b] && (U += n * -scanlineMinX[b], na += Fa * -scanlineMinX[b], scanlineMinX[b] =
-                        0), 640 <= scanlineMaxX[b] && (scanlineMaxX[b] = 639), K = 640 * b + scanlineMinX[b], ba = K + (scanlineMaxX[b] - scanlineMinX[b]); K <= ba; K++, U += n, na += Fa) l = w[(na >> 16) * B + (U >> 16)], 0 != l && (l = (l & 255) * M >> 8, 1 == isSolidRender ? (Ga = frameBufferArray[K] >> 16 & 255, Ga = ((J - Ga) * l >> 8) + Ga, Ca = frameBufferArray[K] >> 8 & 255, Ca = ((y - Ca) * l >> 8) + Ca, ua = frameBufferArray[K] & 255, ua = ((x - ua) * l >> 8) + ua, frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 2 == isSolidRender ? (Ga = (frameBufferArray[K] >> 16 & 255) + (J * l >> 8), 255 < Ga && (Ga = 255), Ca = (frameBufferArray[K] >> 8 & 255) + (y * l >> 8), 255 < Ca && (Ca = 255), ua = (frameBufferArray[K] & 255) + (x * l >> 8), 255 < ua && (ua = 255), frameBufferArray[K] = Ga << 16 | Ca << 8 | ua) : 3 == isSolidRender && (Ga = (frameBufferArray[K] >> 16 & 255) - (J * l >> 8), 0 > Ga && (Ga = 0), Ca = (frameBufferArray[K] >> 8 & 255) - (y * l >> 8), 0 > Ca && (Ca = 0),
-                            ua = (frameBufferArray[K] & 255) - (x * l >> 8), 0 > ua && (ua = 0), frameBufferArray[K] = Ga << 16 | Ca << 8 | ua))
+                for (b = n; b <= c; b++){  
+                    l = scanlineMaxX[b] - scanlineMinX[b] + 1;
+                    n = floor((scanlineTexUEnd[b] - scanlineTexUStart[b]) / l);
+                    Fa = floor((scanlineTexVEnd[b] - scanlineTexVStart[b]) / l);
+                    U = scanlineTexUStart[b];
+                    na = scanlineTexVStart[b];
+                    if (0 > scanlineMinX[b]) {
+                        U += n * -scanlineMinX[b];
+                        na += Fa * -scanlineMinX[b];
+                        scanlineMinX[b] = 0;
+                    }
+                    if (640 <= scanlineMaxX[b]) {
+                        scanlineMaxX[b] = 639;
+                    }
+                    K = 640 * b + scanlineMinX[b];
+                    for (ba = K + (scanlineMaxX[b] - scanlineMinX[b]); K <= ba; K++, U += n, na += Fa) {
+                        l = w[(na >> 16) * B + (U >> 16)];
+                        if (0 != l) {
+                            l = (l & 255) * M >> 8;
+                            if (1 == isSolidRender) {
+                                Ga = frameBufferArray[K] >> 16 & 255;
+                                Ga = ((J - Ga) * l >> 8) + Ga;
+                                Ca = frameBufferArray[K] >> 8 & 255;
+                                Ca = ((y - Ca) * l >> 8) + Ca;
+                                ua = frameBufferArray[K] & 255;
+                                ua = ((x - ua) * l >> 8) + ua;
+                                frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
+                            } else if (2 == isSolidRender) {
+                                Ga = (frameBufferArray[K] >> 16 & 255) + (J * l >> 8);
+                                if (255 < Ga) {
+                                    Ga = 255;
+                                }
+                                Ca = (frameBufferArray[K] >> 8 & 255) + (y * l >> 8);
+                                if (255 < Ca) {
+                                    Ca = 255;
+                                }
+                                ua = (frameBufferArray[K] & 255) + (x * l >> 8);
+                                if (255 < ua) {
+                                    ua = 255;
+                                }
+                                frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
+                            } else if (3 == isSolidRender) {
+                                Ga = (frameBufferArray[K] >> 16 & 255) - (J * l >> 8);
+                                if (Ga < 0) Ga = 0;
+                                Ca = (frameBufferArray[K] >> 8 & 255) - (y * l >> 8);
+                                if (Ca < 0) Ca = 0;
+                                ua = (frameBufferArray[K] & 255) - (x * l >> 8);
+                                if (ua < 0) ua = 0;
+                                frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
+                            }
+                        }
+                    }
+                }
             } else if (2 == projectileDrawMode[a]) {
                 spriteAltRenderFlag = 0;
                 l = -projectileOwnerIdx[a] - 1;
@@ -7526,9 +7600,9 @@ function drawProjectiles() { // Eg
                 l = max(enemyCatalog[enemyTypeArray[l]][enemyDrawScaleCol], 1);
                 B = 0;
                 if (n == enemySlimeBehaviorIdx || n == enemyBoxSnakeBehaviorIdx) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
-                drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d)
+                drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
             }
-            spriteAltRenderFlag = isSolidRender = 0
+            spriteAltRenderFlag = isSolidRender = 0;
         }
 }
 let popupCount = 0, // aj

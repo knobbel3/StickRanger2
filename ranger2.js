@@ -6073,8 +6073,9 @@ function enemyBatBehavior(enemyIdx) {
 
 
 function enemyDragonBehavior(enemyIdx) {
-    var b, c, d, f = new Vec2;
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
+    var b, c, d, f = new Vec2();
+    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) 
+        enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
     else if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
         for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
@@ -6091,7 +6092,10 @@ function enemyDragonBehavior(enemyIdx) {
         if (28 >= d || 24 > c) f.y += .03;
         d = getStageTileAt(b, c + 24);
         if (28 >= d || c > 8 * stageHeight - 24) f.y -= .03;
-        3 > randFloat(100) && (f.x += randFloatRange(-.1, .1), f.y += randFloatRange(-.1, .1));
+        if (3 > randFloat(100)) {
+            f.x += randFloatRange(-.1, .1);
+            f.y += randFloatRange(-.1, .1);
+        }
         enemyJointPosArray[enemyIdx][0].add(f);
         f = .013;
         c = 5;
@@ -6100,19 +6104,28 @@ function enemyDragonBehavior(enemyIdx) {
             enemyJointPosArray[enemyIdx][0].y);
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
+                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+            }
         for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] += 20, enemyDeathTimerArray[enemyIdx] = 0, onEnemyDeath(enemyIdx))
+        if (0 >= enemyHealthArray[enemyIdx]) {
+            enemyPoseTrailWriteIdxArray[enemyIdx] += 20;
+            enemyDeathTimerArray[enemyIdx] = 0;
+            onEnemyDeath(enemyIdx);
+        }
     } else {
         for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         f = .5;
         c = 10 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
         for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 21; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], c, f, f);
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+            deleteEnemy(enemyIdx--);
+        }
     }
-    return enemyIdx
+    return enemyIdx;
 }
 
 

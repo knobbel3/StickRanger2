@@ -15,9 +15,21 @@ import { GameFont } from "./game/font.js";
 import { CanvasState } from "./game/global_states.js";
 export {gameInit as Init, toggleFullscreen as full_screen};
 
+// misc
 const hostname = "dan-ball.jp";
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 432;
+const copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp",
+      copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp",
+      dataPath = "./data/",
+      fpsName = "fps",
+      canvasTag = "canvas",
+      hostnameCheckIdx = 0,
+      targetHostname = "dan-ball.jp";
+// misc: string encoding
+const encodingCharTable = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK";
+const inverseCodingCharTable = [];
+for (let _i = 0; 64 > _i; _i++) inverseCodingCharTable[encodingCharTable[_i]] = _i;
 
 function LogMsg(a) {
     try {
@@ -41,20 +53,52 @@ document.onkeyup = onKeyUp;
 
 let userSaveCode, // ca
     userSaveKey = [0, 0, 0, 0, 0, 0, 0, 0], // da
-    isMinimalTitleMode, // ea
-    canvasImageBuffer = new Sprite,
-    titleSprite = new Sprite,
-    iconSpriteSheet = new Sprite,
-    tilesetSprites = Array(3);
-for (let _i = 0; 3 > _i; _i++) tilesetSprites[_i] = new Sprite;
+    isMinimalTitleMode; // ea
+let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
+    requestAnimCallCount = 0, // Vm, counts active requestAnimationFrame callbacks (incremented each anim callback; reset on timing jumps).
+    lastAnimFrameBucket = 0,  // Zm, last rounded animation-frame bucket (stores previous a to detect/skip duplicate callbacks).
+    frameCountThisSecond = 0, // Ym
+    currentFPS = 0,
+    frameInteval = 20, // en, in milliseconds
+    timestampAnim = Date.now(),
+    lastTimestamp = timestampAnim, // Xm
+    nextFrameTime = timestampAnim + frameInteval, // fn
+    secondWindowDeadline = timestampAnim, // gn
+    totalFrames = 0; // $m
+let gameInitStage = 0;
+let isCanvasFocused = false;
+let hostNameUnchecked = 1;
 
-let currentLevelSprite = new Sprite,
+// rendering maybe
+let frameBufferArray = new Int32Array(276480),
+
+    // per-scanline X ranges (16.16 fixed-point) used for rasterization
+    scanlineMinX = new Int32Array(432),         // Ji,
+    scanlineMaxX = new Int32Array(432),         // Ki,
+
+    // per-scanline start texture U ranges (16.16 fixed-point) for sampling during rasterization.
+    scanlineTexUStart = new Float32Array(432),  // om, 
+    scanlineTexUEnd = new Float32Array(432),    // nm, 
+
+    // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
+    scanlineTexVStart = new Float32Array(432),  // qm, 
+    scanlineTexVEnd = new Float32Array(432);    // pm, 
+let canvasImageBuffer = new Sprite;
+
+// sprites
+let titleSprite = new Sprite,
+    iconSpriteSheet = new Sprite,
+    tilesetSprites = Array(3), 
+    currentLevelSprite = new Sprite,
     enemySpriteSheet = new Sprite,
     droppedItemSpriteSheet = new Sprite,
     itemsSpriteSheet = new Sprite,
     effectSpriteSheet = new Sprite,
-    medalSpriteSheet = new Sprite,
-    gameScreenState = 0,
+    medalSpriteSheet = new Sprite;
+
+for (let _i = 0; 3 > _i; _i++) tilesetSprites[_i] = new Sprite;
+
+let gameScreenState = 0,
     screenStateTimer = 0, // sa
     currentStage = 0,
     clickInUI = false, // ta
@@ -165,23 +209,7 @@ let itemIsNew = Array(256); // ac,
 for (let _i = 0; 256 > _i; _i++) itemIsNew[_i] = 0;
 for (let _i = 0; 256 > _i; _i++) itemForgeLvls[_i] = 0;
 
-
-let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
-    requestAnimCallCount = 0, // Vm, counts active requestAnimationFrame callbacks (incremented each anim callback; reset on timing jumps).
-    lastAnimFrameBucket = 0,  // Zm, last rounded animation-frame bucket (stores previous a to detect/skip duplicate callbacks).
-    frameCountThisSecond = 0, // Ym
-    currentFPS = 0,
-    frameInteval = 20, // en, in milliseconds
-    timestampAnim = Date.now(),
-    lastTimestamp = timestampAnim, // Xm
-    nextFrameTime = timestampAnim + frameInteval, // fn
-    secondWindowDeadline = timestampAnim, // gn
-    totalFrames = 0; // $m
-
-let hostNameUnchecked = 1;
-
-
-let inventoryItemLists = [
+const inventoryItemLists = [
     [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [7, 8, 12, 13, 14, 16, 18, 20, 22, 23, 25, 27, 34, 35, 39, 40, 44, 46, 47, 48, 55, 56, 57, 58, 59, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 131, 132, 133, 134, 135, 0, 0, 0, 0, 0, 0, 0],
     [28, 29, 30, 31, 32, 33, 36, 37, 45, 60, 0, 0, 0, 0, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 0, 0, 0, 0, 0],
@@ -246,7 +274,6 @@ let partyChecksum = 0,
     itemCatalogHashTable = [],
     inventoryItemListsChecksum = 0; // zf, checksum of inventoryItemLists used by the tamper-check path
 
-let gameInitStage = 0;
 
 // heros
 let areUpperJointsDisabled = 1, // rig mode flag
@@ -497,43 +524,16 @@ let dropCount = 0, // ym
 for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new RMath.Vec2;
 for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
 
-// misc
-let copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp",
-    copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp",
-    dataPath = "./data/",
-    fpsName = "fps",
-    canvasTag = "canvas",
-    hostnameCheckIdx = 0,
-    targetHostname = "dan-ball.jp";
 
-// misc: string encoding
-let encodingCharTable = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK",
-    inverseCodingCharTable = [];
-for (let _i = 0; 64 > _i; _i++) inverseCodingCharTable[encodingCharTable[_i]] = _i;
-
-// rendering maybe
-let frameBufferArray = new Int32Array(276480),
-
-    // per-scanline X ranges (16.16 fixed-point) used for rasterization
-    scanlineMinX = new Int32Array(432),         // Ji,
-    scanlineMaxX = new Int32Array(432),         // Ki,
-
-    // per-scanline start texture U ranges (16.16 fixed-point) for sampling during rasterization.
-    scanlineTexUStart = new Float32Array(432),  // om, 
-    scanlineTexUEnd = new Float32Array(432),    // nm, 
-
-    // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
-    scanlineTexVStart = new Float32Array(432),  // qm, 
-    scanlineTexVEnd = new Float32Array(432);    // pm, 
 
 // text rendering / fonts
-let charKerningBefore = [
+const charKerningBefore = [
     [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
     [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
 ]; // jn
-let charKerningAfter = [
+const charKerningAfter = [
     [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
@@ -573,7 +573,6 @@ let keyJustPressed = Array(256), // Jf
     keyMapNoShift = Array(256), // Mf
     keyMapShift = Array(256); // Nf
 
-let isCanvasFocused = false;
 
 function resetGameProgress() { // bc
     let a, b;

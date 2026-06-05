@@ -587,9 +587,11 @@ itemList[116] = ["Peridot Amulet", 8, 144, 30, 0, 10092288, 4478276, accessoryEf
 itemList[118] = ["Ammolite Amulet", 8, 144, 30, 0, 6736896, 13382400, accessoryMultiShotSpreadDivisorCol, "Injection angle 1/", 2, "", "", 0, ""];
 itemList[120] = ["Warrior Amulet", 8, 144, 30, 0, 16737792, 8930338, accessoryComboMaxIncreaseCol, "Combo duration +", 1, " sec", "", 0, ""];
 itemList[139] = ["Giant Amulet", 8, 144, 30, 0, 16711782, 16764057, accessoryHealthBonusCol, "LP +", 50, "%", "", 0, ""];
+
 let badgeCount = 128,
     badgeList = Array(badgeCount),
     badgeCounterArray = Array(badgeCount);
+
 for (let _i = 0; _i < badgeCount; _i++) badgeCounterArray[_i] = 0;
 let badgePopupTimer = 0, // bf
     lastCompletedBadgeIdx = 0, // cf
@@ -8699,26 +8701,6 @@ let isMouseClicked = false,
     mouseYRel = 0,
     activeTouchCount = 0;
 
-function buttonCheck(x, y, w, h) {
-    return mouseXCurrent < x || x + w <= mouseXCurrent || mouseYCurrent < y || y + h <= mouseYCurrent ? false : true
-}
-
-function buttonCheckCentered(x, y, w, h) {
-    return buttonCheck(x - w / 2, y - h / 2, w, h)
-}
-
-function onMouseMove(mouseState) {
-    var clientRect = canvasElement.getBoundingClientRect(),
-        rectWidth = clientRect.right - clientRect.left,
-        rectHeight = clientRect.bottom - clientRect.top,
-        f = min(rectWidth / CANVAS_WIDTH, rectHeight / CANVAS_HEIGHT),
-        rectHeight = floor(rectHeight / 2 - CANVAS_HEIGHT * f / 2);
-    mouseXRel = floor((mouseState.clientX - clientRect.left - floor(rectWidth / 2 - CANVAS_WIDTH * f / 2)) / f);
-    mouseYRel = floor((mouseState.clientY - clientRect.top - rectHeight) / f)
-    // LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
-}
-
-
 domDocument.onmousemove = onMouseMove;
 domDocument.onmousedown = function (mouseState) {
     onMouseMove(mouseState);
@@ -8740,6 +8722,7 @@ domDocument.onmousedown = function (mouseState) {
     //     (isCanvasFocused = true, 0 == a.button && (isMouseDown = true), isCanvasFocused)
     // ) return false
 };
+
 domDocument.onmouseup = function (mouseState) {
     onMouseMove(mouseState);
     if (mouseState.button === 0) {
@@ -8747,31 +8730,11 @@ domDocument.onmouseup = function (mouseState) {
     }
     //0 == mouseState.button && (isMouseDown = false)
 };
+
 domDocument.oncontextmenu = function () {
     if (isCanvasFocused) return false
 };
 
-function handleTouch(a) {
-    var clientRect = canvasElement.getBoundingClientRect(),
-        rectWidth = clientRect.right - clientRect.left,
-        rectHeight = clientRect.bottom - clientRect.top,
-        f = min(rectWidth / 640, rectHeight / 432),
-        rectWidth = floor(rectWidth / 2 - 640 * f / 2),
-        rectHeight = floor(rectHeight / 2 - 432 * f / 2);
-    a = a.touches;
-    console.log(a);
-    activeTouchCount = a.length;
-    if (1 == activeTouchCount) {
-        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
-        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
-    } else if (2 == activeTouchCount) {
-        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
-        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
-        rectHeight = floor((a[1].clientY - clientRect.top - rectHeight) / f);
-        mouseXRel = floor((mouseXRel + floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2);
-        mouseYRel = floor((mouseYRel + rectHeight) / 2);
-    }
-}
 canvasElement.ontouchstart = function(a) {
     handleTouch(a);
     if (1 == activeTouchCount) {
@@ -8785,10 +8748,12 @@ canvasElement.ontouchstart = function(a) {
     }
     return false;
 };
+
 canvasElement.ontouchmove = function(a) {
     handleTouch(a);
     return false;
 };
+
 canvasElement.ontouchend = function(a) {
     handleTouch(a);
     if (0 == activeTouchCount) {
@@ -8839,6 +8804,50 @@ domDocument.onkeyup = function(a) {
     }
     if (0 != b && isCanvasFocused) return false;
 };
+
+
+function buttonCheck(x, y, w, h) {
+    return mouseXCurrent < x || x + w <= mouseXCurrent || mouseYCurrent < y || y + h <= mouseYCurrent ? false : true
+}
+
+function buttonCheckCentered(x, y, w, h) {
+    return buttonCheck(x - w / 2, y - h / 2, w, h)
+}
+
+function onMouseMove(mouseState) {
+    var clientRect = canvasElement.getBoundingClientRect(),
+        rectWidth = clientRect.right - clientRect.left,
+        rectHeight = clientRect.bottom - clientRect.top,
+        f = min(rectWidth / CANVAS_WIDTH, rectHeight / CANVAS_HEIGHT),
+        rectHeight = floor(rectHeight / 2 - CANVAS_HEIGHT * f / 2);
+    mouseXRel = floor((mouseState.clientX - clientRect.left - floor(rectWidth / 2 - CANVAS_WIDTH * f / 2)) / f);
+    mouseYRel = floor((mouseState.clientY - clientRect.top - rectHeight) / f)
+    // LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
+}
+
+function handleTouch(a) {
+    var clientRect = canvasElement.getBoundingClientRect(),
+        rectWidth = clientRect.right - clientRect.left,
+        rectHeight = clientRect.bottom - clientRect.top,
+        f = min(rectWidth / 640, rectHeight / 432),
+        rectWidth = floor(rectWidth / 2 - 640 * f / 2),
+        rectHeight = floor(rectHeight / 2 - 432 * f / 2);
+    a = a.touches;
+    console.log(a);
+    activeTouchCount = a.length;
+    if (1 == activeTouchCount) {
+        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
+    } else if (2 == activeTouchCount) {
+        mouseXRel = floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        mouseYRel = floor((a[0].clientY - clientRect.top - rectHeight) / f);
+        rectHeight = floor((a[1].clientY - clientRect.top - rectHeight) / f);
+        mouseXRel = floor((mouseXRel + floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2);
+        mouseYRel = floor((mouseYRel + rectHeight) / 2);
+    }
+}
+
+
 
 let isCanvasFocused = false;
 

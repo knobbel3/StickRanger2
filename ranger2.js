@@ -7582,20 +7582,23 @@ function clearPopups() { // wm
 
 
 function spawnPopup(x, y, vx, vy, life, color) { // Lg
-    (1E3 != popupCount) && (
-        x = clamp(x, 16, 623), 
-        y = clamp(y, 8, 351), 
-        Vec2Set(popupPos[popupCount], x, y), 
-        Vec2Set(popupVel[popupCount], vx, -2), 
-        (0 != vx) && (
-            popupVel[popupCount].x += randFloatRange(-.2, .2), 
-            popupVel[popupCount].y += randFloatRange(-.2, .2)
-        ), 
-        popupValue[popupCount] = vy, 
-        popupLife[popupCount] = life, 
-        popupColor[popupCount] = color, 
-        popupCount++
-    )
+    if (1E3 != popupCount) {
+        x = clamp(x, 16, 623);
+        y = clamp(y, 8, 351);
+        Vec2Set(popupPos[popupCount], x, y);
+        Vec2Set(popupVel[popupCount], vx, -2);
+        if (0 != vx) {
+            popupVel[popupCount].x += randFloatRange(-.2, .2);
+            if (popupVel[popupCount].y += randFloatRange(-.2, .2)) {
+
+                popupValue[popupCount] = vy;
+                popupLife[popupCount] = life;
+                popupColor[popupCount] = color;
+                popupCount++;
+            }
+        }
+    }
+
 }
 
 
@@ -7616,30 +7619,39 @@ function updatePopups() { // Ag
             var b = popupPos[a],
                 c = popupVel[a];
             c.y += 0;
-            Vec2Scale(c, .95)
-        } else b = popupPos[a], c = popupVel[a], c.y += .05, Vec2Scale(c, .99);
+            Vec2Scale(c, .95);
+        } else {
+            b = popupPos[a];
+            c = popupVel[a];
+            c.y += .05;
+            Vec2Scale(c, .99);
+        }
         b.add(c);
         popupPos[a].x = clamp(popupPos[a].x, 16, 623);
         popupPos[a].y = clamp(popupPos[a].y, 8, 351);
         popupLife[a]--;
-        0 >= popupLife[a] && removePopup(a--)
+        if (0 >= popupLife[a]) {
+            removePopup(a--);
+        }
     }
 }
 
 
 function drawPopups() { // Fg
     let a, b, c, d, f;
-    for (a = 0; a < popupCount; a++) 
-        (20 <= popupLife[a]) 
-            ? drawTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0) 
-            : (
-                b = popupColor[a] >> 16 & 255,
-                c = popupColor[a] >> 8 & 255, 
-                d = popupColor[a] & 255, 
-                f = floor(255 * min(popupLife[a], 20) / 20), 
-                drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7)
-            )
+    for (a = 0; a < popupCount; a++)
+        if (20 <= popupLife[a]) {
+            drawTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0);
+        } else {
+            b = popupColor[a] >> 16 & 255;
+            c = popupColor[a] >> 8 & 255;
+            d = popupColor[a] & 255;
+            f = floor(255 * min(popupLife[a], 20) / 20);
+            drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7);
+        }
+
 }
+
 let dropCount = 0, // ym
     dropPos = Array(100); // zm
 for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new Vec2;

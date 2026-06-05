@@ -155,6 +155,173 @@ let itemIsNew = Array(256); // ac,
 for (let _i = 0; 256 > _i; _i++) itemIsNew[_i] = 0;
 
 
+let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
+    requestAnimCallCount = 0, // Vm, counts active requestAnimationFrame callbacks (incremented each anim callback; reset on timing jumps).
+    lastAnimFrameBucket = 0,  // Zm, last rounded animation-frame bucket (stores previous a to detect/skip duplicate callbacks).
+    frameCountThisSecond = 0, // Ym
+    currentFPS = 0,
+    frameInteval = 20, // en, in milliseconds
+    timestampAnim = Date.now(),
+    lastTimestamp = timestampAnim, // Xm
+    nextFrameTime = timestampAnim + frameInteval, // fn
+    secondWindowDeadline = timestampAnim, // gn
+    totalFrames = 0; // $m
+
+let hostNameUnchecked = 1;
+// for sprites
+let uncheckedSpriteCount = 0;
+
+let inventoryItemLists = [
+    [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [7, 8, 12, 13, 14, 16, 18, 20, 22, 23, 25, 27, 34, 35, 39, 40, 44, 46, 47, 48, 55, 56, 57, 58, 59, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 131, 132, 133, 134, 135, 0, 0, 0, 0, 0, 0, 0],
+    [28, 29, 30, 31, 32, 33, 36, 37, 45, 60, 0, 0, 0, 0, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 0, 0, 0, 0, 0],
+    [71, 73, 75, 77, 79, 81, 83, 85, 87, 113, 115, 117, 119, 136, 137, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [72, 74, 76, 78, 80, 82, 84, 86, 88, 114, 116, 118, 120, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    []
+];
+
+
+let badgeCounterArray = Array(badgeCount);
+for (let _i = 0; _i < badgeCount; _i++) badgeCounterArray[_i] = 0;
+
+let badgePopupTimer = 0, // bf
+    lastCompletedBadgeIdx = 0, // cf
+    badgeIndicesByStage = [ // df
+        [0, 1, 2, 3, 4],
+        [5, 6, 7, 8, 9],
+        [10, 11, 12, 13, 14],
+        [15, 16, 17, 18, 19],
+        [20, 21, 22, 23, 24],
+        [25, 26, 27, 28, 29],
+        [30, 31, 32, 33, 34],
+        [35, 36, 37, 38, 39],
+        [40, 41, 42, 43, 44],
+        [45, 46, 47, 48, 49],
+        [50, 51, 52, 53, 54],
+        [55, 56, 57, 58, 59],
+        [60, 61, 62, 63, 64],
+        [65, 66, 67, 68, 69],
+        [70, 71, 72],
+        [],
+        [],
+        []
+    ];
+
+let stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139]; // ef, stage-indexed reward item table used when all five badges for a stage are cleared.
+
+let shrineRewardClaimSlotCount = 10, // Ec
+    shrineRewardClaimed = Array(shrineRewardClaimSlotCount);
+for (let _i = 0; _i < shrineRewardClaimSlotCount; _i++) badgeCounterArray[_i] = 0;
+
+let shrineRewardOptions = [
+    ["Gold Shower", 15],
+    ["Clear Status", 30],
+    ["ONIGIRI", 45],
+    ["Level Up", 60]
+],
+    gameSaveString = "",
+    gameSaveStatusDuration = 0,
+    gameLoadStatusCode = 0,
+    statusDuration = 0,
+    gameSaveBuffer = new Int32Array(5E3),
+    saveLoadCodecScratchBuffer = new Int32Array(5E3); // lf, scratch buffer used while encoding and decoding save strings
+
+let partyChecksum = 0,
+    basePartyChecksum = 0,
+    tamperCheckScanOffset = 0, // vf, rotating start offset for the chunked tamper-check hash pass
+    itemHashTable = [],
+    levelHashTable = [],
+    itemCatalogHashTable = [],
+    inventoryItemListsChecksum = 0; // zf, checksum of inventoryItemLists used by the tamper-check path
+
+let gameInitStage = 0;
+
+// heros
+let areUpperJointsDisabled = 1, // rig mode flag
+    heroJointPositionsByHero = Array(4); // O, current joint positions for each hero.
+
+    for (let _i = 0; 4 > _i; _i++) heroJointPositionsByHero[_i] = Array(21);
+
+let heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions used for collision resolution and drag selection.
+
+for (let _i = 0; 4 > _i; _i++) heroJointPrevPositionsByHero[_i] = Array(21);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 21 > _j; _j++) heroJointPositionsByHero[_i][_j] = new RMath.Vec2;
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 21 > _j; _j++) heroJointPrevPositionsByHero[_i][_j] = new RMath.Vec2;
+
+let heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
+
+for (let _i = 0; 4 > _i; _i++) heroJoint5HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint5HistoryByHero[_i][_j] = new RMath.Vec2;
+
+let heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
+
+for (let _i = 0; 4 > _i; _i++) heroJoint3HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint3HistoryByHero[_i][_j] = new RMath.Vec2;
+
+let heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
+
+for (let _i = 0; 4 > _i; _i++) heroJoint6HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint6HistoryByHero[_i][_j] = new RMath.Vec2;
+
+let heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
+
+for (let _i = 0; 4 > _i; _i++) heroJoint4HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint4HistoryByHero[_i][_j] = new RMath.Vec2;
+
+let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
+    heroAttackTrailTimerByHero = Array(4), // Sh, hero attack trail timer per hero.
+    heroAttackTrailHistorySets = [
+        heroJoint5HistoryByHero, 
+        heroJoint6HistoryByHero, 
+        heroJoint3HistoryByHero, 
+        heroJoint4HistoryByHero
+    ], // Th, grouped joint-history buffers used for attack-trail drawing.
+    heroAimPosByHero = Array(4); // Uh, stored hero aim position per hero.
+
+for (let _i = 0; 4 > _i; _i++) heroAimPosByHero[_i] = new RMath.Vec2;
+
+let heroAttackLineTimer = Array(4),
+    heroUpperJointMode = new Int32Array(4), // Wh, per-hero rig mode flag that switches between normal and upper-joint-disabled updates.
+    heroPoseAgeFrames = new Int32Array(4), // Xh, per-hero pose age counter used while the rig settles after movement or impact.
+    heroTileContactFlags = new Int32Array(4), // Yh, per-hero tile-contact flags set while joint movement hits stage geometry.
+    heroAttackCooldownFrames = new Int32Array(4), // Zh, per-hero attack cooldown timer that gates target tracking and attack cadence.
+    heroHitFlashTimer = new Int32Array(4), // $h, per-hero hit flash timer used to tint the hero when damage lands.
+    heroEnemySeekTimer = new Int32Array(4), // ai, per-hero AI move timer that spaces out enemy-approach adjustments.
+    draggedHeroIndex = -1, // bi, dragged hero index for mouse joint selection.
+    draggedJointIndex = 0, // ci, dragged joint index for mouse joint selection.
+    levelUpPopupTimer = 0, // Hh, level-up popup timer.
+    stageClearPopupTimer = 0, // di, stage-clear popup timer.
+    comboPopupTimer = 0, // Zg, combo popup timer.
+    comboWindowTimer = 0, // Ic, combo window timer that counts down after each hit.
+    comboWindowMaxFrames = 0, // Vg, maximum combo window length in frames.
+    comboCount = 0, // Hc, combo count shown in the UI and used for payout checks.
+    comboGoldPayoutPerHero = 0, // $g, per-hero combo gold payout after a combo ends.
+    comboMultBonus = 0, // comboMultBonus, extra percent added to combo payout.
+    attackTrailSideIdx = new Int32Array(4), // ei, per-hero active attack-side index used for trail and weapon selection.
+    attackWeaponSlotIdx = new Int32Array(4), // fi, per-hero active weapon slot index used by the current attack sequence.
+    heroBodyDrawStateByHero = [ // partyBodyDrawOptions, per-hero body draw state: two attack-side slots plus facing.
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 0]
+    ],
+    heroSkipTimer = new Int32Array(4), // ch, per-hero skip timer that can block updates entirely.
+    heroSkipChancePercent = new Int32Array(4), // hi, per-hero skip chance used with ch during attackType 2 effects.
+    heroTimedDamageTimer = new Int32Array(4), // dh, per-hero damage-over-time timer.
+    heroTimedDamageAmount = new Int32Array(4), // ii, per-hero damage-over-time amount used to drain LP each tick.
+    heroStatusTintTimer = new Int32Array(4), // bh, per-hero status tint timer used for the buff-colored hero draw.
+    heroTileEffectLatch = new Int32Array(4); // ji, per-hero tile-effect latch used to fire one-off stage tile projectiles.
+
+// something else
+
 function resetGameProgress() { // bc
     let a, b;
     resetUIStates();
@@ -184,18 +351,6 @@ function resetUIStates() {
     memberUIVisibleBackup = inventoryUIVisibleBackup = bestiaryUIVisibleBackup = badgesUIVisibleBackup = optionsUIVisibleBackup = shrineUIVisibleBackup = clickInUI = memberUIVisible = inventoryUIVisible = bestiaryUIVisible = badgesUIVisible = optionsUIVisible = shrineUIVisible = false;
     comboMultBonus = comboCount = comboWindowTimer = selectingHero = selectedStatIndex = inventoryTabIdx = inventoryPageIdx = inventorySlotIdx  = 0
 }
-
-let inventoryItemLists = [
-    [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [7, 8, 12, 13, 14, 16, 18, 20, 22, 23, 25, 27, 34, 35, 39, 40, 44, 46, 47, 48, 55, 56, 57, 58, 59, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 131, 132, 133, 134, 135, 0, 0, 0, 0, 0, 0, 0],
-    [28, 29, 30, 31, 32, 33, 36, 37, 45, 60, 0, 0, 0, 0, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 0, 0, 0, 0, 0],
-    [71, 73, 75, 77, 79, 81, 83, 85, 87, 113, 115, 117, 119, 136, 137, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [72, 74, 76, 78, 80, 82, 84, 86, 88, 114, 116, 118, 120, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    []
-];
-
 
 function getItemModifierAmount(itemIdx, columnIdx) { // Ue
     for (var c = 0; 6 > c; c += 2)
@@ -306,34 +461,6 @@ function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     return c
 }
 
-let badgeCounterArray = Array(badgeCount);
-for (let _i = 0; _i < badgeCount; _i++) badgeCounterArray[_i] = 0;
-
-let badgePopupTimer = 0, // bf
-    lastCompletedBadgeIdx = 0, // cf
-    badgeIndicesByStage = [ // df
-        [0, 1, 2, 3, 4],
-        [5, 6, 7, 8, 9],
-        [10, 11, 12, 13, 14],
-        [15, 16, 17, 18, 19],
-        [20, 21, 22, 23, 24],
-        [25, 26, 27, 28, 29],
-        [30, 31, 32, 33, 34],
-        [35, 36, 37, 38, 39],
-        [40, 41, 42, 43, 44],
-        [45, 46, 47, 48, 49],
-        [50, 51, 52, 53, 54],
-        [55, 56, 57, 58, 59],
-        [60, 61, 62, 63, 64],
-        [65, 66, 67, 68, 69],
-        [70, 71, 72],
-        [],
-        [],
-        []
-    ];
-
-let stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139]; // ef, stage-indexed reward item table used when all five badges for a stage are cleared.
-
 
 function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
     return currentStage == badgeList[badgeIdx][2] && badgeCounterArray[badgeIdx] != badgeList[badgeIdx][4] ? true : false
@@ -363,21 +490,6 @@ function IncrementBadgeCount(badgeIndex) {
     }
 }
 
-let shrineRewardClaimSlotCount = 10, // Ec
-    shrineRewardClaimed = Array(shrineRewardClaimSlotCount);
-for (let _i = 0; _i < shrineRewardClaimSlotCount; _i++) badgeCounterArray[_i] = 0;
-let shrineRewardOptions = [
-    ["Gold Shower", 15],
-    ["Clear Status", 30],
-    ["ONIGIRI", 45],
-    ["Level Up", 60]
-],
-    gameSaveString = "",
-    gameSaveStatusDuration = 0,
-    gameLoadStatusCode = 0,
-    statusDuration = 0,
-    gameSaveBuffer = new Int32Array(5E3),
-    saveLoadCodecScratchBuffer = new Int32Array(5E3); // lf, scratch buffer used while encoding and decoding save strings
 
 
 function saveGame() {
@@ -560,13 +672,6 @@ function loadGame(saveString) {
     for (b = 0; b < g; b++) stageEventFlags[b] = gameSaveBuffer[p++];
     return 0;
 }
-let partyChecksum = 0,
-    basePartyChecksum = 0,
-    tamperCheckScanOffset = 0, // vf, rotating start offset for the chunked tamper-check hash pass
-    itemHashTable = [],
-    levelHashTable = [],
-    itemCatalogHashTable = [],
-    inventoryItemListsChecksum = 0; // zf, checksum of inventoryItemLists used by the tamper-check path
 
 
 function hashAdjust(a, b) {
@@ -611,7 +716,6 @@ function updatePartyChecksum() {
     partyChecksum = c ^ 16777215
 }
 
-let gameInitStage = 0;
 
 function gameInit(a, b) {
     let _t0;
@@ -2236,86 +2340,6 @@ function drawGameUI() {
     drawScaledTintedText(gameFontSmall, 607, 421, "" + currentFPS + fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
 }
 
-let areUpperJointsDisabled = 1, // rig mode flag
-    heroJointPositionsByHero = Array(4); // O, current joint positions for each hero.
-
-    for (let _i = 0; 4 > _i; _i++) heroJointPositionsByHero[_i] = Array(21);
-
-let heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions used for collision resolution and drag selection.
-
-for (let _i = 0; 4 > _i; _i++) heroJointPrevPositionsByHero[_i] = Array(21);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 21 > _j; _j++) heroJointPositionsByHero[_i][_j] = new RMath.Vec2;
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 21 > _j; _j++) heroJointPrevPositionsByHero[_i][_j] = new RMath.Vec2;
-
-let heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint5HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint5HistoryByHero[_i][_j] = new RMath.Vec2;
-
-let heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint3HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint3HistoryByHero[_i][_j] = new RMath.Vec2;
-
-let heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint6HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint6HistoryByHero[_i][_j] = new RMath.Vec2;
-
-let heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint4HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint4HistoryByHero[_i][_j] = new RMath.Vec2;
-
-let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
-    heroAttackTrailTimerByHero = Array(4), // Sh, hero attack trail timer per hero.
-    heroAttackTrailHistorySets = [
-        heroJoint5HistoryByHero, 
-        heroJoint6HistoryByHero, 
-        heroJoint3HistoryByHero, 
-        heroJoint4HistoryByHero
-    ], // Th, grouped joint-history buffers used for attack-trail drawing.
-    heroAimPosByHero = Array(4); // Uh, stored hero aim position per hero.
-
-for (let _i = 0; 4 > _i; _i++) heroAimPosByHero[_i] = new RMath.Vec2;
-
-let heroAttackLineTimer = Array(4),
-    heroUpperJointMode = new Int32Array(4), // Wh, per-hero rig mode flag that switches between normal and upper-joint-disabled updates.
-    heroPoseAgeFrames = new Int32Array(4), // Xh, per-hero pose age counter used while the rig settles after movement or impact.
-    heroTileContactFlags = new Int32Array(4), // Yh, per-hero tile-contact flags set while joint movement hits stage geometry.
-    heroAttackCooldownFrames = new Int32Array(4), // Zh, per-hero attack cooldown timer that gates target tracking and attack cadence.
-    heroHitFlashTimer = new Int32Array(4), // $h, per-hero hit flash timer used to tint the hero when damage lands.
-    heroEnemySeekTimer = new Int32Array(4), // ai, per-hero AI move timer that spaces out enemy-approach adjustments.
-    draggedHeroIndex = -1, // bi, dragged hero index for mouse joint selection.
-    draggedJointIndex = 0, // ci, dragged joint index for mouse joint selection.
-    levelUpPopupTimer = 0, // Hh, level-up popup timer.
-    stageClearPopupTimer = 0, // di, stage-clear popup timer.
-    comboPopupTimer = 0, // Zg, combo popup timer.
-    comboWindowTimer = 0, // Ic, combo window timer that counts down after each hit.
-    comboWindowMaxFrames = 0, // Vg, maximum combo window length in frames.
-    comboCount = 0, // Hc, combo count shown in the UI and used for payout checks.
-    comboGoldPayoutPerHero = 0, // $g, per-hero combo gold payout after a combo ends.
-    comboMultBonus = 0, // comboMultBonus, extra percent added to combo payout.
-    attackTrailSideIdx = new Int32Array(4), // ei, per-hero active attack-side index used for trail and weapon selection.
-    attackWeaponSlotIdx = new Int32Array(4), // fi, per-hero active weapon slot index used by the current attack sequence.
-    heroBodyDrawStateByHero = [ // partyBodyDrawOptions, per-hero body draw state: two attack-side slots plus facing.
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 0]
-    ],
-    heroSkipTimer = new Int32Array(4), // ch, per-hero skip timer that can block updates entirely.
-    heroSkipChancePercent = new Int32Array(4), // hi, per-hero skip chance used with ch during attackType 2 effects.
-    heroTimedDamageTimer = new Int32Array(4), // dh, per-hero damage-over-time timer.
-    heroTimedDamageAmount = new Int32Array(4), // ii, per-hero damage-over-time amount used to drain LP each tick.
-    heroStatusTintTimer = new Int32Array(4), // bh, per-hero status tint timer used for the buff-colored hero draw.
-    heroTileEffectLatch = new Int32Array(4); // ji, per-hero tile-effect latch used to fire one-off stage tile projectiles.
 
 
 function resetDragSelection() { // ki
@@ -3611,6 +3635,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
         }
     }
 }
+
 const stageCount = 32,
     stageListArray = Array(stageCount);
 let ENUM_STAGE_PROPS_COUNT = 0;
@@ -3646,6 +3671,7 @@ stageListArray[17] = ["Limestone cave 5", 2, 8686715, 14, 18, 0, 16, 0, 50, 71, 
 stageListArray[18] = ["Limestone cave 6", 2, 8686715, 15, 19, 17, 0, 0, 50, 77, 1, 3, 29, 42, 29, 42, 77, 1, 3, 44, 42, 44, 42, 77, 1, 3, 59, 42, 59, 42, 78, 2, 0, 7, 34, 15, 34, 78, 1, 0, 7, 18, 14, 18, 79, 20, 80, 4, 26, 17, 26, 80, 1, 0, 39, 4, 53, 8, 81, 99, 99, 23, 14, 67, 28, 82, 1, 0, 47, 20, 47, 20];
 stageListArray[19] = ["Limestone cave 7", 2, 8686715, 16, 0, 18, 20, 0, 50, 84, 20, 0, 10, 36, 18, 36, 84, 10, 0, 29, 38, 34, 38, 85, 1, 0, 63, 28, 63, 28, 85, 1, 0, 13, 25, 13, 25];
 stageListArray[20] = ["Limestone cave 8", 2, 8686715, 17, 0, 15, 0, 19, 50, 0, 0, 0, 0, 0, 0, 0];
+
 let isStageReachedArray = Array(stageCount);
 for (let _i = 0; _i < stageCount; _i++) isStageReachedArray[_i] = 0;
 let stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
@@ -7522,7 +7548,6 @@ function setupAnimRequest() {
     canvasDrawImage(canvasImage, 0, 0);
     requestAnim || setTimeout(setupAnimRequest, computeFrameDelay());
 }
-let hostNameUnchecked = 1;
 
 /** Checks hostname */
 function hostnameCheck() {
@@ -7534,17 +7559,7 @@ function hostnameCheck() {
     return false
 }
 
-let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
-    requestAnimCallCount = 0, // Vm, counts active requestAnimationFrame callbacks (incremented each anim callback; reset on timing jumps).
-    lastAnimFrameBucket = 0,  // Zm, last rounded animation-frame bucket (stores previous a to detect/skip duplicate callbacks).
-    frameCountThisSecond = 0, // Ym
-    currentFPS = 0,
-    frameInteval = 20, // en, in milliseconds
-    timestampAnim = Date.now(),
-    lastTimestamp = timestampAnim, // Xm
-    nextFrameTime = timestampAnim + frameInteval, // fn
-    secondWindowDeadline = timestampAnim, // gn
-    totalFrames = 0; // $m
+
 
 function computeFrameDelay() { // ag
     timestampAnim = Date.now();
@@ -7557,7 +7572,6 @@ function computeFrameDelay() { // ag
     return a
 }
 
-let uncheckedSpriteCount = 0;
 
 function Sprite() {
     /** Image object */
@@ -7616,6 +7630,7 @@ function loadSprite(sprite) {
         sprite.c = 1
     }
 }
+
 let charKerningBefore = [
     [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],

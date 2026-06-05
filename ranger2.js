@@ -9,7 +9,7 @@ import { itemList } from "./game/item_list.js";
 import * as RMath from "./game/math.js";
 import { badgeCount, badgeList } from "./game/badge_list.js";
 import { StageProps } from "./game/stage_enums.js";
-import { stageCount, stageListArray } from "./game/stage_data.js";
+import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 
 export {gameInit as Init, toggleFullscreen as full_screen};
 
@@ -321,8 +321,259 @@ let heroAttackLineTimer = Array(4),
     heroTimedDamageAmount = new Int32Array(4), // ii, per-hero damage-over-time amount used to drain LP each tick.
     heroStatusTintTimer = new Int32Array(4), // bh, per-hero status tint timer used for the buff-colored hero draw.
     heroTileEffectLatch = new Int32Array(4); // ji, per-hero tile-effect latch used to fire one-off stage tile projectiles.
+    
+// stage state
+let isStageReachedArray = Array(stageCount);
+for (let _i = 0; _i < stageCount; _i++) isStageReachedArray[_i] = 0;
+let stageWidth = 80, // Gi
+    stageHeight = 60, // si
+    stageTileData = Array(stageHeight); // P
+for (let i = 0; i < stageHeight; i++) stageTileData[i] = Array(stageWidth);
 
-// something else
+let loadedLevelIndex = -1,
+    lastStageIdx = 0, // Mg
+    lastClearedStageIdx = 0, // Ng, last cleared stage index (stage just completed before returning)
+    partySpawnXByHero = [0, 0, 0, 0], // per-hero spawn Y (tile/row) positions used when placing party members on stage
+    partySpawnYByHero = [0, 0, 0, 0], // per-hero spawn X (tile/column) positions used when placing party members on stage
+    activeSpawnCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // V[group], active spawn counts per spawn-group (number of currently active enemies)
+    totalSpawnedCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Xi[group], cumulative spawned count per spawn-group (used to cap spawns and compute stage-clear payouts)
+    stageClearBaseGoldPerHero = 0; // Mi, per-hero stage-clear gold payout (base amount computed from spawned enemies)
+
+// stage state 2
+let stage_partyDamageTaken = 0, // Og, accumulated party LP lost this stage (used for badges and payouts).
+    stage_totalDamageDealt = 0, // total damage dealt this stage (used for badges/conditions).
+    gameFrameCounter = 0, // gj, global frame tick counter (drives time-based events and UI timers).
+    consecutiveConditionFrameCount = 0, // hj, consecutive-frame counter for stage condition (used for timed badges/popups).
+    stageEncounterCounter = 0, // ij, counter for specific enemy presences/encounters this stage (used for badge triggers).
+    stageConditionMask = 0, // Hi, bitmask of stage tile/contact conditions set by heroes (per-stage).
+    stageFlagUseCount = 0, // jh, count of stage-flag uses (increments when stage flags are triggered).
+    stageEventFlagArray = [0, 0, 0, 0]; // of, array of per-stage event flags (saved/loaded and used for one-off stage events).
+
+    
+// bestiary
+let bestiaryEntryState = Array(enemyTypeCount); // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
+for (let _i = 0; _i < enemyTypeCount; _i++) bestiaryEntryState[_i] = 0;
+
+// enemy states
+let enemyJointPosArray = Array(999), // Q, 
+    enemyPrevJointPosArray = Array(999); // Z, 
+
+for (let _i = 0; 999 > _i; _i++) enemyPrevJointPosArray[_i] = Array(21);
+for (let _i = 0; 999 > _i; _i++) enemyJointPosArray[_i] = Array(21);
+
+for (let _i = 0; 999 > _i; _i++)
+    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
+        enemyJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
+
+for (let _i = 0; 999 > _i; _i++)
+    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
+        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
+
+let enemyTypeArray = new Int32Array(999), // 
+    enemyUpdateFuncIdxArray = new Int32Array(999),
+    enemyPoseTrailWriteIdxArray  = new Int32Array(999), // Y , 
+    enemyDeathTimerArray = new Int32Array(999), // Ck, 
+    enemyTileContactFlagsArray = new Int32Array(999), // Dk, 
+    enemySpawnGroupIdxArray = new Int32Array(999), // fj, 
+    enemyHealthArray = new Int32Array(999),
+    enemyAuxStateArray = new Int32Array(999), // Ek
+    enemyActionCooldownTimerArray = new Int32Array(999), // Fk
+    enemySkipDurationLeftArray = new Int32Array(999),
+    enemyUpdateSkipProbArray = new Int32Array(999),
+    enemyDmgDurationLeftArray = new Int32Array(999),
+    enemyDmgPerFrameArray = new Int32Array(999),
+    enemyFreezeTimerArray = new Int32Array(999),
+    enemyCount = 0,
+    enemyTargetJointIdx = 20, // yi, default enemy joint index used as the target/aim/spawn point for projectiles and AI
+    stageMaxEnemyLevel = 0,  // $i, maximum enemy level among spawned enemies (used for reward/EXP scaling)
+    enemyHitboxHalfWidthByBehavior = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10], // Lk
+    enemyHitboxHalfHeightByBehavior = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10], // Mk
+    enemySpriteAnchorYBySpriteIndex = [4, 4, 5, 4, 4, 4, 5, 5, 4, 3, 5, 5, 5, 5, 6, 7, 3, 0, 2, 2, 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Nk
+    enemyDispatchTable = [
+        enemySlimeBehavior,
+        enemyBoxSnakeBehavior,
+        enemyBatBehavior,
+        enemyDragonBehavior,
+        enemyStickmanBehavior,
+        enemyTreeBehavior,
+        enemyTreeBehavior,
+        enemyHangingTreeBehavior,
+        enemyUpdateFunc7,
+        enemyUpdateFunc8,
+        enemyUpdateFunc9,
+        enemyStickmanBehavior
+    ];
+
+
+// projectiles
+let projectileCount = 0,
+    projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
+    projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
+    projectilePosition = Array(1E3);                    // jl, projectile position Vec2 — world position when free, local offset when attached.
+for (let _i = 0; 1E3 > _i; _i++) projectilePosition[_i] = new RMath.Vec2;
+let projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
+for (let _i = 0; 1E3 > _i; _i++) projectileVelocity[_i] = new RMath.Vec2;
+let projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
+    projectileDrawMode = new Int32Array(1E3),           // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
+    projectileSpriteTileIndex = new Int32Array(1E3),    // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
+    projectileTintColor = new Int32Array(1E3),          // ol, packed RGBA tint used for projectile color/alpha (alpha scaled by life for fade-out).
+    
+    projectileSolidRenderMode = new Int32Array(1E3),    // pl, projectile solid/blend render mode (used as isSolidRender with modes 0/1/2/3 selecting different compositing behavior).
+    projectileSpriteWidth = new Int32Array(1E3),        // ql, projectile sprite/render width (pixels) passed to sprite/draw calls.
+    projectileSpriteHeight = new Int32Array(1E3),       // rl, projectile sprite/render height (pixels) passed to sprite/draw calls.
+    
+    projectileShapeMode = new Int32Array(1E3),          // sl, projectile effect shape/mode for hit detection (0 = rectangular area, 1 = line/beam shape; passed as shapeMode to applyEffectToEnemies).
+    projectileHitboxWidth = new Int32Array(1E3),        // tl, full hitbox width (pixels) passed to collision/effect routines.
+    projectileHitboxHeight = new Int32Array(1E3),       // ul, full hitbox height (pixels) passed to collision/effect routines.
+    
+    projectileSpawnDelayFrames = new Int32Array(1E3),   // vl, frames to wait before the projectile becomes active (counts down each frame).
+    projectileHitCooldownFrames = new Int32Array(1E3),  // wl, short frames of suppressed hit/impact processing after spawn/impact.
+    projectileImpactAge = new Int32Array(1E3),          // xl, frames spent in impact/fade-out (incremented while impact-state == 1).
+    projectileImpactLifetime = new Int32Array(1E3),     // yl, frames before an impacted projectile is deleted (impact lifetime).
+    projectileAttachJointIndex = new Float32Array(1E3), // zl, attachment/joint index mode (0 = free/gravity; -1 = special; >0 = index into owner joint positions used for seeking/attachment).
+    
+    projectileAcceleration = new Float32Array(1E3),     // Al, per-projectile acceleration scalar used for gravity or homing (applied as .01 * Al to velocity each update).
+    projectileVelocityScale = new Int32Array(1E3),      // Bl, per-projectile velocity scale applied each update (velocity multiplied by .01 * Bl).
+    projectileCustomIntA = new Int32Array(1E3),         // Cl, integer per-projectile extra parameter assigned at spawn but not referenced elsewhere (reserved/unused in current code).
+    projectileTileCollisionMode = new Int32Array(1E3),  // Dl, per-projectile tile-collision mode controlling how projectiles interact with stage tiles (observed modes: 0 triggers impact, 2/stick-to-tile, 3=bounce, 4=clamp/zero-vel).
+    projectileHomingRange = new Int32Array(1E3),        // El, homing/search radius for projectiles; when >0 the projectile searches for targets within El and adjusts velocity toward them.
+    projectileCustomIntB = new Int32Array(1E3),         // Fl, integer per-projectile extra parameter assigned at spawn but not observed used elsewhere (reserved/unused in current code).
+    projectileMaxTargets = new Int32Array(1E3),         // Gl, per-projectile effect maxTargets passed to applyEffectToEnemies when the projectile hits (limits how many enemies the projectile affects).
+
+    projectileDamageMin = new Int32Array(1E3),          // Hl, projectile effect damage minimum (passed as damageMin to applyEffectToEnemies / damagePartyMemberInArea)
+    projectileDamageMax = new Int32Array(1E3),          // Il, projectile effect damage maximum (passed as damageMax to applyEffectToEnemies / damagePartyMemberInArea)
+    projectileEffectType = new Int32Array(1E3),         // Jl, projectile effect type (0=phys,1=fire,2=ice,3=light,4=poison - selects damage/effect branch in applyEffectToEnemies)
+    projectileEffectDuration = new Int32Array(1E3),     // Kl, projectile effect duration/parameter (frames passed as effectDuration to applyEffectToEnemies)
+    projectileApplyMode = new Int32Array(1E3),          // Ll, projectile hit/apply mode flag (controls whether effect call is "check-only" vs applies damage; certain values also alter impact timing)
+    projectileImpactSpawnMode = new Int32Array(1E3),    // Ml, projectile impact/spawn mode (selects child-spawn / impact pattern used when the projectile hits)
+    projectileSpawnParam = new Int32Array(1E3),         // Nl, projectile spawn parameter (used as angular spread or probability threshold depending on Ml)
+
+    // Per-projectile extra integer parameters forwarded from item/projectile template
+    projectileTmplSpeed = new Int32Array(1E3),          // Ol, template itemProjectileSpeedCol forwarded: projectile base speed from item template; carried into spawn and child-spawns.
+    projectileTmplElementType = new Int32Array(1E3),    // Pl, template itemElementTypeCol forwarded: item element/type (0=phys,1=fire,2=ice,3=light,4=poison); used by effect/aux logic and forwarded to child spawns.
+    projectileTmplElementBonus = new Int32Array(1E3),   // Ql, modified itemIceBonusPercent (adjusted by accessories) forwarded: per-template element bonus percent applied to effect calculations; carried into projectile and child spawns.
+    projectileTmplParam1 = new Int32Array(1E3),         // Rl, template itemProjectileParam1Col forwarded: template-specific integer parameter (semantics defined by projectile template); passed to child-spawns.
+    projectileTmplAttackMode = new Int32Array(1E3),     // Sl, template itemAttackModeCol forwarded: attack mode flag from item (influences attack/spawn behaviour); carried into projectile and children.
+    projectileTmplParam2 = new Int32Array(1E3),         // Tl, template itemProjectileParam2Col forwarded: second template-specific integer parameter; passed through to spawn/impact handlers.
+    projectileTmplAux1 = new Int32Array(1E3),           // Ul, template itemProjectileAux1Col forwarded: auxiliary template integer A; forwarded into spawned children.
+    projectileTmplAux2 = new Int32Array(1E3),           // Vl, template itemProjectileAux2Col forwarded: auxiliary template integer B; forwarded into spawned children.
+    projectileTmplAuxValueA = new Int32Array(1E3),      // Wl, template itemAuxValueACol forwarded: auxiliary value A from item (template-defined use); carried into projectile and child spawns.
+    projectileTmplAuxValueB = new Int32Array(1E3),      // Xl, per-projectile template param forwarded to child spawns.
+    projectileTmplAuxValueC = new Int32Array(1E3),      // Yl, template itemAuxValueBCol forwarded: auxiliary value B from item; forwarded into spawn/impact calls.
+    projectileTmplDisplayStatA = new Int32Array(1E3),   // Zl, template itemDisplayStatACol forwarded: display/stat A from item (often shown in UI or used by template logic); forwarded to children.
+    projectileTmplAuxValueD = new Int32Array(1E3),      // $l, template itemAuxValueDCol forwarded: auxiliary value D from item; carried through to spawn/impact handlers.
+    projectileTmplFlag = new Int32Array(1E3),           // am, template itemProjectileFlagCol forwarded: bitfield/flag set on the item’s projectile template altering spawn/impact behaviours; forwarded into projectile and child spawns.
+    projectileTmplParamTime = new Int32Array(1E3),      // bm, template itemProjectileParamTimeCol forwarded: time/threshold parameter used by some impact/spawn modes; carried from item -> spawn and forwarded into child-spawn calls.
+    projectileTmplHitCount = new Int32Array(1E3),       // cm, template itemHitCountCol forwarded: hit/count parameter from item (used as per-template hit-count or chance for spawned children).
+    projectileTmplEffectMode = new Int32Array(1E3),     // dm, template itemProjectileEffectModeCol forwarded: per-template effect-mode flag (selects specialised effect/spawn handling); passed from item into projectile and into child spawns.
+    projectileTmplStatA = new Int32Array(1E3),          // em, template itemStatACol (modified) forwarded: per-item stat A (modified by hero/accessories) carried into projectile and child spawns for template-specific behaviors.
+    projectileTmplExtraStat1 = new Int32Array(1E3),     // fm, template itemExtraStatCol1 forwarded: extra/template stat carried through to projectile and child-spawns (template-defined use).
+    
+    projectileChildCount = new Int32Array(1E3),         // gm, child‑spawn count (or chance threshold in some impact modes); used as loop bound and probability check.
+    projectileChildSpeed = new Int32Array(1E3);         // hm, scalar used to set spawned child projectile velocity/scale (interpreted as speed/magnitude)
+
+
+// popups
+let popupCount = 0, // aj
+    popupPos = Array(1E3); // rm
+for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new RMath.Vec2;
+let popupVel = Array(1E3); // sm
+for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new RMath.Vec2;
+let popupValue = Array(1E3), // tm
+    popupLife = new Int32Array(1E3), // um
+    popupColor = new Int32Array(1E3); // vm
+
+// dropped items
+let dropCount = 0, // ym
+    dropPos = Array(100); // zm
+for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
+let dropVel = Array(100); // Am
+for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new RMath.Vec2;
+let dropType = new Int32Array(100), // Bm, in id
+    dropValue = new Int32Array(100), // Cm, value/amount
+    dropMeta = new Int32Array(100), // Dm, rarity/state
+    dropState = new Int32Array(100), // Em, state/lifetime
+    dropScore = 0; // Fm, aggregated score/weight for drops (sum of 7type + 3value + 11*meta)
+
+
+// misc
+let copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp",
+    copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp",
+    dataPath = "./data/",
+    fpsName = "fps",
+    canvasTag = "canvas",
+    name2d = "2d",
+    hostnameCheckIdx = 0,
+    targetHostname = "dan-ball.jp";
+
+// misc: string encoding
+let encodingCharTable = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK",
+    inverseCodingCharTable = [];
+for (let _i = 0; 64 > _i; _i++) inverseCodingCharTable[encodingCharTable[_i]] = _i;
+
+// rendering maybe
+let frameBufferArray = new Int32Array(276480),
+
+    // per-scanline X ranges (16.16 fixed-point) used for rasterization
+    scanlineMinX = new Int32Array(432),         // Ji,
+    scanlineMaxX = new Int32Array(432),         // Ki,
+
+    // per-scanline start texture U ranges (16.16 fixed-point) for sampling during rasterization.
+    scanlineTexUStart = new Float32Array(432),  // om, 
+    scanlineTexUEnd = new Float32Array(432),    // nm, 
+
+    // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
+    scanlineTexVStart = new Float32Array(432),  // qm, 
+    scanlineTexVEnd = new Float32Array(432);    // pm, 
+
+// text rendering / fonts
+let charKerningBefore = [
+    [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
+    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
+]; // jn
+let charKerningAfter = [
+    [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
+]; // kn
+
+let gameFont = new GameFont;
+let gameFontSmall = new GameFont;
+let gameFontMed = new GameFont;
+
+
+// rendering params maybe
+let screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
+    isSolidRender = 0,
+    spriteAltRenderFlag = 0; // fh, auxiliary sprite render-mode flag used for temporary tint/alt-draw modes.
+
+// vector math stuff
+var scratchVec2 = new RMath.Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
+
+// mouse input
+let isMouseClicked = false,
+    isMouseReleased = false,
+    wasMouseDown = false,
+    isMouseDown = false,
+    mouseHoldFrames = 0, // bn, frames mouse has been continuously held down (hold-duration counter).
+    mouseXCurrent = 0,
+    mouseYCurrent = 0,
+    mouseXRel = 0,
+    mouseYRel = 0,
+    activeTouchCount = 0;
+
+
+// keyboard input
+let keyJustPressed = Array(256), // Jf
+    keyPressPending = Array(256), // Kf
+    keyHeld = Array(256), // Lf
+    keyMapNoShift = Array(256), // Mf
+    keyMapShift = Array(256); // Nf
+
+let isCanvasFocused = false;
 
 function resetGameProgress() { // bc
     let a, b;
@@ -3638,45 +3889,6 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     }
 }
 
-let isStageReachedArray = Array(stageCount);
-for (let _i = 0; _i < stageCount; _i++) isStageReachedArray[_i] = 0;
-
-const stageIndexOrder = [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
-    /** array of lists of enemy ids indexed by stage number */
-    bestiaryPageItems = [
-        [0, 1, 2, 5, 3],
-        [4, 7, 6, 9, 8, 14, 15],
-        [12, 13, 10, 11, 17, 16],
-        [18, 19, 20, 21, 22],
-        [23, 24, 25, 26, 27, 28],
-        [29, 30, 31, 32, 33],
-        [34, 35, 36],
-        [37, 38, 39, 40, 41],
-        [42, 43, 44, 45, 46],
-        [47, 48, 49, 50, 51, 52],
-        [53, 54, 55, 56, 57, 58],
-        [59, 60, 61, 62, 63, 64],
-        [65, 66, 67, 68, 69, 70],
-        [71, 72, 73, 74, 75, 76],
-        [77, 78, 79, 80, 81, 82, 83],
-        [84, 85, 86, 87, 88, 89],
-        []
-    ];
-
-let stageWidth = 80, // Gi
-    stageHeight = 60, // si
-    stageTileData = Array(stageHeight); // P
-for (let i = 0; i < stageHeight; i++) stageTileData[i] = Array(stageWidth);
-
-let loadedLevelIndex = -1,
-    lastStageIdx = 0, // Mg
-    lastClearedStageIdx = 0, // Ng, last cleared stage index (stage just completed before returning)
-    partySpawnXByHero = [0, 0, 0, 0], // per-hero spawn Y (tile/row) positions used when placing party members on stage
-    partySpawnYByHero = [0, 0, 0, 0], // per-hero spawn X (tile/column) positions used when placing party members on stage
-    activeSpawnCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // V[group], active spawn counts per spawn-group (number of currently active enemies)
-    totalSpawnedCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Xi[group], cumulative spawned count per spawn-group (used to cap spawns and compute stage-clear payouts)
-    stageClearBaseGoldPerHero = 0; // Mi, per-hero stage-clear gold payout (base amount computed from spawned enemies)
-
 
 function loadLevelData(a) {
     if (loadedLevelIndex != a) {
@@ -4123,14 +4335,7 @@ function drawGameStage() {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
 }
-let stage_partyDamageTaken = 0, // Og, accumulated party LP lost this stage (used for badges and payouts).
-    stage_totalDamageDealt = 0, // total damage dealt this stage (used for badges/conditions).
-    gameFrameCounter = 0, // gj, global frame tick counter (drives time-based events and UI timers).
-    consecutiveConditionFrameCount = 0, // hj, consecutive-frame counter for stage condition (used for timed badges/popups).
-    stageEncounterCounter = 0, // ij, counter for specific enemy presences/encounters this stage (used for badge triggers).
-    stageConditionMask = 0, // Hi, bitmask of stage tile/contact conditions set by heroes (per-stage).
-    stageFlagUseCount = 0, // jh, count of stage-flag uses (increments when stage flags are triggered).
-    stageEventFlagArray = [0, 0, 0, 0]; // of, array of per-stage event flags (saved/loaded and used for one-off stage events).
+
 
 
 function initStageState() { // cj
@@ -4769,57 +4974,7 @@ function updateStageTick() { // xg
         }
     }
 }
-let bestiaryEntryState = Array(enemyTypeCount); // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
-for (let _i = 0; _i < enemyTypeCount; _i++) bestiaryEntryState[_i] = 0;
 
-let enemyJointPosArray = Array(999), // Q, 
-    enemyPrevJointPosArray = Array(999); // Z, 
-
-for (let _i = 0; 999 > _i; _i++) enemyPrevJointPosArray[_i] = Array(21);
-for (let _i = 0; 999 > _i; _i++) enemyJointPosArray[_i] = Array(21);
-
-for (let _i = 0; 999 > _i; _i++)
-    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
-
-for (let _i = 0; 999 > _i; _i++)
-    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
-
-let enemyTypeArray = new Int32Array(999), // 
-    enemyUpdateFuncIdxArray = new Int32Array(999),
-    enemyPoseTrailWriteIdxArray  = new Int32Array(999), // Y , 
-    enemyDeathTimerArray = new Int32Array(999), // Ck, 
-    enemyTileContactFlagsArray = new Int32Array(999), // Dk, 
-    enemySpawnGroupIdxArray = new Int32Array(999), // fj, 
-    enemyHealthArray = new Int32Array(999),
-    enemyAuxStateArray = new Int32Array(999), // Ek
-    enemyActionCooldownTimerArray = new Int32Array(999), // Fk
-    enemySkipDurationLeftArray = new Int32Array(999),
-    enemyUpdateSkipProbArray = new Int32Array(999),
-    enemyDmgDurationLeftArray = new Int32Array(999),
-    enemyDmgPerFrameArray = new Int32Array(999),
-    enemyFreezeTimerArray = new Int32Array(999),
-    enemyCount = 0,
-    enemyTargetJointIdx = 20, // yi, default enemy joint index used as the target/aim/spawn point for projectiles and AI
-    stageMaxEnemyLevel = 0,  // $i, maximum enemy level among spawned enemies (used for reward/EXP scaling)
-    enemyHitboxHalfWidthByBehavior = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10], // Lk
-    enemyHitboxHalfHeightByBehavior = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10], // Mk
-    enemySpriteAnchorYBySpriteIndex = [4, 4, 5, 4, 4, 4, 5, 5, 4, 3, 5, 5, 5, 5, 6, 7, 3, 0, 2, 2, 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Nk
-    enemyDispatchTable = [
-        enemySlimeBehavior,
-        enemyBoxSnakeBehavior,
-        enemyBatBehavior,
-        enemyDragonBehavior,
-        enemyStickmanBehavior,
-        enemyTreeBehavior,
-        enemyTreeBehavior,
-        enemyHangingTreeBehavior,
-        enemyUpdateFunc7,
-        enemyUpdateFunc8,
-        enemyUpdateFunc9,
-        enemyStickmanBehavior
-    ];
 
 
 function clearEnemies() {
@@ -6521,73 +6676,6 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
     }
 }
 
-let projectileCount = 0,
-    projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
-    projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
-    projectilePosition = Array(1E3);                    // jl, projectile position Vec2 — world position when free, local offset when attached.
-for (let _i = 0; 1E3 > _i; _i++) projectilePosition[_i] = new RMath.Vec2;
-let projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
-for (let _i = 0; 1E3 > _i; _i++) projectileVelocity[_i] = new RMath.Vec2;
-let projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
-    projectileDrawMode = new Int32Array(1E3),           // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
-    projectileSpriteTileIndex = new Int32Array(1E3),    // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
-    projectileTintColor = new Int32Array(1E3),          // ol, packed RGBA tint used for projectile color/alpha (alpha scaled by life for fade-out).
-    
-    projectileSolidRenderMode = new Int32Array(1E3),    // pl, projectile solid/blend render mode (used as isSolidRender with modes 0/1/2/3 selecting different compositing behavior).
-    projectileSpriteWidth = new Int32Array(1E3),        // ql, projectile sprite/render width (pixels) passed to sprite/draw calls.
-    projectileSpriteHeight = new Int32Array(1E3),       // rl, projectile sprite/render height (pixels) passed to sprite/draw calls.
-    
-    projectileShapeMode = new Int32Array(1E3),          // sl, projectile effect shape/mode for hit detection (0 = rectangular area, 1 = line/beam shape; passed as shapeMode to applyEffectToEnemies).
-    projectileHitboxWidth = new Int32Array(1E3),        // tl, full hitbox width (pixels) passed to collision/effect routines.
-    projectileHitboxHeight = new Int32Array(1E3),       // ul, full hitbox height (pixels) passed to collision/effect routines.
-    
-    projectileSpawnDelayFrames = new Int32Array(1E3),   // vl, frames to wait before the projectile becomes active (counts down each frame).
-    projectileHitCooldownFrames = new Int32Array(1E3),  // wl, short frames of suppressed hit/impact processing after spawn/impact.
-    projectileImpactAge = new Int32Array(1E3),          // xl, frames spent in impact/fade-out (incremented while impact-state == 1).
-    projectileImpactLifetime = new Int32Array(1E3),     // yl, frames before an impacted projectile is deleted (impact lifetime).
-    projectileAttachJointIndex = new Float32Array(1E3), // zl, attachment/joint index mode (0 = free/gravity; -1 = special; >0 = index into owner joint positions used for seeking/attachment).
-    
-    projectileAcceleration = new Float32Array(1E3),     // Al, per-projectile acceleration scalar used for gravity or homing (applied as .01 * Al to velocity each update).
-    projectileVelocityScale = new Int32Array(1E3),      // Bl, per-projectile velocity scale applied each update (velocity multiplied by .01 * Bl).
-    projectileCustomIntA = new Int32Array(1E3),         // Cl, integer per-projectile extra parameter assigned at spawn but not referenced elsewhere (reserved/unused in current code).
-    projectileTileCollisionMode = new Int32Array(1E3),  // Dl, per-projectile tile-collision mode controlling how projectiles interact with stage tiles (observed modes: 0 triggers impact, 2/stick-to-tile, 3=bounce, 4=clamp/zero-vel).
-    projectileHomingRange = new Int32Array(1E3),        // El, homing/search radius for projectiles; when >0 the projectile searches for targets within El and adjusts velocity toward them.
-    projectileCustomIntB = new Int32Array(1E3),         // Fl, integer per-projectile extra parameter assigned at spawn but not observed used elsewhere (reserved/unused in current code).
-    projectileMaxTargets = new Int32Array(1E3),         // Gl, per-projectile effect maxTargets passed to applyEffectToEnemies when the projectile hits (limits how many enemies the projectile affects).
-
-    projectileDamageMin = new Int32Array(1E3),          // Hl, projectile effect damage minimum (passed as damageMin to applyEffectToEnemies / damagePartyMemberInArea)
-    projectileDamageMax = new Int32Array(1E3),          // Il, projectile effect damage maximum (passed as damageMax to applyEffectToEnemies / damagePartyMemberInArea)
-    projectileEffectType = new Int32Array(1E3),         // Jl, projectile effect type (0=phys,1=fire,2=ice,3=light,4=poison - selects damage/effect branch in applyEffectToEnemies)
-    projectileEffectDuration = new Int32Array(1E3),     // Kl, projectile effect duration/parameter (frames passed as effectDuration to applyEffectToEnemies)
-    projectileApplyMode = new Int32Array(1E3),          // Ll, projectile hit/apply mode flag (controls whether effect call is "check-only" vs applies damage; certain values also alter impact timing)
-    projectileImpactSpawnMode = new Int32Array(1E3),    // Ml, projectile impact/spawn mode (selects child-spawn / impact pattern used when the projectile hits)
-    projectileSpawnParam = new Int32Array(1E3),         // Nl, projectile spawn parameter (used as angular spread or probability threshold depending on Ml)
-
-    // Per-projectile extra integer parameters forwarded from item/projectile template
-    projectileTmplSpeed = new Int32Array(1E3),          // Ol, template itemProjectileSpeedCol forwarded: projectile base speed from item template; carried into spawn and child-spawns.
-    projectileTmplElementType = new Int32Array(1E3),    // Pl, template itemElementTypeCol forwarded: item element/type (0=phys,1=fire,2=ice,3=light,4=poison); used by effect/aux logic and forwarded to child spawns.
-    projectileTmplElementBonus = new Int32Array(1E3),   // Ql, modified itemIceBonusPercent (adjusted by accessories) forwarded: per-template element bonus percent applied to effect calculations; carried into projectile and child spawns.
-    projectileTmplParam1 = new Int32Array(1E3),         // Rl, template itemProjectileParam1Col forwarded: template-specific integer parameter (semantics defined by projectile template); passed to child-spawns.
-    projectileTmplAttackMode = new Int32Array(1E3),     // Sl, template itemAttackModeCol forwarded: attack mode flag from item (influences attack/spawn behaviour); carried into projectile and children.
-    projectileTmplParam2 = new Int32Array(1E3),         // Tl, template itemProjectileParam2Col forwarded: second template-specific integer parameter; passed through to spawn/impact handlers.
-    projectileTmplAux1 = new Int32Array(1E3),           // Ul, template itemProjectileAux1Col forwarded: auxiliary template integer A; forwarded into spawned children.
-    projectileTmplAux2 = new Int32Array(1E3),           // Vl, template itemProjectileAux2Col forwarded: auxiliary template integer B; forwarded into spawned children.
-    projectileTmplAuxValueA = new Int32Array(1E3),      // Wl, template itemAuxValueACol forwarded: auxiliary value A from item (template-defined use); carried into projectile and child spawns.
-    projectileTmplAuxValueB = new Int32Array(1E3),      // Xl, per-projectile template param forwarded to child spawns.
-    projectileTmplAuxValueC = new Int32Array(1E3),      // Yl, template itemAuxValueBCol forwarded: auxiliary value B from item; forwarded into spawn/impact calls.
-    projectileTmplDisplayStatA = new Int32Array(1E3),   // Zl, template itemDisplayStatACol forwarded: display/stat A from item (often shown in UI or used by template logic); forwarded to children.
-    projectileTmplAuxValueD = new Int32Array(1E3),      // $l, template itemAuxValueDCol forwarded: auxiliary value D from item; carried through to spawn/impact handlers.
-    projectileTmplFlag = new Int32Array(1E3),           // am, template itemProjectileFlagCol forwarded: bitfield/flag set on the item’s projectile template altering spawn/impact behaviours; forwarded into projectile and child spawns.
-    projectileTmplParamTime = new Int32Array(1E3),      // bm, template itemProjectileParamTimeCol forwarded: time/threshold parameter used by some impact/spawn modes; carried from item -> spawn and forwarded into child-spawn calls.
-    projectileTmplHitCount = new Int32Array(1E3),       // cm, template itemHitCountCol forwarded: hit/count parameter from item (used as per-template hit-count or chance for spawned children).
-    projectileTmplEffectMode = new Int32Array(1E3),     // dm, template itemProjectileEffectModeCol forwarded: per-template effect-mode flag (selects specialised effect/spawn handling); passed from item into projectile and into child spawns.
-    projectileTmplStatA = new Int32Array(1E3),          // em, template itemStatACol (modified) forwarded: per-item stat A (modified by hero/accessories) carried into projectile and child spawns for template-specific behaviors.
-    projectileTmplExtraStat1 = new Int32Array(1E3),     // fm, template itemExtraStatCol1 forwarded: extra/template stat carried through to projectile and child-spawns (template-defined use).
-    
-    projectileChildCount = new Int32Array(1E3),         // gm, child‑spawn count (or chance threshold in some impact modes); used as loop bound and probability check.
-    projectileChildSpeed = new Int32Array(1E3);         // hm, scalar used to set spawned child projectile velocity/scale (interpreted as speed/magnitude)
-
-
 function clearProjectiles() { // im
     projectileCount = 0
 }
@@ -7205,14 +7293,7 @@ function drawProjectiles() {
             spriteAltRenderFlag = isSolidRender = 0;
         }
 }
-let popupCount = 0, // aj
-    popupPos = Array(1E3); // rm
-for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new RMath.Vec2;
-let popupVel = Array(1E3); // sm
-for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new RMath.Vec2;
-let popupValue = Array(1E3), // tm
-    popupLife = new Int32Array(1E3), // um
-    popupColor = new Int32Array(1E3); // vm
+
 
 
 function clearPopups() { // wm
@@ -7290,17 +7371,6 @@ function drawPopups() { // Fg
         }
 
 }
-
-let dropCount = 0, // ym
-    dropPos = Array(100); // zm
-for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
-let dropVel = Array(100); // Am
-for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new RMath.Vec2;
-let dropType = new Int32Array(100), // Bm, in id
-    dropValue = new Int32Array(100), // Cm, value/amount
-    dropMeta = new Int32Array(100), // Dm, rarity/state
-    dropState = new Int32Array(100), // Em, state/lifetime
-    dropScore = 0; // Fm, aggregated score/weight for drops (sum of 7type + 3value + 11*meta)
 
 
 function clearDrops() { // bj
@@ -7431,35 +7501,6 @@ function canvasDrawImage(_canvas, _dx, _dy) {
 }
 
 
-
-let copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
-    copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp", //fromCharCode(67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 40, 67, 41, 32, 50, 48, 49, 56, 32, 104, 97, 53, 53, 105, 105, 32, 68, 65, 78, 45, 66, 65, 76, 76, 46, 106, 112),
-    dataPath = "./data/", //fromCharCode(46, 47, 100, 97, 116, 97, 47),
-    fpsName = "fps", //fromCharCode(102, 112, 115),
-    canvasTag = "canvas", //fromCharCode(99, 97, 110, 118, 97, 115),
-    name2d = "2d", //fromCharCode(50, 100),
-    encodingCharTable = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK",
-    //fromCharCode(48, 49, 87, 116, 67, 112, 108, 120, 97, 121, 102, 84, 118, 113, 99, 104, 72, 109, 65, 57, 42, 74, 90, 79, 114, 105, 54, 86, 78, 55, 76, 52, 119, 56, 100, 85, 71, 101, 46, 83, 51, 70, 73, 68, 122, 115, 110, 80, 98, 69, 107, 81, 88,
-    //89, 77, 82, 103, 117, 50, 53, 66, 106, 111, 75),
-    inverseCodingCharTable = [];
-
-for (let _i = 0; 64 > _i; _i++) inverseCodingCharTable[encodingCharTable[_i]] = _i;
-let hostnameCheckIdx = 0,
-    targetHostname = "dan-ball.jp", //fromCharCode(100, 97, 110, 45, 98, 97, 108, 108, 46, 106, 112),
-    frameBufferArray = new Int32Array(276480),
-
-    // per-scanline X ranges (16.16 fixed-point) used for rasterization
-    scanlineMinX = new Int32Array(432),         // Ji,
-    scanlineMaxX = new Int32Array(432),         // Ki,
-
-    // per-scanline start texture U ranges (16.16 fixed-point) for sampling during rasterization.
-    scanlineTexUStart = new Float32Array(432),  // om, 
-    scanlineTexUEnd = new Float32Array(432),    // nm, 
-
-    // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
-    scanlineTexVStart = new Float32Array(432),  // qm, 
-    scanlineTexVEnd = new Float32Array(432);    // pm, 
-
 function setupAnimRequest() {
     if (requestAnim) {
         requestAnim(setupAnimRequest);
@@ -7542,94 +7583,6 @@ function computeFrameDelay() { // ag
 }
 
 
-function Sprite() {
-    /** Image object */
-    this.a = 0; // image
-    /** image path */
-    this.b = "";
-    /** is image ready */
-    this.c = 0;
-    /** image data */
-    this.g = 0;
-    /** width */
-    this.i = 0;
-    /** height */
-    this.h = 0;
-}
-
-function spriteCreateBuffer(sprite, width, height) {
-    sprite.h = width;
-    sprite.i = height;
-    for (width = 0; 16 > width; width++);
-    sprite.g = new Int32Array(sprite.h * sprite.i)
-}
-
-/** load  */
-Sprite.prototype.f = function (path) {
-    if (this.b != path) {
-        uncheckedSpriteCount++;
-        this.b = path;
-        this.a = new Image;
-        this.a.src = dataPath + path;
-        delete this.g;
-        this.c = 0
-        this.g = 0
-    }
-};
-
-function loadSprite(sprite) {
-    if (!sprite.c && sprite.a.complete) {
-        uncheckedSpriteCount--;
-        var imgWidth = sprite.a.width,
-            imgHeight = sprite.a.height;
-        if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", "ERROR";
-        var d = document.createElement(canvasTag);
-        d.width = imgWidth;
-        d.height = imgHeight;
-        d = d.getContext(name2d);
-        d.drawImage(sprite.a, 0, 0);
-        d = d.getImageData(0, 0, imgWidth, imgHeight).data;
-        spriteCreateBuffer(sprite, imgWidth, imgHeight);
-        imgWidth = 0;
-        for (imgHeight = d.length; imgWidth < imgHeight; imgWidth += 4)
-            sprite.g[imgWidth >> 2] = 0 == d[imgWidth + 3]
-                ? -1
-                : d[imgWidth + 0] << 16 | d[imgWidth + 1] << 8 | d[imgWidth + 2];
-        delete sprite.a;
-        sprite.c = 1
-    }
-}
-
-let charKerningBefore = [
-    [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
-    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
-]; // jn
-let charKerningAfter = [
-    [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
-]; // kn
-
-let gameFont = new GameFont;
-let gameFontSmall = new GameFont;
-let gameFontMed = new GameFont;
-
-function GameFont() {
-    this.i = new Sprite;
-    this.a = 0
-    this.b = 0
-    this.j = 0
-    this.c = 0
-}
-GameFont.prototype.f = function (a, b, c) {
-    this.i.f(a);
-    this.c = b;
-    this.j = c;
-    this.a = this.b = 0
-};
 
 function drawText(_font, px, py, text, color, outlineColor) {
     let h, k, p, t, l, n, w, B = 640 - _font.c,
@@ -7726,9 +7679,6 @@ function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, 
     drawScaledTintedText(font, x, y - (glyphHeight >> 1), text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight)
 }
 
-let screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
-    isSolidRender = 0,
-    spriteAltRenderFlag = 0; // fh, auxiliary sprite render-mode flag used for temporary tint/alt-draw modes.
 
 function drawLine(x1, y1, x2, y2, color) {
     x2 -= x1;
@@ -8134,7 +8084,6 @@ function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay
         }
     }
 }
-var scratchVec2 = new RMath.Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
 
 function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { // T
     RMath.Vec2Sub(scratchVec2, _a, _b);
@@ -8159,16 +8108,6 @@ function toggleFullscreen() {
     document.fullscreenEnabled && (document.fullscreenElement ? document.exitFullscreen() : canvasElement.requestFullscreen())
 }
 
-let isMouseClicked = false,
-    isMouseReleased = false,
-    wasMouseDown = false,
-    isMouseDown = false,
-    mouseHoldFrames = 0, // bn, frames mouse has been continuously held down (hold-duration counter).
-    mouseXCurrent = 0,
-    mouseYCurrent = 0,
-    mouseXRel = 0,
-    mouseYRel = 0,
-    activeTouchCount = 0;
 
 document.onmousemove = onMouseMove;
 document.onmousedown = function (mouseState) {
@@ -8240,11 +8179,7 @@ canvasElement.ontouchcancel = function() {
     activeTouchCount = 0;
     isMouseDown = false;
 };
-let keyJustPressed = Array(256), // Jf
-    keyPressPending = Array(256), // Kf
-    keyHeld = Array(256), // Lf
-    keyMapNoShift = Array(256), // Mf
-    keyMapShift = Array(256); // Nf
+
 
 document.onkeydown = function(a) {
     var b = a.keyCode;
@@ -8316,7 +8251,6 @@ function handleTouch(a) {
     }
 }
 
-let isCanvasFocused = false;
 
 function promptInput(message, _default) {
     var c = null;
@@ -8399,4 +8333,78 @@ function drawButtonBoldedText(x, y, w, h, text) {
         return true;
     }
     return false;
+};
+
+
+
+function Sprite() {
+    /** Image object */
+    this.a = 0; // image
+    /** image path */
+    this.b = "";
+    /** is image ready */
+    this.c = 0;
+    /** image data */
+    this.g = 0;
+    /** width */
+    this.i = 0;
+    /** height */
+    this.h = 0;
+}
+
+function spriteCreateBuffer(sprite, width, height) {
+    sprite.h = width;
+    sprite.i = height;
+    for (width = 0; 16 > width; width++);
+    sprite.g = new Int32Array(sprite.h * sprite.i)
+}
+
+/** load  */
+Sprite.prototype.f = function (path) {
+    if (this.b != path) {
+        uncheckedSpriteCount++;
+        this.b = path;
+        this.a = new Image;
+        this.a.src = dataPath + path;
+        delete this.g;
+        this.c = 0
+        this.g = 0
+    }
+};
+
+function loadSprite(sprite) {
+    if (!sprite.c && sprite.a.complete) {
+        uncheckedSpriteCount--;
+        var imgWidth = sprite.a.width,
+            imgHeight = sprite.a.height;
+        if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", "ERROR";
+        var d = document.createElement(canvasTag);
+        d.width = imgWidth;
+        d.height = imgHeight;
+        d = d.getContext(name2d);
+        d.drawImage(sprite.a, 0, 0);
+        d = d.getImageData(0, 0, imgWidth, imgHeight).data;
+        spriteCreateBuffer(sprite, imgWidth, imgHeight);
+        imgWidth = 0;
+        for (imgHeight = d.length; imgWidth < imgHeight; imgWidth += 4)
+            sprite.g[imgWidth >> 2] = 0 == d[imgWidth + 3]
+                ? -1
+                : d[imgWidth + 0] << 16 | d[imgWidth + 1] << 8 | d[imgWidth + 2];
+        delete sprite.a;
+        sprite.c = 1
+    }
+}
+
+function GameFont() {
+    this.i = new Sprite;
+    this.a = 0
+    this.b = 0
+    this.j = 0
+    this.c = 0
+}
+GameFont.prototype.f = function (a, b, c) {
+    this.i.f(a);
+    this.c = b;
+    this.j = c;
+    this.a = this.b = 0
 };

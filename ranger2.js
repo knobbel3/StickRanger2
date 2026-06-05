@@ -8584,16 +8584,21 @@ function drawMenuButton(x, y, iconIndex, text, color) {
     drawRectCentered(x, y, 24, 24, 2147483648);
     isSolidRender = 0;
     drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, color);
-    6 <= text.length ? drawSmallTextNoOutline(x, y + 8, text, color) : drawTextCentered(gameFontSmall, x, y + 8, text, color, -1);
-    return buttonCheckCentered(x, y, 24, 24)
-        ? (
-            drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, 16737894),
-            6 <= text.length
-                ? drawSmallTextNoOutline(x, y + 8, text, 16737894)
-                : drawTextCentered(gameFontSmall, x, y + 8, text, 16737894, -1),
-            true
-        )
-        : false
+    if (6 <= text.length) {
+        drawSmallTextNoOutline(x, y + 8, text, color);
+    } else {
+        drawTextCentered(gameFontSmall, x, y + 8, text, color, -1);
+    }
+    if (buttonCheckCentered(x, y, 24, 24)) {
+        drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, 16737894);
+        if (6 <= text.length)
+            drawSmallTextNoOutline(x, y + 8, text, 16737894) 
+        else
+            drawTextCentered(gameFontSmall, x, y + 8, text, 16737894, -1);
+        return true;
+    }
+    return false;
+
 }
 
 function drawCancelButton(x, y) {

@@ -13,23 +13,8 @@ import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
 import { CanvasState } from "./game/global_states.js";
+import * as Consts from "./game/consts.js"
 export {gameInit as Init, toggleFullscreen as full_screen};
-
-// misc
-const hostname = "dan-ball.jp";
-const CANVAS_WIDTH = 640;
-const CANVAS_HEIGHT = 432;
-const copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp",
-      copyrightText2 = "Copyright (C) 2018 ha55ii DAN-BALL.jp",
-      dataPath = "./data/",
-      fpsName = "fps",
-      canvasTag = "canvas",
-      hostnameCheckIdx = 0,
-      targetHostname = "dan-ball.jp";
-// misc: string encoding
-const encodingCharTable = "01WtCplxayfTvqchHmA9*JZOri6VN7L4w8dUGe.S3FIDzsnPbEkQXYMRgu25BjoK";
-const inverseCodingCharTable = [];
-for (let _i = 0; 64 > _i; _i++) inverseCodingCharTable[encodingCharTable[_i]] = _i;
 
 function LogMsg(a) {
     try {
@@ -837,13 +822,13 @@ function saveGame() {
     gameSaveString = "";
     c = a + gameSaveHash & 63;
     for (b = 0; b < gameSaveHash; b++) {
-        gameSaveString += encodingCharTable[saveLoadCodecScratchBuffer[b] + c & 63];
+        gameSaveString += Consts.encodingCharTable[saveLoadCodecScratchBuffer[b] + c & 63];
         c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
     }
-    gameSaveString += encodingCharTable[a];
-    gameSaveString += encodingCharTable[f];
-    gameSaveString += encodingCharTable[c >> 6 & 63];
-    let saveItem = gameSaveString += encodingCharTable[c >> 0 & 63];
+    gameSaveString += Consts.encodingCharTable[a];
+    gameSaveString += Consts.encodingCharTable[f];
+    gameSaveString += Consts.encodingCharTable[c >> 6 & 63];
+    let saveItem = gameSaveString += Consts.encodingCharTable[c >> 0 & 63];
     if (window.localStorage) {
         if ("" != saveItem) {
             window.localStorage.setItem("ranger2", saveItem);
@@ -861,14 +846,14 @@ function loadGame(saveString) {
     if (0 >= d) return 1; // invalid length
     if (null == saveString.match(/^[0-9A-Za-z.*]+$/)) return 2; // str err
     if (10 > d || 5E3 < d) return 3; // len err
-    let b = inverseCodingCharTable[saveString[d + 0]];
-    let f = inverseCodingCharTable[saveString[d + 1]];
+    let b = Consts.inverseCodingCharTable[saveString[d + 0]];
+    let f = Consts.inverseCodingCharTable[saveString[d + 1]];
     let c = b + d & 63;
     for (b = 0; b < d; b++) {
-        saveLoadCodecScratchBuffer[b] = inverseCodingCharTable[saveString[b]] - c & 63;
+        saveLoadCodecScratchBuffer[b] = Consts.inverseCodingCharTable[saveString[b]] - c & 63;
         c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
     }
-    if (inverseCodingCharTable[saveString[d + 2]] != (c >> 6 & 63) || inverseCodingCharTable[saveString[d + 3]] != (c >> 0 & 63)) return 4; // load err
+    if (Consts.inverseCodingCharTable[saveString[d + 2]] != (c >> 6 & 63) || Consts.inverseCodingCharTable[saveString[d + 3]] != (c >> 0 & 63)) return 4; // load err
 
     let i = 0;
     for (c = 0; i < d;)
@@ -980,8 +965,8 @@ function gameInit(a, b) {
         }
         isMinimalTitleMode = "0" == b ? true : false;
         if (8 == userSaveCode.length)
-            for (_t0 = 0; 8 > _t0; _t0++) userSaveKey[_t0] = inverseCodingCharTable[userSaveCode[_t0]];
-        LogMsg(copyrightText2); // Copyright text
+            for (_t0 = 0; 8 > _t0; _t0++) userSaveKey[_t0] = Consts.inverseCodingCharTable[userSaveCode[_t0]];
+        LogMsg(Consts.copyrightText2); // Copyright text
         CanvasState.element.width = 640;
         CanvasState.element.height = 432;
 
@@ -1140,7 +1125,7 @@ function gameInit(a, b) {
 function drawCanvas() {
 
     var a, b, c, d;
-    for (let a = CANVAS_WIDTH * CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
+    for (let a = Consts.CANVAS_WIDTH * Consts.CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
     var d;
 
     tamperCheckScanOffset = tamperCheckScanOffset + 1 & 63;
@@ -1247,7 +1232,7 @@ function drawCanvas() {
             }
         }
         drawRect(0, 408, 640, 16, 0);
-        drawTextCentered(gameFont, 320, 417, copyrightText2, -1, 6697728);
+        drawTextCentered(gameFont, 320, 417, Consts.copyrightText2, -1, 6697728);
 
     } else if (4 == gameScreenState || 5 == gameScreenState) {
         if (4 == gameScreenState) {
@@ -2588,8 +2573,8 @@ function drawGameUI() {
         }
     }
     gameFontSmall.a = 2;
-    drawScaledTintedText(gameFontSmall, 476, 421, copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
-    drawScaledTintedText(gameFontSmall, 607, 421, "" + currentFPS + fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    drawScaledTintedText(gameFontSmall, 476, 421, Consts.copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    drawScaledTintedText(gameFontSmall, 607, 421, "" + currentFPS + Consts.fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
 }
 
 
@@ -7538,7 +7523,7 @@ function setupAnimRequest() {
 
     drawCanvas();
 
-    var canvasBufferLength = CANVAS_WIDTH * CANVAS_HEIGHT;
+    var canvasBufferLength = Consts.CANVAS_WIDTH * Consts.CANVAS_HEIGHT;
     if (1 <= screenFadeFactor){
         for (a = 0; a < canvasBufferLength; a++) {
             CanvasState.canvasBuffer[a] = 4278190080 | 
@@ -7560,10 +7545,10 @@ function setupAnimRequest() {
 
 /** Checks hostname */
 function hostnameCheck() {
-    if (hostname.length != targetHostname.length) 
+    if (Consts.hostname.length != Consts.targetHostname.length) 
         return true;
-    for (hostNameUnchecked = 0; hostnameCheckIdx < hostname.length; hostnameCheckIdx++)
-        if (hostname[hostnameCheckIdx] != targetHostname[hostnameCheckIdx]) 
+    for (hostNameUnchecked = 0; Consts.hostnameCheckIdx < Consts.hostname.length; Consts.hostnameCheckIdx++)
+        if (Consts.hostname[Consts.hostnameCheckIdx] != Consts.targetHostname[Consts.hostnameCheckIdx]) 
             return true;
     return false
 }
@@ -8131,8 +8116,8 @@ function onMouseDown(mouseState) {
     isCanvasFocused = false;
 
     const insideCanvas =
-        mouseXRel >= 0 && mouseXRel < CANVAS_WIDTH &&
-        mouseYRel >= 0 && mouseYRel < CANVAS_HEIGHT;
+        mouseXRel >= 0 && mouseXRel < Consts.CANVAS_WIDTH &&
+        mouseYRel >= 0 && mouseYRel < Consts.CANVAS_HEIGHT;
 
     if (insideCanvas) {
         isCanvasFocused = true;
@@ -8219,9 +8204,9 @@ function onMouseMove(mouseState) {
     var clientRect = CanvasState.element.getBoundingClientRect(),
         rectWidth = clientRect.right - clientRect.left,
         rectHeight = clientRect.bottom - clientRect.top,
-        f = RMath.min(rectWidth / CANVAS_WIDTH, rectHeight / CANVAS_HEIGHT),
-        rectHeight = RMath.floor(rectHeight / 2 - CANVAS_HEIGHT * f / 2);
-    mouseXRel = RMath.floor((mouseState.clientX - clientRect.left - RMath.floor(rectWidth / 2 - CANVAS_WIDTH * f / 2)) / f);
+        f = RMath.min(rectWidth / Consts.CANVAS_WIDTH, rectHeight / Consts.CANVAS_HEIGHT),
+        rectHeight = RMath.floor(rectHeight / 2 - Consts.CANVAS_HEIGHT * f / 2);
+    mouseXRel = RMath.floor((mouseState.clientX - clientRect.left - RMath.floor(rectWidth / 2 - Consts.CANVAS_WIDTH * f / 2)) / f);
     mouseYRel = RMath.floor((mouseState.clientY - clientRect.top - rectHeight) / f)
     // LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
 }

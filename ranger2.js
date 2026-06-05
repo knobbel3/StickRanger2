@@ -3,6 +3,7 @@
 */
 
 import { ItemProps, ModifierColumns, AccessoryPrefixes, AccessoryProps } from "./game/item_enums.js";
+import { EnemyProps, BehaviorTypes } from "./game/enemy_enums.js";
 import { itemList } from "./game/item_list.js";
 import * as RMath from "./game/math.js";
 
@@ -2011,34 +2012,34 @@ function drawGameUI() {
             drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
         } else {
             if (0 == bestiaryEntryState[c]) {
-                h = enemyCatalog[c][enemyBestiaryUnlockCostCol];
+                h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
                 if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold && isMouseClicked) {
                     partyGold = RMath.clamp(partyGold - h, 0, 9999999);
                     bestiaryEntryState[c] = 1;
                 }
             } else {
-                drawText(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][enemyLevelCol], 16777215, 0);
-                drawText(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][enemyHealthCol], 16777215, 0);
-                drawText(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][enemyGoldRewardCol], 16777215, 0);
-                drawText(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][enemyExpRewardCol], 16777215, 0);
+                drawText(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][EnemyProps.Level], 16777215, 0);
+                drawText(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][EnemyProps.Health], 16777215, 0);
+                drawText(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][EnemyProps.GoldReward], 16777215, 0);
+                drawText(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][EnemyProps.ExpReward], 16777215, 0);
                 b = 0;
-                if (0 != enemyCatalog[c][enemyPhysResistPctCol]) {
+                if (0 != enemyCatalog[c][EnemyProps.PhysResistPct]) {
                     drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329);
                     b += 13;
                 }
-                if (0 != enemyCatalog[c][enemyFireResistPctCol]) {
+                if (0 != enemyCatalog[c][EnemyProps.FireResistPct]) {
                     drawMedTextNoOutline(f + 22 + b, g + 48, "fi", 16724736);
                     b += 10;
                 }
-                if (0 != enemyCatalog[c][enemyIceResistPctCol]) {
+                if (0 != enemyCatalog[c][EnemyProps.IceResistPct]) {
                     drawMedTextNoOutline(f + 22 + b, g + 48, "ic", 10070783);
                     b += 10;
                 }
-                if (0 != enemyCatalog[c][enemyLightResistPctCol]) {
+                if (0 != enemyCatalog[c][EnemyProps.LightResistPct]) {
                     drawMedTextNoOutline(f + 22 + b, g + 48, "li", 15658496);
                     b += 7;
                 }
-                if (0 != enemyCatalog[c][enemyPoisonResistPctCol]) {
+                if (0 != enemyCatalog[c][EnemyProps.PoisonResistPct]) {
                     drawMedTextNoOutline(f + 22 + b, g + 48, "po", 52224);
                     b += 13;
                 }
@@ -2047,14 +2048,14 @@ function drawGameUI() {
                 }
                 drawText(gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0);
                 if (1 == bestiaryEntryState[c]) {
-                    h = enemyCatalog[c][enemyBestiaryUnlockCostCol];
+                    h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
                     if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked) {
                         partyGold = RMath.clamp(partyGold - h, 0, 9999999);
                         bestiaryEntryState[c] = 2;
                     }
                 } else {
                     for (d = b = 0; 4 > b; b++) {
-                        hidx = enemyCatalog[c][enemyDropTableStartIdxCol + 2 * b];
+                        hidx = enemyCatalog[c][EnemyProps.DropTableStartIdx + 2 * b];
                         if (hidx <= 2) {
                             continue;
                         }
@@ -3952,7 +3953,7 @@ function loadLevelData(a) {
                 totalSpawnedCountByGroup[(a - stageSpawnGroupsStartIdx) / 7]++;
             };
         }
-        let b = enemyCatalog[c][enemyLevelCol];
+        let b = enemyCatalog[c][EnemyProps.Level];
         if (stageMaxEnemyLevel < b) stageMaxEnemyLevel = b;
     }
     popupCount = projectileCount = 0;
@@ -4852,53 +4853,6 @@ function updateStageTick() { // xg
     }
 }
 
-let ENUM_ENEMY_PROPS_COUNT = 0;    
-const // 0-10
-    enemyLevelCol = ENUM_ENEMY_PROPS_COUNT++, // Enemy level used for bestiary display and EXP scaling.
-    enemyBehaviorIdxCol = ENUM_ENEMY_PROPS_COUNT++, // Dispatch-table index for the enemy update behavior.
-    enemyShapeParamACol = ENUM_ENEMY_PROPS_COUNT++, // Shape parameter used by multi-part enemies; some behaviors treat it as a segment count.
-    enemyShapeParamBCol = ENUM_ENEMY_PROPS_COUNT++, // Secondary shape parameter used by multi-part enemies; some behaviors treat it as a span or max count.
-    enemySpriteIndexCol = ENUM_ENEMY_PROPS_COUNT++, // Sprite sheet index used to pick the enemy art.
-    enemyDrawScaleCol = ENUM_ENEMY_PROPS_COUNT++, // Draw scale multiplier used for the enemy sprite and hitbox math.
-    enemyPrimaryTintCol = ENUM_ENEMY_PROPS_COUNT++, // Primary tint color used by the enemy renderer.
-    enemySecondaryTintCol = ENUM_ENEMY_PROPS_COUNT++, // Secondary tint color used by the enemy renderer.
-    enemyAccentTintCol = ENUM_ENEMY_PROPS_COUNT++, // Accent tint color used by the enemy renderer.
-    enemyHealthCol = ENUM_ENEMY_PROPS_COUNT++, // health column used for the LP display and health bar.
-    enemyProjectileAttachModeCol = ENUM_ENEMY_PROPS_COUNT++, // Attachment mode for the spawned projectile; remapped to -1/0/1 before spawn.
-    enemyProjectileVisualPackCol = ENUM_ENEMY_PROPS_COUNT++, // Packed projectile visual mode; splits into tint mode and solid or blend mode.
-
-    // 12-38: Projectile template arguments forwarded unchanged into spawnProjectile.
-    enemyPArg0Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg1Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg2Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg3Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg4Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg5Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg6Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg7Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg8Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg9Col = ENUM_ENEMY_PROPS_COUNT++,  enemyPArg10Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg11Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg12Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg13Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg14Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg15Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg16Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg17Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg18Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg19Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg20Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg21Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg22Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg23Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg24Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg25Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg26Col = ENUM_ENEMY_PROPS_COUNT++,
-
-    // 39-44
-    enemyPhysResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Physical resistance percentage shown in RES and applied as flat damage reduction.
-    enemyFireResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Fire resistance percentage shown in RES and applied to percentage damage reduction.
-    enemyIceResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Ice resistance percentage shown in RES and applied to percentage damage reduction.
-    enemyLightResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Light resistance percentage shown in RES and applied to percentage damage reduction.
-    enemyPoisonResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Poison resistance percentage shown in RES and applied to DoT damage reduction.
-    enemyFreezeResistPctCol = ENUM_ENEMY_PROPS_COUNT++, // Freeze resistance percentage used by freeze status duration reduction.
-
-    // 45-62: Projectile template arguments forwarded unchanged into spawnProjectile.
-    enemyPArg27Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg28Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg29Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg30Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg31Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg32Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg33Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg34Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg35Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg36Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg37Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg38Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg39Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg40Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg41Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg42Col = ENUM_ENEMY_PROPS_COUNT++,
-    enemyPArg43Col = ENUM_ENEMY_PROPS_COUNT++, enemyPArg44Col = ENUM_ENEMY_PROPS_COUNT++,
-
-    // 63-67
-    enemySecondaryProjectileEnabledCol = ENUM_ENEMY_PROPS_COUNT++, // Secondary projectile template flag; nonzero spawns the variant projectile set.
-    enemyExpRewardCol = ENUM_ENEMY_PROPS_COUNT++, // EXP reward granted on death.
-    enemyGoldRewardCol = ENUM_ENEMY_PROPS_COUNT++, // Gold reward granted on death and bestiary unlock.
-    enemyBestiaryUnlockCostCol = ENUM_ENEMY_PROPS_COUNT++, // Bestiary unlock cost shown before the enemy entry is revealed.
-    enemyDropTableStartIdxCol = ENUM_ENEMY_PROPS_COUNT++; // Base index of the four-slot death drop table; read as item and probability pairs.
-
-
 let enemyTypeCount = 128,
     enemyCatalog = Array(enemyTypeCount),
     bestiaryEntryState = Array(enemyTypeCount); // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
@@ -4995,20 +4949,6 @@ enemyCatalog[87] = [34, 4, 0, 0, 19, 1, 10040064, 13421568, 15658496, 2500, 1, 0
 enemyCatalog[88] = [36, 6, 12, 12, 13, 1, 13408512, 10027161, 2228258, 5E3, 0, 104, 0, 24, 4288217241, 1, 16, 16, 4, 4, 50, 50, 500, 10, .5, 100, 0, 4, 0, 0, 4, 4, 5, 300, 600, 20, 160, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 6, 100, 134, 50, 0, 0, 0, 0, 138, 1E3];
 enemyCatalog[89] = [36, 4, 0, 0, 19, 2, 6697728, 13421568, 10053171, 25E3, 1, 0, 2, 19, 4294901760, 1, 32, 32, 32, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 6, 6, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 800, 5, 100, 132, 50, 0, 0, 0, 0, 138, 100];
 
-const // Dispatch-table indices
-    enemySlimeBehaviorIdx = 0,  // pk, 
-    enemyBoxSnakeBehaviorIdx = 1,  // qk, 
-    enemyBatBehaviorIdx = 2,  // rk, 
-    enemyDragonBehaviorIdx = 3,  // sk, 
-    enemyStickmanBehaviorIdx = 4,  // tk, 
-    enemyTreeBehaviorLeftIdx = 5,  // uk, 
-    enemyTreeBehaviorRightIdx = 6,  // vk, 
-    enemyHangingTreeBehaviorIdx = 7,  // wk, 
-    enemyUpdateFunc7Idx = 8,  // xk, 
-    enemyUpdateFunc9Idx = 9,  // yk, 
-    enemyUpdateFunc10Idx = 10, // zk, 
-    enemyStickmanBehaviorAltIdx = 11; // Ak, 
-
 let enemyJointPosArray = Array(999), // Q, 
     enemyPrevJointPosArray = Array(999); // Z, 
 
@@ -5074,14 +5014,14 @@ function spawnEnemy(gridX, gridY, enemyType, d) {
                 enemyPrevJointPosArray[enemyCount][f].set(enemyJointPosArray[enemyCount][f]);
 
         enemyTypeArray[enemyCount] = enemyType;
-        enemyUpdateFuncIdxArray[enemyCount] = enemyCatalog[enemyType][enemyBehaviorIdxCol];
+        enemyUpdateFuncIdxArray[enemyCount] = enemyCatalog[enemyType][EnemyProps.BehaviorIdx];
         enemyPoseTrailWriteIdxArray[enemyCount] = 0;
         enemyDeathTimerArray[enemyCount] = 0;
         enemyTileContactFlagsArray[enemyCount] = 0;
         enemySpawnGroupIdxArray[enemyCount] = d;
-        enemyHealthArray[enemyCount] = enemyCatalog[enemyType][enemyHealthCol];
+        enemyHealthArray[enemyCount] = enemyCatalog[enemyType][EnemyProps.Health];
         enemyAuxStateArray[enemyCount] = 0;
-        enemyActionCooldownTimerArray[enemyCount] = enemyCatalog[enemyType][enemyPArg22Col];
+        enemyActionCooldownTimerArray[enemyCount] = enemyCatalog[enemyType][EnemyProps.PArg22];
         enemySkipDurationLeftArray[enemyCount] = 0;
         enemyUpdateSkipProbArray[enemyCount] = 0;
         enemyDmgDurationLeftArray[enemyCount] = 0;
@@ -5173,10 +5113,10 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
     let w = -1;
     for (let _i = 0; _i < enemyCount; _i++)
         if (0 != enemyHealthArray[_i]) {
-            let h = enemyHitboxHalfWidthByBehavior[enemyCatalog[enemyTypeArray[_i]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[_i]][enemyDrawScaleCol];
-            let k = enemyHitboxHalfHeightByBehavior[enemyCatalog[enemyTypeArray[_i]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[_i]][enemyDrawScaleCol];
-            if (enemyUpdateFuncIdxArray[_i] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[_i] == enemyTreeBehaviorRightIdx)
-                k = 3 * enemyPoseTrailWriteIdxArray[_i] + 5 * enemyCatalog[enemyTypeArray[_i]][enemyDrawScaleCol];
+            let h = enemyHitboxHalfWidthByBehavior[enemyCatalog[enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[enemyTypeArray[_i]][EnemyProps.DrawScale];
+            let k = enemyHitboxHalfHeightByBehavior[enemyCatalog[enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[enemyTypeArray[_i]][EnemyProps.DrawScale];
+            if (enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeLeft || enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeRight)
+                k = 3 * enemyPoseTrailWriteIdxArray[_i] + 5 * enemyCatalog[enemyTypeArray[_i]][EnemyProps.DrawScale];
             let p = enemyJointPosArray[_i][enemyTargetJointIdx];
             if (!(p.x - h > rx || p.x + h < f || p.y - k > ry || p.y + k < g)) {
                 l.x = p.x - cx;
@@ -5256,10 +5196,10 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
     for (height = 0; height < enemyCount; height++)
         if (0 != enemyHealthArray[height]) {
             x = enemyJointPosArray[height][enemyTargetJointIdx];
-            y = enemyHitboxHalfWidthByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
-            width = enemyHitboxHalfHeightByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
-            if (enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[height] == enemyTreeBehaviorRightIdx)
-                width = 3 * enemyPoseTrailWriteIdxArray[height] + 5 * enemyCatalog[enemyTypeArray[height]][enemyDrawScaleCol];
+            y = enemyHitboxHalfWidthByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][EnemyProps.DrawScale];
+            width = enemyHitboxHalfHeightByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][EnemyProps.DrawScale];
+            if (enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeLeft || enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeRight)
+                width = 3 * enemyPoseTrailWriteIdxArray[height] + 5 * enemyCatalog[enemyTypeArray[height]][EnemyProps.DrawScale];
             if (!(x.x - y > M || x.x + y < w || x.y - width > J || x.y + width < B)) {
                 if (0 == shapeMode) {
                     ba.x = x.x - centerPos.x;
@@ -5297,31 +5237,31 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                     if (4 == effectType) {
                         enemyDmgPerFrameArray[height] = RMath.max(
                             enemyDmgPerFrameArray[height],
-                            RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100))
+                            RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100))
                         );
                         enemyDmgDurationLeftArray[height] = RMath.max(
                             enemyDmgDurationLeftArray[height],
-                            effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyPoisonResistPctCol] / 100)
+                            effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100)
                         );
                     } else {
                         if (0 == effectType) {
-                            n = RMath.max(1, n - enemyCatalog[enemyTypeArray[height]][enemyPhysResistPctCol]);
+                            n = RMath.max(1, n - enemyCatalog[enemyTypeArray[height]][EnemyProps.PhysResistPct]);
                         } else if (1 == effectType) {
-                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyFireResistPctCol] / 100));
+                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.FireResistPct] / 100));
                         } else if (2 == effectType) {
-                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100));
+                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.IceResistPct] / 100));
                         } else {
-                            3 == effectType && (n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][enemyLightResistPctCol] / 100)));
+                            3 == effectType && (n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.LightResistPct] / 100)));
                         }
                         enemyHealthArray[height] = RMath.max(enemyHealthArray[height] - n, 0);
                         spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
                         stage_totalDamageDealt += n;
                     }
                     if (2 == effectType) {
-                        enemySkipDurationLeftArray[height] = 120 - RMath.floor(120 * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
-                        enemyUpdateSkipProbArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyIceResistPctCol] / 100);
+                        enemySkipDurationLeftArray[height] = 120 - RMath.floor(120 * enemyCatalog[enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
+                        enemyUpdateSkipProbArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
                     } else {
-                        5 == effectType && (enemyFreezeTimerArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][enemyFreezeResistPctCol] / 100));
+                        5 == effectType && (enemyFreezeTimerArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][EnemyProps.FreezeResistPct] / 100));
                     }
 
                     enemyAuxStateArray[height] = 120;
@@ -5343,7 +5283,7 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
         itemIdx = enemyTypeArray[enemyIdx] + lootVariant,
         selectedItem = enemyCatalog[itemIdx];
     lootVariant = -enemyIdx - 1;
-    let k = selectedItem[enemyProjectileAttachModeCol];
+    let k = selectedItem[EnemyProps.ProjectileAttachMode];
     if (0 == k) {
         k = -1;
     } else if (1 == k) {
@@ -5352,53 +5292,53 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
         k = 1;
     }
     
-    let _s0 = selectedItem[enemyProjectileVisualPackCol] % 100,
-        _s1 = RMath.floor(selectedItem[enemyProjectileVisualPackCol] / 100),
-        _p0 = selectedItem[enemyPArg0Col],
-        _p1 = selectedItem[enemyPArg1Col],
-        _p2 = selectedItem[enemyPArg2Col],
-        _p3 = selectedItem[enemyPArg3Col],
-        _p4 = selectedItem[enemyPArg4Col],
-        _p5 = selectedItem[enemyPArg5Col],
-        _p6 = selectedItem[enemyPArg6Col],
-        _p7 = selectedItem[enemyPArg7Col],
-        _p8 = selectedItem[enemyPArg8Col],
-        _p9 = selectedItem[enemyPArg9Col],
-        _p10 = selectedItem[enemyPArg10Col],
-        _p11 = selectedItem[enemyPArg11Col],
-        _p12 = selectedItem[enemyPArg12Col],
-        _p13 = selectedItem[enemyPArg13Col],
-        _p14 = selectedItem[enemyPArg14Col],
-        _p15 = selectedItem[enemyPArg15Col],
-        _p16 = selectedItem[enemyPArg16Col],
-        _p17 = selectedItem[enemyPArg17Col],
-        _p18 = selectedItem[enemyPArg18Col],
-        _p19 = selectedItem[enemyPArg19Col],
-        _p20 = selectedItem[enemyPArg20Col],
-        _p21 = selectedItem[enemyPArg21Col],
-        _p22 = selectedItem[enemyPArg22Col],
-        _p23 = selectedItem[enemyPArg23Col],
-        _p24 = selectedItem[enemyPArg24Col],
-        _p25 = selectedItem[enemyPArg25Col],
-        _p26 = selectedItem[enemyPArg26Col],
-        _p27 = selectedItem[enemyPArg27Col],
-        _p28 = selectedItem[enemyPArg28Col],
-        _p29 = selectedItem[enemyPArg29Col],
-        _p30 = selectedItem[enemyPArg30Col],
-        _p31 = selectedItem[enemyPArg31Col],
-        _p32 = selectedItem[enemyPArg32Col],
-        _p33 = selectedItem[enemyPArg33Col],
-        _p34 = selectedItem[enemyPArg34Col],
-        _p35 = selectedItem[enemyPArg35Col],
-        _p36 = selectedItem[enemyPArg36Col],
-        _p37 = selectedItem[enemyPArg37Col],
-        _p38 = selectedItem[enemyPArg38Col],
-        _p39 = selectedItem[enemyPArg39Col],
-        _p40 = selectedItem[enemyPArg40Col],
-        _p41 = selectedItem[enemyPArg41Col],
-        _p42 = selectedItem[enemyPArg42Col],
-        _p43 = selectedItem[enemyPArg43Col],
-        _p44 = selectedItem[enemyPArg44Col];
+    let _s0 = selectedItem[EnemyProps.ProjectileVisualPack] % 100,
+        _s1 = RMath.floor(selectedItem[EnemyProps.ProjectileVisualPack] / 100),
+        _p0 = selectedItem[EnemyProps.PArg0],
+        _p1 = selectedItem[EnemyProps.PArg1],
+        _p2 = selectedItem[EnemyProps.PArg2],
+        _p3 = selectedItem[EnemyProps.PArg3],
+        _p4 = selectedItem[EnemyProps.PArg4],
+        _p5 = selectedItem[EnemyProps.PArg5],
+        _p6 = selectedItem[EnemyProps.PArg6],
+        _p7 = selectedItem[EnemyProps.PArg7],
+        _p8 = selectedItem[EnemyProps.PArg8],
+        _p9 = selectedItem[EnemyProps.PArg9],
+        _p10 = selectedItem[EnemyProps.PArg10],
+        _p11 = selectedItem[EnemyProps.PArg11],
+        _p12 = selectedItem[EnemyProps.PArg12],
+        _p13 = selectedItem[EnemyProps.PArg13],
+        _p14 = selectedItem[EnemyProps.PArg14],
+        _p15 = selectedItem[EnemyProps.PArg15],
+        _p16 = selectedItem[EnemyProps.PArg16],
+        _p17 = selectedItem[EnemyProps.PArg17],
+        _p18 = selectedItem[EnemyProps.PArg18],
+        _p19 = selectedItem[EnemyProps.PArg19],
+        _p20 = selectedItem[EnemyProps.PArg20],
+        _p21 = selectedItem[EnemyProps.PArg21],
+        _p22 = selectedItem[EnemyProps.PArg22],
+        _p23 = selectedItem[EnemyProps.PArg23],
+        _p24 = selectedItem[EnemyProps.PArg24],
+        _p25 = selectedItem[EnemyProps.PArg25],
+        _p26 = selectedItem[EnemyProps.PArg26],
+        _p27 = selectedItem[EnemyProps.PArg27],
+        _p28 = selectedItem[EnemyProps.PArg28],
+        _p29 = selectedItem[EnemyProps.PArg29],
+        _p30 = selectedItem[EnemyProps.PArg30],
+        _p31 = selectedItem[EnemyProps.PArg31],
+        _p32 = selectedItem[EnemyProps.PArg32],
+        _p33 = selectedItem[EnemyProps.PArg33],
+        _p34 = selectedItem[EnemyProps.PArg34],
+        _p35 = selectedItem[EnemyProps.PArg35],
+        _p36 = selectedItem[EnemyProps.PArg36],
+        _p37 = selectedItem[EnemyProps.PArg37],
+        _p38 = selectedItem[EnemyProps.PArg38],
+        _p39 = selectedItem[EnemyProps.PArg39],
+        _p40 = selectedItem[EnemyProps.PArg40],
+        _p41 = selectedItem[EnemyProps.PArg41],
+        _p42 = selectedItem[EnemyProps.PArg42],
+        _p43 = selectedItem[EnemyProps.PArg43],
+        _p44 = selectedItem[EnemyProps.PArg44];
 
     let _foundHero = findNearestPartyMemberInRect(_px, _py, _p24, _p24, 0);
     if (_foundHero == -1)
@@ -5499,8 +5439,8 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
 
 
 function onEnemyDeath(_enemyIdx) { // cl
-    let lvlDiff = RMath.abs(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyLevelCol] - partyLevel);
-    let expRewardValue = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyExpRewardCol] * (100 + partyEnemyHpBonusPercent) / 100);
+    let lvlDiff = RMath.abs(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.Level] - partyLevel);
+    let expRewardValue = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.ExpReward] * (100 + partyEnemyHpBonusPercent) / 100);
     if (stageMaxEnemyLevel + 10 <= partyLevel) {
         expRewardValue = 0;
     } else if (10 > lvlDiff) {
@@ -5515,7 +5455,7 @@ function onEnemyDeath(_enemyIdx) { // cl
         for (let _i = 0; 4 > _i; _i++) partySP[_i] += 2;
         levelUpPopupTimer = 60;
     }
-    for (let _dropIdx = enemyDropTableStartIdxCol; _dropIdx < enemyDropTableStartIdxCol + 8; _dropIdx += 2) {
+    for (let _dropIdx = EnemyProps.DropTableStartIdx; _dropIdx < EnemyProps.DropTableStartIdx + 8; _dropIdx += 2) {
         let itemIdx = enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx];
         if (0 != itemIdx) {
             let randComp = RMath.floor(100 * (100 + partyDropChanceBonusPercent) / 100);
@@ -5529,7 +5469,7 @@ function onEnemyDeath(_enemyIdx) { // cl
             }
         }
     }
-    let val = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][enemyGoldRewardCol] * (100 + partyRewardValueBonusPercent) / 100);
+    let val = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.GoldReward] * (100 + partyRewardValueBonusPercent) / 100);
     if (1 > 3 * RMath.rand()) {
         spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, val, 0);
     }
@@ -5621,7 +5561,7 @@ function updateEnemies() {
 
 function enemySlimeBehavior(enemyIdx) {
 
-    var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+    var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         enemyJointPosArray[enemyIdx][0].x += 4;
         enemyJointPosArray[enemyIdx][0].y += 6;
@@ -5637,7 +5577,7 @@ function enemySlimeBehavior(enemyIdx) {
                 }
             }
         }
-        var d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol]];
+        var d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - d * c + 1);
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
@@ -5664,7 +5604,7 @@ function enemySlimeBehavior(enemyIdx) {
 
 
 function enemyBoxSnakeBehavior(enemyIdx) {
-    var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+    var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         enemyJointPosArray[enemyIdx][0].x += 2;
         enemyJointPosArray[enemyIdx][1].x += 3;
@@ -5693,7 +5633,7 @@ function enemyBoxSnakeBehavior(enemyIdx) {
         }
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 0, 0, .01);
-        d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol]];
+        d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - d * c + 1);
         enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= enemyHealthArray[enemyIdx])
@@ -5725,7 +5665,7 @@ function enemyBoxSnakeBehavior(enemyIdx) {
 
 function enemyBatBehavior(enemyIdx) {
     var b, c = new RMath.Vec2();
-    b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+    b = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         enemyJointPosArray[enemyIdx][0].x += 4;
         enemyJointPosArray[enemyIdx][0].y += 4;
@@ -5757,7 +5697,7 @@ function enemyBatBehavior(enemyIdx) {
         if (-1 != d) {
             RMath.Vec2Sub(c, heroJointPositionsByHero[d][2], enemyJointPosArray[enemyIdx][0]);
             d = RMath.Vec2Norm(c);
-            d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] - 10;
+            d -= enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.PArg24] - 10;
             if (0 > d) {
                 RMath.Vec2Scale(c, -.05);
             } else {
@@ -5818,7 +5758,7 @@ function enemyBatBehavior(enemyIdx) {
 function enemyDragonBehavior(enemyIdx) {
     var b, c, d, f = new RMath.Vec2();
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) 
-        enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
+        enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA];
     else if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
         for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
@@ -5874,11 +5814,11 @@ function enemyDragonBehavior(enemyIdx) {
 
 function enemyStickmanBehavior(enemyIdx) {
     var b;
-    b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+    b = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
     else
     if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx) {
+        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Stickman) {
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.2, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.1, .99);
@@ -5890,7 +5830,7 @@ function enemyStickmanBehavior(enemyIdx) {
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .3, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .3, .99);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.02, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.01, .99);
@@ -5913,7 +5853,7 @@ function enemyStickmanBehavior(enemyIdx) {
             }
             var d = c = 1,
                 f = 0;
-            if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+            if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
                 c = .25;
                 d = .3;
                 f = .25;
@@ -5943,7 +5883,7 @@ function enemyStickmanBehavior(enemyIdx) {
         }
         c = .5;
         d = 1.2 * b;
-        if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
             c = .02;
             d = 1 * b;
         }
@@ -5959,7 +5899,7 @@ function enemyStickmanBehavior(enemyIdx) {
         applySeparationCorrection(enemyJointPosArray[enemyIdx][8], enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 5 * d, c, c);
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol]) {
+        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SecondaryProjectileEnabled]) {
             spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
         }
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
@@ -5993,13 +5933,13 @@ function enemyStickmanBehavior(enemyIdx) {
 function enemyTreeBehavior(enemyIdx) {
     var b;
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx])
-        for (enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.floor(RMath.randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] + 2)), b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
+        for (enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.floor(RMath.randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamB] + 2)), b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
             enemyJointPosArray[enemyIdx][b].x += 4;
             enemyJointPosArray[enemyIdx][b].y += 4;
             enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
         } else
     if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        if (enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx) {
+        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft) {
             for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], -.04, .99);
             stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 1, .99);
         } else {
@@ -6099,8 +6039,8 @@ function enemyHangingTreeBehavior(enemyIdx) {
 
 function enemyUpdateFunc7(enemyIdx) {
     var b, c, d, f = new RMath.Vec2(),
-        g = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol],
-        h = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamBCol] * enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+        g = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA],
+        h = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamB] * enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         for (b = 0; b < g; b++) {
             c = 360 * b / g * RMath.PI / 180;
@@ -6192,7 +6132,7 @@ function enemyUpdateFunc7(enemyIdx) {
 
 function enemyUpdateFunc8(enemyIdx) {
     var b;
-    b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+    b = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         enemyJointPosArray[enemyIdx][0].x += 4;
         enemyJointPosArray[enemyIdx][0].y += 0;
@@ -6289,7 +6229,7 @@ function enemyUpdateFunc8(enemyIdx) {
         applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], 8 * b, .1 * c, .1 * c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][7], 7 * b, .1 * c, .1 * c);
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol]) {
+        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SecondaryProjectileEnabled]) {
             spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
         }
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
@@ -6323,7 +6263,7 @@ function enemyUpdateFunc8(enemyIdx) {
 
 function enemyUpdateFunc9(enemyIdx) {
     var b, c = new RMath.Vec2(),
-        d = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+        d = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         if (1 > RMath.randFloat(2)) {
             enemyJointPosArray[enemyIdx][0].x += 0;
@@ -6348,7 +6288,7 @@ function enemyUpdateFunc9(enemyIdx) {
         if (-1 != b) {
             RMath.Vec2Sub(c, heroJointPositionsByHero[b][2], enemyJointPosArray[enemyIdx][0]);
             b = RMath.Vec2Norm(c);
-            b -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] / 2 - 10;
+            b -= enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.PArg24] / 2 - 10;
             if (0 > b) {
                 RMath.Vec2Scale(c, -.01);
             } else {
@@ -6416,11 +6356,11 @@ function enemyUpdateFunc9(enemyIdx) {
 
 function drawEnemies() { // Cg
     for (let enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
-        let sprIdx = enemyCatalog[enemyTypeArray[enemyIdx]][enemySpriteIndexCol],
-            primTint = enemyCatalog[enemyTypeArray[enemyIdx]][enemyPrimaryTintCol],
-            secTint = enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryTintCol],
-            accentTint = enemyCatalog[enemyTypeArray[enemyIdx]][enemyAccentTintCol];
-        let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+        let sprIdx = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex],
+            primTint = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.PrimaryTint],
+            secTint = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SecondaryTint],
+            accentTint = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.AccentTint];
+        let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
         let yAnchor = enemySpriteAnchorYBySpriteIndex[sprIdx];
         if (0 < enemyFreezeTimerArray[enemyIdx]) {
             primTint = 5934817;
@@ -6434,20 +6374,20 @@ function drawEnemies() { // Cg
         }
         
         let k = (150 - enemyDeathTimerArray[enemyIdx]) / 150 * drawScale;
-        if (enemyUpdateFuncIdxArray[enemyIdx] == enemySlimeBehaviorIdx) {
+        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Slime) {
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             } else {
                 drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 15, -15, primTint, secTint, RMath.floor(128 * (50 - enemyDeathTimerArray[enemyIdx]) / 50));
             }
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyBoxSnakeBehaviorIdx) {
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.BoxSnake) {
             drawRectCentered(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y - 2 * k, 4 * k, 4 * k, accentTint);
             drawRectCentered(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y - 2.5 * k, 5 * k, 5 * k, accentTint);
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 k = RMath.max(1, k);
             }
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * k + 1, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyBatBehaviorIdx) {
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Bat) {
             drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
             drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
             drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, accentTint);
@@ -6458,7 +6398,7 @@ function drawEnemies() { // Cg
                 k = RMath.max(1, k);
             }
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyDragonBehaviorIdx) {
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Dragon) {
             let _a = 0;
             let _b = enemyPoseTrailWriteIdxArray[enemyIdx] - 1;
             if (20 < enemyPoseTrailWriteIdxArray[enemyIdx]) {
@@ -6468,7 +6408,7 @@ function drawEnemies() { // Cg
             for (; _a < _b; _a++) drawLine(enemyJointPosArray[enemyIdx][_a].x, enemyJointPosArray[enemyIdx][_a].y, enemyJointPosArray[enemyIdx][_a + 1].x, enemyJointPosArray[enemyIdx][_a + 1].y, accentTint);
             drawRectCentered(RMath.floor(enemyJointPosArray[enemyIdx][_b].x) + 1, RMath.floor(enemyJointPosArray[enemyIdx][_b].y) + 1, RMath.floor(2 * k), RMath.floor(2 * k), primTint);
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx || enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Stickman || enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
             drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
@@ -6484,28 +6424,28 @@ function drawEnemies() { // Cg
             drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][9].x, enemyJointPosArray[enemyIdx][9].y, accentTint);
             drawLine(enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, enemyJointPosArray[enemyIdx][10].x, enemyJointPosArray[enemyIdx][10].y, accentTint);
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorRightIdx) {
-            let leftHanded = enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx ? -2 : 2;
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft || enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeRight) {
+            let leftHanded = enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft ? -2 : 2;
             let startI = 20 >= enemyPoseTrailWriteIdxArray[enemyIdx] ? enemyPoseTrailWriteIdxArray[enemyIdx] - 1 : enemyPoseTrailWriteIdxArray[enemyIdx] - 21;
             for (let _i = startI; 0 < _i; _i--) 
                 drawRectOutlineCentered(RMath.floor(enemyJointPosArray[enemyIdx][_i].x), RMath.floor(enemyJointPosArray[enemyIdx][_i].y + leftHanded), 5, 5, accentTint);
-            if (enemyUpdateFuncIdxArray[enemyIdx] == enemyTreeBehaviorLeftIdx) {
+            if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft) {
                 drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             } else {
                 drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 16, -16, primTint, secTint, 255);
             }
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyHangingTreeBehaviorIdx) {
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.HangingTree) {
             for (let _i = 1; 6 > _i; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x, enemyJointPosArray[enemyIdx][_i].y, enemyJointPosArray[enemyIdx][_i + 1].x, enemyJointPosArray[enemyIdx][_i + 1].y, secTint);
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 drawLine(enemyJointPosArray[enemyIdx][drawScale].x, enemyJointPosArray[enemyIdx][drawScale].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
             }
             drawSpriteSheetPartCentered(enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc7Idx) {
-            let _a = enemyCatalog[enemyTypeArray[enemyIdx]][enemyShapeParamACol];
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type8) {
+            let _a = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA];
             for (let _i = 1; _i < _a; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x - 1, enemyJointPosArray[enemyIdx][_i].y - 1, enemyJointPosArray[enemyIdx][_i + 1].x - 1, enemyJointPosArray[enemyIdx][_i + 1].y - 1, accentTint);
             drawLine(enemyJointPosArray[enemyIdx][drawScale].x - 1, enemyJointPosArray[enemyIdx][drawScale].y - 1, enemyJointPosArray[enemyIdx][1].x - 1, enemyJointPosArray[enemyIdx][1].y - 1, accentTint);
             drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc9Idx) {
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type9) {
             drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, secTint);
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
@@ -6521,7 +6461,7 @@ function drawEnemies() { // Cg
             drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, secTint);
             drawSpriteSheetPartCentered(enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
         } else {
-            if (enemyUpdateFuncIdxArray[enemyIdx] == enemyUpdateFunc10Idx) {
+            if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type10) {
                 drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
                 drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][4].x,
                     enemyJointPosArray[enemyIdx][4].y, accentTint);
@@ -6538,11 +6478,11 @@ function drawEnemies() { // Cg
         if (enemyAuxStateArray[enemyIdx] > 0){
             enemyAuxStateArray[enemyIdx]--;
             if (enemyHealthArray[enemyIdx] > 0) {
-                let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
+                let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
                 drawRect(RMath.floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale, 14 * drawScale, 1, 10027008);
                 drawRect(
                     RMath.floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale,
-                    RMath.floor(14 * drawScale * enemyHealthArray[enemyIdx] / enemyCatalog[enemyTypeArray[enemyIdx]][enemyHealthCol]), 1, 52224
+                    RMath.floor(14 * drawScale * enemyHealthArray[enemyIdx] / enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.Health]), 1, 52224
                 )
             }
         }
@@ -6551,28 +6491,28 @@ function drawEnemies() { // Cg
 
 
 function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
-    let behaviorIdx = enemyCatalog[_typeIdx][enemyBehaviorIdxCol],
-        spriteIdx = enemyCatalog[_typeIdx][enemySpriteIndexCol],
-        primTint = enemyCatalog[_typeIdx][enemyPrimaryTintCol],
-        secTint = enemyCatalog[_typeIdx][enemySecondaryTintCol],
-        accentTint = enemyCatalog[_typeIdx][enemyAccentTintCol];
-    _scale = RMath.clamp(enemyCatalog[_typeIdx][enemyDrawScaleCol], 1, _scale);
+    let behaviorIdx = enemyCatalog[_typeIdx][EnemyProps.BehaviorIdx],
+        spriteIdx = enemyCatalog[_typeIdx][EnemyProps.SpriteIndex],
+        primTint = enemyCatalog[_typeIdx][EnemyProps.PrimaryTint],
+        secTint = enemyCatalog[_typeIdx][EnemyProps.SecondaryTint],
+        accentTint = enemyCatalog[_typeIdx][EnemyProps.AccentTint];
+    _scale = RMath.clamp(enemyCatalog[_typeIdx][EnemyProps.DrawScale], 1, _scale);
     let yAnchor = enemySpriteAnchorYBySpriteIndex[spriteIdx],
         posY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         posX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    if (behaviorIdx == enemySlimeBehaviorIdx) {
+    if (behaviorIdx == BehaviorTypes.Slime) {
         drawEnemyScaledSprite(
             _px + 0 * _scale, _py - yAnchor * _scale + 1, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 
             16 * (spriteIdx >> 3), 16, primTint, secTint, 255
         );
-    } else if (behaviorIdx == enemyBoxSnakeBehaviorIdx) {
+    } else if (behaviorIdx == BehaviorTypes.BoxSnake) {
         drawRectCentered(_px + 5 * _scale, _py - 4 * _scale, 4 * _scale, 4 * _scale, accentTint);
         drawRectCentered(_px + 2 * _scale, _py - 10 * _scale, 5 * _scale, 5 * _scale, accentTint);
         drawEnemyScaledSprite(
             _px - 4 * _scale, _py - 11 * _scale, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 
             16 * (spriteIdx >> 3), 16, primTint, secTint, 255
         );
-    } else if (behaviorIdx == enemyBatBehaviorIdx) {
+    } else if (behaviorIdx == BehaviorTypes.Bat) {
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 8 * _scale;
         posY[1] = _px - 4 * _scale;
@@ -6594,7 +6534,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawLine(posY[5], posX[5], posY[6], posX[6], accentTint);
         drawLine(posY[6], posX[6], posY[4], posX[4], accentTint);
         drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
-    } else if (behaviorIdx == enemyDragonBehaviorIdx) {
+    } else if (behaviorIdx == BehaviorTypes.Dragon) {
         posY[0] = _px - 3 * _scale;
         posX[0] = _py - 10 * _scale;
         posY[1] = _px + 1 * _scale;
@@ -6614,7 +6554,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawLine(posY[3], posX[3], posY[4], posX[4], accentTint);
         drawRectCentered(RMath.floor(posY[5]), RMath.floor(posX[5]), RMath.floor(2 * _scale), RMath.floor(2 * _scale), primTint);
         drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
-    } else if (behaviorIdx == enemyStickmanBehaviorIdx) {
+    } else if (behaviorIdx == BehaviorTypes.Stickman) {
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 15 * _scale;
         posY[1] = _px + 0 * _scale;
@@ -6647,17 +6587,17 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawLine(posY[7], posX[7], posY[9], posX[9], accentTint);
         drawLine(posY[8], posX[8], posY[10], posX[10], accentTint);
         drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
-    } else if (behaviorIdx == enemyTreeBehaviorLeftIdx) {
+    } else if (behaviorIdx == BehaviorTypes.TreeLeft) {
         drawRectOutlineCentered(_px + 0, _py + 0, 5, 5, accentTint);
         drawRectOutlineCentered(_px - 1, _py - 6, 5, 5, accentTint);
         drawRectOutlineCentered(_px + 0, _py - 12, 5, 5, accentTint);
         drawEnemyScaledSprite(_px + 0, _py - 18, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
-    } else if (behaviorIdx == enemyTreeBehaviorRightIdx) {
+    } else if (behaviorIdx == BehaviorTypes.TreeRight) {
         drawRectOutlineCentered(_px + 0, _py - 17, 5, 5, accentTint);
         drawRectOutlineCentered(_px - 1, _py - 11, 5, 5, accentTint);
         drawRectOutlineCentered(_px + 0, _py - 5, 5, 5, accentTint);
         drawEnemyScaledSprite(_px + 0, _py + 1, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3) + 16, -16, primTint, secTint, 255);
-    } else if (behaviorIdx == enemyHangingTreeBehaviorIdx) {
+    } else if (behaviorIdx == BehaviorTypes.HangingTree) {
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 10 * _scale;
         posY[1] = _px - 7 * _scale;
@@ -6678,9 +6618,9 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
             enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
             16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
         );
-    } else if (behaviorIdx == enemyUpdateFunc7Idx) {
-        behaviorIdx = enemyCatalog[_typeIdx][enemyShapeParamACol];
-        _typeIdx = enemyCatalog[_typeIdx][enemyShapeParamBCol];
+    } else if (behaviorIdx == BehaviorTypes.Type8) {
+        behaviorIdx = enemyCatalog[_typeIdx][EnemyProps.ShapeParamA];
+        _typeIdx = enemyCatalog[_typeIdx][EnemyProps.ShapeParamB];
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 10 * _scale;
         for (_px = 0; _px < behaviorIdx; _px++) {
@@ -6692,7 +6632,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
             drawLine(posY[_px], posX[_px], posY[_px + 1], posX[_px + 1], accentTint);
         drawLine(posY[_px], posX[_px], posY[1], posX[1], accentTint);
         drawEnemyScaledSprite(posY[0], posX[0], 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, primTint, secTint, 255);
-    } else if (behaviorIdx == enemyUpdateFunc9Idx) {
+    } else if (behaviorIdx == BehaviorTypes.Type9) {
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 6 * _scale;
         posY[1] = _px - 9 * _scale;
@@ -6723,7 +6663,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
             enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
             16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
         );
-    } else if (behaviorIdx == enemyUpdateFunc10Idx) {
+    } else if (behaviorIdx == BehaviorTypes.Type10) {
         drawLine(_px + 5 * _scale, _py - 6 * _scale, _px + 8 * _scale, _py - 11 * _scale, accentTint);
         drawLine(_px + 8 * _scale, _py - 11 * _scale, _px + 10 * _scale, _py - 3 * _scale, accentTint);
         drawLine(_px + 10 * _scale, _py - 3 * _scale, _px + 5 * _scale, _py - 6 * _scale, accentTint);
@@ -6732,7 +6672,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
             _px - 5 * _scale, _py - 13 * _scale, 16 * _scale, 16 * _scale, 16 * (spriteIdx & 7), 
             16 * (spriteIdx >> 3), 16, primTint, secTint, 255
         );
-    } else if (behaviorIdx == enemyStickmanBehaviorAltIdx) {
+    } else if (behaviorIdx == BehaviorTypes.StickmanAlt) {
         posY[0] = _px + 0 * _scale;
         posX[0] = _py - 16 * _scale;
         posY[1] = _px + 0 * _scale;
@@ -7432,11 +7372,11 @@ function drawProjectiles() {
             } else if (2 == projectileDrawMode[a]) {
                 spriteAltRenderFlag = 0;
                 l = -projectileOwnerIdx[a] - 1;
-                n = enemyCatalog[enemyTypeArray[l]][enemyBehaviorIdxCol];
-                w = enemyCatalog[enemyTypeArray[l]][enemySpriteIndexCol];
-                l = RMath.max(enemyCatalog[enemyTypeArray[l]][enemyDrawScaleCol], 1);
+                n = enemyCatalog[enemyTypeArray[l]][EnemyProps.BehaviorIdx];
+                w = enemyCatalog[enemyTypeArray[l]][EnemyProps.SpriteIndex];
+                l = RMath.max(enemyCatalog[enemyTypeArray[l]][EnemyProps.DrawScale], 1);
                 B = 0;
-                if (n == enemySlimeBehaviorIdx || n == enemyBoxSnakeBehaviorIdx) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
+                if (n == BehaviorTypes.Slime || n == BehaviorTypes.BoxSnake) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
                 drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
             }
             spriteAltRenderFlag = isSolidRender = 0;

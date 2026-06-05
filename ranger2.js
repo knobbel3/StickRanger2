@@ -4070,78 +4070,137 @@ function loadLevelData(a) {
                 return (_a == _c && _b == _c && _c) ? 1 : 0;
             };
 
-            if (0xffffff == spriteData[d]) { 
-                let k0 = _isPixelSolid(pu);
-                let k1 = _isPixelSolid(pd);
-                let k2 = _isPixelSolid(pl);
-                let k3 = _isPixelSolid(pr);
-                const table = [3, 5, 4, 19, 4, 19, 4, 19, 2, 10, 2, 10, 2, 10, 2, 10];
+            if (0xffffff == spriteData[d]) {
+                const solidUp = _isPixelSolid(pu);
+                const solidDown = _isPixelSolid(pd);
+                const solidLeft = _isPixelSolid(pl);
+                const solidRight = _isPixelSolid(pr);
 
-                const idx =
-                    (k0 ? 1 : 0) |
-                    (k1 ? 2 : 0) |
-                    (k2 ? 4 : 0) |
-                    (k3 ? 8 : 0);
+                const adjacencyMask = (solidUp ? 1 : 0) | (solidDown ? 2 : 0) | (solidLeft ? 4 : 0) | (solidRight ? 8 : 0);
 
-                stageTileData[b][a] = table[idx];
+                switch (adjacencyMask) {
+                    case 0:
+                        stageTileData[b][a] = 3;
+                        break;
+                    case 1:
+                        stageTileData[b][a] = 5;
+                        break;
+                    case 2:
+                        stageTileData[b][a] = 4;
+                        break;
+                    case 3:
+                        stageTileData[b][a] = 19;
+                        break;
+                    case 4:
+                        stageTileData[b][a] = 7;
+                        break;
+                    case 5:
+                        stageTileData[b][a] = 18;
+                        break;
+                    case 6:
+                        stageTileData[b][a] = 2;
+                        break;
+                    case 7:
+                        stageTileData[b][a] = 10;
+                        break;
+                    case 8:
+                        stageTileData[b][a] = 6;
+                        break;
+                    case 9:
+                        stageTileData[b][a] = 16;
+                        break;
+                    case 10:
+                        stageTileData[b][a] = 0;
+                        break;
+                    case 11:
+                        stageTileData[b][a] = 8;
+                        break;
+                    case 12:
+                        stageTileData[b][a] = 11;
+                        break;
+                    case 13:
+                        stageTileData[b][a] = 17;
+                        break;
+                    case 14:
+                        stageTileData[b][a] = 1;
+                        break;
+                    case 15:
+                        stageTileData[b][a] = 9;
+                        break;
+                }
             } else {
-                const stageTable = {
-                    12303291 : 12,
-                    11184810 : 13,
-                    10066329 : 14,
-                    6684774 : 20,
-                    6697728 : 24,
-                    10053171 : 25,
-                    13408614 : 26,
-                    3355392 : 32,
-                    6710835 : 33,
-                    10066278 : 34,
-                    13421721 : 35,
-                    16776960 : 39,
-                    3368448 : 40,
-                    6723891 : 41,
-                    10079334 : 42,
-                    6710784 : 47,
-                    16724940 : 48,
-                    13056 : 49,
-                    51 : 50,
-                    10040064 : 51,
-                    16763904 : 55,
-                }
-
-                if (stageTable[d]) {
-                    stageTileData[d] = stageTable[d];
-                }
-
-                if(16764057 == spriteData[d] && 0 == spriteData[pl]) {
+                const tileColor = spriteData[d];
+                if (tileColor === 12303291) {
+                    stageTileData[b][a] = 12;
+                } else if (tileColor === 11184810) {
+                    stageTileData[b][a] = 13;
+                } else if (tileColor === 10066329) {
+                    stageTileData[b][a] = 14;
+                } else if (tileColor === 6684774) {
+                    stageTileData[b][a] = 20;
+                } else if (tileColor === 6697728) {
+                    stageTileData[b][a] = 24;
+                } else if (tileColor === 10053171) {
+                    stageTileData[b][a] = 25;
+                } else if (tileColor === 13408614) {
+                    stageTileData[b][a] = 26;
+                } else if (tileColor === 16764057 && spriteData[pl] === 0) {
                     stageTileData[b][a] = 27;
-                } else if(16764057 == spriteData[d] && 21913 == spriteData[pl]) {
+                } else if (tileColor === 16764057 && spriteData[pl] === 21913) {
                     stageTileData[b][a] = 29;
-                } else if(16764057 == spriteData[d] && 0 != spriteData[pl]) {
+                } else if (tileColor === 16764057 && spriteData[pl] !== 0) {
                     stageTileData[b][a] = 28;
-                } else if(21913 == spriteData[d] && 0 == spriteData[pu]) {
+                } else if (tileColor === 21913 && spriteData[pu] === 0) {
                     stageTileData[b][a] = 30;
-                } else if(21913 == spriteData[d] && 0 != spriteData[pu]) {
+                } else if (tileColor === 21913 && spriteData[pu] !== 0) {
                     stageTileData[b][a] = 31;
-                } else if(10053120 == spriteData[d] && 10053120 == spriteData[pd]) {
+                } else if (tileColor === 3355392) {
+                    stageTileData[b][a] = 32;
+                } else if (tileColor === 6710835) {
+                    stageTileData[b][a] = 33;
+                } else if (tileColor === 10066278) {
+                    stageTileData[b][a] = 34;
+                } else if (tileColor === 13421721) {
+                    stageTileData[b][a] = 35;
+                } else if (tileColor === 10053120 && spriteData[pd] === 10053120) {
                     stageTileData[b][a] = 36;
-                } else if(16724736 == spriteData[d] && 16724736 != spriteData[pu]) {
+                } else if (tileColor === 16724736 && spriteData[pu] !== 16724736) {
                     stageTileData[b][a] = 37;
-                } else if(3355494 == spriteData[d] && 3355494 != spriteData[pu]) {
+                } else if (tileColor === 3355494 && spriteData[pu] !== 3355494) {
                     stageTileData[b][a] = 38;
-                } else if(10053120 == spriteData[d] && 10053120 != spriteData[pd]) {
+                } else if (tileColor === 16776960) {
+                    stageTileData[b][a] = 39;
+                } else if (tileColor === 3368448) {
+                    stageTileData[b][a] = 40;
+                } else if (tileColor === 6723891) {
+                    stageTileData[b][a] = 41;
+                } else if (tileColor === 10079334) {
+                    stageTileData[b][a] = 42;
+                } else if (tileColor === 10053120 && spriteData[pd] !== 10053120) {
                     stageTileData[b][a] = 44;
-                } else if(16724736 == spriteData[d] && 16724736 == spriteData[pu]) {
+                } else if (tileColor === 16724736 && spriteData[pu] === 16724736) {
                     stageTileData[b][a] = 45;
-                } else if(3355494 == spriteData[d] && 3355494 == spriteData[pu]) {
+                } else if (tileColor === 3355494 && spriteData[pu] === 3355494) {
                     stageTileData[b][a] = 46;
-                } else if(10066431 == spriteData[d] && 10066431 == spriteData[pd]) {
+                } else if (tileColor === 6710784) {
+                    stageTileData[b][a] = 47;
+                } else if (tileColor === 16724940) {
+                    stageTileData[b][a] = 48;
+                } else if (tileColor === 13056) {
+                    stageTileData[b][a] = 49;
+                } else if (tileColor === 51) {
+                    stageTileData[b][a] = 50;
+                } else if (tileColor === 10040064) {
+                    stageTileData[b][a] = 51;
+                } else if (tileColor === 10066431 && spriteData[pd] === 10066431) {
                     stageTileData[b][a] = 52;
-                } else if(16737792 == spriteData[d] && 16737792 != spriteData[pu]) {
+                } else if (tileColor === 16737792 && spriteData[pu] !== 16737792) {
                     stageTileData[b][a] = 53;
-                } else if(10066431 == spriteData[d] && 10066431 == spriteData[pu]) {
+                } else if (tileColor === 16763904) {
+                    stageTileData[b][a] = 55;
+                } else if (tileColor === 10066431 && spriteData[pu] === 10066431) {
                     stageTileData[b][a] = 60;
-                } else if(16737792 == spriteData[d] && 16737792 == spriteData[pu]) {
+                } else if (tileColor === 16737792 && spriteData[pu] === 16737792) {
                     stageTileData[b][a] = 61;
                 }
             }

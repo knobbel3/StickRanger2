@@ -8,6 +8,7 @@ import { EnemyProps, BehaviorTypes } from "./game/enemy_enums.js";
 import { itemList } from "./game/item_list.js";
 import * as RMath from "./game/math.js";
 import { badgeCount, badgeList } from "./game/badge_list.js";
+import { StageProps } from "./game/stage_enums.js";
 
 export {gameInit as Init, toggleFullscreen as full_screen};
 
@@ -1075,16 +1076,16 @@ function drawCanvas() {
 
         // display current stage name
         isSolidRender = 1;
-        drawRect(4, 4, 8 * stageListArray[currentStage][stageNameCol].length + 8, 20, 2151694400); // background
+        drawRect(4, 4, 8 * stageListArray[currentStage][StageProps.stageNameCol].length + 8, 20, 2151694400); // background
         isSolidRender = 0;
-        drawText(gameFont, 8, 8, stageListArray[currentStage][stageNameCol], 16777215, 0);
+        drawText(gameFont, 8, 8, stageListArray[currentStage][StageProps.stageNameCol], 16777215, 0);
         drawGameUI();
         if (11 == gameScreenState) {
             c = 255;
             if (50 < screenStateTimer) {
                 c = 255 - RMath.floor(255 * (screenStateTimer - 50) / 20);
             }
-            drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
+            drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][StageProps.stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
             a = -1E3 + RMath.floor(500 * screenStateTimer / 20);
             drawLine(a, 164, a + 1E3, 164, 8421504);
             a = 640 - RMath.floor(500 * screenStateTimer / 20);
@@ -1403,7 +1404,7 @@ function drawGameUI() {
     }
 
 
-    drawRect(0, 361, 640, 70, stageListArray[currentStage][stageUIBgColorCol]);
+    drawRect(0, 361, 640, 70, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
     f = 8;
     g = 348;
     drawText(gameFont, f, g, "LV " + partyLevel, 16777215, 0);
@@ -1622,7 +1623,7 @@ function drawGameUI() {
 
     if (memberUIVisible) {
         g = f = 14;
-        drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
         gameFont.a = 1;
         drawText(gameFont, f, g, "LP " + partyLP[selectingHero] + "/" + partyMaxLP[selectingHero] + " SP (" + partySP[selectingHero] + ")", 16777215, 0);
         let k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
@@ -1772,7 +1773,7 @@ function drawGameUI() {
     if (inventoryUIVisible) {
         let _ox = 224;
         let _oy = 14;
-        drawRect(_ox - 6, _oy - 6, 204, 260, stageListArray[currentStage][stageUIBgColorCol]);
+        drawRect(_ox - 6, _oy - 6, 204, 260, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
         let c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx];
 
         if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= inventoryTabIdx) { // item upgrade panel
@@ -2027,7 +2028,7 @@ function drawGameUI() {
     if (bestiaryUIVisible) {
         let f = 434;
         let g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
             bestiaryUIVisible = false;
         }
@@ -2149,13 +2150,13 @@ function drawGameUI() {
         currentBestiaryPage = wrapStageIndex(currentBestiaryPage);
         drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
         if (1 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
-            drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][stageNameCol], -1, 0);
+            drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][StageProps.stageNameCol], -1, 0);
         }
     }
     if (badgesUIVisible) {
         let f = 434;
         let g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
             badgesUIVisible = false;
         }
@@ -2198,14 +2199,14 @@ function drawGameUI() {
         badgesUIStageIdx = wrapStageIndex(badgesUIStageIdx);
         drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
         if (1 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) {
-            drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[badgesUIStageIdx]][stageNameCol], -1, 0);
+            drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[badgesUIStageIdx]][StageProps.stageNameCol], -1, 0);
         }
     }
     if (optionsUIVisible) {
         let f = 434;
         let g = 202;
         d = 32;
-        drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
             optionsUIVisible = false;
         }
@@ -2243,7 +2244,7 @@ function drawGameUI() {
             drawTextCentered(gameFontMed, f + 96, g + 100, "Return to Village",
                 -1, 0);
         }
-        h = stageListArray[currentStage][stageReturnCost];
+        h = stageListArray[currentStage][StageProps.stageReturnCost];
         if (drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h)) {
             if (h <= partyGold && isMouseClicked) {
                 partyGold = RMath.clamp(partyGold - h, 0, 9999999);
@@ -2270,7 +2271,7 @@ function drawGameUI() {
     if (shrineUIVisible) {
         f = 224;
         g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
             shrineUIVisible = false;
         }
@@ -3638,18 +3639,6 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
 
 const stageCount = 32,
     stageListArray = Array(stageCount);
-let ENUM_STAGE_PROPS_COUNT = 0;
-const stageNameCol = ENUM_STAGE_PROPS_COUNT++,
-    stageTilesetIdxCol = ENUM_STAGE_PROPS_COUNT++,
-    stageUIBgColorCol = ENUM_STAGE_PROPS_COUNT++,
-    stageReturnCost = ENUM_STAGE_PROPS_COUNT++, // stageAttr3, gold cost to return/warp to the village
-    stageExitTopIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr4, stage index to go to when exiting off the top edge
-    stageExitBottomIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr5, stage index to go to when exiting off the bottom edge
-    stageExitLeftIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr6, stage index to go to when exiting off the left edge
-    stageExitRightIdx = ENUM_STAGE_PROPS_COUNT++, // stageAttr7, stage index to go to when exiting off the right edge
-    stageSpawnChance = ENUM_STAGE_PROPS_COUNT++, // stageAttr8, stage spawn chance/intensity (higher -> more frequent ambient spawns)
-    stageSpawnGroupsStartIdx = ENUM_STAGE_PROPS_COUNT++; // stageAttr9, index where this row's spawn-group definitions begin (groups of 7 values)
-
 stageListArray[0] = ["", 0, 13407305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 stageListArray[1] = ["Village", 0, 13407305, 0, 0, 0, 0, 2, 10, 0, 0, 0, 0, 0, 0, 0];
 stageListArray[2] = ["Cave 1", 0, 13407305, 1, 0, 0, 1, 3, 10, 0, 5, 10, 11, 40, 63, 41, 0, 5, 10, 5, 34, 45, 34, 1, 2, 0, 5, 34, 45, 34, 1, 8, 30, 8, 26, 46, 26, 2, 3, 5, 50, 22, 60, 22, 2, 5, 10, 32, 8, 74, 9, 3, 1, 1, 4, 13, 11, 13, 5, 15, 30, 50, 25, 62, 28];
@@ -3884,7 +3873,7 @@ function loadLevelData(a) {
     }
     stageClearBaseGoldPerHero = 0;
     clearEnemies();
-    for (let a = stageSpawnGroupsStartIdx; a < stageListArray[currentStage].length; a += 7) {
+    for (let a = StageProps.stageSpawnGroupsStartIdx; a < stageListArray[currentStage].length; a += 7) {
         let c = stageListArray[currentStage][a + 0];
         let d = stageListArray[currentStage][a + 1];
         let k = stageListArray[currentStage][a + 3];
@@ -3896,9 +3885,9 @@ function loadLevelData(a) {
             let g = RMath.randIntRange(f, t + 1);
 
             if (stageTileData[g][h] > 25) {
-                spawnEnemy(h, g, c, (a - stageSpawnGroupsStartIdx) / 7);
-                activeSpawnCountByGroup[(a - stageSpawnGroupsStartIdx) / 7]++;
-                totalSpawnedCountByGroup[(a - stageSpawnGroupsStartIdx) / 7]++;
+                spawnEnemy(h, g, c, (a - StageProps.stageSpawnGroupsStartIdx) / 7);
+                activeSpawnCountByGroup[(a - StageProps.stageSpawnGroupsStartIdx) / 7]++;
+                totalSpawnedCountByGroup[(a - StageProps.stageSpawnGroupsStartIdx) / 7]++;
             };
         }
         let b = enemyCatalog[c][EnemyProps.Level];
@@ -3932,30 +3921,30 @@ function updateStageEdgeSpawns() { // wg
             if (heroUpperJointMode[a] != areUpperJointsDisabled) {
                 var b = heroJointPositionsByHero[a][1].x,
                     c = heroJointPositionsByHero[a][1].y;
-                if (4 > b && 0 < stageListArray[currentStage][stageExitLeftIdx]) {
-                    lastStageIdx = stageListArray[currentStage][stageExitLeftIdx];
+                if (4 > b && 0 < stageListArray[currentStage][StageProps.stageExitLeftIdx]) {
+                    lastStageIdx = stageListArray[currentStage][StageProps.stageExitLeftIdx];
                     for (var d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = 77;
                         partySpawnYByHero[d] = c >> 3;
                     }
-                } else if (636 <= b && 0 < stageListArray[currentStage][stageExitRightIdx])
-                    for (lastStageIdx = stageListArray[currentStage][stageExitRightIdx], d = 0; 4 > d; d++) {
+                } else if (636 <= b && 0 < stageListArray[currentStage][StageProps.stageExitRightIdx])
+                    for (lastStageIdx = stageListArray[currentStage][StageProps.stageExitRightIdx], d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = 2;
                         partySpawnYByHero[d] = c >> 3;
                     }
-                if (4 > c && 0 < stageListArray[currentStage][stageExitTopIdx])
-                    for (lastStageIdx = stageListArray[currentStage][stageExitTopIdx], d = 0; 4 > d; d++) {
+                if (4 > c && 0 < stageListArray[currentStage][StageProps.stageExitTopIdx])
+                    for (lastStageIdx = stageListArray[currentStage][StageProps.stageExitTopIdx], d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = b >> 3;
                         partySpawnYByHero[d] = 42;
                     } else
-                if (356 <= c && 0 < stageListArray[currentStage][stageExitBottomIdx])
-                    for (lastStageIdx = stageListArray[currentStage][stageExitBottomIdx], d = 0; 4 > d; d++) {
+                if (356 <= c && 0 < stageListArray[currentStage][StageProps.stageExitBottomIdx])
+                    for (lastStageIdx = stageListArray[currentStage][StageProps.stageExitBottomIdx], d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = b >> 3;
                         partySpawnYByHero[d] = 2;
                     }
             } for (a = 0; 20 > a; a++) activeSpawnCountByGroup[a] = 0;
     for (a = 0; a < enemyCount; a++) activeSpawnCountByGroup[enemySpawnGroupIdxArray[a]]++;
-    for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
+    for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
         a = stageListArray[currentStage][b + 0];
         var f = stageListArray[currentStage][b + 1],
             c = stageListArray[currentStage][b + 2],
@@ -3963,15 +3952,15 @@ function updateStageEdgeSpawns() { // wg
             d = stageListArray[currentStage][b + 4],
             h = stageListArray[currentStage][b + 5],
             k = stageListArray[currentStage][b + 6];
-        if (!(c <= totalSpawnedCountByGroup[(b - stageSpawnGroupsStartIdx) / 7])) {
-            if (activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7] < f) {
-                if (1E3 * RMath.rand() < stageListArray[currentStage][stageSpawnChance]) {
+        if (!(c <= totalSpawnedCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7])) {
+            if (activeSpawnCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7] < f) {
+                if (1E3 * RMath.rand() < stageListArray[currentStage][StageProps.stageSpawnChance]) {
                     c = RMath.randIntRange(g, h + 1);
                     d = RMath.randIntRange(d, k + 1);
                     if (!25 >= stageTileData[d][c]) {
-                        spawnEnemy(c, d, a, (b - stageSpawnGroupsStartIdx) / 7);
-                        activeSpawnCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]++;
-                        totalSpawnedCountByGroup[(b - stageSpawnGroupsStartIdx) / 7]++;
+                        spawnEnemy(c, d, a, (b - StageProps.stageSpawnGroupsStartIdx) / 7);
+                        activeSpawnCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7]++;
+                        totalSpawnedCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7]++;
                     }
                 }
             }
@@ -3980,8 +3969,8 @@ function updateStageEdgeSpawns() { // wg
 
     }
     a = d = 0;
-    for (b = stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
-        a = (b - stageSpawnGroupsStartIdx) / 7;
+    for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
+        a = (b - StageProps.stageSpawnGroupsStartIdx) / 7;
         c = stageListArray[currentStage][b + 2];
         if (0 != activeSpawnCountByGroup[a] || totalSpawnedCountByGroup[a] < c) {
             d++;
@@ -4084,7 +4073,7 @@ function updateStageEdgeSpawns() { // wg
 
 function drawGameStage() {
     var a, b, c, d;
-    a = stageListArray[currentStage][stageTilesetIdxCol];
+    a = stageListArray[currentStage][StageProps.stageTilesetIdxCol];
     for (c = 0; c < stageHeight; c++)
         for (b = 0; b < stageWidth; b++)
             if (d = stageTileData[c][b], 64 == d) drawRect(8 * b, 8 * c, 8, 8, 0);

@@ -5374,30 +5374,45 @@ function deleteEnemy(enemyIdx) {
 
 
 function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
-    let d = new Vec2;
+    let d = new Vec2();
     Vec2Sub(d, enemyJointPosArray[enemyIdx][jointIdx], enemyPrevJointPosArray[enemyIdx][jointIdx]);
     enemyJointPosArray[enemyIdx][jointIdx].set(enemyPrevJointPosArray[enemyIdx][jointIdx]);
     let f = (Vec2Mag(d) >> 2) + 1;
     Vec2Scale(d, 1 / f);
-    for (let g, h, k = 0; k < f; k++) 
-        g = enemyJointPosArray[enemyIdx][jointIdx].y + d.y, 
-        h = getStageTileAt(enemyJointPosArray[enemyIdx][jointIdx].x, g), 
-        (0 > g || 8 * stageHeight <= g) 
-            ? enemyTileContactFlagsArray[enemyIdx] |= 2 
-            : (0 <= h && 25 >= h) 
-                ? (0 < d.y && (enemyTileContactFlagsArray[enemyIdx] |= 2), d.x *= bounceScale, d.y = -d.y) 
-                : (26 <= h && 26 >= h && 0 < d.y) 
-                    ? (enemyTileContactFlagsArray[enemyIdx] |= 2, d.x *= bounceScale, d.y = -d.y) 
-                    : enemyJointPosArray[enemyIdx][jointIdx].y = g, 
-        g = enemyJointPosArray[enemyIdx][jointIdx].x + d.x, 
-        h = getStageTileAt(g, enemyJointPosArray[enemyIdx][jointIdx].y), 
-        (0 > g || 640 <= g) 
-            ? enemyTileContactFlagsArray[enemyIdx] |= 1 
-            : (0 <= h && 25 >= h) 
-                ? (d.y *= bounceScale, d.x = -d.x, enemyTileContactFlagsArray[enemyIdx] |= 1) 
-                : (27 <= h && 29 >= h) 
-                    ? (d.y *= bounceScale, d.x = -d.x, enemyTileContactFlagsArray[enemyIdx] |= 1) 
-                    : enemyJointPosArray[enemyIdx][jointIdx].x = g
+    for (let g, h, k = 0; k < f; k++) {
+        g = enemyJointPosArray[enemyIdx][jointIdx].y + d.y;
+        h = getStageTileAt(enemyJointPosArray[enemyIdx][jointIdx].x, g);
+        if (0 > g || 8 * stageHeight <= g) {
+            enemyTileContactFlagsArray[enemyIdx] |= 2;
+        } else if (0 <= h && 25 >= h) {
+            if (0 < d.y) {
+                enemyTileContactFlagsArray[enemyIdx] |= 2;
+            }
+            d.x *= bounceScale;
+            d.y = -d.y;
+        } else if (26 <= h && 26 >= h && 0 < d.y) {
+            enemyTileContactFlagsArray[enemyIdx] |= 2;
+            d.x *= bounceScale;
+            d.y = -d.y;
+        } else {
+            enemyJointPosArray[enemyIdx][jointIdx].y = g;
+        }
+        g = enemyJointPosArray[enemyIdx][jointIdx].x + d.x;
+        h = getStageTileAt(g, enemyJointPosArray[enemyIdx][jointIdx].y);
+        if (0 > g || 640 <= g) {
+            enemyTileContactFlagsArray[enemyIdx] |= 1;
+        } else if (0 <= h && 25 >= h) {
+            d.y *= bounceScale;
+            d.x = -d.x;
+            enemyTileContactFlagsArray[enemyIdx] |= 1;
+        } else if (27 <= h && 29 >= h) {
+            d.y *= bounceScale;
+            d.x = -d.x;
+            enemyTileContactFlagsArray[enemyIdx] |= 1;
+        } else {
+            enemyJointPosArray[enemyIdx][jointIdx].x = g;
+        }
+    }
 }
 
 

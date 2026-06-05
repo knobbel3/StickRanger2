@@ -5423,14 +5423,18 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
     let f = cx - rx,
         g = cy - ry;
     rx = cx + rx;
-    ry = cy + ry;
-    for (var h, k, p, t = new Vec2, l = new Vec2, n = 1E3, w = -1, B = 0; B < enemyCount; B++)
-        if (0 != enemyHealthArray[B]) {
-            h = enemyHitboxHalfWidthByBehavior[enemyCatalog[enemyTypeArray[B]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
-            k = enemyHitboxHalfHeightByBehavior[enemyCatalog[enemyTypeArray[B]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
-            if (enemyUpdateFuncIdxArray[B] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[B] == enemyTreeBehaviorRightIdx) 
-                k = 3 * enemyPoseTrailWriteIdxArray[B] + 5 * enemyCatalog[enemyTypeArray[B]][enemyDrawScaleCol];
-            p = enemyJointPosArray[B][enemyTargetJointIdx];
+    ry = cy + ry; 
+    let t = new Vec2();
+    let l = new Vec2();
+    let n = 1E3;
+    let w = -1;
+    for (let _i = 0; _i < enemyCount; _i++)
+        if (0 != enemyHealthArray[_i]) {
+            let h = enemyHitboxHalfWidthByBehavior[enemyCatalog[enemyTypeArray[_i]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[_i]][enemyDrawScaleCol];
+            let k = enemyHitboxHalfHeightByBehavior[enemyCatalog[enemyTypeArray[_i]][enemyBehaviorIdxCol]] * enemyCatalog[enemyTypeArray[_i]][enemyDrawScaleCol];
+            if (enemyUpdateFuncIdxArray[_i] == enemyTreeBehaviorLeftIdx || enemyUpdateFuncIdxArray[_i] == enemyTreeBehaviorRightIdx)
+                k = 3 * enemyPoseTrailWriteIdxArray[_i] + 5 * enemyCatalog[enemyTypeArray[_i]][enemyDrawScaleCol];
+            let p = enemyJointPosArray[_i][enemyTargetJointIdx];
             if (!(p.x - h > rx || p.x + h < f || p.y - k > ry || p.y + k < g)) {
                 l.x = p.x - cx;
                 l.y = p.y - cy;
@@ -5441,11 +5445,14 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
                 for (var M = 0; M <= h; M++) {
                     p = getStageTileAt(t.x, t.y);
                     if (0 <= p && 29 >= p) break;
-                    t.add(l)
+                    t.add(l);
                 }
-                (M > h && k < n) && (n = k, w = B)
+                if (M > h && k < n) {
+                    n = k;
+                    w = _i;
+                }
             }
-        } return w
+        } return w;
 }
 
 

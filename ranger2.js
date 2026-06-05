@@ -12,19 +12,12 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-
+import { CanvasState } from "./game/global_states.js";
 export {gameInit as Init, toggleFullscreen as full_screen};
 
 const hostname = "dan-ball.jp";
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 432;
-
-let canvasElement = document.getElementById("cv"),
-    context2d = canvasElement.getContext("2d"),
-    canvasImage = context2d.createImageData(640, 432),
-    canvasBuffer = new Uint32Array(canvasImage.data.buffer);
-
-
 
 function LogMsg(a) {
     try {
@@ -38,12 +31,12 @@ document.onmousemove = onMouseMove;
 document.onmousedown = onMouseDown;
 document.onmouseup = onMouseUp;
 document.oncontextmenu = onContextMenu;
-canvasElement.ontouchstart = onTouchStart;
-canvasElement.ontouchmove = onTouchMove;
-canvasElement.ontouchend = onTouchEnd;
-canvasElement.ontouchcancel = onTouchCancel;
-document.onkeydown = onKeyDown; 
-document.onkeyup = onKeyUp; 
+CanvasState.element.ontouchstart = onTouchStart;
+CanvasState.element.ontouchmove = onTouchMove;
+CanvasState.element.ontouchend = onTouchEnd;
+CanvasState.element.ontouchcancel = onTouchCancel;
+document.onkeydown = onKeyDown;
+document.onkeyup = onKeyUp;
 
 
 let userSaveCode, // ca
@@ -990,8 +983,8 @@ function gameInit(a, b) {
         if (8 == userSaveCode.length)
             for (_t0 = 0; 8 > _t0; _t0++) userSaveKey[_t0] = inverseCodingCharTable[userSaveCode[_t0]];
         LogMsg(copyrightText2); // Copyright text
-        canvasElement.width = 640;
-        canvasElement.height = 432;
+        CanvasState.element.width = 640;
+        CanvasState.element.height = 432;
 
         for (_t0 = 0; 256 > _t0; _t0++) {
             keyJustPressed[_t0] = false;
@@ -7501,9 +7494,9 @@ function drawDrops() { // Dg
 
 function canvasDrawImage(_canvas, _dx, _dy) {
     try {
-        canvasElement = document.getElementById("cv"); 
-        context2d = canvasElement.getContext("2d");
-        context2d.putImageData(_canvas, _dx, _dy);
+        CanvasState.element = document.getElementById("cv"); 
+        CanvasState.context2d = CanvasState.element.getContext("2d");
+        CanvasState.context2d.putImageData(_canvas, _dx, _dy);
     } catch (d) { }
 }
 
@@ -7549,20 +7542,20 @@ function setupAnimRequest() {
     var canvasBufferLength = CANVAS_WIDTH * CANVAS_HEIGHT;
     if (1 <= screenFadeFactor){
         for (a = 0; a < canvasBufferLength; a++) {
-            canvasBuffer[a] = 4278190080 | 
+            CanvasState.canvasBuffer[a] = 4278190080 | 
             (frameBufferArray[a] & 255) << 16 | 
             frameBufferArray[a] & 65280 | 
             frameBufferArray[a] >> 16 & 255;
         }
     } else {
         for (a = 0; a < canvasBufferLength; a++) {
-            canvasBuffer[a] = 4278190080 | 
+            CanvasState.canvasBuffer[a] = 4278190080 | 
             (frameBufferArray[a] & 255) * screenFadeFactor << 16 | 
             (frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | 
             (frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
         }
     }
-    canvasDrawImage(canvasImage, 0, 0);
+    canvasDrawImage(CanvasState.canvasImage, 0, 0);
     requestAnim || setTimeout(setupAnimRequest, computeFrameDelay());
 }
 
@@ -8112,7 +8105,7 @@ function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
 }
 
 function toggleFullscreen() {
-    document.fullscreenEnabled && (document.fullscreenElement ? document.exitFullscreen() : canvasElement.requestFullscreen())
+    document.fullscreenEnabled && (document.fullscreenElement ? document.exitFullscreen() : CanvasState.element.requestFullscreen())
 }
 
 
@@ -8224,7 +8217,7 @@ function buttonCheckCentered(x, y, w, h) {
 }
 
 function onMouseMove(mouseState) {
-    var clientRect = canvasElement.getBoundingClientRect(),
+    var clientRect = CanvasState.element.getBoundingClientRect(),
         rectWidth = clientRect.right - clientRect.left,
         rectHeight = clientRect.bottom - clientRect.top,
         f = RMath.min(rectWidth / CANVAS_WIDTH, rectHeight / CANVAS_HEIGHT),
@@ -8235,7 +8228,7 @@ function onMouseMove(mouseState) {
 }
 
 function handleTouch(a) {
-    var clientRect = canvasElement.getBoundingClientRect(),
+    var clientRect = CanvasState.element.getBoundingClientRect(),
         rectWidth = clientRect.right - clientRect.left,
         rectHeight = clientRect.bottom - clientRect.top,
         f = RMath.min(rectWidth / 640, rectHeight / 432),

@@ -8071,18 +8071,26 @@ function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, al
         ob = text.length;
     for (idx_0 = 0; idx_0 < ob; idx_0++, x += glyphWidth + font.b) {
         J = text.charCodeAt(idx_0) - 32;
-        0 != font.a && (x -= ~~(charKerningBefore[font.a - 1][J] * glyphWidth / font.c));
+        if (0 != font.a) {
+            x -= ~~(charKerningBefore[font.a - 1][J] * glyphWidth / font.c);
+        }
         K = 640 * y + x;
         U = J * font.c;
         for (idx_1 = 0; idx_1 < glyphHeight; idx_1++, K += Fa)
-            for (ba = ~~(idx_1 * font.j / glyphHeight) * font.i.h + U << 8, idx_2 = 0; idx_2 < glyphWidth; idx_2++, K++, ba += Ga) na = Ca[ba >> 8], na == ua ? frameBufferArray[K] = fgR + ((frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((frameBufferArray[K] & 255) * fgAlpha >> 8) : na == fb && (frameBufferArray[K] =
-                altR + ((frameBufferArray[K] >> 16 & 255) * altAlpha >> 8) << 16 | altG + ((frameBufferArray[K] >> 8 & 255) * altAlpha >> 8) << 8 | altB + ((frameBufferArray[K] & 255) * altAlpha >> 8));
-        0 != font.a && (x -= ~~(charKerningAfter[font.a - 1][J] * glyphWidth / font.c))
-
-
+            for (ba = ~~(idx_1 * font.j / glyphHeight) * font.i.h + U << 8, idx_2 = 0; idx_2 < glyphWidth; idx_2++, K++, ba += Ga) {
+                na = Ca[ba >> 8];
+                if (na == ua) {
+                    frameBufferArray[K] = fgR + ((frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((frameBufferArray[K] & 255) * fgAlpha >> 8);
+                } else if (na == fb) {
+                    frameBufferArray[K] = altR + ((frameBufferArray[K] >> 16 & 255) * altAlpha >> 8) << 16 | altG + ((frameBufferArray[K] >> 8 & 255) * altAlpha >> 8) << 8 | altB + ((frameBufferArray[K] & 255) * altAlpha >> 8);
+                }
+            }
+        if (0 != font.a) {
+            x -= ~~(charKerningAfter[font.a - 1][J] * glyphWidth / font.c);
+        }
     }
     font.b = 0;
-    font.a = 0
+    font.a = 0;
 }
 
 function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight) { // Jg

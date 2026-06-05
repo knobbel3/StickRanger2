@@ -9,31 +9,25 @@ import { itemList } from "./game/item_list.js";
 import * as RMath from "./game/math.js";
 import { badgeCount, badgeList } from "./game/badge_list.js";
 
-let domDocument = document,
-    mainWindow = window,
-    canvasElement = domDocument.getElementById("cv"),
+export {gameInit as Init, toggleFullscreen as full_screen};
+
+const hostname = "dan-ball.jp";
+const CANVAS_WIDTH = 640;
+const CANVAS_HEIGHT = 432;
+
+let canvasElement = document.getElementById("cv"),
     context2d = canvasElement.getContext("2d"),
     canvasImage = context2d.createImageData(640, 432),
-    canvasBuffer = new Uint32Array(canvasImage.data.buffer),
-    mainConsole = window.console,
-    fromCharCode = String.fromCharCode,
-    _setTimeout = setTimeout,
-    currentStorage = mainWindow.localStorage,
-    hostname = "dan-ball.jp";//location.hostname;
+    canvasBuffer = new Uint32Array(canvasImage.data.buffer);
 
 function LogMsg(a) {
     try {
-        mainConsole.log(a)
+        console.log(a)
     } catch (b) { }
 }
-
-export {gameInit as Init, toggleFullscreen as full_screen};
 // mainWindow.Init = gameInit;
 // mainWindow.full_screen = toggleFullscreen;
 
-
-const CANVAS_WIDTH = 640;
-const CANVAS_HEIGHT = 432;
 
 let userSaveCode, // ca
     userSaveKey = [0, 0, 0, 0, 0, 0, 0, 0], // da
@@ -486,11 +480,11 @@ function saveGame() {
     gameSaveString += encodingCharTable[f];
     gameSaveString += encodingCharTable[c >> 6 & 63];
     let saveItem = gameSaveString += encodingCharTable[c >> 0 & 63];
-    if (currentStorage) {
+    if (window.localStorage) {
         if ("" != saveItem) {
-            currentStorage.setItem("ranger2", saveItem);
+            window.localStorage.setItem("ranger2", saveItem);
         } else {
-            currentStorage.removeItem("ranger2");
+            window.localStorage.removeItem("ranger2");
         }
     }
     gameSaveStatusDuration = 50
@@ -728,14 +722,14 @@ function gameInit(a, b) {
         loadSprite(effectSpriteSheet);
         loadSprite(medalSpriteSheet);
         if (uncheckedSpriteCount > 0) { // restart
-            _setTimeout(gameInit, computeFrameDelay());
+            setTimeout(gameInit, computeFrameDelay());
         } else {
             gameInitStage++;
         }
     }
     if (2 == gameInitStage) {
-        if (currentStorage) {
-            _t0 = currentStorage.getItem("ranger2");
+        if (window.localStorage) {
+            _t0 = window.localStorage.getItem("ranger2");
             gameSaveString = _t0 ?? "";
         } else {
             gameSaveString = "";
@@ -7435,7 +7429,7 @@ function drawDrops() { // Dg
 
 function canvasDrawImage(_canvas, _dx, _dy) {
     try {
-        canvasElement = domDocument.getElementById("cv"); 
+        canvasElement = document.getElementById("cv"); 
         context2d = canvasElement.getContext("2d");
         context2d.putImageData(_canvas, _dx, _dy);
     } catch (d) { }
@@ -7526,7 +7520,7 @@ function setupAnimRequest() {
         }
     }
     canvasDrawImage(canvasImage, 0, 0);
-    requestAnim || _setTimeout(setupAnimRequest, computeFrameDelay());
+    requestAnim || setTimeout(setupAnimRequest, computeFrameDelay());
 }
 let hostNameUnchecked = 1;
 
@@ -7606,7 +7600,7 @@ function loadSprite(sprite) {
         var imgWidth = sprite.a.width,
             imgHeight = sprite.a.height;
         if (!imgWidth || !imgHeight) throw delete sprite.a, sprite.b = "", "ERROR";
-        var d = domDocument.createElement(canvasTag);
+        var d = document.createElement(canvasTag);
         d.width = imgWidth;
         d.height = imgHeight;
         d = d.getContext(name2d);
@@ -8178,7 +8172,7 @@ function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
 }
 
 function toggleFullscreen() {
-    domDocument.fullscreenEnabled && (domDocument.fullscreenElement ? domDocument.exitFullscreen() : canvasElement.requestFullscreen())
+    document.fullscreenEnabled && (document.fullscreenElement ? document.exitFullscreen() : canvasElement.requestFullscreen())
 }
 
 let isMouseClicked = false,
@@ -8192,8 +8186,8 @@ let isMouseClicked = false,
     mouseYRel = 0,
     activeTouchCount = 0;
 
-domDocument.onmousemove = onMouseMove;
-domDocument.onmousedown = function (mouseState) {
+document.onmousemove = onMouseMove;
+document.onmousedown = function (mouseState) {
     onMouseMove(mouseState);
     isCanvasFocused = false;
 
@@ -8214,7 +8208,7 @@ domDocument.onmousedown = function (mouseState) {
     // ) return false
 };
 
-domDocument.onmouseup = function (mouseState) {
+document.onmouseup = function (mouseState) {
     onMouseMove(mouseState);
     if (mouseState.button === 0) {
         isMouseDown = false;
@@ -8222,7 +8216,7 @@ domDocument.onmouseup = function (mouseState) {
     //0 == mouseState.button && (isMouseDown = false)
 };
 
-domDocument.oncontextmenu = function () {
+document.oncontextmenu = function () {
     if (isCanvasFocused) return false
 };
 
@@ -8268,7 +8262,7 @@ let keyJustPressed = Array(256), // Jf
     keyMapNoShift = Array(256), // Mf
     keyMapShift = Array(256); // Nf
 
-domDocument.onkeydown = function(a) {
+document.onkeydown = function(a) {
     var b = a.keyCode;
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);
@@ -8283,7 +8277,7 @@ domDocument.onkeydown = function(a) {
 };
 
 
-domDocument.onkeyup = function(a) {
+document.onkeyup = function(a) {
     var b = a.keyCode;
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);

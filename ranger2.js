@@ -7314,7 +7314,15 @@ function updateProjectiles() { // Bg
             if (1 == p) {
                 c = 0;
                 if (1 == projectileApplyMode[a] || 2 == projectileApplyMode[a]) c = 1;
-                c = 0 <= projectileOwnerIdx[a] ? applyEffectToEnemies(c, projectileShapeMode[a], projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h, k, projectileHitboxWidth[a], projectileHitboxHeight[a]) : damagePartyMemberInArea(0, projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], h.x, h.y, projectileHitboxWidth[a], projectileHitboxHeight[a]);
+                c = (0 <= projectileOwnerIdx[a]) 
+                    ? applyEffectToEnemies(
+                        c, projectileShapeMode[a], projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], 
+                        projectileDamageMin[a], projectileDamageMax[a], h, k, projectileHitboxWidth[a], projectileHitboxHeight[a]
+                    ) 
+                    : damagePartyMemberInArea(
+                        0, projectileMaxTargets[a], projectileEffectType[a], projectileEffectDuration[a], projectileDamageMin[a], projectileDamageMax[a], 
+                        h.x, h.y, projectileHitboxWidth[a], projectileHitboxHeight[a]
+                    );
             }
             if (1 == projectileEffectType[a] && 0 == projectileImpactSpawnMode[a]) {
                 c = -1;    

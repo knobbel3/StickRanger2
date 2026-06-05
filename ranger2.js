@@ -6133,20 +6133,77 @@ function enemyStickmanBehavior(enemyIdx) {
     var b;
     b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
-    else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx ? (stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.2, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.1, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .3, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .3, .99)) : enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx && (stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.02, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.01, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][4],
-            enemyPrevJointPosArray[enemyIdx][4], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .1, .99), stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .1, .99));
+    else
+    if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorIdx) {
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.2, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.1, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .3, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .3, .99);
+        } else if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.02, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.01, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][4],
+                enemyPrevJointPosArray[enemyIdx][4], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .1, .99);
+            stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .1, .99);
+        }
         if (50 > randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0); - 1 != c ? enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2));
+            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
+            if (-1 != c) {
+                enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
+            } else if (10 > randFloat(100)) {
+                enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
+            }
             var d = c = 1,
                 f = 0;
-            enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx && (c = .25, d = .3, f = .25);
-            1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x ? (enemyJointPosArray[enemyIdx][10].x += randFloat(-c), enemyJointPosArray[enemyIdx][10].y += -d) : (enemyJointPosArray[enemyIdx][9].x += randFloat(-c), enemyJointPosArray[enemyIdx][9].y += -d), enemyJointPosArray[enemyIdx][5].x += randFloat(-f), enemyJointPosArray[enemyIdx][6].x += randFloat(-f)) : (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x ? (enemyJointPosArray[enemyIdx][9].x +=
-                randFloat(c), enemyJointPosArray[enemyIdx][9].y += -d) : (enemyJointPosArray[enemyIdx][10].x += randFloat(c), enemyJointPosArray[enemyIdx][10].y += -d), enemyJointPosArray[enemyIdx][5].x += randFloat(f), enemyJointPosArray[enemyIdx][6].x += randFloat(f))
+            if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+                c = .25;
+                d = .3;
+                f = .25;
+            }
+            if (1 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                if (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x) {
+                    enemyJointPosArray[enemyIdx][10].x += randFloat(-c);
+                    enemyJointPosArray[enemyIdx][10].y += -d;
+                } else {
+                    enemyJointPosArray[enemyIdx][9].x += randFloat(-c);
+                    enemyJointPosArray[enemyIdx][9].y += -d;
+                }
+                enemyJointPosArray[enemyIdx][5].x += randFloat(-f);
+                enemyJointPosArray[enemyIdx][6].x += randFloat(-f);
+            } else {
+                if (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x) {
+                    enemyJointPosArray[enemyIdx][9].x +=
+                        randFloat(c);
+                    enemyJointPosArray[enemyIdx][9].y += -d;
+                } else {
+                    enemyJointPosArray[enemyIdx][10].x += randFloat(c);
+                    enemyJointPosArray[enemyIdx][10].y += -d;
+                }
+                enemyJointPosArray[enemyIdx][5].x += randFloat(f);
+                enemyJointPosArray[enemyIdx][6].x += randFloat(f);
+            }
         }
         c = .5;
         d = 1.2 * b;
-        enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx && (c = .02, d = 1 * b);
+        if (enemyUpdateFuncIdxArray[enemyIdx] == enemyStickmanBehaviorAltIdx) {
+            c = .02;
+            d = 1 * b;
+        }
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 3 * d, c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 3 * d, c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][3], 4 * d, c, c);
@@ -6159,14 +6216,18 @@ function enemyStickmanBehavior(enemyIdx) {
         applySeparationCorrection(enemyJointPosArray[enemyIdx][8], enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 5 * d, c, c);
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol] && spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        for (b =
-            enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol]) {
+            spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        }
+        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][1]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
-            for (b = enemyDeathTimerArray[enemyIdx] = 0; 11 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
-            onEnemyDeath(enemyIdx)
+            for (b = enemyDeathTimerArray[enemyIdx] = 0; 11 > b; b++) {
+                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+            }
+            onEnemyDeath(enemyIdx);
         }
     } else {
         for (b = 0; 11 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
@@ -6178,9 +6239,11 @@ function enemyStickmanBehavior(enemyIdx) {
         applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][9], 4 * d, c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][8], enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+            deleteEnemy(enemyIdx--);
+        }
     }
-    return enemyIdx
+    return enemyIdx;
 }
 
 

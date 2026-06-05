@@ -5981,7 +5981,7 @@ function enemyBoxSnakeBehavior(enemyIdx) {
 
 
 function enemyBatBehavior(enemyIdx) {
-    var b, c = new Vec2;
+    var b, c = new Vec2();
     b = enemyCatalog[enemyTypeArray[enemyIdx]][enemyDrawScaleCol];
     if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         enemyJointPosArray[enemyIdx][0].x += 4;
@@ -5999,7 +5999,7 @@ function enemyBatBehavior(enemyIdx) {
         enemyJointPosArray[enemyIdx][6].x += 6;
         enemyJointPosArray[enemyIdx][6].y += 6;
         for (b = 0; 7 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
     } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
@@ -6010,9 +6010,22 @@ function enemyBatBehavior(enemyIdx) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
         Vec2Set(c, 0, 0);
         var d = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x,
-            enemyJointPosArray[enemyIdx][0].y, 150, 150, 0); - 1 != d && (Vec2Sub(c, heroJointPositionsByHero[d][2], enemyJointPosArray[enemyIdx][0]), d = Vec2Norm(c), d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] - 10, 0 > d ? Vec2Scale(c, -.05) : Vec2Scale(c, .05));
+            enemyJointPosArray[enemyIdx][0].y, 150, 150, 0);
+        if (-1 != d) {
+            Vec2Sub(c, heroJointPositionsByHero[d][2], enemyJointPosArray[enemyIdx][0]);
+            d = Vec2Norm(c);
+            d -= enemyCatalog[enemyTypeArray[enemyIdx]][enemyPArg24Col] - 10;
+            if (0 > d) {
+                Vec2Scale(c, -.05);
+            } else {
+                Vec2Scale(c, .05);
+            }
+        }
         enemyJointPosArray[enemyIdx][0].add(c);
-        10 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1, 1));
+        if (10 > randFloat(100)) {
+            enemyJointPosArray[enemyIdx][0].x += randFloatRange(-1, 1);
+            enemyJointPosArray[enemyIdx][0].y += randFloatRange(-1, 1);
+        }
         enemyJointPosArray[enemyIdx][2].x += randFloatRange(0, -.1);
         enemyJointPosArray[enemyIdx][3].x += randFloatRange(0, -.1);
         enemyJointPosArray[enemyIdx][5].x += randFloatRange(0, .1);
@@ -6029,12 +6042,17 @@ function enemyBatBehavior(enemyIdx) {
         applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], d, c, c);
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
         enemyTileContactFlagsArray[enemyIdx] = 0;
-        if (0 >=
-            enemyHealthArray[enemyIdx])
-            for (b = 0; 7 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+        if (0 >= enemyHealthArray[enemyIdx])
+            for (b = 0; 7 > b; b++) {
+                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+            }
         for (b = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, 1);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        0 >= enemyHealthArray[enemyIdx] && (enemyPoseTrailWriteIdxArray[enemyIdx] = 3, onEnemyDeath(enemyIdx))
+        if (0 >= enemyHealthArray[enemyIdx]) {
+            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            onEnemyDeath(enemyIdx);
+        }
     } else {
         for (b = 0; 8 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
@@ -6046,9 +6064,11 @@ function enemyBatBehavior(enemyIdx) {
         applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], d, c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], d, c, c);
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+            deleteEnemy(enemyIdx--);
+        }
     }
-    return enemyIdx
+    return enemyIdx;
 }
 
 

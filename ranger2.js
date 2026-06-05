@@ -8358,25 +8358,38 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
             255, x = (((replaceColAlt >> 16 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] >> 8 & 255, K = (((replaceColAlt >> 8 & 255) - y) * blendAmount >> 8) + y, y = frameBufferArray[B] & 255, y = (((replaceColAlt & 255) - y) * blendAmount >> 8) + y), frameBufferArray[B] = x << 16 | K << 8 | y))
 }
 
-function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tintColor) { // gh
-    var h = 16,
-        k = 16,
-        p, t, l = itemsSpriteSheet.g,
-        n, w, B, M;
+function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tintColor) {
+    // gh
+    let h = 16, k = 16, p, t, 
+        l = itemsSpriteSheet.g, n, w, B, M;
     p = ~~(4096 / h);
     t = ~~(4096 / k);
     _sourceX <<= 8;
     _sourceY <<= 8;
-    0 > _px && (_sourceX += ~~(p * -_px));
-    0 > _py && (_sourceY += ~~(t * -_py));
+    if (0 > _px) {
+        _sourceX += ~~(p * -_px);
+    }
+    if (0 > _py) {
+        _sourceY += ~~(t * -_py);
+    }
     h = 640 < _px + h ? 640 : ~~(_px + h);
     k = 432 < _py + k ? 432 : ~~(_py + k);
     _px = 0 > _px ? 0 : ~~_px;
     _py = 0 > _py ? 0 : ~~_py;
     n = 640 * _py + _px;
     w = 640 - (h - _px);
-    for (var J, y, x = _tintColor >> 16 & 255, K = _tintColor >> 8 & 255, ba = _tintColor & 255; _py < k; _py++, n += w, _sourceY += t)
-        for (B = ((_sourceY >> 8) * itemsSpriteSheet.h << 8) + _sourceX, _tintColor = _px; _tintColor < h; _tintColor++, n++, B += p) M = l[B >> 8], 0 >= M || (J = M >> 16 & 255, y = M >> 8 & 255, M &= 255, frameBufferArray[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : _defaultColor)
+    let J, y, x = _tintColor >> 16 & 255, K = _tintColor >> 8 & 255;
+    for (ba = _tintColor & 255; _py < k; _py++, n += w, _sourceY += t) {
+        for (B = ((_sourceY >> 8) * itemsSpriteSheet.h << 8) + _sourceX, _tintColor = _px; _tintColor < h; _tintColor++, n++, B += p) {
+            M = l[B >> 8];
+            if (0 < M) {
+                J = M >> 16 & 255;
+                y = M >> 8 & 255;
+                M &= 255;
+                frameBufferArray[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : _defaultColor;
+            }
+        }
+    }
 }
 
 function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg

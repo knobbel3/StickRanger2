@@ -8575,8 +8575,22 @@ function drawIconButton(x, y, iconIndex, label, color) {
     drawRectCentered(x, y, 32, 32, 2147483648);
     isSolidRender = 0;
     drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, color);
-    6 <= label.length ? drawSmallTextNoOutline(x, y + 10, label, color) : drawTextCentered(gameFontSmall, x, y + 10, label, color, -1);
-    return buttonCheckCentered(x, y, 32, 32) ? (drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, 16750950), 6 <= label.length ? drawSmallTextNoOutline(x, y + 10, label, 16750950) : drawTextCentered(gameFontSmall, x, y + 10, label, 16750950, -1), true) : false
+    if (6 <= label.length) {
+        drawSmallTextNoOutline(x, y + 10, label, color);
+    } else {
+        drawTextCentered(gameFontSmall, x, y + 10, label, color, -1);
+    }
+    if (buttonCheckCentered(x, y, 32, 32)) {
+        drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, 16750950);
+        if (6 <= label.length) {
+            drawSmallTextNoOutline(x, y + 10, label, 16750950);
+        } else {
+            drawTextCentered(gameFontSmall, x, y + 10, label, 16750950, -1);
+        }
+        return true;
+    }
+    return false;
+    
 }
 
 function drawMenuButton(x, y, iconIndex, text, color) {
@@ -8591,10 +8605,11 @@ function drawMenuButton(x, y, iconIndex, text, color) {
     }
     if (buttonCheckCentered(x, y, 24, 24)) {
         drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, 16737894);
-        if (6 <= text.length)
+        if (6 <= text.length) {
             drawSmallTextNoOutline(x, y + 8, text, 16737894) 
-        else
+        } else {
             drawTextCentered(gameFontSmall, x, y + 8, text, 16737894, -1);
+        }
         return true;
     }
     return false;
@@ -8606,11 +8621,18 @@ function drawCancelButton(x, y) {
     drawRectCentered(x, y, 20, 20, 2147483648);
     isSolidRender = 0;
     drawSpriteSheetPartCentered(iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16777215);
-    return buttonCheckCentered(x, y, 20, 20) ? (drawSpriteSheetPartCentered(iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16737894), true) : false
+    if (buttonCheckCentered(x, y, 20, 20)) {
+        drawSpriteSheetPartCentered(iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16737894);
+        return true;
+    }
 }
 
 function drawButtonBoldedText(x, y, w, h, text) {
     drawRectCentered(x, y, w, h, 0);
     drawTextCentered(gameFont, x, y, text, 16777215, 8409120);
-    return buttonCheckCentered(x, y, w, h) ? (fillEmptyPixelsRect(x - (w >> 1), y - (h >> 1), w, h, 6684672), true) : false
+    if (buttonCheckCentered(x, y, w, h)) {
+        fillEmptyPixelsRect(x - (w >> 1), y - (h >> 1), w, h, 6684672);
+        return true;
+    }
+    return false;
 };

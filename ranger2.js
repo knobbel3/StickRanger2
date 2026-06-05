@@ -1509,24 +1509,34 @@ function drawGameUI() {
             stageFlagUseCount++;
         }
     }
-    if (drawIconButton(f + 0 * d, g, 1, "STATUS", memberUIVisible ? 16750950 : 16777215) && isMouseClicked) {
-        memberUIVisible = !memberUIVisible;
+    if (drawIconButton(f + 0 * d, g, 1, "STATUS", memberUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked) {
+            memberUIVisible = !memberUIVisible;
+        }
     }
 
-    if (drawIconButton(f + 1 * d, g, 2, "ITEM", inventoryUIVisible ? 16750950 : 16777215) && isMouseClicked) {
-        shrineUIVisible = false;
+    if (drawIconButton(f + 1 * d, g, 2, "ITEM", inventoryUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked && (inventoryUIVisible = !inventoryUIVisible)) {
+            shrineUIVisible = false;
+        }
     }
 
-    if (drawIconButton(f + 2 * d, g, 3, "MONSTER", bestiaryUIVisible ? 16750950 : 16777215) && isMouseClicked) {
-        badgesUIVisible = false;
+    if (drawIconButton(f + 2 * d, g, 3, "MONSTER", bestiaryUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked && (bestiaryUIVisible = !bestiaryUIVisible)) {
+            badgesUIVisible = false;
+        }
     }
 
-    if (drawIconButton(f + 3 * d, g, 4, "MEDAL", badgesUIVisible ? 16750950 : 16777215) && isMouseClicked) {
-        bestiaryUIVisible = false;
+    if (drawIconButton(f + 3 * d, g, 4, "MEDAL", badgesUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked && (badgesUIVisible = !badgesUIVisible)) {
+            bestiaryUIVisible = false;
+        }
     }
 
-    if (drawIconButton(f + 4 * d, g, 5, "OPTION", optionsUIVisible ? 16750950 : 16777215) && isMouseClicked) {
-        optionsUIVisible = !optionsUIVisible;
+    if (drawIconButton(f + 4 * d, g, 5, "OPTION", optionsUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked) {
+            optionsUIVisible = !optionsUIVisible;
+        }
     }
     c = 0;
     for (b = itemIsNew.length - 1; 0 <= b; b--) c += itemIsNew[b];

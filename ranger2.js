@@ -8259,15 +8259,53 @@ function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
     g = 640 * _top + _left;
     h = 640 - _width;
     for (_top = 0; _top < _height; _top++, g += h)
-        for (_left = 0; _left < _width; _left++, g++) 0 == frameBufferArray[g] && (frameBufferArray[g] = _color)
+        for (_left = 0; _left < _width; _left++, g++)
+            if (0 == frameBufferArray[g]) {
+                frameBufferArray[g] = _color;
+            }
 }
 
 function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
     var f, g, h;
-    if (abs(_x1 - _x0) >= abs(_y1 - _y0))
-        for (_x0 >>= 16, _x1 >>= 16, f = abs(_x1 - _x0), _x1 = _x0 <= _x1 ? 1 : -1, h = floor((_y1 - _y0) / max(f, 1)); 0 <= f; f--, _x0 += _x1, _y0 += h) 0 == f && (_y0 = _y1), g = _y0 >> 16, 0 > g || 432 <= g || (scanlineMinX[g] > _x0 && (scanlineMinX[g] = _x0), scanlineMaxX[g] < _x0 && (scanlineMaxX[g] = _x0));
-    else
-        for (_y0 >>= 16, _y1 >>= 16, f = abs(_y1 - _y0), h = floor((_x1 - _x0) / max(f, 1)), _y1 = _y0 <= _y1 ? 1 : -1; 0 <= f; f--, _x0 += h, _y0 += _y1) 0 == f && (_x0 = _x1), g = _x0 >> 16, 0 > _y0 || 432 <= _y0 || (scanlineMinX[_y0] > g && (scanlineMinX[_y0] = g), scanlineMaxX[_y0] < g && (scanlineMaxX[_y0] = g))
+    if (abs(_x1 - _x0) >= abs(_y1 - _y0)) {
+        _x0 >>= 16;
+        _x1 >>= 16;
+        f = abs(_x1 - _x0);
+        _x1 = _x0 <= _x1 ? 1 : -1;
+        for (h = floor((_y1 - _y0) / max(f, 1)); 0 <= f; f--, _x0 += _x1, _y0 += h) {
+            if (0 == f) {
+                _y0 = _y1;
+            }
+            g = _y0 >> 16;
+            if (!(0 > g || 432 <= g)) {
+                if (scanlineMinX[g] > _x0) {
+                    scanlineMinX[g] = _x0;
+                }
+                if (scanlineMaxX[g] < _x0) {
+                    scanlineMaxX[g] = _x0;
+                }
+            }
+        }
+    } else {
+        _y0 >>= 16;
+        _y1 >>= 16;
+        f = abs(_y1 - _y0);
+        h = floor((_x1 - _x0) / max(f, 1));
+        for (_y1 = _y0 <= _y1 ? 1 : -1; 0 <= f; f--, _x0 += h, _y0 += _y1) {
+            if (0 == f) {
+                _x0 = _x1;
+            }
+            g = _x0 >> 16;
+            if (!(0 > _y0 || 432 <= _y0)) {
+                if (scanlineMinX[_y0] > g) {
+                    scanlineMinX[_y0] = g;
+                }
+                if (scanlineMaxX[_y0] < g) {
+                    scanlineMaxX[_y0] = g;
+                }
+            }
+        }
+    }
 }
 
 function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay1) { // mm
@@ -8276,7 +8314,22 @@ function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay
     _y1 = floor((_y1 - _y0) / p);
     _ax1 = floor((_ax1 - _ax0) / p);
     _ay1 = floor((_ay1 - _ay0) / p);
-    for (var t, l, n = 0; n < p; n++, _x0 += _x1, _y0 += _y1, _ax0 += _ax1, _ay0 += _ay1) t = _x0 >> 16, l = _y0 >> 16, 0 > l || 432 <= l || (scanlineMinX[l] > t && (scanlineMinX[l] = t, scanlineTexUStart[l] = _ax0, scanlineTexVStart[l] = _ay0), scanlineMaxX[l] < t && (scanlineMaxX[l] = t, scanlineTexUEnd[l] = _ax0, scanlineTexVEnd[l] = _ay0))
+    for (var t, l, n = 0; n < p; n++, _x0 += _x1, _y0 += _y1, _ax0 += _ax1, _ay0 += _ay1) {
+        t = _x0 >> 16;
+        l = _y0 >> 16;
+        if (!(0 > l || 432 <= l)) {
+            if (scanlineMinX[l] > t) {
+                scanlineMinX[l] = t;
+                scanlineTexUStart[l] = _ax0;
+                scanlineTexVStart[l] = _ay0;
+            }
+            if (scanlineMaxX[l] < t) {
+                scanlineMaxX[l] = t;
+                scanlineTexUEnd[l] = _ax0;
+                scanlineTexVEnd[l] = _ay0;
+            }
+        }
+    }
 }
 var scratchVec2 = new Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
 

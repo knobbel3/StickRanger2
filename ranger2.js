@@ -6470,7 +6470,7 @@ function enemyUpdateFunc8(enemyIdx) {
         enemyJointPosArray[enemyIdx][8].x += 7.99;
         enemyJointPosArray[enemyIdx][8].y += 7.99;
         for (b = 0; 9 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1
+        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
     } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.05, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], -.1, .99);
@@ -6483,9 +6483,51 @@ function enemyUpdateFunc8(enemyIdx) {
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], -.1, .99);
         stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], .8, .99);
         if (50 > randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 500, 25, 0); - 1 != c ? enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2 : 10 > randFloat(100) && (enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2));
-            1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x ? (enemyJointPosArray[enemyIdx][6].x += randFloat(-1), enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][2].x += randFloat(-1), enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1)), enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x ? (enemyJointPosArray[enemyIdx][8].x += randFloat(-1), enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][4].x += randFloat(-1), enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (--enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y -= 3)) : (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x ?
-                (enemyJointPosArray[enemyIdx][2].x += randFloat(1), enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][6].x += randFloat(1), enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1)), enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x ? (enemyJointPosArray[enemyIdx][4].x += randFloat(1), enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1)) : (enemyJointPosArray[enemyIdx][8].x += randFloat(1), enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1)), 1 > randFloat(100) && (enemyJointPosArray[enemyIdx][0].x += 1, enemyJointPosArray[enemyIdx][0].y -= 3))
+            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 500, 25, 0);
+            if (-1 != c) {
+                enemyPoseTrailWriteIdxArray[enemyIdx] = heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
+            } else if (10 > randFloat(100)) {
+                enemyPoseTrailWriteIdxArray[enemyIdx] = randSelect(1, 2);
+            }
+            if (1 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                if (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x) {
+                    enemyJointPosArray[enemyIdx][6].x += randFloat(-1);
+                    enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1);
+                } else {
+                    enemyJointPosArray[enemyIdx][2].x += randFloat(-1);
+                    enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1);
+                }
+                if (enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x) {
+                    enemyJointPosArray[enemyIdx][8].x += randFloat(-1);
+                    enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1);
+                } else {
+                    enemyJointPosArray[enemyIdx][4].x += randFloat(-1);
+                    enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1);
+                }
+                if (1 > randFloat(100)) {
+                    --enemyJointPosArray[enemyIdx][0].x;
+                    enemyJointPosArray[enemyIdx][0].y -= 3;
+                }
+            } else {
+                if (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x) {
+                    enemyJointPosArray[enemyIdx][2].x += randFloat(1);
+                    enemyJointPosArray[enemyIdx][2].y += randFloatRange(-1, -1);
+                } else {
+                    enemyJointPosArray[enemyIdx][6].x += randFloat(1);
+                    enemyJointPosArray[enemyIdx][6].y += randFloatRange(-1, -1);
+                }
+                if (enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x) {
+                    enemyJointPosArray[enemyIdx][4].x += randFloat(1);
+                    enemyJointPosArray[enemyIdx][4].y += randFloatRange(-1, -1);
+                } else {
+                    enemyJointPosArray[enemyIdx][8].x += randFloat(1);
+                    enemyJointPosArray[enemyIdx][8].y += randFloatRange(-1, -1);
+                }
+                if (1 > randFloat(100)) {
+                    enemyJointPosArray[enemyIdx][0].x += 1;
+                    enemyJointPosArray[enemyIdx][0].y -= 3;
+                }
+            }
         }
         c = .3;
         b = 2.2 * b;
@@ -6498,21 +6540,25 @@ function enemyUpdateFunc8(enemyIdx) {
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 4 * b, .1 * c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][3], 4 * b, .1 * c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][2], 4 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1],
-            enemyJointPosArray[enemyIdx][2], 3 * b, .2 * c, .2 * c);
+        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 3 * b, .2 * c, .2 * c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][4], 4 * b, .1 * c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], 3 * b, .2 * c, .2 * c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], 8 * b, .1 * c, .1 * c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][7], 7 * b, .1 * c, .1 * c);
         spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol] && spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][enemySecondaryProjectileEnabledCol]) {
+            spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        }
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
         enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
         if (0 >= enemyHealthArray[enemyIdx]) {
             enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             enemyDeathTimerArray[enemyIdx] = 0;
-            for (b = 1; 9 > b; b++) enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1), enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
-            onEnemyDeath(enemyIdx)
+            for (b = 1; 9 > b; b++) {
+                enemyJointPosArray[enemyIdx][b].x += randFloatRange(-1, 1);
+                enemyJointPosArray[enemyIdx][b].y -= randFloatRange(1, 2);
+            }
+            onEnemyDeath(enemyIdx);
         }
     } else {
         for (b = 0; 9 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
@@ -6524,9 +6570,11 @@ function enemyUpdateFunc8(enemyIdx) {
             enemyJointPosArray[enemyIdx][6], 3 * b, c, c);
         applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 3 * b, c, c);
         for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        150 < enemyDeathTimerArray[enemyIdx]++ && deleteEnemy(enemyIdx--)
+        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+            deleteEnemy(enemyIdx--);
+        }
     }
-    return enemyIdx
+    return enemyIdx;
 }
 
 

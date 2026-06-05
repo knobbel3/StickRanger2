@@ -90,6 +90,7 @@ let currentLevelSprite = new Sprite,
     badgesUIStageIdx = 0, // Sa
     LevelExpThresholds = Array(100);
 LevelExpThresholds[0] = 0;
+
 for (let _i = 1; 98 > _i; _i++) 
     LevelExpThresholds[_i] = LevelExpThresholds[_i - 1] + 1E3 * _i;
 LevelExpThresholds[98] = 9999999;
@@ -166,10 +167,10 @@ let partyMemberCount = 1,
     ],
     forgePreviewItemIdx = -1, // Zb
     itemForgeLvls = Array(256);
-
-for (let _i = 0; 256 > _i; _i++) itemForgeLvls[_i] = 0;
 let itemIsNew = Array(256); // ac, 
+
 for (let _i = 0; 256 > _i; _i++) itemIsNew[_i] = 0;
+for (let _i = 0; 256 > _i; _i++) itemForgeLvls[_i] = 0;
 
 
 let requestAnim = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
@@ -257,40 +258,11 @@ let gameInitStage = 0;
 // heros
 let areUpperJointsDisabled = 1, // rig mode flag
     heroJointPositionsByHero = Array(4); // O, current joint positions for each hero.
-
-    for (let _i = 0; 4 > _i; _i++) heroJointPositionsByHero[_i] = Array(21);
-
 let heroJointPrevPositionsByHero = Array(4); // Mh, previous joint positions used for collision resolution and drag selection.
-
-for (let _i = 0; 4 > _i; _i++) heroJointPrevPositionsByHero[_i] = Array(21);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 21 > _j; _j++) heroJointPositionsByHero[_i][_j] = new RMath.Vec2;
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 21 > _j; _j++) heroJointPrevPositionsByHero[_i][_j] = new RMath.Vec2;
-
 let heroJoint5HistoryByHero = Array(4); // Nh, 16-frame history for joint 5 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint5HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint5HistoryByHero[_i][_j] = new RMath.Vec2;
-
 let heroJoint3HistoryByHero = Array(4); // Oh, 16-frame history for joint 3 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint3HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint3HistoryByHero[_i][_j] = new RMath.Vec2;
-
 let heroJoint6HistoryByHero = Array(4); // Ph, 16-frame history for joint 6 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint6HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint6HistoryByHero[_i][_j] = new RMath.Vec2;
-
 let heroJoint4HistoryByHero = Array(4); // Qh, 16-frame history for joint 4 positions.
-
-for (let _i = 0; 4 > _i; _i++) heroJoint4HistoryByHero[_i] = Array(16);
-for (let _i = 0; 4 > _i; _i++)
-    for (let _j = 0; 16 > _j; _j++) heroJoint4HistoryByHero[_i][_j] = new RMath.Vec2;
 
 let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index per hero.
     heroAttackTrailTimerByHero = Array(4), // Sh, hero attack trail timer per hero.
@@ -301,8 +273,6 @@ let heroPoseTrailWriteIdxByHero = Array(4), // Rh, hero pose trail write index p
         heroJoint4HistoryByHero
     ], // Th, grouped joint-history buffers used for attack-trail drawing.
     heroAimPosByHero = Array(4); // Uh, stored hero aim position per hero.
-
-for (let _i = 0; 4 > _i; _i++) heroAimPosByHero[_i] = new RMath.Vec2;
 
 let heroAttackLineTimer = Array(4),
     heroUpperJointMode = new Int32Array(4), // Wh, per-hero rig mode flag that switches between normal and upper-joint-disabled updates.
@@ -335,13 +305,40 @@ let heroAttackLineTimer = Array(4),
     heroTimedDamageAmount = new Int32Array(4), // ii, per-hero damage-over-time amount used to drain LP each tick.
     heroStatusTintTimer = new Int32Array(4), // bh, per-hero status tint timer used for the buff-colored hero draw.
     heroTileEffectLatch = new Int32Array(4); // ji, per-hero tile-effect latch used to fire one-off stage tile projectiles.
-    
+
+
+for (let _i = 0; 4 > _i; _i++) heroJointPositionsByHero[_i] = Array(21);
+for (let _i = 0; 4 > _i; _i++) heroJointPrevPositionsByHero[_i] = Array(21);
+
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 21 > _j; _j++) heroJointPositionsByHero[_i][_j] = new RMath.Vec2;
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 21 > _j; _j++) heroJointPrevPositionsByHero[_i][_j] = new RMath.Vec2;
+
+for (let _i = 0; 4 > _i; _i++) heroJoint5HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint5HistoryByHero[_i][_j] = new RMath.Vec2;
+
+for (let _i = 0; 4 > _i; _i++) heroJoint3HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint3HistoryByHero[_i][_j] = new RMath.Vec2;
+
+for (let _i = 0; 4 > _i; _i++) heroJoint6HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint6HistoryByHero[_i][_j] = new RMath.Vec2;
+
+for (let _i = 0; 4 > _i; _i++) heroJoint4HistoryByHero[_i] = Array(16);
+for (let _i = 0; 4 > _i; _i++)
+    for (let _j = 0; 16 > _j; _j++) heroJoint4HistoryByHero[_i][_j] = new RMath.Vec2;
+
+for (let _i = 0; 4 > _i; _i++) heroAimPosByHero[_i] = new RMath.Vec2;
+
 // stage state
-let isStageReachedArray = Array(stageCount);
-for (let _i = 0; _i < stageCount; _i++) isStageReachedArray[_i] = 0;
-let stageWidth = 80, // Gi
+let isStageReachedArray = Array(stageCount),
+    stageWidth = 80, // Gi
     stageHeight = 60, // si
     stageTileData = Array(stageHeight); // P
+for (let _i = 0; _i < stageCount; _i++) isStageReachedArray[_i] = 0;
 for (let i = 0; i < stageHeight; i++) stageTileData[i] = Array(stageWidth);
 
 let loadedLevelIndex = -1,
@@ -370,20 +367,8 @@ for (let _i = 0; _i < enemyTypeCount; _i++) bestiaryEntryState[_i] = 0;
 
 // enemy states
 let enemyJointPosArray = Array(999), // Q, 
-    enemyPrevJointPosArray = Array(999); // Z, 
-
-for (let _i = 0; 999 > _i; _i++) enemyPrevJointPosArray[_i] = Array(21);
-for (let _i = 0; 999 > _i; _i++) enemyJointPosArray[_i] = Array(21);
-
-for (let _i = 0; 999 > _i; _i++)
-    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
-
-for (let _i = 0; 999 > _i; _i++)
-    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
-
-let enemyTypeArray = new Int32Array(999), // 
+    enemyPrevJointPosArray = Array(999), // Z, 
+    enemyTypeArray = new Int32Array(999), // 
     enemyUpdateFuncIdxArray = new Int32Array(999),
     enemyPoseTrailWriteIdxArray  = new Int32Array(999), // Y , 
     enemyDeathTimerArray = new Int32Array(999), // Ck, 
@@ -419,19 +404,28 @@ let enemyTypeArray = new Int32Array(999), //
     ];
 
 
+for (let _i = 0; 999 > _i; _i++) enemyPrevJointPosArray[_i] = Array(21);
+for (let _i = 0; 999 > _i; _i++) enemyJointPosArray[_i] = Array(21);
+
+for (let _i = 0; 999 > _i; _i++)
+    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
+        enemyJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
+
+for (let _i = 0; 999 > _i; _i++)
+    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
+        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
+
 // projectiles
 let projectileCount = 0,
     projectileOwnerIdx = new Int32Array(1E3),           // hl, projectile owner index (>=0 = hero index; <0 = -enemyIdx-1)
     projectileJointPair = new Int32Array(1E3),          // il, packed attach joint pair (high=jointA, low=jointB). Negative => free-moving (tile-collision) mode.
-    projectilePosition = Array(1E3);                    // jl, projectile position Vec2 — world position when free, local offset when attached.
-for (let _i = 0; 1E3 > _i; _i++) projectilePosition[_i] = new RMath.Vec2;
-let projectileVelocity = Array(1E3);                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
-for (let _i = 0; 1E3 > _i; _i++) projectileVelocity[_i] = new RMath.Vec2;
-let projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
+    projectilePosition = Array(1E3),                    // jl, projectile position Vec2 — world position when free, local offset when attached.
+    projectileVelocity = Array(1E3),                    // kl, projectile velocity Vec2; updated (gravity/homing) and used to advance or transform projectile motion.
+    projectileImpactState = new Int32Array(1E3),        // ll, projectile life/state flag (0 = active, 1 = impact/fade-out awaiting deletion).
+    
     projectileDrawMode = new Int32Array(1E3),           // ml, projectile draw mode. 0 = simple sprite, 1 = rasterized rotated quad, 2 = draw enemy-sprite branch.
     projectileSpriteTileIndex = new Int32Array(1E3),    // nl, packed projectile sprite-sheet tile info (low bits used for sub-tile, high bits used for tile index -> sheet x/y).
     projectileTintColor = new Int32Array(1E3),          // ol, packed RGBA tint used for projectile color/alpha (alpha scaled by life for fade-out).
-    
     projectileSolidRenderMode = new Int32Array(1E3),    // pl, projectile solid/blend render mode (used as isSolidRender with modes 0/1/2/3 selecting different compositing behavior).
     projectileSpriteWidth = new Int32Array(1E3),        // ql, projectile sprite/render width (pixels) passed to sprite/draw calls.
     projectileSpriteHeight = new Int32Array(1E3),       // rl, projectile sprite/render height (pixels) passed to sprite/draw calls.
@@ -485,30 +479,30 @@ let projectileImpactState = new Int32Array(1E3),        // ll, projectile life/s
     
     projectileChildCount = new Int32Array(1E3),         // gm, child‑spawn count (or chance threshold in some impact modes); used as loop bound and probability check.
     projectileChildSpeed = new Int32Array(1E3);         // hm, scalar used to set spawned child projectile velocity/scale (interpreted as speed/magnitude)
-
+for (let _i = 0; 1E3 > _i; _i++) projectilePosition[_i] = new RMath.Vec2;
+for (let _i = 0; 1E3 > _i; _i++) projectileVelocity[_i] = new RMath.Vec2;
 
 // popups
 let popupCount = 0, // aj
-    popupPos = Array(1E3); // rm
-for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new RMath.Vec2;
-let popupVel = Array(1E3); // sm
-for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new RMath.Vec2;
-let popupValue = Array(1E3), // tm
+    popupPos = Array(1E3), // rm
+    popupVel = Array(1E3), // sm
+    popupValue = Array(1E3), // tm
     popupLife = new Int32Array(1E3), // um
     popupColor = new Int32Array(1E3); // vm
+for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new RMath.Vec2;
+for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new RMath.Vec2;
 
 // dropped items
 let dropCount = 0, // ym
-    dropPos = Array(100); // zm
-for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
-let dropVel = Array(100); // Am
-for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new RMath.Vec2;
-let dropType = new Int32Array(100), // Bm, in id
+    dropPos = Array(100), // zm
+    dropVel = Array(100), // Am
+    dropType = new Int32Array(100), // Bm, in id
     dropValue = new Int32Array(100), // Cm, value/amount
     dropMeta = new Int32Array(100), // Dm, rarity/state
     dropState = new Int32Array(100), // Em, state/lifetime
     dropScore = 0; // Fm, aggregated score/weight for drops (sum of 7type + 3value + 11*meta)
-
+for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new RMath.Vec2;
+for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
 
 // misc
 let copyrightText1 = "(C) 2018 ha55ii DAN-BALL.jp",

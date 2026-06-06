@@ -147,6 +147,27 @@ function floor(a) {
     return Math.floor(a)
 }
 
+let scratchVec2 = new Vec2;
+
+function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { // T
+    Vec2Sub(scratchVec2, _a, _b);
+    _targetDist -= Vec2Norm(scratchVec2);
+    _weightA *= _targetDist;
+    _weightB *= _targetDist;
+    _a.x += scratchVec2.x * _weightA;
+    _a.y += scratchVec2.y * _weightA;
+    _b.x -= scratchVec2.x * _weightB;
+    _b.y -= scratchVec2.y * _weightB
+}
+
+function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
+    Vec2Sub(scratchVec2, _a, _b);
+    _b.set(_a);
+    scratchVec2.y += _yBias;
+    Vec2Scale(scratchVec2, _scale);
+    _a.add(scratchVec2)
+}
+
 function InitStates() {
     let _t0;
     for (_t0 = 0; 513 > _t0; _t0++) rotationLUT[_t0] = new Float32Array(2);
@@ -199,6 +220,8 @@ export {
     getRandSeed,
     setRandSeed,
     getRandSeedStep,
-    setRandSeedStep
+    setRandSeedStep,
+    applySeparationCorrection,
+    stepWithVerticalBias,
 };
 

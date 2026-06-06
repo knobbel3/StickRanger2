@@ -22,6 +22,8 @@ import { GameplayState, HeroesState } from "./game/heroes.js";
 import { StageState } from "./game/stages.js";
 import { EnemyState } from "./game/enemy_state.js";
 import { ProjectileState } from "./game/projectile_state.js";
+import { PopupState } from "./game/popup_state.js";
+import { DropState } from "./game/drop_state.js";
 
 
 export {gameInit as Init, toggleFullscreen as full_screen};
@@ -38,30 +40,6 @@ CanvasState.element.ontouchend = onTouchEnd;
 CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
-
-// popups
-let popupCount = 0, // aj
-    popupPos = Array(1E3), // rm
-    popupVel = Array(1E3), // sm
-    popupValue = Array(1E3), // tm
-    popupLife = new Int32Array(1E3), // um
-    popupColor = new Int32Array(1E3); // vm
-for (let _i = 0; 1E3 > _i; _i++) popupPos[_i] = new RMath.Vec2;
-for (let _i = 0; 1E3 > _i; _i++) popupVel[_i] = new RMath.Vec2;
-
-// dropped items
-let dropCount = 0, // ym
-    dropPos = Array(100), // zm
-    dropVel = Array(100), // Am
-    dropType = new Int32Array(100), // Bm, in id
-    dropValue = new Int32Array(100), // Cm, value/amount
-    dropMeta = new Int32Array(100), // Dm, rarity/state
-    dropState = new Int32Array(100), // Em, state/lifetime
-    dropScore = 0; // Fm, aggregated score/weight for drops (sum of 7type + 3value + 11*meta)
-for (let _i = 0; 100 > _i; _i++) dropVel[_i] = new RMath.Vec2;
-for (let _i = 0; 100 > _i; _i++) dropPos[_i] = new RMath.Vec2;
-
-
 
 // rendering params maybe
 let screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
@@ -3602,7 +3580,7 @@ export function loadLevelData(a) {
         let b = enemyCatalog[c][EnemyProps.Level];
         if (EnemyState.stageMaxEnemyLevel < b) EnemyState.stageMaxEnemyLevel = b;
     }
-    popupCount = ProjectileState.projectileCount = 0;
+    PopupState.popupCount = ProjectileState.projectileCount = 0;
     clearDrops();
     initStageState();
     return true
@@ -6814,24 +6792,24 @@ export function drawProjectiles() {
 
 
 export function clearPopups() { // wm
-    popupCount = 0
+    PopupState.popupCount = 0
 }
 
 
 export function spawnPopup(x, y, vx, vy, life, color) { // Lg
-    if (1E3 != popupCount) {
+    if (1E3 != PopupState.popupCount) {
         x = RMath.clamp(x, 16, 623);
         y = RMath.clamp(y, 8, 351);
-        RMath.Vec2Set(popupPos[popupCount], x, y);
-        RMath.Vec2Set(popupVel[popupCount], vx, -2);
+        RMath.Vec2Set(PopupState.popupPos[PopupState.popupCount], x, y);
+        RMath.Vec2Set(PopupState.popupVel[PopupState.popupCount], vx, -2);
         if (0 != vx) {
-            popupVel[popupCount].x += RMath.randFloatRange(-.2, .2);
-            if (popupVel[popupCount].y += RMath.randFloatRange(-.2, .2)) {
+            PopupState.popupVel[PopupState.popupCount].x += RMath.randFloatRange(-.2, .2);
+            if (PopupState.popupVel[PopupState.popupCount].y += RMath.randFloatRange(-.2, .2)) {
 
-                popupValue[popupCount] = vy;
-                popupLife[popupCount] = life;
-                popupColor[popupCount] = color;
-                popupCount++;
+                PopupState.popupValue[PopupState.popupCount] = vy;
+                PopupState.popupLife[PopupState.popupCount] = life;
+                PopupState.popupColor[PopupState.popupCount] = color;
+                PopupState.popupCount++;
             }
         }
     }
@@ -6840,34 +6818,34 @@ export function spawnPopup(x, y, vx, vy, life, color) { // Lg
 
 
 export function removePopup(idx) { // xm
-    popupPos[idx].set(popupPos[popupCount - 1]);
-    popupVel[idx].set(popupVel[popupCount - 1]);
-    popupValue[idx] = popupValue[popupCount - 1];
-    popupLife[idx] = popupLife[popupCount - 1];
-    popupColor[idx] = popupColor[popupCount - 1];
-    popupCount--
+    PopupState.popupPos[idx].set(PopupState.popupPos[PopupState.popupCount - 1]);
+    PopupState.popupVel[idx].set(PopupState.popupVel[PopupState.popupCount - 1]);
+    PopupState.popupValue[idx] = PopupState.popupValue[PopupState.popupCount - 1];
+    PopupState.popupLife[idx] = PopupState.popupLife[PopupState.popupCount - 1];
+    PopupState.popupColor[idx] = PopupState.popupColor[PopupState.popupCount - 1];
+    PopupState.popupCount--
 }
 
 
 export function updatePopups() { // Ag
     let a;
-    for (a = 0; a < popupCount; a++) {
-        if (0 == popupVel[a].x) {
-            var b = popupPos[a],
-                c = popupVel[a];
+    for (a = 0; a < PopupState.popupCount; a++) {
+        if (0 == PopupState.popupVel[a].x) {
+            var b = PopupState.popupPos[a],
+                c = PopupState.popupVel[a];
             c.y += 0;
             RMath.Vec2Scale(c, .95);
         } else {
-            b = popupPos[a];
-            c = popupVel[a];
+            b = PopupState.popupPos[a];
+            c = PopupState.popupVel[a];
             c.y += .05;
             RMath.Vec2Scale(c, .99);
         }
         b.add(c);
-        popupPos[a].x = RMath.clamp(popupPos[a].x, 16, 623);
-        popupPos[a].y = RMath.clamp(popupPos[a].y, 8, 351);
-        popupLife[a]--;
-        if (0 >= popupLife[a]) {
+        PopupState.popupPos[a].x = RMath.clamp(PopupState.popupPos[a].x, 16, 623);
+        PopupState.popupPos[a].y = RMath.clamp(PopupState.popupPos[a].y, 8, 351);
+        PopupState.popupLife[a]--;
+        if (0 >= PopupState.popupLife[a]) {
             removePopup(a--);
         }
     }
@@ -6876,111 +6854,111 @@ export function updatePopups() { // Ag
 
 export function drawPopups() { // Fg
     let a, b, c, d, f;
-    for (a = 0; a < popupCount; a++)
-        if (20 <= popupLife[a]) {
-            drawTextCentered(LoadedFonts.gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0);
+    for (a = 0; a < PopupState.popupCount; a++)
+        if (20 <= PopupState.popupLife[a]) {
+            drawTextCentered(LoadedFonts.gameFontSmall, ~~PopupState.popupPos[a].x, ~~PopupState.popupPos[a].y, "" + PopupState.popupValue[a], PopupState.popupColor[a], 0);
         } else {
-            b = popupColor[a] >> 16 & 255;
-            c = popupColor[a] >> 8 & 255;
-            d = popupColor[a] & 255;
-            f = RMath.floor(255 * RMath.min(popupLife[a], 20) / 20);
-            drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7);
+            b = PopupState.popupColor[a] >> 16 & 255;
+            c = PopupState.popupColor[a] >> 8 & 255;
+            d = PopupState.popupColor[a] & 255;
+            f = RMath.floor(255 * RMath.min(PopupState.popupLife[a], 20) / 20);
+            drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, ~~PopupState.popupPos[a].x, ~~PopupState.popupPos[a].y, "" + PopupState.popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7);
         }
 
 }
 
 
 export function clearDrops() { // bj
-    dropScore = dropCount = 0
+    DropState.dropScore = DropState.dropCount = 0
 }
 
 
 export function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
-    if (100 != dropCount) {
+    if (100 != DropState.dropCount) {
         _x = RMath.clamp(_x, 16, 623);
         _y = RMath.clamp(_y, 8, 351);
-        RMath.Vec2Set(dropPos[dropCount], _x, _y);
-        dropVel[dropCount].x = mouseXCurrent < _x ?
+        RMath.Vec2Set(DropState.dropPos[DropState.dropCount], _x, _y);
+        DropState.dropVel[DropState.dropCount].x = mouseXCurrent < _x ?
             RMath.randFloatRange(-.5, -1) :
             RMath.randFloatRange(.5, 1);
-        dropVel[dropCount].y = RMath.randFloatRange(-1, -2);
-        dropType[dropCount] = _tidx;
-        dropValue[dropCount] = _val;
-        dropMeta[dropCount] = _meta;
-        dropState[dropCount] = 0;
-        dropCount++;
+        DropState.dropVel[DropState.dropCount].y = RMath.randFloatRange(-1, -2);
+        DropState.dropType[DropState.dropCount] = _tidx;
+        DropState.dropValue[DropState.dropCount] = _val;
+        DropState.dropMeta[DropState.dropCount] = _meta;
+        DropState.dropState[DropState.dropCount] = 0;
+        DropState.dropCount++;
         for (
-            _tidx = dropScore = 0; // end initialization
-            _tidx < dropCount; // condition
+            _tidx = DropState.dropScore = 0; // end initialization
+            _tidx < DropState.dropCount; // condition
             _tidx++ // repeat
-        ) dropScore += 7 * dropType[_tidx] + 3 * dropValue[_tidx] + 11 * dropMeta[_tidx];
+        ) DropState.dropScore += 7 * DropState.dropType[_tidx] + 3 * DropState.dropValue[_tidx] + 11 * DropState.dropMeta[_tidx];
     }
 }
 
 
 export function removeDrop(a) { // Gm
-    dropCount--;
-    dropPos[a].set(dropPos[dropCount]);
-    dropVel[a].set(dropVel[dropCount]);
-    dropType[a] = dropType[dropCount];
-    dropValue[a] = dropValue[dropCount];
-    dropMeta[a] = dropMeta[dropCount];
-    dropState[a] = dropState[dropCount];
-    for (a = dropScore = 0; a < dropCount; a++) dropScore += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a]
+    DropState.dropCount--;
+    DropState.dropPos[a].set(DropState.dropPos[DropState.dropCount]);
+    DropState.dropVel[a].set(DropState.dropVel[DropState.dropCount]);
+    DropState.dropType[a] = DropState.dropType[DropState.dropCount];
+    DropState.dropValue[a] = DropState.dropValue[DropState.dropCount];
+    DropState.dropMeta[a] = DropState.dropMeta[DropState.dropCount];
+    DropState.dropState[a] = DropState.dropState[DropState.dropCount];
+    for (a = DropState.dropScore = 0; a < DropState.dropCount; a++) DropState.dropScore += 7 * DropState.dropType[a] + 3 * DropState.dropValue[a] + 11 * DropState.dropMeta[a]
 }
 
 
 export function isDropTypeAbsent(typeIdx) { // dl
     if (2 == typeIdx) return true;
     let b;
-    for (b = 0; b < dropCount; b++)
-        if (dropType[b] == typeIdx) return false;
+    for (b = 0; b < DropState.dropCount; b++)
+        if (DropState.dropType[b] == typeIdx) return false;
     return true
 }
 
 
 export function updateDrops() { // zg
     let a, b, c;
-    for (a = b = 0; a < dropCount; a++)
-        b += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a];
+    for (a = b = 0; a < DropState.dropCount; a++)
+        b += 7 * DropState.dropType[a] + 3 * DropState.dropValue[a] + 11 * DropState.dropMeta[a];
     
     // if (dropScore != b) {
     //     frameBufferArray = null;
     // }
-    for (a = 0; a < dropCount; a++) {
-        dropVel[a].y += .04;
-        RMath.Vec2Scale(dropVel[a], .98);
-        c = RMath.clamp(dropPos[a].y + dropVel[a].y, 8, 8 * StageState.stageHeight + 16 - 1);
-        b = getStageTileAt(dropPos[a].x, c);
-        if (!(0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < dropVel[a].y)) {
-            dropPos[a].y = c
+    for (a = 0; a < DropState.dropCount; a++) {
+        DropState.dropVel[a].y += .04;
+        RMath.Vec2Scale(DropState.dropVel[a], .98);
+        c = RMath.clamp(DropState.dropPos[a].y + DropState.dropVel[a].y, 8, 8 * StageState.stageHeight + 16 - 1);
+        b = getStageTileAt(DropState.dropPos[a].x, c);
+        if (!(0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < DropState.dropVel[a].y)) {
+            DropState.dropPos[a].y = c
         }
         if (c > 8 * StageState.stageHeight + 12) {
             if (isBadgeIncompleteForCurrentStage(29)) {
-                if (2 == dropType[a]) {
+                if (2 == DropState.dropType[a]) {
                     IncrementBadgeCount(29);
                 }
             }
             removeDrop(a--);
         } else {
-            c = RMath.clamp(dropPos[a].x + dropVel[a].x, 16, 623);
-            b = getStageTileAt(c, dropPos[a].y);
-            0 <= b && 23 >= b || (dropPos[a].x = c);
-            if (100 > dropState[a]) {
-                dropState[a]++;
-            } else if (-1 != findNearestPartyMemberInRect(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1)) {
-                if (2 == dropType[a]) {
-                    PartyState.partyGold = RMath.clamp(PartyState.partyGold + dropValue[a], 0, 9999999);
-                    spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960);
-                } else if (3 == dropType[a]) {
-                    StageState.stageEventFlagArray[dropValue[a]] = 1;
+            c = RMath.clamp(DropState.dropPos[a].x + DropState.dropVel[a].x, 16, 623);
+            b = getStageTileAt(c, DropState.dropPos[a].y);
+            0 <= b && 23 >= b || (DropState.dropPos[a].x = c);
+            if (100 > DropState.dropState[a]) {
+                DropState.dropState[a]++;
+            } else if (-1 != findNearestPartyMemberInRect(DropState.dropPos[a].x, DropState.dropPos[a].y - 6, 12, 12, 1)) {
+                if (2 == DropState.dropType[a]) {
+                    PartyState.partyGold = RMath.clamp(PartyState.partyGold + DropState.dropValue[a], 0, 9999999);
+                    spawnPopup(DropState.dropPos[a].x, DropState.dropPos[a].y, 0, DropState.dropValue[a], 60, 16776960);
+                } else if (3 == DropState.dropType[a]) {
+                    StageState.stageEventFlagArray[DropState.dropValue[a]] = 1;
                     PartyState.collectedStageFlagsCount++;
-                } else if (PartyState.itemForgeLvls[dropType[a]] < dropValue[a]) {
-                    PartyState.itemForgeLvls[dropType[a]] = dropValue[a];
-                    PartyState.itemIsNew[dropType[a]] = 1;
+                } else if (PartyState.itemForgeLvls[DropState.dropType[a]] < DropState.dropValue[a]) {
+                    PartyState.itemForgeLvls[DropState.dropType[a]] = DropState.dropValue[a];
+                    PartyState.itemIsNew[DropState.dropType[a]] = 1;
                 }
                 if (isBadgeIncompleteForCurrentStage(24)) {
-                    if (2 == dropType[a] && 225 <= dropValue[a]) {
+                    if (2 == DropState.dropType[a] && 225 <= DropState.dropValue[a]) {
                         IncrementBadgeCount(24);
                     }
                 }
@@ -6995,14 +6973,14 @@ export function updateDrops() { // zg
 export function drawDrops() { // Dg
     let a;
     spriteAltRenderFlag = 2;
-    for (a = 0; a < dropCount; a++)
-        (100 == dropState[a] || dropState[a] & 6) &&
+    for (a = 0; a < DropState.dropCount; a++)
+        (100 == DropState.dropState[a] || DropState.dropState[a] & 6) &&
             drawSpriteSheetPart(LoadedSprites.droppedItemSpriteSheet,
-                dropPos[a].x - 6, dropPos[a].y - 12,
+                DropState.dropPos[a].x - 6, DropState.dropPos[a].y - 12,
                 12, 12,
-                12 * itemList[dropType[a]][ItemProps.DropIconCol], 0,
+                12 * itemList[DropState.dropType[a]][ItemProps.DropIconCol], 0,
                 12, 12,
-                itemList[dropType[a]][ItemProps.SpriteSourceX]
+                itemList[DropState.dropType[a]][ItemProps.SpriteSourceX]
             );
     spriteAltRenderFlag = 0
 }

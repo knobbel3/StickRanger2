@@ -74,3 +74,5 @@ badgeList[69] = ["Sunflower hunt 50", "", 17, 9, 50];
 badgeList[70] = ["Stage clear", "within 150 sec", 18, 0, 1];
 badgeList[71] = ["Defeat all fish", "without diving", 18, 12, 1];
 badgeList[72] = ["Defeat all fish", "without landing", 18, 12, 1];
+
+export const stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139];

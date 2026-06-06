@@ -7,15 +7,17 @@ import { enemyCatalog, enemyTypeCount } from "./game/enemy_list.js";
 import { EnemyProps, BehaviorTypes } from "./game/enemy_enums.js";
 import { itemList } from "./game/item_list.js";
 import * as RMath from "./game/math.js";
-import { badgeCount, badgeList } from "./game/badge_list.js";
+import { badgeCount, badgeList, stageBadgeRewardItemIdxByStage } from "./game/badge_list.js";
 import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { CanvasState, GameState, GUIState, RenderingState } from "./game/global_states.js";
+import { BadgeState, CanvasState, GameState, GUIState, RenderingState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
 import { LoadedSprites } from "./game/game_sprites.js";
 import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
+import { inventoryItemLists, PartyState } from "./game/party_state.js";
+import { shrineRewardClaimed, shrineRewardClaimSlotCount, shrineRewardOptions } from "./game/shrine_data.js";
 
 export {gameInit as Init, toggleFullscreen as full_screen};
 // mainWindow.Init = gameInit;
@@ -32,133 +34,7 @@ CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
-let partyMemberCount = 1,
-    partyLevel = 1,
-    partyEXPAccum = 0,
-    partyGold = 0,
-    partySP = [0, 0, 0, 0],
-    partyLP = [50, 50, 50, 50],
-    partyMaxLP = [50, 50, 50, 50],
-    heroEmitCurrent = [0, 0, 0, 0], // $a
-    heroEmitValues = [0, 0, 0, 0],
-    heroChargeValues = [0, 0, 0, 0],
-    heroEmitCooldown = [0, 0, 0, 0], // cb
-
-    stageEventFlags = [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    collectedStageFlagsCount = 0, // eb
-    stageFlagsSetCount = 0, // hb
-
-    autoMoveEnabled = [0, 0, 0, 0], // ib
-    cliffStopEnabled = 0, // kb
-
-    // real values
-    partyHealthLvls = [0, 0, 0, 0],
-    partyShortAtkLvls = [0, 0, 0, 0],
-    partyMidAtkLvls = [0, 0, 0, 0],
-    partyLongAtkLvls = [0, 0, 0, 0],
-    partyPhysLvls = [0, 0, 0, 0],
-    partyElemLvls = [0, 0, 0, 0],
-    partyDodgeLvls = [0, 0, 0, 0],
-    partyStats = [partyHealthLvls, partyShortAtkLvls, partyMidAtkLvls, partyLongAtkLvls, partyPhysLvls, partyElemLvls, partyDodgeLvls],
-
-    // fake values!!
-    partyMaxLPBonus_vals = [0, 0, 0, 0],
-    partyShortAtk_vals = [0, 0, 0, 0],
-    partyMidAtk_vals = [0, 0, 0, 0],
-    partyLongAtk_vals = [0, 0, 0, 0],
-    partyPhys_vals = [0, 0, 0, 0],
-    partyElem_vals = [0, 0, 0, 0],
-    partyDodge_vals = [0, 0, 0, 0],
-    partyPhysAtkStats = [partyShortAtk_vals, partyMidAtk_vals, partyLongAtk_vals],
-    //               PRIMARY      SECONDARY   
-    //              [h0,h1,h2,h3, h0,h1,h2,h3]
-    minAtkArray =   [0, 0, 0, 0,  0, 0, 0, 0],
-    maxAtkArray =   [0, 0, 0, 0,  0, 0, 0, 0],
-    atkCountArray = [0, 0, 0, 0,  0, 0, 0, 0],
-
-    heroAgiValues = [0, 0, 0, 0],
-    heroRangeValues = [0, 0, 0, 0],
-    heroMeleeDefensesFlatArray = [0, 0, 0, 0],
-    heroProjDefenseFlatArray = [0, 0, 0, 0],
-    heroMagicDefenseFlatArray = [0, 0, 0, 0],
-    heroDodgeChanceArray = [0, 0, 0, 0],
-    physAtkBonusPercent = [0, 0, 0, 0], // Nb
-    fireAtkBonusPercent = [0, 0, 0, 0], // Ob
-    iceAtkBonusPercent = [0, 0, 0, 0], // Pb
-    lightningAtkBonusPercent = [0, 0, 0, 0], // Sb
-    poisonAtkBonusPercent = [0, 0, 0, 0], // Tb
-    atkBonusPercentByElement = [physAtkBonusPercent, fireAtkBonusPercent, iceAtkBonusPercent, lightningAtkBonusPercent, poisonAtkBonusPercent], // Ub
-    
-    partyRewardValueBonusPercent = 0, // Vb
-    partyDropChanceBonusPercent = 0, // Wb
-    partyEnemyHpBonusPercent = 0, // Xb
-    /** [partyN][i] */
-    partyEquipmentTable = [
-        // "arms", "charge", "head", "ring", "amulet"
-        [4, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        []
-    ],
-    forgePreviewItemIdx = -1, // Zb
-    itemForgeLvls = Array(256),
-    itemIsNew = Array(256); // ac, 
-
-for (let _i = 0; 256 > _i; _i++) itemIsNew[_i] = 0;
-for (let _i = 0; 256 > _i; _i++) itemForgeLvls[_i] = 0;
-
-const inventoryItemLists = [
-    [4, 5, 6, 9, 10, 11, 15, 17, 19, 21, 24, 26, 38, 41, 42, 43, 49, 50, 51, 52, 53, 54, 89, 90, 91, 92, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [7, 8, 12, 13, 14, 16, 18, 20, 22, 23, 25, 27, 34, 35, 39, 40, 44, 46, 47, 48, 55, 56, 57, 58, 59, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 131, 132, 133, 134, 135, 0, 0, 0, 0, 0, 0, 0],
-    [28, 29, 30, 31, 32, 33, 36, 37, 45, 60, 0, 0, 0, 0, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 0, 0, 0, 0, 0],
-    [71, 73, 75, 77, 79, 81, 83, 85, 87, 113, 115, 117, 119, 136, 137, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [72, 74, 76, 78, 80, 82, 84, 86, 88, 114, 116, 118, 120, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    []
-];
-
-
-let badgeCounterArray = Array(badgeCount);
-for (let _i = 0; _i < badgeCount; _i++) badgeCounterArray[_i] = 0;
-
-let badgePopupTimer = 0, // bf
-    lastCompletedBadgeIdx = 0, // cf
-    badgeIndicesByStage = [ // df
-        [0, 1, 2, 3, 4],
-        [5, 6, 7, 8, 9],
-        [10, 11, 12, 13, 14],
-        [15, 16, 17, 18, 19],
-        [20, 21, 22, 23, 24],
-        [25, 26, 27, 28, 29],
-        [30, 31, 32, 33, 34],
-        [35, 36, 37, 38, 39],
-        [40, 41, 42, 43, 44],
-        [45, 46, 47, 48, 49],
-        [50, 51, 52, 53, 54],
-        [55, 56, 57, 58, 59],
-        [60, 61, 62, 63, 64],
-        [65, 66, 67, 68, 69],
-        [70, 71, 72],
-        [],
-        [],
-        []
-    ];
-
-let stageBadgeRewardItemIdxByStage = [0, 0, 72, 74, 76, 78, 0, 80, 82, 84, 86, 88, 0, 114, 116, 118, 120, 139]; // ef, stage-indexed reward item table used when all five badges for a stage are cleared.
-
-let shrineRewardClaimSlotCount = 10, // Ec
-    shrineRewardClaimed = Array(shrineRewardClaimSlotCount);
-for (let _i = 0; _i < shrineRewardClaimSlotCount; _i++) badgeCounterArray[_i] = 0;
-
-let shrineRewardOptions = [
-    ["Gold Shower", 15],
-    ["Clear Status", 30],
-    ["ONIGIRI", 45],
-    ["Level Up", 60]
-],
-    gameSaveString = "",
+let gameSaveString = "",
     gameSaveStatusDuration = 0,
     gameLoadStatusCode = 0,
     statusDuration = 0,
@@ -457,24 +333,24 @@ let keyJustPressed = Array(256), // Jf
 function resetGameProgress() { // bc
     let a, b;
     resetUIStates();
-    partyLevel = partyMemberCount = 1;
-    for (a = partyGold = partyEXPAccum = 0; 4 > a; a++) 
-        partySP[a] = 0, 
-        partyLP[a] = 50, 
-        partyMaxLP[a] = 50, 
-        heroEmitCurrent[a] = 0;
-    for (a = 0; 9 > a; a++) stageEventFlags[a] = 0;
-    for (b = stageFlagsSetCount = collectedStageFlagsCount = 0; b < partyStats.length; b++)
-        for (a = 0; 4 > a; a++) partyStats[b][a] = 0;
+    PartyState.partyLevel = PartyState.partyMemberCount = 1;
+    for (a = PartyState.partyGold = PartyState.partyEXPAccum = 0; 4 > a; a++) 
+        PartyState.partySP[a] = 0, 
+        PartyState.partyLP[a] = 50, 
+        PartyState.partyMaxLP[a] = 50, 
+        PartyState.heroEmitCurrent[a] = 0;
+    for (a = 0; 9 > a; a++) PartyState.stageEventFlags[a] = 0;
+    for (b = PartyState.stageFlagsSetCount = PartyState.collectedStageFlagsCount = 0; b < PartyState.partyStats.length; b++)
+        for (a = 0; 4 > a; a++) PartyState.partyStats[b][a] = 0;
     for (a = 0; 4 > a; a++)
-        for (b = 0; 8 > b; b++) partyEquipmentTable[a][b] = 0;
-    for (a = 0; 256 > a; a++) itemForgeLvls[a] = 0, itemIsNew[a] = 0;
+        for (b = 0; 8 > b; b++) PartyState.partyEquipmentTable[a][b] = 0;
+    for (a = 0; 256 > a; a++) PartyState.itemForgeLvls[a] = 0, PartyState.itemIsNew[a] = 0;
     for (a = 0; a < stageCount; a++) isStageReachedArray[a] = 0;
     for (a = 0; a < enemyTypeCount; a++) bestiaryEntryState[a] = 0;
-    for (a = 0; a < badgeCount; a++) badgeCounterArray[a] = 0;
+    for (a = 0; a < badgeCount; a++) BadgeState.badgeCounterArray[a] = 0;
     for (a = 0; a < shrineRewardClaimSlotCount; a++) shrineRewardClaimed[a] = 0;
-    for (a = 0; 4 > a; a++) autoMoveEnabled[a] = 0;
-    cliffStopEnabled = 0
+    for (a = 0; 4 > a; a++) PartyState.autoMoveEnabled[a] = 0;
+    PartyState.cliffStopEnabled = 0
 }
 
 
@@ -505,8 +381,8 @@ function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
         
     }
     if (0 != c) {
-        var d = itemForgeLvls[_itemIdx] - 1;
-        _itemIdx == forgePreviewItemIdx && d++;
+        var d = PartyState.itemForgeLvls[_itemIdx] - 1;
+        _itemIdx == PartyState.forgePreviewItemIdx && d++;
         return itemList[_itemIdx][_columnIdx] + RMath.floor(itemList[_itemIdx][_columnIdx] * d * c / 100);
     }
     return itemList[_itemIdx][_columnIdx];
@@ -526,8 +402,8 @@ function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     }
     
     if (0 != c) {
-        var d = itemForgeLvls[_itemIdx] - 1;
-        _itemIdx == forgePreviewItemIdx && d++;
+        var d = PartyState.itemForgeLvls[_itemIdx] - 1;
+        _itemIdx == PartyState.forgePreviewItemIdx && d++;
         return d * c;
     }
     return -1;
@@ -551,7 +427,7 @@ function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
     }
 
     if (0 != d) {
-        let f = itemForgeLvls[itemIdx] - 1; // $b
+        let f = PartyState.itemForgeLvls[itemIdx] - 1; // $b
         if (heroHasAccessoryEffect(heroIdx, AccessoryProps.ArmsBonus0) && 3 == itemList[itemIdx][ItemProps.DropIconCol])
             f += countAccessoryLvlBonuses(heroIdx, AccessoryProps.ArmsBonus0);
 
@@ -571,8 +447,8 @@ function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
 
 
 function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
-    return itemList[partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx ||
-        itemList[partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx
+    return itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx ||
+        itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx
         ? true
         : false
 }
@@ -580,44 +456,44 @@ function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
 
 function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
     var c = 0;
-    itemList[partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.PrimaryValue]);
-    itemList[partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.PrimaryValue]);
+    itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.PrimaryValue]);
+    itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.PrimaryValue]);
     return c
 }
 
 
 function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     var c = 0;
-    itemList[partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.SecondaryValue]);
-    itemList[partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.SecondaryValue]);
+    itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.SecondaryValue]);
+    itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.SecondaryValue]);
     return c
 }
 
 
 function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
-    return GUIState.currentStage == badgeList[badgeIdx][2] && badgeCounterArray[badgeIdx] != badgeList[badgeIdx][4] ? true : false
+    return GUIState.currentStage == badgeList[badgeIdx][2] && BadgeState.badgeCounterArray[badgeIdx] != badgeList[badgeIdx][4] ? true : false
 }
 
 
 function IncrementBadgeCount(badgeIndex) {
-    badgeCounterArray[badgeIndex]++;
-    if (badgeCounterArray[badgeIndex] == badgeList[badgeIndex][4]) {
-        lastCompletedBadgeIdx = badgeIndex;
-        badgePopupTimer = 120;
+    BadgeState.badgeCounterArray[badgeIndex]++;
+    if (BadgeState.badgeCounterArray[badgeIndex] == badgeList[badgeIndex][4]) {
+        BadgeState.lastCompletedBadgeIdx = badgeIndex;
+        BadgeState.badgePopupTimer = 120;
         var b = 0;
         badgeIndex = badgeList[badgeIndex][2];
         for (var c = 0; c < badgeList.length; c++) {
             if (
                 badgeList[c] &&
                 badgeIndex == badgeList[c][2] &&
-                badgeCounterArray[c] == badgeList[c][4]
+                BadgeState.badgeCounterArray[c] == badgeList[c][4]
             ) {
                 b++;
             }
         }
         if (5 == b) {
-            itemForgeLvls[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1;
-            itemIsNew[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1;
+            PartyState.itemForgeLvls[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1;
+            PartyState.itemIsNew[stageBadgeRewardItemIdxByStage[badgeIndex]] = 1;
         }
     }
 }
@@ -641,43 +517,43 @@ function saveGame() {
         gameSaveBuffer[a++] = 0;
         gameSaveBuffer[a++] = 0;
     }
-    gameSaveBuffer[a++] = partyMemberCount;
-    gameSaveBuffer[a++] = partyLevel >> 6 & 63;
-    gameSaveBuffer[a++] = partyLevel >> 0 & 63;
-    gameSaveBuffer[a++] = partyEXPAccum >> 18 & 63;
-    gameSaveBuffer[a++] = partyEXPAccum >> 12 & 63;
-    gameSaveBuffer[a++] = partyEXPAccum >> 6 & 63;
-    gameSaveBuffer[a++] = partyEXPAccum >> 0 & 63;
-    gameSaveBuffer[a++] = partyGold >> 18 & 63;
-    gameSaveBuffer[a++] = partyGold >> 12 & 63;
-    gameSaveBuffer[a++] = partyGold >> 6 & 63;
-    gameSaveBuffer[a++] = partyGold >> 0 & 63;
+    gameSaveBuffer[a++] = PartyState.partyMemberCount;
+    gameSaveBuffer[a++] = PartyState.partyLevel >> 6 & 63;
+    gameSaveBuffer[a++] = PartyState.partyLevel >> 0 & 63;
+    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 18 & 63;
+    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 12 & 63;
+    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 6 & 63;
+    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 0 & 63;
+    gameSaveBuffer[a++] = PartyState.partyGold >> 18 & 63;
+    gameSaveBuffer[a++] = PartyState.partyGold >> 12 & 63;
+    gameSaveBuffer[a++] = PartyState.partyGold >> 6 & 63;
+    gameSaveBuffer[a++] = PartyState.partyGold >> 0 & 63;
     for (b = 0; 4 > b; b++) {
-        gameSaveBuffer[a++] = partySP[b] >> 6 & 63;
-        gameSaveBuffer[a++] = partySP[b] >> 0 & 63;
+        gameSaveBuffer[a++] = PartyState.partySP[b] >> 6 & 63;
+        gameSaveBuffer[a++] = PartyState.partySP[b] >> 0 & 63;
     }
     for (b = 0; 4 > b; b++) {
-        gameSaveBuffer[a++] = partyLP[b] >> 12 & 63;
-        gameSaveBuffer[a++] = partyLP[b] >> 6 & 63;
-        gameSaveBuffer[a++] = partyLP[b] >> 0 & 63;
+        gameSaveBuffer[a++] = PartyState.partyLP[b] >> 12 & 63;
+        gameSaveBuffer[a++] = PartyState.partyLP[b] >> 6 & 63;
+        gameSaveBuffer[a++] = PartyState.partyLP[b] >> 0 & 63;
     }
     for (b = 0; 4 > b; b++)
-        for (c = 0; c < partyStats.length; c++) {
-            gameSaveBuffer[a++] = partyStats[c][b] >> 6 & 63;
-            gameSaveBuffer[a++] = partyStats[c][b] >> 0 & 63;
+        for (c = 0; c < PartyState.partyStats.length; c++) {
+            gameSaveBuffer[a++] = PartyState.partyStats[c][b] >> 6 & 63;
+            gameSaveBuffer[a++] = PartyState.partyStats[c][b] >> 0 & 63;
         }
     for (b = 0; 4 > b; b++)
         for (c = 0; 8 > c; c++) {
-            gameSaveBuffer[a++] = partyEquipmentTable[b][c] >> 6 & 63;
-            gameSaveBuffer[a++] = partyEquipmentTable[b][c] >> 0 & 63;
+            gameSaveBuffer[a++] = PartyState.partyEquipmentTable[b][c] >> 6 & 63;
+            gameSaveBuffer[a++] = PartyState.partyEquipmentTable[b][c] >> 0 & 63;
         }
 
     gameSaveBuffer[a++] = 4;
-    for (b = gameSaveBuffer[a++] = 0; 256 > b; b++) gameSaveBuffer[a++] = itemForgeLvls[b];
+    for (b = gameSaveBuffer[a++] = 0; 256 > b; b++) gameSaveBuffer[a++] = PartyState.itemForgeLvls[b];
     gameSaveBuffer[a++] = 0;
     gameSaveBuffer[a++] = 10;
-    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = stageEventFlags[b];
-    gameSaveBuffer[a++] = collectedStageFlagsCount;
+    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = PartyState.stageEventFlags[b];
+    gameSaveBuffer[a++] = PartyState.collectedStageFlagsCount;
     gameSaveBuffer[a++] = stageCount >> 6 & 63;
     gameSaveBuffer[a++] = stageCount >> 0 & 63;
     for (b = 0; b < stageCount; b++) gameSaveBuffer[a++] = isStageReachedArray[b];
@@ -689,18 +565,18 @@ function saveGame() {
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
     for (b = 0; 4 > b; b++)
-        gameSaveBuffer[a++] = autoMoveEnabled[b];
-    gameSaveBuffer[a++] = cliffStopEnabled;
+        gameSaveBuffer[a++] = PartyState.autoMoveEnabled[b];
+    gameSaveBuffer[a++] = PartyState.cliffStopEnabled;
     gameSaveBuffer[a++] = badgeCount >> 6 & 63;
     gameSaveBuffer[a++] = badgeCount >> 0 & 63;
-    for (b = 0; b < badgeCount; b++) gameSaveBuffer[a++] = badgeCounterArray[b];
+    for (b = 0; b < badgeCount; b++) gameSaveBuffer[a++] = BadgeState.badgeCounterArray[b];
     gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 6 & 63;
     gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 0 & 63;
     for (b = 0; b < shrineRewardClaimSlotCount; b++) gameSaveBuffer[a++] = shrineRewardClaimed[b];
     f = 4;
     gameSaveBuffer[a++] = f >> 6 & 63;
     gameSaveBuffer[a++] = f >> 0 & 63;
-    for (b = 0; b < f; b++) gameSaveBuffer[a++] = stageEventFlags[b];
+    for (b = 0; b < f; b++) gameSaveBuffer[a++] = PartyState.stageEventFlags[b];
 
     let gameSaveHash = 0;
     for (b = 3; b < a; b++) gameSaveHash += gameSaveBuffer[b];
@@ -764,24 +640,24 @@ function loadGame(saveString) {
     let p = 16 + 3*4;
     b = 4;
 
-    partyMemberCount = gameSaveBuffer[p++];
-    partyLevel = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    partyEXPAccum = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    partyGold = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; 4 > b; b++) partySP[b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; 4 > b; b++) partyLP[b] = (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    PartyState.partyMemberCount = gameSaveBuffer[p++];
+    PartyState.partyLevel = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    PartyState.partyEXPAccum = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    PartyState.partyGold = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; 4 > b; b++) PartyState.partySP[b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; 4 > b; b++) PartyState.partyLP[b] = (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; c < partyStats.length; c++) partyStats[c][b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+        for (c = 0; c < PartyState.partyStats.length; c++) PartyState.partyStats[c][b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; 8 > c; c++) partyEquipmentTable[b][c] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+        for (c = 0; 8 > c; c++) PartyState.partyEquipmentTable[b][c] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
 
     let g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; b < g; b++) itemForgeLvls[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) PartyState.itemForgeLvls[b] = gameSaveBuffer[p++];
 
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; 9 > b; b++) stageEventFlags[b] = gameSaveBuffer[p++];
-    collectedStageFlagsCount = gameSaveBuffer[p++];
+    for (b = 0; 9 > b; b++) PartyState.stageEventFlags[b] = gameSaveBuffer[p++];
+    PartyState.collectedStageFlagsCount = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     for (b = 0; b < g; b++) isStageReachedArray[b] = gameSaveBuffer[p++];
@@ -790,18 +666,18 @@ function loadGame(saveString) {
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     if (5 <= g) {
-        for (b = 0; 4 > b; b++) autoMoveEnabled[b] = gameSaveBuffer[p++];
-        cliffStopEnabled = gameSaveBuffer[p++];
+        for (b = 0; 4 > b; b++) PartyState.autoMoveEnabled[b] = gameSaveBuffer[p++];
+        PartyState.cliffStopEnabled = gameSaveBuffer[p++];
     }
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) badgeCounterArray[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) BadgeState.badgeCounterArray[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
     for (b = 0; b < g; b++) shrineRewardClaimed[b] = gameSaveBuffer[p++];
     g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) stageEventFlags[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) PartyState.stageEventFlags[b] = gameSaveBuffer[p++];
     return 0;
 }
 
@@ -816,34 +692,34 @@ function updatePartyChecksum() {
     basePartyChecksum = c = RMath.floor(RMath.randFloat(1024));
     c = hashAdjust(c, 0);
     c = hashAdjust(c, GUIState.currentStage);
-    c = hashAdjust(c, partyMemberCount);
-    c = hashAdjust(c, partyLevel);
-    c = hashAdjust(c, partyEXPAccum);
-    c = hashAdjust(c, partyGold);
+    c = hashAdjust(c, PartyState.partyMemberCount);
+    c = hashAdjust(c, PartyState.partyLevel);
+    c = hashAdjust(c, PartyState.partyEXPAccum);
+    c = hashAdjust(c, PartyState.partyGold);
     for (a = 0; 4 > a; a++)
-        c = hashAdjust(c, partySP[a]),
-            c = hashAdjust(c, partyLP[a]),
-            c = hashAdjust(c, partyMaxLP[a]),
-            c = hashAdjust(c, heroEmitCurrent[a]),
-            c = hashAdjust(c, heroEmitValues[a]),
-            c = hashAdjust(c, heroChargeValues[a]),
-            c = hashAdjust(c, partyHealthLvls[a]),
-            c = hashAdjust(c, partyShortAtkLvls[a]),
-            c = hashAdjust(c, partyMidAtkLvls[a]),
-            c = hashAdjust(c, partyLongAtkLvls[a]),
-            c = hashAdjust(c, partyPhysLvls[a]),
-            c = hashAdjust(c, partyElemLvls[a]),
-            c = hashAdjust(c, partyDodgeLvls[a]);
+        c = hashAdjust(c, PartyState.partySP[a]),
+            c = hashAdjust(c, PartyState.partyLP[a]),
+            c = hashAdjust(c, PartyState.partyMaxLP[a]),
+            c = hashAdjust(c, PartyState.heroEmitCurrent[a]),
+            c = hashAdjust(c, PartyState.heroEmitValues[a]),
+            c = hashAdjust(c, PartyState.heroChargeValues[a]),
+            c = hashAdjust(c, PartyState.partyHealthLvls[a]),
+            c = hashAdjust(c, PartyState.partyShortAtkLvls[a]),
+            c = hashAdjust(c, PartyState.partyMidAtkLvls[a]),
+            c = hashAdjust(c, PartyState.partyLongAtkLvls[a]),
+            c = hashAdjust(c, PartyState.partyPhysLvls[a]),
+            c = hashAdjust(c, PartyState.partyElemLvls[a]),
+            c = hashAdjust(c, PartyState.partyDodgeLvls[a]);
     for (a = 0; 4 > a; a++)
         for (b = 0; 8 > b; b++)
-            c = hashAdjust(c, partyEquipmentTable[a][b]);
+            c = hashAdjust(c, PartyState.partyEquipmentTable[a][b]);
 
-    for (a = 0; 256 > a; a++) c = hashAdjust(c, itemForgeLvls[a]);
-    for (a = 0; 9 > a; a++) c = hashAdjust(c, stageEventFlags[a]);
-    c = hashAdjust(c, collectedStageFlagsCount);
+    for (a = 0; 256 > a; a++) c = hashAdjust(c, PartyState.itemForgeLvls[a]);
+    for (a = 0; 9 > a; a++) c = hashAdjust(c, PartyState.stageEventFlags[a]);
+    c = hashAdjust(c, PartyState.collectedStageFlagsCount);
     for (a = 0; a < stageCount; a++) c = hashAdjust(c, isStageReachedArray[a]);
     for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, bestiaryEntryState[a]);
-    for (a = 0; a < badgeCount; a++) c = hashAdjust(c, badgeCounterArray[a]);
+    for (a = 0; a < badgeCount; a++) c = hashAdjust(c, BadgeState.badgeCounterArray[a]);
     for (a = 0; a < shrineRewardClaimSlotCount; a++) c = hashAdjust(c, shrineRewardClaimed[a]);
     partyChecksum = c ^ 16777215
 }
@@ -1132,8 +1008,8 @@ function drawCanvas() {
     } else if (4 == GUIState.gameScreenState || 5 == GUIState.gameScreenState) {
         if (4 == GUIState.gameScreenState) {
             resetGameProgress();
-            partyEquipmentTable[0][0] = 4;
-            GUIState.currentStage = itemForgeLvls[4] = 1;
+            PartyState.partyEquipmentTable[0][0] = 4;
+            GUIState.currentStage = PartyState.itemForgeLvls[4] = 1;
             partySpawnXByHero[0] = 20;
             partySpawnXByHero[1] = 28;
             partySpawnXByHero[2] = 36;
@@ -1229,25 +1105,25 @@ function drawCanvas() {
                 GUIState.gameScreenState++;
             }
         } else if (12 == GUIState.gameScreenState) {
-            for (a = b = 0; a < partyMemberCount; a++)
-                b += partyLP[a];
+            for (a = b = 0; a < PartyState.partyMemberCount; a++)
+                b += PartyState.partyLP[a];
             if (0 == b) {
                 GUIState.screenStateTimer = 0;
                 GUIState.gameScreenState = 30;
                 comboMultBonus = comboCount = comboWindowTimer = 0;
-                c = RMath.floor(partyGold / 10 / partyMemberCount);
+                c = RMath.floor(PartyState.partyGold / 10 / PartyState.partyMemberCount);
                 if (0 < c) {
-                    for (a = 0; a < partyMemberCount; a++)
+                    for (a = 0; a < PartyState.partyMemberCount; a++)
                         spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, -c, 60, 16776960);
-                    partyGold = RMath.clamp(partyGold - c * partyMemberCount, 0, 9999999);
+                    PartyState.partyGold = RMath.clamp(PartyState.partyGold - c * PartyState.partyMemberCount, 0, 9999999);
                 }
-                for (a = 0; a < partyMemberCount; a++) {
-                    partyLP[a] = 1;
-                    heroEmitCurrent[a] = 0;
+                for (a = 0; a < PartyState.partyMemberCount; a++) {
+                    PartyState.partyLP[a] = 1;
+                    PartyState.heroEmitCurrent[a] = 0;
                 }
                 saveGame();
-                for (a = 0; a < partyMemberCount; a++)
-                    partyLP[a] = 0;
+                for (a = 0; a < PartyState.partyMemberCount; a++)
+                    PartyState.partyLP[a] = 0;
             } else if (GUIState.currentStage != lastStageIdx) {
                 GUIState.screenStateTimer = 0;
                 GUIState.gameScreenState = 13;
@@ -1285,8 +1161,8 @@ function drawCanvas() {
             drawScaledTintedTextCentered(LoadedFonts.gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24);
             if (100 == GUIState.screenStateTimer && isMouseClicked) {
                 for (a = 0; 4 > a; a++) {
-                    partyLP[a] = 1;
-                    heroEmitCurrent[a] = 0;
+                    PartyState.partyLP[a] = 1;
+                    PartyState.heroEmitCurrent[a] = 0;
                 }
                 screenFadeFactor = 0;
                 GUIState.gameScreenState = 10;
@@ -1304,41 +1180,41 @@ function drawCanvas() {
         }
     }
     // updatePartyChecksum();
-    if (0 < badgePopupTimer) {
-        badgePopupTimer--;
-        a = badgeList[lastCompletedBadgeIdx][3];
+    if (0 < BadgeState.badgePopupTimer) {
+        BadgeState.badgePopupTimer--;
+        a = badgeList[BadgeState.lastCompletedBadgeIdx][3];
         drawSpriteSheetPartTintedScaled(LoadedSprites.medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true);
         b = 440;
-        a = RMath.min(120 - badgePopupTimer - 0, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 0, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0);
         }
-        a = RMath.min(120 - badgePopupTimer - 2, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 2, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0);
         }
-        a = RMath.min(120 - badgePopupTimer - 4, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 4, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0);
         }
         b = 438;
-        a = RMath.min(120 - badgePopupTimer - 6, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 6, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0);
         }
-        a = RMath.min(120 - badgePopupTimer - 8, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 8, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0);
         }
-        a = RMath.min(120 - badgePopupTimer - 10, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 10, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0);
         }
-        a = RMath.min(120 - badgePopupTimer - 12, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 12, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0);
         }
-        a = RMath.min(120 - badgePopupTimer - 14, 4);
+        a = RMath.min(120 - BadgeState.badgePopupTimer - 14, 4);
         if (0 < a) {
             drawText(LoadedFonts.gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0);
         }
@@ -1369,115 +1245,115 @@ function drawCanvas() {
 
 function updatePartyStats() {
     for (let hidx = 0; 4 > hidx; hidx++) {
-        partyMaxLPBonus_vals[hidx] = 10 * partyHealthLvls[hidx];
-        partyShortAtk_vals[hidx] = 5 * partyShortAtkLvls[hidx];
-        partyMidAtk_vals[hidx] = 5 * partyMidAtkLvls[hidx];
-        partyLongAtk_vals[hidx] = 5 * partyLongAtkLvls[hidx];
-        partyPhys_vals[hidx] = 5 * partyPhysLvls[hidx];
-        partyElem_vals[hidx] = 5 * partyElemLvls[hidx];
-        partyDodge_vals[hidx] = 2 * partyDodgeLvls[hidx];
+        PartyState.partyMaxLPBonus_vals[hidx] = 10 * PartyState.partyHealthLvls[hidx];
+        PartyState.partyShortAtk_vals[hidx] = 5 * PartyState.partyShortAtkLvls[hidx];
+        PartyState.partyMidAtk_vals[hidx] = 5 * PartyState.partyMidAtkLvls[hidx];
+        PartyState.partyLongAtk_vals[hidx] = 5 * PartyState.partyLongAtkLvls[hidx];
+        PartyState.partyPhys_vals[hidx] = 5 * PartyState.partyPhysLvls[hidx];
+        PartyState.partyElem_vals[hidx] = 5 * PartyState.partyElemLvls[hidx];
+        PartyState.partyDodge_vals[hidx] = 2 * PartyState.partyDodgeLvls[hidx];
         // from headwear
-        let headgearHpPercent = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ModifierColumns.heroHealthModifier); // armor health modifier %
-        let headgearFlatDefense = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ModifierColumns.heroDefenseModifier);
-        let headgearMagicResistPercent = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ModifierColumns.heroMagicDefModifier);
-        let headgearDodgeBonus = getModifiedStatVal(hidx, partyEquipmentTable[hidx][2], ModifierColumns.heroDodgeModifier);
+        let headgearHpPercent = getModifiedStatVal(hidx, PartyState.partyEquipmentTable[hidx][2], ModifierColumns.heroHealthModifier); // armor health modifier %
+        let headgearFlatDefense = getModifiedStatVal(hidx, PartyState.partyEquipmentTable[hidx][2], ModifierColumns.heroDefenseModifier);
+        let headgearMagicResistPercent = getModifiedStatVal(hidx, PartyState.partyEquipmentTable[hidx][2], ModifierColumns.heroMagicDefModifier);
+        let headgearDodgeBonus = getModifiedStatVal(hidx, PartyState.partyEquipmentTable[hidx][2], ModifierColumns.heroDodgeModifier);
 
-        heroMeleeDefensesFlatArray[hidx] = headgearFlatDefense;
+        PartyState.heroMeleeDefensesFlatArray[hidx] = headgearFlatDefense;
         if (heroHasAccessoryEffect(hidx, AccessoryProps.MeleeDefence))
-            heroMeleeDefensesFlatArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.MeleeDefence);
+            PartyState.heroMeleeDefensesFlatArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.MeleeDefence);
 
-        heroProjDefenseFlatArray[hidx] = headgearFlatDefense;
+        PartyState.heroProjDefenseFlatArray[hidx] = headgearFlatDefense;
         if (heroHasAccessoryEffect(hidx, AccessoryProps.MeleeDefence))
-            heroProjDefenseFlatArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.MeleeDefence);
+            PartyState.heroProjDefenseFlatArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.MeleeDefence);
 
-        heroMagicDefenseFlatArray[hidx] = headgearMagicResistPercent;
+        PartyState.heroMagicDefenseFlatArray[hidx] = headgearMagicResistPercent;
         if (heroHasAccessoryEffect(hidx, AccessoryProps.MagicDefense))
-            heroMagicDefenseFlatArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.MagicDefense);
+            PartyState.heroMagicDefenseFlatArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.MagicDefense);
 
-        heroDodgeChanceArray[hidx] = partyDodge_vals[hidx] + headgearDodgeBonus;
+        PartyState.heroDodgeChanceArray[hidx] = PartyState.partyDodge_vals[hidx] + headgearDodgeBonus;
         if (heroHasAccessoryEffect(hidx, AccessoryProps.DodgeChance))
-            heroDodgeChanceArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.DodgeChance);
+            PartyState.heroDodgeChanceArray[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.DodgeChance);
 
-        physAtkBonusPercent[hidx] = partyPhys_vals[hidx];
-        fireAtkBonusPercent[hidx] = partyElem_vals[hidx];
-        iceAtkBonusPercent[hidx] = partyElem_vals[hidx];
-        lightningAtkBonusPercent[hidx] = partyElem_vals[hidx];
-        poisonAtkBonusPercent[hidx] = partyElem_vals[hidx];
-        partyMaxLP[hidx] = RMath.floor((50 + headgearHpPercent) * (100 + partyMaxLPBonus_vals[hidx]) / 100);
+        PartyState.physAtkBonusPercent[hidx] = PartyState.partyPhys_vals[hidx];
+        PartyState.fireAtkBonusPercent[hidx] = PartyState.partyElem_vals[hidx];
+        PartyState.iceAtkBonusPercent[hidx] = PartyState.partyElem_vals[hidx];
+        PartyState.lightningAtkBonusPercent[hidx] = PartyState.partyElem_vals[hidx];
+        PartyState.poisonAtkBonusPercent[hidx] = PartyState.partyElem_vals[hidx];
+        PartyState.partyMaxLP[hidx] = RMath.floor((50 + headgearHpPercent) * (100 + PartyState.partyMaxLPBonus_vals[hidx]) / 100);
 
         if (heroHasAccessoryEffect(hidx, AccessoryProps.HealthBonus))
-            partyMaxLP[hidx] = RMath.floor(partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.HealthBonus)) / 100);
+            PartyState.partyMaxLP[hidx] = RMath.floor(PartyState.partyMaxLP[hidx] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.HealthBonus)) / 100);
 
-        partyLP[hidx] = RMath.clamp(partyLP[hidx], 0, partyMaxLP[hidx]);
+        PartyState.partyLP[hidx] = RMath.clamp(PartyState.partyLP[hidx], 0, PartyState.partyMaxLP[hidx]);
 
-        heroChargeValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][0], ItemProps.ChargeEmitValue);
-        if (heroHasAccessoryEffect(hidx, AccessoryProps.ChargeValueBonus) && 0 < heroChargeValues[hidx])
-            heroChargeValues[hidx] = RMath.max(heroChargeValues[hidx] + countAccessoryLvlBonuses(hidx, AccessoryProps.ChargeValueBonus), 1);
+        PartyState.heroChargeValues[hidx] = getModifiedStatVal(hidx, PartyState.partyEquipmentTable[hidx][0], ItemProps.ChargeEmitValue);
+        if (heroHasAccessoryEffect(hidx, AccessoryProps.ChargeValueBonus) && 0 < PartyState.heroChargeValues[hidx])
+            PartyState.heroChargeValues[hidx] = RMath.max(PartyState.heroChargeValues[hidx] + countAccessoryLvlBonuses(hidx, AccessoryProps.ChargeValueBonus), 1);
 
-        heroEmitValues[hidx] = getModifiedStatVal(hidx, partyEquipmentTable[hidx][1], ItemProps.ChargeEmitValue);
-        if (heroHasAccessoryEffect(hidx, AccessoryProps.EffectEmitMaxReduction) && 0 < heroEmitValues[hidx])
-            heroEmitValues[hidx] = RMath.max(heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, AccessoryProps.EffectEmitMaxReduction), 1);
+        PartyState.heroEmitValues[hidx] = getModifiedStatVal(hidx, PartyState.partyEquipmentTable[hidx][1], ItemProps.ChargeEmitValue);
+        if (heroHasAccessoryEffect(hidx, AccessoryProps.EffectEmitMaxReduction) && 0 < PartyState.heroEmitValues[hidx])
+            PartyState.heroEmitValues[hidx] = RMath.max(PartyState.heroEmitValues[hidx] - countAccessoryLvlBonuses(hidx, AccessoryProps.EffectEmitMaxReduction), 1);
 
-        heroEmitCurrent[hidx] = RMath.clamp(heroEmitCurrent[hidx], 0, heroEmitValues[hidx]);
+        PartyState.heroEmitCurrent[hidx] = RMath.clamp(PartyState.heroEmitCurrent[hidx], 0, PartyState.heroEmitValues[hidx]);
     }
 
     // weapons 
     for (let heroItem = 0; 2 > heroItem; heroItem++)
         for (let hidx = 0; 4 > hidx; hidx++) {
-            let itemIdx = partyEquipmentTable[hidx][heroItem];
+            let itemIdx = PartyState.partyEquipmentTable[hidx][heroItem];
             if (0 != itemIdx) {
                 let f = getModifiedStatVal(hidx, itemIdx, ItemProps.RangeType);
                 let g = getModifiedStatVal(hidx, itemIdx, ItemProps.ElementType);
                 let c = 4 * heroItem + hidx;
-                minAtkArray[c] = getModifiedStatVal(hidx, itemIdx, ItemProps.AtkMin);
-                maxAtkArray[c] = getModifiedStatVal(hidx, itemIdx, ItemProps.AtkMax);
-                minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
-                maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + partyPhysAtkStats[f][hidx]) / 100);
-                minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
-                maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + atkBonusPercentByElement[g][hidx]) / 100);
+                PartyState.minAtkArray[c] = getModifiedStatVal(hidx, itemIdx, ItemProps.AtkMin);
+                PartyState.maxAtkArray[c] = getModifiedStatVal(hidx, itemIdx, ItemProps.AtkMax);
+                PartyState.minAtkArray[c] = RMath.floor(PartyState.minAtkArray[c] * (100 + PartyState.partyPhysAtkStats[f][hidx]) / 100);
+                PartyState.maxAtkArray[c] = RMath.floor(PartyState.maxAtkArray[c] * (100 + PartyState.partyPhysAtkStats[f][hidx]) / 100);
+                PartyState.minAtkArray[c] = RMath.floor(PartyState.minAtkArray[c] * (100 + PartyState.atkBonusPercentByElement[g][hidx]) / 100);
+                PartyState.maxAtkArray[c] = RMath.floor(PartyState.maxAtkArray[c] * (100 + PartyState.atkBonusPercentByElement[g][hidx]) / 100);
 
                 if (heroHasAccessoryEffect(hidx, AccessoryProps.EffectAtkBonus)) {
-                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectAtkBonus)) / 100);
-                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectAtkBonus)) / 100);
+                    PartyState.minAtkArray[c] = RMath.floor(PartyState.minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectAtkBonus)) / 100);
+                    PartyState.maxAtkArray[c] = RMath.floor(PartyState.maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectAtkBonus)) / 100);
                 }
                 if (heroHasAccessoryEffect(hidx, AccessoryProps.FireAtkPercent) && 1 == g) {
-                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.FireAtkPercent)) / 100);
-                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.FireAtkPercent)) / 100);
+                    PartyState.minAtkArray[c] = RMath.floor(PartyState.minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.FireAtkPercent)) / 100);
+                    PartyState.maxAtkArray[c] = RMath.floor(PartyState.maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.FireAtkPercent)) / 100);
                 }
                 if (heroHasAccessoryEffect(hidx, AccessoryProps.IceAtkPercent) && 2 == g) {
-                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.IceAtkPercent)) / 100);
-                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.IceAtkPercent)) / 100);
+                    PartyState.minAtkArray[c] = RMath.floor(PartyState.minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.IceAtkPercent)) / 100);
+                    PartyState.maxAtkArray[c] = RMath.floor(PartyState.maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.IceAtkPercent)) / 100);
                 }
 
                 if (heroHasAccessoryEffect(hidx, AccessoryProps.EffectLightningMaxAtkPercent) && 3 == g)
-                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectLightningMaxAtkPercent)) / 100);
+                    PartyState.maxAtkArray[c] = RMath.floor(PartyState.maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectLightningMaxAtkPercent)) / 100);
 
                 if (heroHasAccessoryEffect(hidx, AccessoryProps.EffectPoisonAtkPercent) && 4 == g) {
-                    minAtkArray[c] = RMath.floor(minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectPoisonAtkPercent)) / 100);
-                    maxAtkArray[c] = RMath.floor(maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectPoisonAtkPercent)) / 100);
+                    PartyState.minAtkArray[c] = RMath.floor(PartyState.minAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectPoisonAtkPercent)) / 100);
+                    PartyState.maxAtkArray[c] = RMath.floor(PartyState.maxAtkArray[c] * (100 + countAccessoryLvlBonuses(hidx, AccessoryProps.EffectPoisonAtkPercent)) / 100);
                 }
 
-                atkCountArray[c] = getModifiedStatVal(hidx, itemIdx, ItemProps.ProjectileCount);
-                if (heroHasAccessoryEffect(hidx, AccessoryProps.EffectMultiShotIncrease) && 1 < atkCountArray[c])
-                    atkCountArray[c] += countAccessoryLvlBonuses(hidx, AccessoryProps.EffectMultiShotIncrease);
+                PartyState.atkCountArray[c] = getModifiedStatVal(hidx, itemIdx, ItemProps.ProjectileCount);
+                if (heroHasAccessoryEffect(hidx, AccessoryProps.EffectMultiShotIncrease) && 1 < PartyState.atkCountArray[c])
+                    PartyState.atkCountArray[c] += countAccessoryLvlBonuses(hidx, AccessoryProps.EffectMultiShotIncrease);
 
                 heroItem || (
-                    heroAgiValues[hidx] = getModifiedStatVal(hidx, itemIdx, ItemProps.Agility),
-                    heroHasAccessoryEffect(hidx, AccessoryProps.EffectAgiPenalty) && (heroAgiValues[hidx] -= countAccessoryLvlBonuses(hidx, AccessoryProps.EffectAgiPenalty)),
-                    heroRangeValues[hidx] = getModifiedStatVal(hidx, itemIdx, ItemProps.Range),
-                    !heroHasAccessoryEffect(hidx, AccessoryProps.EffectRangeAndCount) || 4 != itemList[itemIdx][ItemProps.Appearance] && 5 != itemList[itemIdx][ItemProps.Appearance] || (heroRangeValues[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.EffectRangeAndCount))
+                    PartyState.heroAgiValues[hidx] = getModifiedStatVal(hidx, itemIdx, ItemProps.Agility),
+                    heroHasAccessoryEffect(hidx, AccessoryProps.EffectAgiPenalty) && (PartyState.heroAgiValues[hidx] -= countAccessoryLvlBonuses(hidx, AccessoryProps.EffectAgiPenalty)),
+                    PartyState.heroRangeValues[hidx] = getModifiedStatVal(hidx, itemIdx, ItemProps.Range),
+                    !heroHasAccessoryEffect(hidx, AccessoryProps.EffectRangeAndCount) || 4 != itemList[itemIdx][ItemProps.Appearance] && 5 != itemList[itemIdx][ItemProps.Appearance] || (PartyState.heroRangeValues[hidx] += countAccessoryLvlBonuses(hidx, AccessoryProps.EffectRangeAndCount))
                 )
             }
         }
-    partyEnemyHpBonusPercent = partyDropChanceBonusPercent = partyRewardValueBonusPercent = 0;
+    PartyState.partyEnemyHpBonusPercent = PartyState.partyDropChanceBonusPercent = PartyState.partyRewardValueBonusPercent = 0;
     comboWindowMaxFrames = 180;
     for (let hidx = 0; 4 > hidx; hidx++)
-        heroHasAccessoryEffect(hidx, AccessoryProps.RewardValueBonus) && (partyRewardValueBonusPercent += countAccessoryLvlBonuses(hidx, AccessoryProps.RewardValueBonus)),
-            heroHasAccessoryEffect(hidx, AccessoryProps.DropChanceBonus) && (partyDropChanceBonusPercent += countAccessoryLvlBonuses(hidx, AccessoryProps.DropChanceBonus)),
-            heroHasAccessoryEffect(hidx, AccessoryProps.EnemyHpBonus) && (partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, AccessoryProps.EnemyHpBonus)),
+        heroHasAccessoryEffect(hidx, AccessoryProps.RewardValueBonus) && (PartyState.partyRewardValueBonusPercent += countAccessoryLvlBonuses(hidx, AccessoryProps.RewardValueBonus)),
+            heroHasAccessoryEffect(hidx, AccessoryProps.DropChanceBonus) && (PartyState.partyDropChanceBonusPercent += countAccessoryLvlBonuses(hidx, AccessoryProps.DropChanceBonus)),
+            heroHasAccessoryEffect(hidx, AccessoryProps.EnemyHpBonus) && (PartyState.partyEnemyHpBonusPercent += countAccessoryLvlBonuses(hidx, AccessoryProps.EnemyHpBonus)),
             heroHasAccessoryEffect(hidx, AccessoryProps.ComboMaxIncrease) && (comboWindowMaxFrames += 60 * countAccessoryLvlBonuses(hidx, AccessoryProps.ComboMaxIncrease));
     comboWindowTimer = RMath.clamp(comboWindowTimer, 0, comboWindowMaxFrames);
-    for (let hidx = stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == stageEventFlags[hidx] && stageFlagsSetCount++
+    for (let hidx = PartyState.stageFlagsSetCount = 0; 9 > hidx; hidx++) 1 == PartyState.stageEventFlags[hidx] && PartyState.stageFlagsSetCount++
 }
 
 
@@ -1538,12 +1414,12 @@ function drawGameUI() {
     drawRect(0, 361, 640, 70, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
     f = 8;
     g = 348;
-    drawText(LoadedFonts.gameFont, f, g, "LV " + partyLevel, 16777215, 0);
-    if (99 > partyLevel) {
-        var p = GUIState.LevelExpThresholds[partyLevel - 1];
-        drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + RMath.floor(100 * (partyEXPAccum - p) / (GUIState.LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0);
-    } else drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + partyEXPAccum + "(MAX)", 16777215, 0);
-    drawText(LoadedFonts.gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
+    drawText(LoadedFonts.gameFont, f, g, "LV " + PartyState.partyLevel, 16777215, 0);
+    if (99 > PartyState.partyLevel) {
+        var p = GUIState.LevelExpThresholds[PartyState.partyLevel - 1];
+        drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + PartyState.partyEXPAccum + "(" + RMath.floor(100 * (PartyState.partyEXPAccum - p) / (GUIState.LevelExpThresholds[PartyState.partyLevel] - p)) + "%)", 16777215, 0);
+    } else drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + PartyState.partyEXPAccum + "(MAX)", 16777215, 0);
+    drawText(LoadedFonts.gameFont, f + 184, g, "G " + PartyState.partyGold, 16777215, 0);
 
     drawRect(f + 264, g, 90, 11, 2236962); // combo bar bg
     drawRect(f + 264, g, RMath.floor(90 * comboWindowTimer / comboWindowMaxFrames), 11, 12281344); // combo bar fg
@@ -1561,8 +1437,8 @@ function drawGameUI() {
         if (comboWindowTimer == 0) {
             if (comboCount >= 4) {
                 comboPopupTimer = 60;
-                comboGoldPayoutPerHero = RMath.floor((comboCount * p / 10 + partyMemberCount - 1) / partyMemberCount);
-                partyGold = RMath.clamp(partyGold + comboGoldPayoutPerHero * partyMemberCount, 0, 9999999);
+                comboGoldPayoutPerHero = RMath.floor((comboCount * p / 10 + PartyState.partyMemberCount - 1) / PartyState.partyMemberCount);
+                PartyState.partyGold = RMath.clamp(PartyState.partyGold + comboGoldPayoutPerHero * PartyState.partyMemberCount, 0, 9999999);
                 if (isBadgeIncompleteForCurrentStage(1) && 100 <= comboCount) {
                     IncrementBadgeCount(1);
                 }
@@ -1591,7 +1467,7 @@ function drawGameUI() {
     for (let _i = 0; 11 > _i; _i++)
         l[_i] = new RMath.Vec2();
 
-    for (hidx = 0; hidx < partyMemberCount; hidx++) { // draw party
+    for (hidx = 0; hidx < PartyState.partyMemberCount; hidx++) { // draw party
         drawRect(f + hidx * d, g, 24, 24, 0); // bg behind hero
         drawLine(f + hidx * d + 7, g + 22, f + hidx * d + 16, g + 22, 15908203);
         drawLine(f + hidx * d + 6, g + 23, f + hidx * d + 17, g + 23, 15908203);
@@ -1613,10 +1489,10 @@ function drawGameUI() {
 
         drawText(LoadedFonts.gameFontSmall, f + hidx * d + 28, g, "P" + (hidx + 1), 3355443, -1);
         drawRect(f + hidx * d + 28, g + 8, 48, 7, 1114112);
-        drawRect(f + hidx * d + 28, g + 8, RMath.floor(48 * partyLP[hidx] / partyMaxLP[hidx]), 7, 10027008);
-        drawText(LoadedFonts.gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
+        drawRect(f + hidx * d + 28, g + 8, RMath.floor(48 * PartyState.partyLP[hidx] / PartyState.partyMaxLP[hidx]), 7, 10027008);
+        drawText(LoadedFonts.gameFontSmall, f + hidx * d + 28, g + 8, "" + PartyState.partyLP[hidx], 16764108, -1);
         drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
-        drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / RMath.max(heroEmitValues[hidx], 1), 5, 221);
+        drawRect(f + hidx * d + 28, g + 17, 48 * PartyState.heroEmitCurrent[hidx] / RMath.max(PartyState.heroEmitValues[hidx], 1), 5, 221);
         if (buttonCheck(f + hidx * d, g, 24, 24)) {
             fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608);
 
@@ -1629,7 +1505,7 @@ function drawGameUI() {
             }
         }
         for (b = 0; 5 > b; b++) {
-            c = partyEquipmentTable[hidx][b];
+            c = PartyState.partyEquipmentTable[hidx][b];
             k = f + hidx * d + b % 3 * 20;
             var n = g + 28 + 20 * RMath.floor(b / 3);
             drawRect(k, n, 16, 16, 0);
@@ -1655,16 +1531,16 @@ function drawGameUI() {
     f = 472;
     g = 379;
     d = 36;
-    if (drawIconButton(f + -1 * d, g, 13, "" + collectedStageFlagsCount + "/" + stageFlagsSetCount, 16777215) && isMouseClicked) {
-        for (hidx = c = 0; hidx < partyMemberCount; hidx++) c += partyMaxLP[hidx] - partyLP[hidx];
-        if (0 < c && 0 < collectedStageFlagsCount) {
-            for (hidx = 0; hidx < partyMemberCount; hidx++) {
-                if (partyLP[hidx] != partyMaxLP[hidx]) {
-                    spawnPopup(heroJointPositionsByHero[hidx][0].x, heroJointPositionsByHero[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+    if (drawIconButton(f + -1 * d, g, 13, "" + PartyState.collectedStageFlagsCount + "/" + PartyState.stageFlagsSetCount, 16777215) && isMouseClicked) {
+        for (hidx = c = 0; hidx < PartyState.partyMemberCount; hidx++) c += PartyState.partyMaxLP[hidx] - PartyState.partyLP[hidx];
+        if (0 < c && 0 < PartyState.collectedStageFlagsCount) {
+            for (hidx = 0; hidx < PartyState.partyMemberCount; hidx++) {
+                if (PartyState.partyLP[hidx] != PartyState.partyMaxLP[hidx]) {
+                    spawnPopup(heroJointPositionsByHero[hidx][0].x, heroJointPositionsByHero[hidx][0].y, 0, PartyState.partyMaxLP[hidx] - PartyState.partyLP[hidx], 60, 65280);
                 }
-                partyLP[hidx] = partyMaxLP[hidx];
+                PartyState.partyLP[hidx] = PartyState.partyMaxLP[hidx];
             }
-            collectedStageFlagsCount--;
+            PartyState.collectedStageFlagsCount--;
             stageFlagUseCount++;
         }
     }
@@ -1698,7 +1574,7 @@ function drawGameUI() {
         }
     }
     c = 0;
-    for (b = itemIsNew.length - 1; 0 <= b; b--) c += itemIsNew[b];
+    for (b = PartyState.itemIsNew.length - 1; 0 <= b; b--) c += PartyState.itemIsNew[b];
     if (0 < c) {
         drawText(LoadedFonts.gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
     }
@@ -1706,27 +1582,27 @@ function drawGameUI() {
         LoadedFonts.gameFont.a = 1;
         drawTextCentered(LoadedFonts.gameFont, 530, 168, "INN", 16777215, 8409120);
         if (buttonCheckCentered(528, 180, 48, 40)) {
-            for (hidx = c = 0; hidx < partyMemberCount; hidx++)
-                c += partyMaxLP[hidx] - partyLP[hidx];
+            for (hidx = c = 0; hidx < PartyState.partyMemberCount; hidx++)
+                c += PartyState.partyMaxLP[hidx] - PartyState.partyLP[hidx];
             if (0 < c) {
                 c = 10;
             }
-            c += 10 * (stageFlagsSetCount - collectedStageFlagsCount);
+            c += 10 * (PartyState.stageFlagsSetCount - PartyState.collectedStageFlagsCount);
             LoadedFonts.gameFont.a = 1;
             drawTextCentered(LoadedFonts.gameFont, 530, 168, "INN", 15908203, 8409120);
             drawTextCentered(LoadedFonts.gameFont, 528, 187, "G " + c, 16777215, 8409120);
-            if (0 < c && c <= partyGold && isMouseClicked && !GUIState.clickInUI) {
-                for (hidx = 0; hidx < partyMemberCount; hidx++) {
-                    if (partyLP[hidx] != partyMaxLP[hidx]) {
-                        spawnPopup(heroJointPositionsByHero[hidx][0].x, heroJointPositionsByHero[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
+            if (0 < c && c <= PartyState.partyGold && isMouseClicked && !GUIState.clickInUI) {
+                for (hidx = 0; hidx < PartyState.partyMemberCount; hidx++) {
+                    if (PartyState.partyLP[hidx] != PartyState.partyMaxLP[hidx]) {
+                        spawnPopup(heroJointPositionsByHero[hidx][0].x, heroJointPositionsByHero[hidx][0].y, 0, PartyState.partyMaxLP[hidx] - PartyState.partyLP[hidx], 60, 65280);
                     }
-                    partyLP[hidx] = partyMaxLP[hidx];
+                    PartyState.partyLP[hidx] = PartyState.partyMaxLP[hidx];
                 }
-                if (collectedStageFlagsCount != stageFlagsSetCount) {
-                    spawnPopup(436, 380, 0, stageFlagsSetCount - collectedStageFlagsCount, 60, 65280);
+                if (PartyState.collectedStageFlagsCount != PartyState.stageFlagsSetCount) {
+                    spawnPopup(436, 380, 0, PartyState.stageFlagsSetCount - PartyState.collectedStageFlagsCount, 60, 65280);
                 }
-                collectedStageFlagsCount = stageFlagsSetCount;
-                partyGold = RMath.clamp(partyGold - c, 0, 9999999);
+                PartyState.collectedStageFlagsCount = PartyState.stageFlagsSetCount;
+                PartyState.partyGold = RMath.clamp(PartyState.partyGold - c, 0, 9999999);
             }
         }
         LoadedFonts.gameFont.a = 1;
@@ -1756,7 +1632,7 @@ function drawGameUI() {
         g = f = 14;
         drawRect(f - 6, g - 6, 204, 196, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
         LoadedFonts.gameFont.a = 1;
-        drawText(LoadedFonts.gameFont, f, g, "LP " + partyLP[GUIState.selectingHero] + "/" + partyMaxLP[GUIState.selectingHero] + " SP (" + partySP[GUIState.selectingHero] + ")", 16777215, 0);
+        drawText(LoadedFonts.gameFont, f, g, "LP " + PartyState.partyLP[GUIState.selectingHero] + "/" + PartyState.partyMaxLP[GUIState.selectingHero] + " SP (" + PartyState.partySP[GUIState.selectingHero] + ")", 16777215, 0);
         let k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
         LoadedFonts.gameFont.a = 1;
         drawText(LoadedFonts.gameFont, f, g + 20, k[GUIState.selectedStatIndex], 16777215, 0);
@@ -1768,18 +1644,18 @@ function drawGameUI() {
             let _clicked = drawMenuButton(
                 f + 12 + _statIdx % 7 * 28, g + 46 + 28 * ~~(_statIdx / 7),
                 statXs[_statIdx],
-                "" + partyStats[_statIdx][GUIState.selectingHero],
+                "" + PartyState.partyStats[_statIdx][GUIState.selectingHero],
                 GUIState.selectedStatIndex == _statIdx ? 16737894 : 16777215
             );
             if (_clicked) {
                 if (GUIState.selectedStatIndex != _statIdx) {
                     // mouse button is held, but the cursor is hovering over another icon
                     if (isMouseReleased) GUIState.selectedStatIndex = _statIdx;
-                } else if (0 < partySP[GUIState.selectingHero] && partyStats[GUIState.selectedStatIndex][GUIState.selectingHero] < maxStats[GUIState.selectedStatIndex]) {
+                } else if (0 < PartyState.partySP[GUIState.selectingHero] && PartyState.partyStats[GUIState.selectedStatIndex][GUIState.selectingHero] < maxStats[GUIState.selectedStatIndex]) {
                     drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481);
                     if (isMouseReleased) {
-                        partyStats[GUIState.selectedStatIndex][GUIState.selectingHero]++;
-                        partySP[GUIState.selectingHero]--;
+                        PartyState.partyStats[GUIState.selectedStatIndex][GUIState.selectingHero]++;
+                        PartyState.partySP[GUIState.selectingHero]--;
                     }
                 }
             }
@@ -1792,11 +1668,11 @@ function drawGameUI() {
         g += 64;
         // show stats
         for (let _slotIdx = 0; 2 > _slotIdx; _slotIdx++) { // loop over primary and secondary
-            let _equipmentIdx = partyEquipmentTable[GUIState.selectingHero][_slotIdx];
+            let _equipmentIdx = PartyState.partyEquipmentTable[GUIState.selectingHero][_slotIdx];
             if (0 != itemList[_equipmentIdx][ItemProps.Appearance]) { // is it empty
                 if (10 > itemList[_equipmentIdx][ItemProps.Appearance]) {
                     LoadedFonts.gameFontMed.a = 4;
-                    let accessoryLevel = itemForgeLvls[_equipmentIdx];
+                    let accessoryLevel = PartyState.itemForgeLvls[_equipmentIdx];
                     if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.ArmsBonus0) && 3 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
                         accessoryLevel += countAccessoryLvlBonuses(GUIState.selectingHero, AccessoryProps.ArmsBonus0);
                     }
@@ -1812,20 +1688,20 @@ function drawGameUI() {
 
                     drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " " + accessoryLevel, -1, 0);
 
-                    let atkRangeTxt = "AT " + minAtkArray[4 * _slotIdx + GUIState.selectingHero] + "-" + maxAtkArray[4 * _slotIdx + GUIState.selectingHero];
+                    let atkRangeTxt = "AT " + PartyState.minAtkArray[4 * _slotIdx + GUIState.selectingHero] + "-" + PartyState.maxAtkArray[4 * _slotIdx + GUIState.selectingHero];
 
                     if (itemList[_equipmentIdx][ItemProps.AttackMode] === 10 ||
                         itemList[_equipmentIdx][ItemProps.AttackMode] === 11) {
-                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + GUIState.selectingHero] + ">" + ~~(getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackCooldown) * getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackPower) / 60);
+                        atkRangeTxt += " *" + PartyState.atkCountArray[4 * _slotIdx + GUIState.selectingHero] + ">" + ~~(getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackCooldown) * getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackPower) / 60);
                     } else if (0 != itemList[_equipmentIdx][ItemProps.AttackMode]) {
                         let b = getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackPower);
                         if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.EffectLightningElemBonus) && 3 == itemList[_equipmentIdx][ItemProps.ElementType] && 20 == itemList[_equipmentIdx][ItemProps.AttackMode]) {
                             b += countAccessoryLvlBonuses(GUIState.selectingHero, AccessoryProps.EffectLightningElemBonus);
                         }
-                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + GUIState.selectingHero] + ">" + b;
+                        atkRangeTxt += " *" + PartyState.atkCountArray[4 * _slotIdx + GUIState.selectingHero] + ">" + b;
                     } else {
-                        if (1 < atkCountArray[4 * _slotIdx + GUIState.selectingHero]) {
-                            atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + GUIState.selectingHero];
+                        if (1 < PartyState.atkCountArray[4 * _slotIdx + GUIState.selectingHero]) {
+                            atkRangeTxt += " *" + PartyState.atkCountArray[4 * _slotIdx + GUIState.selectingHero];
                         }
                         if (99 == getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.HitCountStat)) {
                             atkRangeTxt += " all";
@@ -1834,17 +1710,17 @@ function drawGameUI() {
                         }
                         drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 12, atkRangeTxt, 16777215, 0);
                         if (!_slotIdx) {
-                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + heroAgiValues[GUIState.selectingHero], 16777215, 0);
-                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + heroRangeValues[GUIState.selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + PartyState.heroAgiValues[GUIState.selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + PartyState.heroRangeValues[GUIState.selectingHero], 16777215, 0);
                         }
                         if (_slotIdx) {
-                            if (-1 == heroEmitValues[GUIState.selectingHero]) {
+                            if (-1 == PartyState.heroEmitValues[GUIState.selectingHero]) {
                                 drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT passive", 16777215, 0);
                             } else {
-                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT " + heroEmitValues[GUIState.selectingHero], 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT " + PartyState.heroEmitValues[GUIState.selectingHero], 16777215, 0);
                             }
                         } else {
-                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "CHARGE +" + heroChargeValues[GUIState.selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "CHARGE +" + PartyState.heroChargeValues[GUIState.selectingHero], 16777215, 0);
                             drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "SML", 16777215, 0);
                             if (0 == itemList[_equipmentIdx][ItemProps.RangeType]) {
                                 drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "    short", 16764057, 0);
@@ -1879,14 +1755,14 @@ function drawGameUI() {
                     }
                 } else {
                     LoadedFonts.gameFontMed.a = 4;
-                    drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " Lv" + itemForgeLvls[_equipmentIdx], 16777215, 0);
+                    drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " Lv" + PartyState.itemForgeLvls[_equipmentIdx], 16777215, 0);
                 }
             };
         }
         g += 96;
         k = ["ARMS", "CHARGE"];
         for (hidx = 0; 2 > hidx; hidx++) {
-            c = partyEquipmentTable[GUIState.selectingHero][hidx];
+            c = PartyState.partyEquipmentTable[GUIState.selectingHero][hidx];
             b = f + 28 * hidx;
             d = g;
             drawRect(b, d, 24, 24, 0);
@@ -1907,20 +1783,20 @@ function drawGameUI() {
         drawRect(_ox - 6, _oy - 6, 204, 260, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
         let c = inventoryItemLists[GUIState.inventoryTabIdx][28 * GUIState.inventoryPageIdx + GUIState.inventorySlotIdx];
 
-        if (0 != itemForgeLvls[c] && 1 == GUIState.currentStage && 2 >= GUIState.inventoryTabIdx) { // item upgrade panel
+        if (0 != PartyState.itemForgeLvls[c] && 1 == GUIState.currentStage && 2 >= GUIState.inventoryTabIdx) { // item upgrade panel
             drawTextCentered(LoadedFonts.gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
             hidx = getItemStatWithForge(c, ItemProps.ForgeMaxLevel);
             if (0 == hidx)
                 drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "---");
-            else if (itemForgeLvls[c] < hidx) {
-                forgePreviewItemIdx = -1;
-                h = getItemStatWithForge(c, ItemProps.ForgeCostPerLevel) * itemForgeLvls[c];
-                if (drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "G " + h) && h <= partyGold) {
-                    forgePreviewItemIdx = c;
+            else if (PartyState.itemForgeLvls[c] < hidx) {
+                PartyState.forgePreviewItemIdx = -1;
+                h = getItemStatWithForge(c, ItemProps.ForgeCostPerLevel) * PartyState.itemForgeLvls[c];
+                if (drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "G " + h) && h <= PartyState.partyGold) {
+                    PartyState.forgePreviewItemIdx = c;
                     if (isMouseClicked) {
-                        forgePreviewItemIdx = -1;
-                        partyGold = RMath.clamp(partyGold - h, 0, 9999999);
-                        itemForgeLvls[c]++;
+                        PartyState.forgePreviewItemIdx = -1;
+                        PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
+                        PartyState.itemForgeLvls[c]++;
                     }
                 }
             } else {
@@ -1928,10 +1804,10 @@ function drawGameUI() {
             }
         }
 
-        if (0 != itemForgeLvls[c]) {
+        if (0 != PartyState.itemForgeLvls[c]) {
             if (10 > itemList[c][ItemProps.Appearance]) {
                 LoadedFonts.gameFontMed.a = 4;
-                drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + itemForgeLvls[c], -1, 0);
+                drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + PartyState.itemForgeLvls[c], -1, 0);
                 h = "AT " + getItemStatWithForge(c, ItemProps.AtkMin) + "-" + getItemStatWithForge(c, ItemProps.AtkMax);
                 if (10 <= getItemStatWithForge(c, ItemProps.AttackMode) && 11 >= getItemStatWithForge(c, ItemProps.AttackMode)) {
                     h += " *" + getItemStatWithForge(c, ItemProps.ProjectileCount) + ">" + ~~(getItemStatWithForge(c, ItemProps.AttackCooldown) * getItemStatWithForge(c, ItemProps.AttackPower) / 60);
@@ -2008,7 +1884,7 @@ function drawGameUI() {
                 if (LoadedFonts.gameFontMed.a = 4, 0 == itemList[c][ItemProps.ForgeMaxLevel]) {
                     drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name], -1, 0);
                 } else {
-                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + itemForgeLvls[c], -1, 0);
+                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + PartyState.itemForgeLvls[c], -1, 0);
                     d = 1;
                     {
                         hidx = getItemStatWithForge(c, ModifierColumns.heroHealthModifier);
@@ -2046,7 +1922,7 @@ function drawGameUI() {
             
         }
 
-        forgePreviewItemIdx = -1;
+        PartyState.forgePreviewItemIdx = -1;
         k = GUIState.inventoryTabIdx;
         if (drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked) {
             GUIState.inventoryUIVisible = false;
@@ -2056,7 +1932,7 @@ function drawGameUI() {
             b = _ox + hidx % 7 * 28;
             d = _oy + 84 + 28 * ~~(hidx / 7);
             drawRect(b, d, 24, 24, 0);
-            if (0 < itemForgeLvls[c]) {
+            if (0 < PartyState.itemForgeLvls[c]) {
                 spriteAltRenderFlag = 2;
                 h = itemList[c][ItemProps.HeadwearType];
                 if (2 == GUIState.inventoryTabIdx) {
@@ -2080,54 +1956,54 @@ function drawGameUI() {
                     }
                 } else {
                     h = -1;
-                    if (partyEquipmentTable[0][k] == c) {
+                    if (PartyState.partyEquipmentTable[0][k] == c) {
                         h = 0;
-                    } else if (partyEquipmentTable[1][k] == c) {
+                    } else if (PartyState.partyEquipmentTable[1][k] == c) {
                         h = 1;
-                    } else if (partyEquipmentTable[2][k] == c) {
+                    } else if (PartyState.partyEquipmentTable[2][k] == c) {
                         h = 2;
-                    } else if (partyEquipmentTable[3][k] == c) {
+                    } else if (PartyState.partyEquipmentTable[3][k] == c) {
                         h = 3;
                     }
 
-                    if (0 != itemForgeLvls[c]) {
+                    if (0 != PartyState.itemForgeLvls[c]) {
                         if (-1 == h) {
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
                             if (isMouseReleased) {
-                                partyEquipmentTable[GUIState.selectingHero][k] = c;
+                                PartyState.partyEquipmentTable[GUIState.selectingHero][k] = c;
                             }
                         } else if (h == GUIState.selectingHero) {
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                                 0);
                             if (isMouseReleased) {
-                                partyEquipmentTable[GUIState.selectingHero][k] = 0;
+                                PartyState.partyEquipmentTable[GUIState.selectingHero][k] = 0;
                             }
                         } else {
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0);
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
                             if (isMouseReleased) {
-                                partyEquipmentTable[h][k] = 0;
-                                partyEquipmentTable[GUIState.selectingHero][k] = c;
+                                PartyState.partyEquipmentTable[h][k] = 0;
+                                PartyState.partyEquipmentTable[GUIState.selectingHero][k] = c;
                             }
                         }
                         
                     }
                 }
                 if (isMouseReleased) {
-                    itemIsNew[c] = 0;
+                    PartyState.itemIsNew[c] = 0;
                 }
             }
-            if (0 < itemIsNew[c]) {
+            if (0 < PartyState.itemIsNew[c]) {
                 drawText(LoadedFonts.gameFontSmall, b, d, "NEW", 16776960, -1);
             }
             if (0 != c) {
-                if (partyEquipmentTable[0][k] == c) {
+                if (PartyState.partyEquipmentTable[0][k] == c) {
                     drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E1", 16777215, -1);
-                } else if (partyEquipmentTable[1][k] == c) {
+                } else if (PartyState.partyEquipmentTable[1][k] == c) {
                     drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E2", 16777215, -1);
-                } else if (partyEquipmentTable[2][k] == c) {
+                } else if (PartyState.partyEquipmentTable[2][k] == c) {
                     drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E3", 16777215, -1);
-                } else if (partyEquipmentTable[3][k] == c) {
+                } else if (PartyState.partyEquipmentTable[3][k] == c) {
                     drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E4", 16777215, -1);
                 }
             }
@@ -2140,7 +2016,7 @@ function drawGameUI() {
                 }
             }
             c = 0;
-            for (b = inventoryItemLists[hidx].length - 1; 0 <= b; b--) c += itemIsNew[inventoryItemLists[hidx][b]];
+            for (b = inventoryItemLists[hidx].length - 1; 0 <= b; b--) c += PartyState.itemIsNew[inventoryItemLists[hidx][b]];
             if (0 < c) {
                 drawText(LoadedFonts.gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1);
             }
@@ -2171,8 +2047,8 @@ function drawGameUI() {
         } else {
             if (0 == bestiaryEntryState[c]) {
                 h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
-                if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= partyGold && isMouseClicked) {
-                    partyGold = RMath.clamp(partyGold - h, 0, 9999999);
+                if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= PartyState.partyGold && isMouseClicked) {
+                    PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
                     bestiaryEntryState[c] = 1;
                 }
             } else {
@@ -2207,8 +2083,8 @@ function drawGameUI() {
                 drawText(LoadedFonts.gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0);
                 if (1 == bestiaryEntryState[c]) {
                     h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
-                    if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked) {
-                        partyGold = RMath.clamp(partyGold - h, 0, 9999999);
+                    if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= PartyState.partyGold && isMouseClicked) {
+                        PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
                         bestiaryEntryState[c] = 2;
                     }
                 } else {
@@ -2244,7 +2120,7 @@ function drawGameUI() {
                                 spriteAltRenderFlag = 0;
                                 LoadedFonts.gameFontMed.a = 4;
                                 drawText(LoadedFonts.gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][ItemProps.Name], -1, 0);
-                                if (0 < itemForgeLvls[hidx]) {
+                                if (0 < PartyState.itemForgeLvls[hidx]) {
                                     drawRect(f + 80 - 6, g + 12 + 20 * d + 6, 4, 4, 0);
                                     drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168);
                                     handleInventoryButton(f + 80, g + 12 + 20 * d, 16, 16, hidx, 0);
@@ -2293,22 +2169,22 @@ function drawGameUI() {
         }
         if (0 == isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) 
             drawTextCentered(LoadedFonts.gameFont, f + 96, g + 48, "Not reached", -1, 0);
-        else for (hidx = 0; hidx < badgeIndicesByStage[GUIState.badgesUIStageIdx].length; hidx++) {
-                c = badgeIndicesByStage[GUIState.badgesUIStageIdx][hidx];
+        else for (hidx = 0; hidx < BadgeState.badgeIndicesByStage[GUIState.badgesUIStageIdx].length; hidx++) {
+                c = BadgeState.badgeIndicesByStage[GUIState.badgesUIStageIdx][hidx];
                 if (badgeList[c]) {
                     b = f + 6;
                     d = g + 6 + 24 * hidx;
                     drawRect(b - 1, d + 5, 10, 10, 0);
                     drawRect(b + 14, d, 20, 20, 0);
                     h = badgeList[c][3];
-                    if (badgeCounterArray[c] == badgeList[c][4]) {
+                    if (BadgeState.badgeCounterArray[c] == badgeList[c][4]) {
                         drawSpriteSheetPart(LoadedSprites.iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168);
                         drawSpriteSheetPartTintedScaled(LoadedSprites.medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true);
                     } else {
                         drawSpriteSheetPart(LoadedSprites.medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924);
-                        if (0 < badgeCounterArray[c]) {
+                        if (0 < BadgeState.badgeCounterArray[c]) {
                             LoadedFonts.gameFontMed.b = -1;
-                            drawTextCentered(LoadedFonts.gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1);
+                            drawTextCentered(LoadedFonts.gameFontMed, b + 3, d + 10, "" + BadgeState.badgeCounterArray[c], 16777215, -1);
                         }
                     }
                     LoadedFonts.gameFontMed.a = 3;
@@ -2343,7 +2219,7 @@ function drawGameUI() {
         }
         c = ["ON", "OFF"];
         drawText(LoadedFonts.gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
-        for (hidx = 0; hidx < partyMemberCount; hidx++) {
+        for (hidx = 0; hidx < PartyState.partyMemberCount; hidx++) {
             drawRect(f + 72 + hidx * d, g + 20, 24, 24, 0);
             drawLine(f + 72 + hidx * d + 7, g + 42, f + 72 + hidx * d + 16, g + 42, 15908203);
             drawLine(f + 72 + hidx * d + 6, g + 43, f + 72 + hidx * d + 17, g + 43, 15908203);
@@ -2352,21 +2228,21 @@ function drawGameUI() {
                 l[b].y = g + 20 + t[b];
             }
             drawHero(hidx, l, 0, 1, 15908203, 16777215, 2);
-            drawTextCentered(LoadedFonts.gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16777215, 0);
+            drawTextCentered(LoadedFonts.gameFontMed, f + 84 + hidx * d, g + 52, c[PartyState.autoMoveEnabled[hidx]], 16777215, 0);
             if (buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40)) {
                 fillEmptyPixelsRect(f + 72 + hidx * d, g + 20, 24, 24, 8388608);
-                drawTextCentered(LoadedFonts.gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16711680, 0);
+                drawTextCentered(LoadedFonts.gameFontMed, f + 84 + hidx * d, g + 52, c[PartyState.autoMoveEnabled[hidx]], 16711680, 0);
                 if (isMouseClicked) {
-                    autoMoveEnabled[hidx] = 1 - autoMoveEnabled[hidx];
+                    PartyState.autoMoveEnabled[hidx] = 1 - PartyState.autoMoveEnabled[hidx];
                 }
             }
         }
         drawText(LoadedFonts.gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
-        drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16777215, 0);
+        drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[PartyState.cliffStopEnabled], 16777215, 0);
         if (buttonCheck(f + 0, g + 64 - 2, 192, 12)) {
-            drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16711680, 0);
+            drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[PartyState.cliffStopEnabled], 16711680, 0);
             if (isMouseClicked) {
-                cliffStopEnabled = 1 - cliffStopEnabled;
+                PartyState.cliffStopEnabled = 1 - PartyState.cliffStopEnabled;
             }
         }
         if (1 == GUIState.currentStage) {
@@ -2377,8 +2253,8 @@ function drawGameUI() {
         }
         h = stageListArray[GUIState.currentStage][StageProps.stageReturnCost];
         if (drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h)) {
-            if (h <= partyGold && isMouseClicked) {
-                partyGold = RMath.clamp(partyGold - h, 0, 9999999);
+            if (h <= PartyState.partyGold && isMouseClicked) {
+                PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
                 if (1 == GUIState.currentStage) {
                     GUIState.gameScreenState = 0;
                 } else {
@@ -2407,7 +2283,7 @@ function drawGameUI() {
             GUIState.shrineUIVisible = false;
         }
         for (hidx = h = 0; hidx < badgeList.length; hidx++)
-            if (badgeList[hidx] && badgeCounterArray[hidx] == badgeList[hidx][4]) {
+            if (badgeList[hidx] && BadgeState.badgeCounterArray[hidx] == badgeList[hidx][4]) {
                 h++;
             }
         LoadedFonts.gameFontMed.a = 3;
@@ -2446,22 +2322,22 @@ function drawGameUI() {
             for (shrineRewardClaimed[c] = 1, GUIState.shrineUIVisible = false, hidx = 0; 100 > hidx;) {
                 f = RMath.randIntRange(2, 78);
                 g = RMath.randIntRange(1, 44);
-                25 >= stageTileData[g][f] || (h = RMath.floor(100 * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
+                25 >= stageTileData[g][f] || (h = RMath.floor(100 * (100 + PartyState.partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         } else if (1 == c)
             for (shrineRewardClaimed[c] = 1, hidx = 0; 4 > hidx; hidx++)
-                for (b = 0; b < partyStats.length; b++) {
-                    partySP[hidx] += partyStats[b][hidx];
-                    partyStats[b][hidx] = 0;
+                for (b = 0; b < PartyState.partyStats.length; b++) {
+                    PartyState.partySP[hidx] += PartyState.partyStats[b][hidx];
+                    PartyState.partyStats[b][hidx] = 0;
         } else if (2 == c) {
             shrineRewardClaimed[c] = 1;
-            stageEventFlags[3] = 1;
-            collectedStageFlagsCount++;
+            PartyState.stageEventFlags[3] = 1;
+            PartyState.collectedStageFlagsCount++;
         } else if (3 == c){
             for (shrineRewardClaimed[c] = 1, hidx = 0; 2 > hidx; hidx++){
-                if (99 > partyLevel) {
-                    partyEXPAccum = GUIState.LevelExpThresholds[partyLevel];
-                    partyLevel++;
-                    for (b = 0; 4 > b; b++) partySP[b] += 2;
+                if (99 > PartyState.partyLevel) {
+                    PartyState.partyEXPAccum = GUIState.LevelExpThresholds[PartyState.partyLevel];
+                    PartyState.partyLevel++;
+                    for (b = 0; 4 > b; b++) PartyState.partySP[b] += 2;
                     levelUpPopupTimer = 60;
                 }
             }
@@ -2567,7 +2443,7 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
         l, n, w = 1E3,
         B = -1;
     _modelFlag = 0 == _modelFlag ? 29 : 23;
-    for (var M = 0; M < partyMemberCount; M++) {
+    for (var M = 0; M < PartyState.partyMemberCount; M++) {
         if (heroUpperJointMode[M] != areUpperJointsDisabled) {
             k = heroJointPositionsByHero[M][2];
             if (!(k.x > _halfW || k.x < g || k.y > _halfH || k.y < h)) {
@@ -2603,7 +2479,7 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
     var l = _cx - _h - 10;
     _w = _cy + _w + 5;
     _h = _cx + _h + 10;
-    for (var n, w = new RMath.Vec2(), B = new RMath.Vec2(), M, J, y = -1, x = 0; x < partyMemberCount; x++) {
+    for (var n, w = new RMath.Vec2(), B = new RMath.Vec2(), M, J, y = -1, x = 0; x < PartyState.partyMemberCount; x++) {
         if (heroUpperJointMode[x] != areUpperJointsDisabled) {
             n = heroJointPositionsByHero[x][2];
             if (!(n.x > _w || n.x < __unused || n.y > _h || n.y < l)) {
@@ -2624,17 +2500,17 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                     J = 16711680;
                     heroHitFlashTimer[x] = 2;
                     if (0 == attackType) {
-                        y = RMath.max(y - heroMeleeDefensesFlatArray[x], 1);
+                        y = RMath.max(y - PartyState.heroMeleeDefensesFlatArray[x], 1);
                     } else {
                         if (6 == attackType) {
-                            y = RMath.max(y - heroProjDefenseFlatArray[x], 1);
+                            y = RMath.max(y - PartyState.heroProjDefenseFlatArray[x], 1);
                         } else {
                             if (1 <= attackType) {
-                                y = RMath.max(RMath.floor(y * (100 - heroMagicDefenseFlatArray[x]) / 100), 1);
+                                y = RMath.max(RMath.floor(y * (100 - PartyState.heroMagicDefenseFlatArray[x]) / 100), 1);
                             }
                         }
                     }
-                    if (RMath.randFloat(100) < heroDodgeChanceArray[x]) {
+                    if (RMath.randFloat(100) < PartyState.heroDodgeChanceArray[x]) {
                         y = 0;
                         J = 16744576;
                         heroHitFlashTimer[x] = 0;
@@ -2681,13 +2557,13 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                             }
                         }
                     }
-                    partyLP[x] -= y;
+                    PartyState.partyLP[x] -= y;
                     spawnPopup(heroJointPositionsByHero[x][0].x, heroJointPositionsByHero[x][0].y, M, y, 60, J);
                     stage_partyDamageTaken += y;
-                    if (0 > partyLP[x])
-                        for (y = RMath.max(~~-partyLP[x], 1), n = partyLP[x] = 0; n < partyMemberCount; n++)
+                    if (0 > PartyState.partyLP[x])
+                        for (y = RMath.max(~~-PartyState.partyLP[x], 1), n = PartyState.partyLP[x] = 0; n < PartyState.partyMemberCount; n++)
                             if (x != n) {
-                                partyLP[n] = RMath.clamp(partyLP[n] - y, 0, partyMaxLP[n]);
+                                PartyState.partyLP[n] = RMath.clamp(PartyState.partyLP[n] - y, 0, PartyState.partyMaxLP[n]);
                                 spawnPopup(heroJointPositionsByHero[n][0].x, heroJointPositionsByHero[n][0].y, M, y, 60, J);
                                 stage_partyDamageTaken += y;
                             }
@@ -2717,7 +2593,7 @@ function pickHeroJointUnderMouse() { // vi
                     draggedJointIndex = 0;
                 }
             }
-            for (var d = 0; d < partyMemberCount; d++)
+            for (var d = 0; d < PartyState.partyMemberCount; d++)
                 if (heroUpperJointMode[d] != areUpperJointsDisabled)
                     for (var f = 0; 10 > f; f++) {
                         a.x = mouseXCurrent - heroJointPrevPositionsByHero[d][f].x;
@@ -2744,7 +2620,7 @@ function pickHeroJointUnderMouse() { // vi
 function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
     console.log(`spawnHeroAttackPattern(${heroIdx}, ${limbDesc}, ${itemSlot}, ${originX}, ${originY}, ${targetEnemyIdx})`);
     let projDir = new RMath.Vec2(),
-        selectedItemIdx = partyEquipmentTable[heroIdx][itemSlot],
+        selectedItemIdx = PartyState.partyEquipmentTable[heroIdx][itemSlot],
         selectedItem = itemList[selectedItemIdx],
         limbSel = selectedItem[ItemProps.LimbSelection];
     switch (limbSel) {
@@ -2795,13 +2671,13 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
         projEffect = selectedItem[ItemProps.ProjectileEffectType],
         projEffectDur = selectedItem[ItemProps.ProjectileEffectDuration],
         itemHitCountMod = getModifiedStatVal(heroIdx, selectedItemIdx, ItemProps.HitCountStat),
-        minAtk = minAtkArray[4 * itemSlot + heroIdx],
-        maxAtk = maxAtkArray[4 * itemSlot + heroIdx];
+        minAtk = PartyState.minAtkArray[4 * itemSlot + heroIdx],
+        maxAtk = PartyState.maxAtkArray[4 * itemSlot + heroIdx];
     if (heroHasAccessoryEffect(heroIdx, AccessoryProps.EffectPhysicalProcChance) && 0 == selectedItem[ItemProps.ElementType] && RMath.randFloat(100) < countAccessoryLvlBonuses(heroIdx, AccessoryProps.EffectPhysicalProcChance)) {
         minAtk = RMath.floor(minAtk * (100 + sumAccessorySecondaryValues(heroIdx, AccessoryProps.EffectPhysicalProcChance)) / 100);
         maxAtk = RMath.floor(maxAtk * (100 + sumAccessorySecondaryValues(heroIdx, AccessoryProps.EffectPhysicalProcChance)) / 100);
     }
-    itemSlot = atkCountArray[4 * itemSlot + heroIdx];
+    itemSlot = PartyState.atkCountArray[4 * itemSlot + heroIdx];
     let itemProjSpd = selectedItem[ItemProps.ProjectileSpeed],
         itemEType = selectedItem[ItemProps.ElementType],
         itemBonus = getModifiedStatVal(heroIdx, selectedItemIdx, ItemProps.IceBonusPercent);
@@ -2971,7 +2847,7 @@ function updatePartyMemberAI(memberIdx) { // Di
     let b = heroJointPositionsByHero[memberIdx][2].x,
         c = heroJointPositionsByHero[memberIdx][2].y;
     
-    if (autoMoveEnabled[memberIdx] == 1)
+    if (PartyState.autoMoveEnabled[memberIdx] == 1)
         return;
     let nearestEnem = findEnemyInArea(heroJointPositionsByHero[memberIdx][0].x, heroJointPositionsByHero[memberIdx][0].y, 200, 50);
 
@@ -3000,7 +2876,7 @@ function updatePartyMemberAI(memberIdx) { // Di
             k = heroJointPositionsByHero[memberIdx][9].x > heroJointPositionsByHero[memberIdx][10].x ? 7 : 8;
             heroBodyDrawStateByHero[memberIdx][2] = 0;
         }
-        if (!cliffStopEnabled) {
+        if (!PartyState.cliffStopEnabled) {
             h = getStageTileAt(b + 20 * f, c + 8 + 0);
             let p = getStageTileAt(b + 20 * f, c + 8 + 8),
                 t = getStageTileAt(b + 20 * f, c + 8 + 16),
@@ -3043,11 +2919,11 @@ function updatePlayerParty() {
         g = new RMath.Vec2(),
         h = new RMath.Vec2();
     pickHeroJointUnderMouse();
-    for (a = 0; a < partyMemberCount; a++) {
-        if (0 < heroTimedDamageTimer[a] && (heroTimedDamageTimer[a]--, d = RMath.floor(heroTimedDamageAmount[a] / 60), b = heroTimedDamageAmount[a] - 60 * d, RMath.randFloat(60) < b && (d += 1), partyLP[a] -= d, stage_partyDamageTaken += d, 0 > partyLP[a]))
-            for (c = 0 == heroBodyDrawStateByHero[a][2] ? 1 : -1, d = RMath.max(~~-partyLP[a], 1), b = partyLP[a] = 0; b < partyMemberCount; b++)
+    for (a = 0; a < PartyState.partyMemberCount; a++) {
+        if (0 < heroTimedDamageTimer[a] && (heroTimedDamageTimer[a]--, d = RMath.floor(heroTimedDamageAmount[a] / 60), b = heroTimedDamageAmount[a] - 60 * d, RMath.randFloat(60) < b && (d += 1), PartyState.partyLP[a] -= d, stage_partyDamageTaken += d, 0 > PartyState.partyLP[a]))
+            for (c = 0 == heroBodyDrawStateByHero[a][2] ? 1 : -1, d = RMath.max(~~-PartyState.partyLP[a], 1), b = PartyState.partyLP[a] = 0; b < PartyState.partyMemberCount; b++)
                 if (a != b) {
-                    partyLP[b] = RMath.clamp(partyLP[b] - d, 0, partyMaxLP[b]);
+                    PartyState.partyLP[b] = RMath.clamp(PartyState.partyLP[b] - d, 0, PartyState.partyMaxLP[b]);
                     spawnPopup(heroJointPositionsByHero[b][0].x, heroJointPositionsByHero[b][0].y, c, d, 60, 16711680);
                     stage_partyDamageTaken += d;
                 }
@@ -3079,7 +2955,7 @@ function updatePlayerParty() {
                 } else {
                     stepWithVerticalBias(heroJointPositionsByHero[a][b], heroJointPrevPositionsByHero[a][b], .05, .99);
                 }
-            for (b = d = 0; b < partyMemberCount; b++) d += partyLP[b];
+            for (b = d = 0; b < PartyState.partyMemberCount; b++) d += PartyState.partyLP[b];
             if (0 == d && heroUpperJointMode[a] != areUpperJointsDisabled)
                 for (heroUpperJointMode[a] = areUpperJointsDisabled, b = heroAttackCooldownFrames[a] = 0; 11 > b; b++) {
                     heroJointPositionsByHero[a][b].x += RMath.randFloatRange(-2, 2);
@@ -3088,9 +2964,9 @@ function updatePlayerParty() {
                 }
             if (heroUpperJointMode[a] != areUpperJointsDisabled) {
                 if (1 == GUIState.currentStage) {
-                    if (partyLP[a] < partyMaxLP[a]) {
+                    if (PartyState.partyLP[a] < PartyState.partyMaxLP[a]) {
                         if (1 > RMath.randFloat(100)) {
-                            partyLP[a] = RMath.clamp(partyLP[a] + 5, 0, partyMaxLP[a]);
+                            PartyState.partyLP[a] = RMath.clamp(PartyState.partyLP[a] + 5, 0, PartyState.partyMaxLP[a]);
                             spawnPopup(heroJointPositionsByHero[a][0].x, heroJointPositionsByHero[a][0].y, 0, 5, 60, 65280);
                         }
                     }
@@ -3099,48 +2975,48 @@ function updatePlayerParty() {
                     heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x += .2 * (mouseXCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].x);
                     heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y += .2 * (mouseYCurrent - heroJointPositionsByHero[draggedHeroIndex][draggedJointIndex].y);
                 }
-                b = itemList[partyEquipmentTable[a][0]][ItemProps.Appearance];
-                c = heroRangeValues[a];
+                b = itemList[PartyState.partyEquipmentTable[a][0]][ItemProps.Appearance];
+                c = PartyState.heroRangeValues[a];
                 d = heroJointPositionsByHero[a][1].x;
                 var k = heroJointPositionsByHero[a][1].y;
                 c = findEnemyInArea(d, k, c, c);
-                if (-1 == heroEmitValues[a]) {
-                    if (0 < heroEmitCooldown[a]) {
-                        heroEmitCooldown[a]--;
+                if (-1 == PartyState.heroEmitValues[a]) {
+                    if (0 < PartyState.heroEmitCooldown[a]) {
+                        PartyState.heroEmitCooldown[a]--;
                     }
-                    if (0 == heroEmitCooldown[a]) {
+                    if (0 == PartyState.heroEmitCooldown[a]) {
                         k = findEnemyInArea(d, k, 999, 999);
                         if (-1 != k) {
                             spawnHeroAttackPattern(a, 1540, 1, heroJointPositionsByHero[a][6].x, heroJointPositionsByHero[a][6].y, k);
-                            heroEmitCooldown[a] = itemList[partyEquipmentTable[a][1]][ItemProps.AttackCooldown];
+                            PartyState.heroEmitCooldown[a] = itemList[PartyState.partyEquipmentTable[a][1]][ItemProps.AttackCooldown];
                         }
                     }
                 }
                 if (0 < heroAttackCooldownFrames[a]) heroAttackCooldownFrames[a]--;
                 else if (draggedHeroIndex != a && 0 != b && -1 != c) {
-                    heroAttackCooldownFrames[a] = heroAgiValues[a] + RMath.randIntRange(-1, 1);
+                    heroAttackCooldownFrames[a] = PartyState.heroAgiValues[a] + RMath.randIntRange(-1, 1);
                     heroBodyDrawStateByHero[a][2] = d < enemyJointPosArray[c][enemyTargetJointIdx].x ? 1 : 0;
                     k = 0;
-                    if (-1 == heroEmitValues[a]) {
-                        heroEmitCurrent[a] =
+                    if (-1 == PartyState.heroEmitValues[a]) {
+                        PartyState.heroEmitCurrent[a] =
                             0;
                         attackWeaponSlotIdx[a] = 0;
                     } else {
-                        if (heroEmitCurrent[a] < heroEmitValues[a] || 0 == heroEmitValues[a]) {
-                            heroEmitCurrent[a] = RMath.clamp(heroEmitCurrent[a] + heroChargeValues[a], 0, heroEmitValues[a]);
+                        if (PartyState.heroEmitCurrent[a] < PartyState.heroEmitValues[a] || 0 == PartyState.heroEmitValues[a]) {
+                            PartyState.heroEmitCurrent[a] = RMath.clamp(PartyState.heroEmitCurrent[a] + PartyState.heroChargeValues[a], 0, PartyState.heroEmitValues[a]);
                             attackWeaponSlotIdx[a] = 0;
                             if (heroHasAccessoryEffect(a, AccessoryProps.EffectEmitFullChargeChance_duringCharge)) {
                                 if (100 * RMath.rand() < countAccessoryLvlBonuses(a, AccessoryProps.EffectEmitFullChargeChance_duringCharge)) {
-                                    heroEmitCurrent[a] = heroEmitValues[a];
+                                    PartyState.heroEmitCurrent[a] = PartyState.heroEmitValues[a];
                                 }
                             }
                         } else {
-                            heroEmitCurrent[a] = 0;
+                            PartyState.heroEmitCurrent[a] = 0;
                             attackWeaponSlotIdx[a] = 1;
-                            b = itemList[partyEquipmentTable[a][1]][ItemProps.Appearance];
+                            b = itemList[PartyState.partyEquipmentTable[a][1]][ItemProps.Appearance];
                             if (heroHasAccessoryEffect(a, AccessoryProps.EffectEmitFullChargeChance_onFire)) {
                                 if (100 * RMath.rand() < countAccessoryLvlBonuses(a, AccessoryProps.EffectEmitFullChargeChance_onFire)) {
-                                    heroEmitCurrent[a] = heroEmitValues[a];
+                                    PartyState.heroEmitCurrent[a] = PartyState.heroEmitValues[a];
                                 }
                             }
                         }
@@ -3284,7 +3160,7 @@ function updatePlayerParty() {
             heroJoint4HistoryByHero[a][heroPoseTrailWriteIdxByHero[a]].set(heroJointPositionsByHero[a][4]);
             if (0 < heroAttackTrailTimerByHero[a]) {
                 heroAttackTrailTimerByHero[a]--;
-                b = itemList[partyEquipmentTable[a][attackWeaponSlotIdx[a]]][ItemProps.Appearance];
+                b = itemList[PartyState.partyEquipmentTable[a][attackWeaponSlotIdx[a]]][ItemProps.Appearance];
                 if (2 != b) {
                     heroAttackTrailTimerByHero[a] = 0;
                 }
@@ -3356,7 +3232,7 @@ function updatePlayerParty() {
 function drawPlayerParty() {
     var a, b, c, d, f, g, h = new RMath.Vec2(),
         k = new RMath.Vec2();
-    for (a = 0; a < partyMemberCount; a++) {
+    for (a = 0; a < PartyState.partyMemberCount; a++) {
         d = 15908203;
         f = 16777215;
         if (0 < heroStatusTintTimer[a]) {
@@ -3382,7 +3258,7 @@ function drawPlayerParty() {
         isSolidRender = spriteAltRenderFlag = 0;
         drawHero(a, heroJointPositionsByHero[a], heroBodyDrawStateByHero[a][0], heroBodyDrawStateByHero[a][1], d, f, heroUpperJointMode[a]);
         if (0 < heroAttackTrailTimerByHero[a]) {
-            b = partyEquipmentTable[a][attackWeaponSlotIdx[a]];
+            b = PartyState.partyEquipmentTable[a][attackWeaponSlotIdx[a]];
             c = itemList[b][ItemProps.ProjectileSpeedScale];
             d = itemList[b][ItemProps.ProjectileDelayRange];
             f = d >> 24 & 255;
@@ -3679,7 +3555,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     drawRectOutline(~~joints[0].x - 2, ~~joints[0].y - 2, 5, 5, headColor);
     //*/
     // draw items/accessories
-    let headwearType = itemList[partyEquipmentTable[heroIdx][2]][ItemProps.HeadwearType]; // headwear type
+    let headwearType = itemList[PartyState.partyEquipmentTable[heroIdx][2]][ItemProps.HeadwearType]; // headwear type
     if (headwearType != 0) {
         if (heroBodyDrawStateByHero[heroIdx][2] == 0)
             drawSpriteSheetPartTintedScaled(
@@ -3688,7 +3564,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 16, 16,
                 16 * (headwearType & 15) + 0, 16 * (headwearType >> 4),
                 16, 16,
-                itemList[partyEquipmentTable[heroIdx][2]][ItemProps.SpriteSourceX], itemList[partyEquipmentTable[heroIdx][2]][ModifierColumns.itemSpriteLocY],
+                itemList[PartyState.partyEquipmentTable[heroIdx][2]][ItemProps.SpriteSourceX], itemList[PartyState.partyEquipmentTable[heroIdx][2]][ModifierColumns.itemSpriteLocY],
                 false
             );
         else
@@ -3699,7 +3575,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
                 16, 16,
                 16 * (headwearType & 15) + 16, 16 * (headwearType >> 4),
                 -16, 16,
-                itemList[partyEquipmentTable[heroIdx][2]][ItemProps.SpriteSourceX], itemList[partyEquipmentTable[heroIdx][2]][ModifierColumns.itemSpriteLocY],
+                itemList[PartyState.partyEquipmentTable[heroIdx][2]][ItemProps.SpriteSourceX], itemList[PartyState.partyEquipmentTable[heroIdx][2]][ModifierColumns.itemSpriteLocY],
                 false
             );
     }
@@ -3707,7 +3583,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     var baseDrawPos = new RMath.Vec2();
 
     for (let toolIdx = 0; toolIdx < 2; toolIdx++) {
-        let p = partyEquipmentTable[heroIdx][toolIdx ? d : c];
+        let p = PartyState.partyEquipmentTable[heroIdx][toolIdx ? d : c];
         let appearanceType = itemList[p][ItemProps.Appearance];
         p = itemList[p][ItemProps.SpriteSourceX];
         let t = joints[5 + toolIdx];
@@ -3935,7 +3811,7 @@ function loadLevelData(a) {
         }
     }
 
-    for (let a = 0; 4 > a; a++) heroEmitCooldown[a] = 0;
+    for (let a = 0; 4 > a; a++) PartyState.heroEmitCooldown[a] = 0;
     resetDragSelection();
     for (let a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXByHero[a], partySpawnYByHero[a]);
     for (let a = 0; 20 > a; a++) {
@@ -3988,7 +3864,7 @@ function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
 function updateStageEdgeSpawns() { // wg
     var a;
     if (12 == GUIState.gameScreenState)
-        for (a = 0; a < partyMemberCount; a++)
+        for (a = 0; a < PartyState.partyMemberCount; a++)
             if (heroUpperJointMode[a] != areUpperJointsDisabled) {
                 var b = heroJointPositionsByHero[a][1].x,
                     c = heroJointPositionsByHero[a][1].y;
@@ -4053,13 +3929,13 @@ function updateStageEdgeSpawns() { // wg
         }
     if (!d && 0 == stageClearBaseGoldPerHero) {
         for (a = 0; 20 > a; a++) stageClearBaseGoldPerHero += totalSpawnedCountByGroup[a];
-        stageClearBaseGoldPerHero = RMath.floor((stageClearBaseGoldPerHero + partyMemberCount - 1) / partyMemberCount);
+        stageClearBaseGoldPerHero = RMath.floor((stageClearBaseGoldPerHero + PartyState.partyMemberCount - 1) / PartyState.partyMemberCount);
         if (0 < stageClearBaseGoldPerHero) {
             b = 100 + comboMultBonus;
             comboMultBonus += stageClearBaseGoldPerHero;
             stageClearBaseGoldPerHero = RMath.floor(stageClearBaseGoldPerHero * b / 100);
             stageClearPopupTimer = 60;
-            partyGold = RMath.clamp(partyGold + stageClearBaseGoldPerHero * partyMemberCount, 0, 9999999);
+            PartyState.partyGold = RMath.clamp(PartyState.partyGold + stageClearBaseGoldPerHero * PartyState.partyMemberCount, 0, 9999999);
             if (isBadgeIncompleteForCurrentStage(0)) {
                 IncrementBadgeCount(0);
             }
@@ -4127,8 +4003,8 @@ function updateStageEdgeSpawns() { // wg
                 }
             }
             if (19 == GUIState.currentStage) {
-                if (0 == stageEventFlags[1]) {
-                    stageEventFlags[1] = 1;
+                if (0 == PartyState.stageEventFlags[1]) {
+                    PartyState.stageEventFlags[1] = 1;
                 }
             }
             spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215);
@@ -4209,8 +4085,8 @@ function drawGameStage() {
     } else
     if (18 == GUIState.currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
-            for (h = 0; h < partyMemberCount && !(b = RMath.clamp(heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = RMath.clamp(heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
-            h == partyMemberCount || gameFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
+            for (h = 0; h < PartyState.partyMemberCount && !(b = RMath.clamp(heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = RMath.clamp(heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
+            h == PartyState.partyMemberCount || gameFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
 }
@@ -4221,7 +4097,7 @@ function initStageState() { // cj
     stageFlagUseCount = stageConditionMask = stageEncounterCounter = consecutiveConditionFrameCount = gameFrameCounter = stage_totalDamageDealt = stage_partyDamageTaken = 0;
     let a, b, c, d;
     if (17 == GUIState.currentStage) {
-        b = partyGold % 100;
+        b = PartyState.partyGold % 100;
         for (a = 0; a < b;) {
             c = ~~RMath.randFloatRange(27, 70);
             d = RMath.randFloat(2.1);
@@ -4263,7 +4139,7 @@ function updateStageTick() { // xg
 
     g = RMath.clamp(heroJointPositionsByHero[GUIState.selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
     h = RMath.clamp(heroJointPositionsByHero[GUIState.selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
-    for (a = 0; a < partyMemberCount; a++) {
+    for (a = 0; a < PartyState.partyMemberCount; a++) {
         c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
         d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
         if (k > c) {
@@ -4293,7 +4169,7 @@ function updateStageTick() { // xg
                 } else if (1 > RMath.randFloat(14)) {
                     a = 7;
                 }
-                a = RMath.floor(a * (100 + partyRewardValueBonusPercent) / 100);
+                a = RMath.floor(a * (100 + PartyState.partyRewardValueBonusPercent) / 100);
                 spawnDrop(8 * n +
                     4, 8 * w + 4, 2, a, 0);
                 if (isBadgeIncompleteForCurrentStage(3)) {
@@ -4379,11 +4255,11 @@ function updateStageTick() { // xg
         }
     } else if (2 != GUIState.currentStage)
         if (3 == GUIState.currentStage) {
-            if (1 == partyMemberCount && 0 == activeSpawnCountByGroup[0]) {
-                resetHeroPose(partyMemberCount, 25, 14);
-                partyMemberCount++;
+            if (1 == PartyState.partyMemberCount && 0 == activeSpawnCountByGroup[0]) {
+                resetHeroPose(PartyState.partyMemberCount, 25, 14);
+                PartyState.partyMemberCount++;
             }
-            if (2 <= partyMemberCount) {
+            if (2 <= PartyState.partyMemberCount) {
                 fillStageTilesRect(25, 13, 25, 14, 64);
                 fillStageTilesRect(31, 11, 31, 14, 64);
             }
@@ -4416,7 +4292,7 @@ function updateStageTick() { // xg
                 spawnDrop(132, 332, 3, 1, 0);
             }
             if (isBadgeIncompleteForCurrentStage(7)) {
-                for (a = b = 0; a < partyMemberCount; a++) {
+                for (a = b = 0; a < PartyState.partyMemberCount; a++) {
                     c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
                     d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                     if (8 <= c && 15 >= c && 19 <= d && 21 >= d) {
@@ -4434,21 +4310,21 @@ function updateStageTick() { // xg
                 consecutiveConditionFrameCount++;
             }
         } else if (4 == GUIState.currentStage) {
-        if (2 == partyMemberCount && 0 == activeSpawnCountByGroup[1] && 0 != totalSpawnedCountByGroup[1]) {
-            resetHeroPose(partyMemberCount, 55, 40);
-            partyMemberCount++;
+        if (2 == PartyState.partyMemberCount && 0 == activeSpawnCountByGroup[1] && 0 != totalSpawnedCountByGroup[1]) {
+            resetHeroPose(PartyState.partyMemberCount, 55, 40);
+            PartyState.partyMemberCount++;
         }
-        if (3 <= partyMemberCount) {
+        if (3 <= PartyState.partyMemberCount) {
             fillStageTilesRect(55, 39, 55, 40, 32);
             fillStageTilesRect(77, 38, 77, 41, 32);
         }
-        if (2 == partyMemberCount && 0 == totalSpawnedCountByGroup[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
+        if (2 == PartyState.partyMemberCount && 0 == totalSpawnedCountByGroup[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
             for (a = 0; 20 > a; a++) {
                 spawnEnemy(RMath.randIntRange(56, 76), RMath.randIntRange(33, 38), 5, 0);
                 activeSpawnCountByGroup[0]++;
                 totalSpawnedCountByGroup[0]++;
             }
-        if ((3 <= partyMemberCount || 0 == activeSpawnCountByGroup[0] && 0 != totalSpawnedCountByGroup[0]) && 0 == totalSpawnedCountByGroup[1]) {
+        if ((3 <= PartyState.partyMemberCount || 0 == activeSpawnCountByGroup[0] && 0 != totalSpawnedCountByGroup[0]) && 0 == totalSpawnedCountByGroup[1]) {
             spawnEnemy(65, 35, 16, 1);
             activeSpawnCountByGroup[1] = 1;
             totalSpawnedCountByGroup[1] = 1;
@@ -4474,9 +4350,9 @@ function updateStageTick() { // xg
             }
         }
     } else if (5 == GUIState.currentStage) {
-        if (3 == partyMemberCount && 0 == activeSpawnCountByGroup[0] && 0 == activeSpawnCountByGroup[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 2 || IncrementBadgeCount(16),
+        if (3 == PartyState.partyMemberCount && 0 == activeSpawnCountByGroup[0] && 0 == activeSpawnCountByGroup[1] && (resetHeroPose(PartyState.partyMemberCount, 17, 5), PartyState.partyMemberCount++), 4 == PartyState.partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 2 || IncrementBadgeCount(16),
             !isBadgeIncompleteForCurrentStage(17) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
-            for (a = b = 0; a < partyMemberCount; a++) {
+            for (a = b = 0; a < PartyState.partyMemberCount; a++) {
                 c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
                 d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (56 <= c && 59 >= c && 39 <= d && 41 >= d) {
@@ -4536,7 +4412,7 @@ function updateStageTick() { // xg
             }
         }
         if (isBadgeIncompleteForCurrentStage(23)) {
-            for (a = b = 0; a < partyMemberCount; a++)
+            for (a = b = 0; a < PartyState.partyMemberCount; a++)
                 if (0 < heroSkipTimer[a]) {
                     b++;
                 } if (4 == b) {
@@ -4553,7 +4429,7 @@ function updateStageTick() { // xg
             totalSpawnedCountByGroup[3]++;
         }
         if (isBadgeIncompleteForCurrentStage(27)) {
-            for (a = 0; a < partyMemberCount; a++) {
+            for (a = 0; a < PartyState.partyMemberCount; a++) {
                 c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
                 d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (2 <= c && 15 >= c && 29 <= d && 36 >= d) {
@@ -4563,8 +4439,8 @@ function updateStageTick() { // xg
             0 != activeSpawnCountByGroup[4] || stageConditionMask || IncrementBadgeCount(27);
         }
         if (isBadgeIncompleteForCurrentStage(28)) {
-            for (a = 0; a < partyMemberCount && 0 == heroTileContactFlags[a]; a++);
-            if (a == partyMemberCount) {
+            for (a = 0; a < PartyState.partyMemberCount && 0 == heroTileContactFlags[a]; a++);
+            if (a == PartyState.partyMemberCount) {
                 consecutiveConditionFrameCount++;
             } else {
                 consecutiveConditionFrameCount = 0;
@@ -4597,7 +4473,7 @@ function updateStageTick() { // xg
         }
         if (isBadgeIncompleteForCurrentStage(33)) {
             for (a =
-                b = 0; a < partyMemberCount; a++) {
+                b = 0; a < PartyState.partyMemberCount; a++) {
                 c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
                 d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (26 == stageTileData[d][c]) {
@@ -4639,7 +4515,7 @@ function updateStageTick() { // xg
             }
         }
         if (isBadgeIncompleteForCurrentStage(39)) {
-            for (a = b = 0; a < partyMemberCount; a++)
+            for (a = b = 0; a < PartyState.partyMemberCount; a++)
                 if (0 < heroTimedDamageTimer[a]) {
                     b++;
                 } if (4 == b) {
@@ -4673,8 +4549,8 @@ function updateStageTick() { // xg
         }
     } else if (14 == GUIState.currentStage) {
         if (isBadgeIncompleteForCurrentStage(53)) {
-            for (a = 0; a < partyMemberCount && 2 == heroTileContactFlags[a]; a++);
-            if (a == partyMemberCount) {
+            for (a = 0; a < PartyState.partyMemberCount && 2 == heroTileContactFlags[a]; a++);
+            if (a == PartyState.partyMemberCount) {
                 consecutiveConditionFrameCount++;
             } else {
                 consecutiveConditionFrameCount = 0;
@@ -4776,7 +4652,7 @@ function updateStageTick() { // xg
         }
         !isBadgeIncompleteForCurrentStage(62) || 0 != activeSpawnCountByGroup[10] || stageConditionMask & 1 || IncrementBadgeCount(62);
         if (isBadgeIncompleteForCurrentStage(63)) {
-            for (a = 0; a < partyMemberCount; a++) {
+            for (a = 0; a < PartyState.partyMemberCount; a++) {
                 c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
                 d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
                 if (58 <= c && 76 >= c && 36 <= d && 42 >= d) {
@@ -4791,7 +4667,7 @@ function updateStageTick() { // xg
             }
         }
     } else if (17 == GUIState.currentStage) {
-        for (a = 0; a < partyMemberCount; a++) {
+        for (a = 0; a < PartyState.partyMemberCount; a++) {
             if (0 < heroTimedDamageTimer[a]) {
                 stageConditionMask = 1;
             } 
@@ -5296,9 +5172,9 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
 
 
 function onEnemyDeath(_enemyIdx) { // cl
-    let lvlDiff = RMath.abs(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.Level] - partyLevel);
-    let expRewardValue = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.ExpReward] * (100 + partyEnemyHpBonusPercent) / 100);
-    if (stageMaxEnemyLevel + 10 <= partyLevel) {
+    let lvlDiff = RMath.abs(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.Level] - PartyState.partyLevel);
+    let expRewardValue = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.ExpReward] * (100 + PartyState.partyEnemyHpBonusPercent) / 100);
+    if (stageMaxEnemyLevel + 10 <= PartyState.partyLevel) {
         expRewardValue = 0;
     } else if (10 > lvlDiff) {
         expRewardValue = RMath.floor(expRewardValue * (10 - lvlDiff) / 10);
@@ -5306,27 +5182,27 @@ function onEnemyDeath(_enemyIdx) { // cl
         expRewardValue = 1;
     }
 
-    partyEXPAccum = RMath.clamp(partyEXPAccum + expRewardValue, 0, 9999999);
-    if (GUIState.LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
-        partyLevel++;
-        for (let _i = 0; 4 > _i; _i++) partySP[_i] += 2;
+    PartyState.partyEXPAccum = RMath.clamp(PartyState.partyEXPAccum + expRewardValue, 0, 9999999);
+    if (GUIState.LevelExpThresholds[PartyState.partyLevel] <= PartyState.partyEXPAccum && 99 > PartyState.partyLevel) {
+        PartyState.partyLevel++;
+        for (let _i = 0; 4 > _i; _i++) PartyState.partySP[_i] += 2;
         levelUpPopupTimer = 60;
     }
     for (let _dropIdx = EnemyProps.DropTableStartIdx; _dropIdx < EnemyProps.DropTableStartIdx + 8; _dropIdx += 2) {
         let itemIdx = enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx];
         if (0 != itemIdx) {
-            let randComp = RMath.floor(100 * (100 + partyDropChanceBonusPercent) / 100);
+            let randComp = RMath.floor(100 * (100 + PartyState.partyDropChanceBonusPercent) / 100);
             if (2 == itemIdx) {
-                itemIdx = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * (100 + partyRewardValueBonusPercent) / 100);
+                itemIdx = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * (100 + PartyState.partyRewardValueBonusPercent) / 100);
                 spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, itemIdx, 0);
             } else if (RMath.rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * 100 < randComp) {
-                if (1 > itemForgeLvls[itemIdx] && isDropTypeAbsent(itemIdx)) {
+                if (1 > PartyState.itemForgeLvls[itemIdx] && isDropTypeAbsent(itemIdx)) {
                     spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, itemIdx, 1, 0);    
                 }
             }
         }
     }
-    let val = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.GoldReward] * (100 + partyRewardValueBonusPercent) / 100);
+    let val = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.GoldReward] * (100 + PartyState.partyRewardValueBonusPercent) / 100);
     if (1 > 3 * RMath.rand()) {
         spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, val, 0);
     }
@@ -7332,14 +7208,14 @@ function updateDrops() { // zg
                 dropState[a]++;
             } else if (-1 != findNearestPartyMemberInRect(dropPos[a].x, dropPos[a].y - 6, 12, 12, 1)) {
                 if (2 == dropType[a]) {
-                    partyGold = RMath.clamp(partyGold + dropValue[a], 0, 9999999);
+                    PartyState.partyGold = RMath.clamp(PartyState.partyGold + dropValue[a], 0, 9999999);
                     spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960);
                 } else if (3 == dropType[a]) {
                     stageEventFlagArray[dropValue[a]] = 1;
-                    collectedStageFlagsCount++;
-                } else if (itemForgeLvls[dropType[a]] < dropValue[a]) {
-                    itemForgeLvls[dropType[a]] = dropValue[a];
-                    itemIsNew[dropType[a]] = 1;
+                    PartyState.collectedStageFlagsCount++;
+                } else if (PartyState.itemForgeLvls[dropType[a]] < dropValue[a]) {
+                    PartyState.itemForgeLvls[dropType[a]] = dropValue[a];
+                    PartyState.itemIsNew[dropType[a]] = 1;
                 }
                 if (isBadgeIncompleteForCurrentStage(24)) {
                     if (2 == dropType[a] && 225 <= dropValue[a]) {

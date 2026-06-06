@@ -14,6 +14,8 @@ import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./
 import { GameFont } from "./game/font.js";
 import { CanvasState, GameState, RenderingState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
+import { LoadedSprites } from "./game/game_sprites.js";
+import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
 
 export {gameInit as Init, toggleFullscreen as full_screen};
 // mainWindow.Init = gameInit;
@@ -30,38 +32,6 @@ CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
-// let canvasImageBuffer = new Sprite;
-
-// sprites
-let titleSprite = new Sprite,
-    iconSpriteSheet = new Sprite,
-    tilesetSprites = Array(3), 
-    currentLevelSprite = new Sprite,
-    enemySpriteSheet = new Sprite,
-    droppedItemSpriteSheet = new Sprite,
-    itemsSpriteSheet = new Sprite,
-    effectSpriteSheet = new Sprite,
-    medalSpriteSheet = new Sprite;
-
-// text rendering / fonts
-const charKerningBefore = [
-    [0, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
-    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]
-]; // jn
-const charKerningAfter = [
-    [0, 1, 1, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
-]; // kn
-
-let gameFont = new GameFont;
-let gameFontSmall = new GameFont;
-let gameFontMed = new GameFont;
-
-for (let _i = 0; 3 > _i; _i++) tilesetSprites[_i] = new Sprite;
 
 let gameScreenState = 0,
     screenStateTimer = 0, // sa
@@ -990,17 +960,17 @@ function gameInit(a, b) {
         RMath.setRandSeed(RMath.floor(1024 * RMath.rand()) & 1023);
         RMath.setRandSeedStep(RMath.floor(512 * RMath.rand()) | 1);
         // clear frame buffer
-        gameFont.f("font.png", 8, 12);
-        gameFontSmall.f("font_s.png", 5, 7);
-        gameFontMed.f("font_m.png", 6, 8);
-        titleSprite.f("title.png");
-        iconSpriteSheet.f("b.png");
-        for (_t0 = 0; 3 > _t0; _t0++) tilesetSprites[_t0].f("g" + _t0 + ".png");
-        enemySpriteSheet.f("en.png");
-        droppedItemSpriteSheet.f("icon.png");
-        itemsSpriteSheet.f("item.png");
-        effectSpriteSheet.f("ef.png");
-        medalSpriteSheet.f("medal.png");
+        LoadedFonts.gameFont.f("font.png", 8, 12);
+        LoadedFonts.gameFontSmall.f("font_s.png", 5, 7);
+        LoadedFonts.gameFontMed.f("font_m.png", 6, 8);
+        LoadedSprites.titleSprite.f("title.png");
+        LoadedSprites.iconSpriteSheet.f("b.png");
+        for (_t0 = 0; 3 > _t0; _t0++) LoadedSprites.tilesetSprites[_t0].f("g" + _t0 + ".png");
+        LoadedSprites.enemySpriteSheet.f("en.png");
+        LoadedSprites.droppedItemSpriteSheet.f("icon.png");
+        LoadedSprites.itemsSpriteSheet.f("item.png");
+        LoadedSprites.effectSpriteSheet.f("ef.png");
+        LoadedSprites.medalSpriteSheet.f("medal.png");
         // hostnameCheck();
         // iterIdxTemp_3 = 0;
         // hostnameCheckIdx = hostname.length;
@@ -1012,17 +982,17 @@ function gameInit(a, b) {
         GameState.gameInitStage++;
     }
     if (1 == GameState.gameInitStage) { // uncheckedSpriteCount is decremented on each successful drawSprite call
-        loadSprite(gameFont.i);
-        loadSprite(gameFontSmall.i);
-        loadSprite(gameFontMed.i);
-        loadSprite(titleSprite);
-        loadSprite(iconSpriteSheet);
-        for (_t0 = 0; 3 > _t0; _t0++) loadSprite(tilesetSprites[_t0]);
-        loadSprite(enemySpriteSheet);
-        loadSprite(droppedItemSpriteSheet);
-        loadSprite(itemsSpriteSheet);
-        loadSprite(effectSpriteSheet);
-        loadSprite(medalSpriteSheet);
+        loadSprite(LoadedFonts.gameFont.i);
+        loadSprite(LoadedFonts.gameFontSmall.i);
+        loadSprite(LoadedFonts.gameFontMed.i);
+        loadSprite(LoadedSprites.titleSprite);
+        loadSprite(LoadedSprites.iconSpriteSheet);
+        for (_t0 = 0; 3 > _t0; _t0++) loadSprite(LoadedSprites.tilesetSprites[_t0]);
+        loadSprite(LoadedSprites.enemySpriteSheet);
+        loadSprite(LoadedSprites.droppedItemSpriteSheet);
+        loadSprite(LoadedSprites.itemsSpriteSheet);
+        loadSprite(LoadedSprites.effectSpriteSheet);
+        loadSprite(LoadedSprites.medalSpriteSheet);
         if (uncheckedSpriteCount.value > 0) { // restart
             setTimeout(gameInit, computeFrameDelay());
         } else {
@@ -1125,9 +1095,9 @@ function drawCanvas() {
         a = 0 > a ? 0 : ~~a;
         b = 0 > b ? 0 : ~~b;
         let n = 640 * b + a;
-        let titleSpriteData = titleSprite.g;
+        let titleSpriteData = LoadedSprites.titleSprite.g;
         for (let w = 640 - (d - a); b < f; b++, n += w, h += p) { // draw title
-            let idxmask = ((h >> 8) * titleSprite.h << 8) + g; 
+            let idxmask = ((h >> 8) * LoadedSprites.titleSprite.h << 8) + g; 
             let _dx = a;
             while (_dx < d) {
                 let _px = titleSpriteData[idxmask >> 8];
@@ -1141,7 +1111,7 @@ function drawCanvas() {
         }
 
         if (2 == gameScreenState) {
-            drawTextCentered(gameFont, 320, 220, "NEW GAME", 16777215, 10053171);
+            drawTextCentered(LoadedFonts.gameFont, 320, 220, "NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
                 if (isMouseClicked) {
                     gameScreenState = 0 == gameLoadStatusCode ? 3 : 4;
@@ -1149,7 +1119,7 @@ function drawCanvas() {
                 drawLine(256, 228, 384, 228, 11141120);
             }
             if (0 == gameLoadStatusCode) {
-                drawTextCentered(gameFont, 320, 260, "LOAD GAME", 16777215, 10053171);
+                drawTextCentered(LoadedFonts.gameFont, 320, 260, "LOAD GAME", 16777215, 10053171);
                 if (buttonCheckCentered(320, 260, 128, 24)) {
                     if (isMouseClicked) {
                         gameScreenState = 5;
@@ -1158,7 +1128,7 @@ function drawCanvas() {
                 }
             }
         } else if (3 == gameScreenState) {
-            drawTextCentered(gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171);
+            drawTextCentered(LoadedFonts.gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
                 if (isMouseClicked) {
                     gameScreenState = 4;
@@ -1166,7 +1136,7 @@ function drawCanvas() {
                 drawLine(192, 228, 448, 228, 11141120);
             }
 
-            drawTextCentered(gameFont, 320, 260, "CANCEL", 16777215, 10053171);
+            drawTextCentered(LoadedFonts.gameFont, 320, 260, "CANCEL", 16777215, 10053171);
             if (buttonCheckCentered(320, 260, 128, 24)) {
                 if (isMouseClicked) {
                     gameScreenState = 2;
@@ -1177,7 +1147,7 @@ function drawCanvas() {
         
         if (drawIconButton(608, 312, 8, "IMPORT", 16777215)) {
             if (8 != GameState.userSaveCode.length) {
-                drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
+                drawText(LoadedFonts.gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
             } else if (isMouseClicked) {
                 if (a = promptInput("Import Game Data", "")) {
                     gameLoadStatusCode = loadGame(a);
@@ -1187,13 +1157,13 @@ function drawCanvas() {
         }
         if (drawIconButton(608, 352, 9, "EXPORT", 16777215)) {
             if (8 != GameState.userSaveCode.length) {
-                drawText(gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
+                drawText(LoadedFonts.gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
             } else if (isMouseClicked) {
                 promptInput("Export Game Data", gameSaveString);
             }
         }
         drawRect(0, 408, 640, 16, 0);
-        drawTextCentered(gameFont, 320, 417, Consts.copyrightText2, -1, 6697728);
+        drawTextCentered(LoadedFonts.gameFont, 320, 417, Consts.copyrightText2, -1, 6697728);
 
     } else if (4 == gameScreenState || 5 == gameScreenState) {
         if (4 == gameScreenState) {
@@ -1275,14 +1245,14 @@ function drawCanvas() {
         isSolidRender = 1;
         drawRect(4, 4, 8 * stageListArray[currentStage][StageProps.stageNameCol].length + 8, 20, 2151694400); // background
         isSolidRender = 0;
-        drawText(gameFont, 8, 8, stageListArray[currentStage][StageProps.stageNameCol], 16777215, 0);
+        drawText(LoadedFonts.gameFont, 8, 8, stageListArray[currentStage][StageProps.stageNameCol], 16777215, 0);
         drawGameUI();
         if (11 == gameScreenState) {
             c = 255;
             if (50 < screenStateTimer) {
                 c = 255 - RMath.floor(255 * (screenStateTimer - 50) / 20);
             }
-            drawScaledTintedTextCentered(gameFont, 320, 180, stageListArray[currentStage][StageProps.stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
+            drawScaledTintedTextCentered(LoadedFonts.gameFont, 320, 180, stageListArray[currentStage][StageProps.stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
             a = -1E3 + RMath.floor(500 * screenStateTimer / 20);
             drawLine(a, 164, a + 1E3, 164, 8421504);
             a = 640 - RMath.floor(500 * screenStateTimer / 20);
@@ -1348,7 +1318,7 @@ function drawCanvas() {
         } else if (30 == gameScreenState) {
             100 > screenStateTimer && screenStateTimer++;
             c = RMath.floor(255 * screenStateTimer / 100);
-            drawScaledTintedTextCentered(gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24);
+            drawScaledTintedTextCentered(LoadedFonts.gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24);
             if (100 == screenStateTimer && isMouseClicked) {
                 for (a = 0; 4 > a; a++) {
                     partyLP[a] = 1;
@@ -1373,40 +1343,40 @@ function drawCanvas() {
     if (0 < badgePopupTimer) {
         badgePopupTimer--;
         a = badgeList[lastCompletedBadgeIdx][3];
-        drawSpriteSheetPartTintedScaled(medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true);
+        drawSpriteSheetPartTintedScaled(LoadedSprites.medalSpriteSheet, 420, 341, 18, 19, a % 5 * 20 + 1, 20 * ~~(a / 5), 18, 19, 14540253, 2236962, true);
         b = 440;
         a = RMath.min(120 - badgePopupTimer - 0, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 0, 342 + 2 * a, "G", 16777215, 0);
         }
         a = RMath.min(120 - badgePopupTimer - 2, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 5, 342 + 2 * a, "E", 16777215, 0);
         }
         a = RMath.min(120 - badgePopupTimer - 4, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 10, 342 + 2 * a, "T", 16777215, 0);
         }
         b = 438;
         a = RMath.min(120 - badgePopupTimer - 6, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 20, 342 + 2 * a, "M", 16777215, 0);
         }
         a = RMath.min(120 - badgePopupTimer - 8, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 25, 342 + 2 * a, "E", 16777215, 0);
         }
         a = RMath.min(120 - badgePopupTimer - 10, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 30, 342 + 2 * a, "D", 16777215, 0);
         }
         a = RMath.min(120 - badgePopupTimer - 12, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 35, 342 + 2 * a, "A", 16777215, 0);
         }
         a = RMath.min(120 - badgePopupTimer - 14, 4);
         if (0 < a) {
-            drawText(gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0);
+            drawText(LoadedFonts.gameFontMed, b + 40, 342 + 2 * a, "L", 16777215, 0);
         }
     }
 
@@ -1417,7 +1387,7 @@ function drawCanvas() {
             c = RMath.floor(255 * statusDuration / 10);
         else {
             c = 255;
-            drawScaledTintedText(gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
+            drawScaledTintedText(LoadedFonts.gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
         }
     } else if (gameSaveStatusDuration > 0) {
         gameSaveStatusDuration--;
@@ -1425,7 +1395,7 @@ function drawCanvas() {
             c = RMath.floor(255 * gameSaveStatusDuration / 10);
         else {
             c = 255;
-            drawScaledTintedText(gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);
+            drawScaledTintedText(LoadedFonts.gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);
         }
     }
 
@@ -1604,22 +1574,22 @@ function drawGameUI() {
     drawRect(0, 361, 640, 70, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
     f = 8;
     g = 348;
-    drawText(gameFont, f, g, "LV " + partyLevel, 16777215, 0);
+    drawText(LoadedFonts.gameFont, f, g, "LV " + partyLevel, 16777215, 0);
     if (99 > partyLevel) {
         var p = LevelExpThresholds[partyLevel - 1];
-        drawText(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + RMath.floor(100 * (partyEXPAccum - p) / (LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0);
-    } else drawText(gameFont, f + 48, g, "EXP " + partyEXPAccum + "(MAX)", 16777215, 0);
-    drawText(gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
+        drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + RMath.floor(100 * (partyEXPAccum - p) / (LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0);
+    } else drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + partyEXPAccum + "(MAX)", 16777215, 0);
+    drawText(LoadedFonts.gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
 
     drawRect(f + 264, g, 90, 11, 2236962); // combo bar bg
     drawRect(f + 264, g, RMath.floor(90 * comboWindowTimer / comboWindowMaxFrames), 11, 12281344); // combo bar fg
     p = 10 + RMath.floor(comboCount / 10);
     h = "CB " + comboCount;
-    gameFontMed.a = 4;
-    drawText(gameFontMed, f + 265, g + 2, h, 12281344, 0); // combo count 
+    LoadedFonts.gameFontMed.a = 4;
+    drawText(LoadedFonts.gameFontMed, f + 265, g + 2, h, 12281344, 0); // combo count 
     if (comboCount >= 10) {
-        gameFontMed.a = 4;
-        drawText(gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0);
+        LoadedFonts.gameFontMed.a = 4;
+        drawText(LoadedFonts.gameFontMed, f + 265 + 6 * h.length + 0, g + 2, "*" + p / 10, 12281344, 0);
     }
     // 0 < Ic && (Ic--, 0 == Ic && (4 <= Hc && (Zg = 60, $g = floor((Hc * p / 10 + partyMemberCount - 1) / partyMemberCount), partyGold = clamp(partyGold + $g * partyMemberCount, 0, 9999999), A(1) && 100 <= Hc && IncrementBadgeCount(1), A(26) && 300 <= Hc && IncrementBadgeCount(26), A(36) && 500 <= Hc && IncrementBadgeCount(36), A(56) && 600 <= Hc && IncrementBadgeCount(56)), Hc = 0));
     if (comboWindowTimer > 0) {
@@ -1646,8 +1616,8 @@ function drawGameUI() {
         }
     }
     p = 100 + comboMultBonus;
-    gameFontMed.a = 4;
-    drawText(gameFontMed, f + 356, g + 2, "CB *" + p / 100, 16777215, 0); // combo multiplier
+    LoadedFonts.gameFontMed.a = 4;
+    drawText(LoadedFonts.gameFontMed, f + 356, g + 2, "CB *" + p / 100, 16777215, 0); // combo multiplier
     f = 8;
     g = 364;
     d = 80;
@@ -1677,10 +1647,10 @@ function drawGameUI() {
         }
         drawHero(hidx, l, 0, 1, 15908203, c, 2);
 
-        drawText(gameFontSmall, f + hidx * d + 28, g, "P" + (hidx + 1), 3355443, -1);
+        drawText(LoadedFonts.gameFontSmall, f + hidx * d + 28, g, "P" + (hidx + 1), 3355443, -1);
         drawRect(f + hidx * d + 28, g + 8, 48, 7, 1114112);
         drawRect(f + hidx * d + 28, g + 8, RMath.floor(48 * partyLP[hidx] / partyMaxLP[hidx]), 7, 10027008);
-        drawText(gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
+        drawText(LoadedFonts.gameFontSmall, f + hidx * d + 28, g + 8, "" + partyLP[hidx], 16764108, -1);
         drawRect(f + hidx * d + 28, g + 17, 48, 5, 17);
         drawRect(f + hidx * d + 28, g + 17, 48 * heroEmitCurrent[hidx] / RMath.max(heroEmitValues[hidx], 1), 5, 221);
         if (buttonCheck(f + hidx * d, g, 24, 24)) {
@@ -1703,11 +1673,11 @@ function drawGameUI() {
                 spriteAltRenderFlag = 2;
                 h = itemList[c][ItemProps.HeadwearType];
                 if (2 == b) {
-                    drawSpriteSheetPartTintedScaled(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY], true);
+                    drawSpriteSheetPartTintedScaled(LoadedSprites.itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY], true);
                 } else if (3 == b || 4 == b) {
                     drawItemSpriteTinted(k, n, 16 * (h & 15), 16 * (h >> 4), itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY]);
                 } else {
-                    drawSpriteSheetPart(itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
+                    drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
                 }
                 spriteAltRenderFlag = 0;
             }
@@ -1766,11 +1736,11 @@ function drawGameUI() {
     c = 0;
     for (b = itemIsNew.length - 1; 0 <= b; b--) c += itemIsNew[b];
     if (0 < c) {
-        drawText(gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
+        drawText(LoadedFonts.gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
     }
     if (1 == currentStage) {
-        gameFont.a = 1;
-        drawTextCentered(gameFont, 530, 168, "INN", 16777215, 8409120);
+        LoadedFonts.gameFont.a = 1;
+        drawTextCentered(LoadedFonts.gameFont, 530, 168, "INN", 16777215, 8409120);
         if (buttonCheckCentered(528, 180, 48, 40)) {
             for (hidx = c = 0; hidx < partyMemberCount; hidx++)
                 c += partyMaxLP[hidx] - partyLP[hidx];
@@ -1778,9 +1748,9 @@ function drawGameUI() {
                 c = 10;
             }
             c += 10 * (stageFlagsSetCount - collectedStageFlagsCount);
-            gameFont.a = 1;
-            drawTextCentered(gameFont, 530, 168, "INN", 15908203, 8409120);
-            drawTextCentered(gameFont, 528, 187, "G " + c, 16777215, 8409120);
+            LoadedFonts.gameFont.a = 1;
+            drawTextCentered(LoadedFonts.gameFont, 530, 168, "INN", 15908203, 8409120);
+            drawTextCentered(LoadedFonts.gameFont, 528, 187, "G " + c, 16777215, 8409120);
             if (0 < c && c <= partyGold && isMouseClicked && !clickInUI) {
                 for (hidx = 0; hidx < partyMemberCount; hidx++) {
                     if (partyLP[hidx] != partyMaxLP[hidx]) {
@@ -1795,11 +1765,11 @@ function drawGameUI() {
                 partyGold = RMath.clamp(partyGold - c, 0, 9999999);
             }
         }
-        gameFont.a = 1;
-        drawTextCentered(gameFont, 54, 296, "SMITH", 16777215, 8409120);
+        LoadedFonts.gameFont.a = 1;
+        drawTextCentered(LoadedFonts.gameFont, 54, 296, "SMITH", 16777215, 8409120);
         if (buttonCheckCentered(52, 308, 56, 40)) {
-            gameFont.a = 1;
-            drawTextCentered(gameFont, 54, 296, "SMITH", 15908203, 8409120);
+            LoadedFonts.gameFont.a = 1;
+            drawTextCentered(LoadedFonts.gameFont, 54, 296, "SMITH", 15908203, 8409120);
             if (isMouseClicked && !clickInUI) {
                 if (inventoryUIVisible = !inventoryUIVisible) {
                     shrineUIVisible = false;
@@ -1807,11 +1777,11 @@ function drawGameUI() {
             }
         }
     } else if (12 == currentStage) {
-        gameFont.a = 1;
-        drawTextCentered(gameFont, 418, 104, "SHRINE", 16777215, 8409120);
+        LoadedFonts.gameFont.a = 1;
+        drawTextCentered(LoadedFonts.gameFont, 418, 104, "SHRINE", 16777215, 8409120);
         if (buttonCheckCentered(416, 108, 48, 40)) {
-            gameFont.a = 1;
-            drawTextCentered(gameFont, 418, 104, "SHRINE", 15908203, 8409120);
+            LoadedFonts.gameFont.a = 1;
+            drawTextCentered(LoadedFonts.gameFont, 418, 104, "SHRINE", 15908203, 8409120);
             if (isMouseClicked && !clickInUI && (shrineUIVisible = !shrineUIVisible)) {
                 inventoryUIVisible = false;
             }
@@ -1821,11 +1791,11 @@ function drawGameUI() {
     if (memberUIVisible) {
         g = f = 14;
         drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
-        gameFont.a = 1;
-        drawText(gameFont, f, g, "LP " + partyLP[selectingHero] + "/" + partyMaxLP[selectingHero] + " SP (" + partySP[selectingHero] + ")", 16777215, 0);
+        LoadedFonts.gameFont.a = 1;
+        drawText(LoadedFonts.gameFont, f, g, "LP " + partyLP[selectingHero] + "/" + partyMaxLP[selectingHero] + " SP (" + partySP[selectingHero] + ")", 16777215, 0);
         let k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
-        gameFont.a = 1;
-        drawText(gameFont, f, g + 20, k[selectedStatIndex], 16777215, 0);
+        LoadedFonts.gameFont.a = 1;
+        drawText(LoadedFonts.gameFont, f, g + 20, k[selectedStatIndex], 16777215, 0);
         let statXs = [9, 0, 20, 21, 17, 22, 23];
         let maxStats = [999, 999, 999, 999, 999, 999, 25];
 
@@ -1842,7 +1812,7 @@ function drawGameUI() {
                     // mouse button is held, but the cursor is hovering over another icon
                     if (isMouseReleased) selectedStatIndex = _statIdx;
                 } else if (0 < partySP[selectingHero] && partyStats[selectedStatIndex][selectingHero] < maxStats[selectedStatIndex]) {
-                    drawText(gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481);
+                    drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481);
                     if (isMouseReleased) {
                         partyStats[selectedStatIndex][selectingHero]++;
                         partySP[selectingHero]--;
@@ -1861,7 +1831,7 @@ function drawGameUI() {
             let _equipmentIdx = partyEquipmentTable[selectingHero][_slotIdx];
             if (0 != itemList[_equipmentIdx][ItemProps.Appearance]) { // is it empty
                 if (10 > itemList[_equipmentIdx][ItemProps.Appearance]) {
-                    gameFontMed.a = 4;
+                    LoadedFonts.gameFontMed.a = 4;
                     let accessoryLevel = itemForgeLvls[_equipmentIdx];
                     if (heroHasAccessoryEffect(selectingHero, AccessoryProps.ArmsBonus0) && 3 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
                         accessoryLevel += countAccessoryLvlBonuses(selectingHero, AccessoryProps.ArmsBonus0);
@@ -1876,7 +1846,7 @@ function drawGameUI() {
                         accessoryLevel += sumAccessorySecondaryValues(selectingHero, AccessoryProps.ArmsBonus1);
                     }
 
-                    drawText(gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " " + accessoryLevel, -1, 0);
+                    drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " " + accessoryLevel, -1, 0);
 
                     let atkRangeTxt = "AT " + minAtkArray[4 * _slotIdx + selectingHero] + "-" + maxAtkArray[4 * _slotIdx + selectingHero];
 
@@ -1898,54 +1868,54 @@ function drawGameUI() {
                         } else if (1 < getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.HitCountStat)) {
                             atkRangeTxt += " " + getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.HitCountStat) + "hit";
                         }
-                        drawText(gameFontMed, f + 96 * _slotIdx, g + 12, atkRangeTxt, 16777215, 0);
+                        drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 12, atkRangeTxt, 16777215, 0);
                         if (!_slotIdx) {
-                            drawText(gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + heroAgiValues[selectingHero], 16777215, 0);
-                            drawText(gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + heroRangeValues[selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + heroAgiValues[selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + heroRangeValues[selectingHero], 16777215, 0);
                         }
                         if (_slotIdx) {
                             if (-1 == heroEmitValues[selectingHero]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT passive", 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT passive", 16777215, 0);
                             } else {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT " + heroEmitValues[selectingHero], 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT " + heroEmitValues[selectingHero], 16777215, 0);
                             }
                         } else {
-                            drawText(gameFontMed, f + 96 * _slotIdx, g + 48, "CHARGE +" + heroChargeValues[selectingHero], 16777215, 0);
-                            drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "SML", 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "CHARGE +" + heroChargeValues[selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "SML", 16777215, 0);
                             if (0 == itemList[_equipmentIdx][ItemProps.RangeType]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    short", 16764057, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "    short", 16764057, 0);
                             }
                             if (1 == itemList[_equipmentIdx][ItemProps.RangeType]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    middle", 16764057, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "    middle", 16764057, 0);
                             }
                             if (2 == itemList[_equipmentIdx][ItemProps.RangeType]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 60, "    long", 16764057, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "    long", 16764057, 0);
                             }
-                            drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "ATR", 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "ATR", 16777215, 0);
                             if (0 == itemList[_equipmentIdx][ItemProps.ElementType]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    physical", 10066329, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "    physical", 10066329, 0);
                             }
                             if (1 == itemList[_equipmentIdx][ItemProps.ElementType]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
                             }
                             if (2 == itemList[_equipmentIdx][ItemProps.ElementType]) {
                                 let iceVal = getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.IceBonusPercent);
                                 if (heroHasAccessoryEffect(selectingHero, AccessoryProps.EffectIceStatBonus)) {
                                     iceVal += countAccessoryLvlBonuses(selectingHero, AccessoryProps.EffectIceStatBonus);
                                 }
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    ice " + iceVal + "%", 10070783, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "    ice " + iceVal + "%", 10070783, 0);
                             }
                             if (3 == itemList[_equipmentIdx][ItemProps.ElementType]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    lightning", 15658496, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "    lightning", 15658496, 0);
                             }
                             if (4 == itemList[_equipmentIdx][ItemProps.ElementType]) {
-                                drawText(gameFontMed, f + 96 * _slotIdx, g + 72, "    poison", 52224, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "    poison", 52224, 0);
                             }
                         }
                     }
                 } else {
-                    gameFontMed.a = 4;
-                    drawText(gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " Lv" + itemForgeLvls[_equipmentIdx], 16777215, 0);
+                    LoadedFonts.gameFontMed.a = 4;
+                    drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " Lv" + itemForgeLvls[_equipmentIdx], 16777215, 0);
                 }
             };
         }
@@ -1958,10 +1928,10 @@ function drawGameUI() {
             drawRect(b, d, 24, 24, 0);
             spriteAltRenderFlag = 2;
             h = itemList[c][ItemProps.HeadwearType];
-            drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
+            drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
             spriteAltRenderFlag = 0;
             
-            drawTextCentered(gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0);
+            drawTextCentered(LoadedFonts.gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0);
             handleInventoryButton(b, d, 24, 24, c, hidx);
             
         }
@@ -1974,7 +1944,7 @@ function drawGameUI() {
         let c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx];
 
         if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= inventoryTabIdx) { // item upgrade panel
-            drawTextCentered(gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
+            drawTextCentered(LoadedFonts.gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
             hidx = getItemStatWithForge(c, ItemProps.ForgeMaxLevel);
             if (0 == hidx)
                 drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "---");
@@ -1996,8 +1966,8 @@ function drawGameUI() {
 
         if (0 != itemForgeLvls[c]) {
             if (10 > itemList[c][ItemProps.Appearance]) {
-                gameFontMed.a = 4;
-                drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + itemForgeLvls[c], -1, 0);
+                LoadedFonts.gameFontMed.a = 4;
+                drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + itemForgeLvls[c], -1, 0);
                 h = "AT " + getItemStatWithForge(c, ItemProps.AtkMin) + "-" + getItemStatWithForge(c, ItemProps.AtkMax);
                 if (10 <= getItemStatWithForge(c, ItemProps.AttackMode) && 11 >= getItemStatWithForge(c, ItemProps.AttackMode)) {
                     h += " *" + getItemStatWithForge(c, ItemProps.ProjectileCount) + ">" + ~~(getItemStatWithForge(c, ItemProps.AttackCooldown) * getItemStatWithForge(c, ItemProps.AttackPower) / 60);
@@ -2013,57 +1983,57 @@ function drawGameUI() {
                         if (1 < getItemStatWithForge(c, ItemProps.HitCountStat)) {
                             h += " " + getItemStatWithForge(c, ItemProps.HitCountStat) + "hit";
                         }
-                        drawText(gameFontMed, _ox, _oy + 12, h, 16777215, 0);
+                        drawText(LoadedFonts.gameFontMed, _ox, _oy + 12, h, 16777215, 0);
                         if (                    0 == inventoryTabIdx) {
-                            drawText(gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, ItemProps.Agility), 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, ItemProps.Agility), 16777215, 0);
                         }
                         if (0 == inventoryTabIdx) {
-                            drawText(gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, ItemProps.Range), 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, ItemProps.Range), 16777215, 0);
                         }
                         if (0 == inventoryTabIdx) {
-                            drawText(gameFontMed, _ox, _oy + 48, "CHARGE +" + getItemStatWithForge(c, ItemProps.ChargeEmitValue), 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, _ox, _oy + 48, "CHARGE +" + getItemStatWithForge(c, ItemProps.ChargeEmitValue), 16777215, 0);
                         } else {
                             if (-1 == getItemStatWithForge(c, ItemProps.ChargeEmitValue)) {
-                                drawText(gameFontMed, _ox, _oy + 48, "EMIT passive", 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, _ox, _oy + 48, "EMIT passive", 16777215, 0);
                             } else {
-                                drawText(gameFontMed, _ox, _oy + 48, "EMIT " + getItemStatWithForge(c, ItemProps.ChargeEmitValue), 16777215, 0);
-                                drawText(gameFontMed, _ox, _oy + 60, "SML", 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, _ox, _oy + 48, "EMIT " + getItemStatWithForge(c, ItemProps.ChargeEmitValue), 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, _ox, _oy + 60, "SML", 16777215, 0);
                                 if (0 == itemList[c][ItemProps.RangeType]) {
-                                    drawText(gameFontMed, _ox, _oy + 60, "    short", 16764057, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 60, "    short", 16764057, 0);
                                 }
                                 if (1 == itemList[c][ItemProps.RangeType]) {
-                                    drawText(gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 60, "    middle", 16764057, 0);
                                 }
                                 if (2 == itemList[c][ItemProps.RangeType]) {
-                                    drawText(gameFontMed, _ox, _oy + 60, "    long", 16764057, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 60, "    long", 16764057, 0);
                                 }
-                                drawText(gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, _ox, _oy + 72, "ATR", 16777215, 0);
                                 if (0 == itemList[c][ItemProps.ElementType]) {
-                                    drawText(gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 72, "    physical", 10066329, 0);
                                 }
                                 if (1 == itemList[c][ItemProps.ElementType]) {
-                                    drawText(gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 72, "    fire", 16724736, 0);
                                 }
                                 if (2 == itemList[c][ItemProps.ElementType]) {
-                                    drawText(gameFontMed, _ox, _oy + 72, "    ice " + getItemStatWithForge(c, ItemProps.IceBonusPercent) + "%", 10070783, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 72, "    ice " + getItemStatWithForge(c, ItemProps.IceBonusPercent) + "%", 10070783, 0);
                                 }
                                 if (3 == itemList[c][ItemProps.ElementType]) {
-                                    drawText(gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 72, "    lightning", 15658496, 0);
                                 }
                                 if (4 == itemList[c][ItemProps.ElementType]) {
-                                    drawText(gameFontMed, _ox, _oy + 72, "    poison", 52224, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 72, "    poison", 52224, 0);
                                 }
                                 hidx = getItemForgeMultiplier(c, ItemProps.ProjectileAcceleration);
                                 if (-1 != hidx) {
-                                    drawText(gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox + 84, _oy + 72, "RANGE +" + hidx + "%", 16777215, 0);
                                 }
                                 hidx = getItemForgeMultiplier(c, ItemProps.AttackCooldown);
                                 if (-1 != hidx) {
-                                    drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
                                 }
                                 hidx = getItemForgeMultiplier(c, ItemProps.StatA);
                                 if (-1 != hidx) {
-                                    drawText(gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
+                                    drawText(LoadedFonts.gameFontMed, _ox + 84, _oy + 72, "COUNT +" + hidx + "%", 16777215, 0);
                                 }
                             }
                         }
@@ -2071,42 +2041,42 @@ function drawGameUI() {
                 }
 
             } else if (20 > itemList[c][ItemProps.Appearance]) {
-                if (gameFontMed.a = 4, 0 == itemList[c][ItemProps.ForgeMaxLevel]) {
-                    drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name], -1, 0);
+                if (LoadedFonts.gameFontMed.a = 4, 0 == itemList[c][ItemProps.ForgeMaxLevel]) {
+                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name], -1, 0);
                 } else {
-                    drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + itemForgeLvls[c], -1, 0);
+                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name] + " Lv" + itemForgeLvls[c], -1, 0);
                     d = 1;
                     {
                         hidx = getItemStatWithForge(c, ModifierColumns.heroHealthModifier);
                         if (0 < hidx) {
-                            drawText(gameFontMed, _ox, _oy + 12 * d, "LP +" + hidx, 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, _ox, _oy + 12 * d, "LP +" + hidx, 16777215, 0);
                             d++;
                         }
                     }
                     hidx = getItemStatWithForge(c, ModifierColumns.heroDefenseModifier);
                     if (0 < hidx) {
-                        drawText(gameFontMed, _ox, _oy + 12 * d, "DF +" + hidx, 16777215, 0);
+                        drawText(LoadedFonts.gameFontMed, _ox, _oy + 12 * d, "DF +" + hidx, 16777215, 0);
                         d++;
                     }
                     hidx = getItemStatWithForge(c, ModifierColumns.heroMagicDefModifier);
                     if (0 < hidx) {
-                        drawText(gameFontMed, _ox, _oy + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0);
+                        drawText(LoadedFonts.gameFontMed, _ox, _oy + 12 * d, "MAGIC DF " + hidx + "%", 16777215, 0);
                         d++;
                     }
                     hidx = getItemStatWithForge(c, ModifierColumns.heroDodgeModifier);
                     if (0 < hidx) {
-                        drawText(gameFontMed, _ox, _oy + 12 * d, "DODGE +" + hidx, 16777215, 0);
+                        drawText(LoadedFonts.gameFontMed, _ox, _oy + 12 * d, "DODGE +" + hidx, 16777215, 0);
                     }
                 }
             
             } else {
-                gameFontMed.a = 4;
-                drawText(gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name], -1, 0);
+                LoadedFonts.gameFontMed.a = 4;
+                drawText(LoadedFonts.gameFontMed, _ox, _oy + 0, "" + itemList[c][ItemProps.Name], -1, 0);
                 if (0 != itemList[c][AccessoryPrefixes.PrimaryValue]) {
-                    drawText(gameFontMed, _ox, _oy + 12, itemList[c][AccessoryPrefixes.PrimaryPrefix] + itemList[c][AccessoryPrefixes.PrimaryValue] + itemList[c][AccessoryPrefixes.PrimarySuffix], 16777215, 0);
+                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 12, itemList[c][AccessoryPrefixes.PrimaryPrefix] + itemList[c][AccessoryPrefixes.PrimaryValue] + itemList[c][AccessoryPrefixes.PrimarySuffix], 16777215, 0);
                 }
                 if (0 != itemList[c][AccessoryPrefixes.SecondaryValue]) {
-                    drawText(gameFontMed, _ox, _oy + 24, itemList[c][AccessoryPrefixes.SecondaryLabelPrefix] + itemList[c][AccessoryPrefixes.SecondaryValue] + itemList[c][AccessoryPrefixes.SecondaryLabelSuffix], 16777215, 0);
+                    drawText(LoadedFonts.gameFontMed, _ox, _oy + 24, itemList[c][AccessoryPrefixes.SecondaryLabelPrefix] + itemList[c][AccessoryPrefixes.SecondaryValue] + itemList[c][AccessoryPrefixes.SecondaryLabelSuffix], 16777215, 0);
                 }
             }
             
@@ -2126,11 +2096,11 @@ function drawGameUI() {
                 spriteAltRenderFlag = 2;
                 h = itemList[c][ItemProps.HeadwearType];
                 if (2 == inventoryTabIdx) {
-                    drawSpriteSheetPartTintedScaled(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY], true);
+                    drawSpriteSheetPartTintedScaled(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY], true);
                 } else if (3 == inventoryTabIdx || 4 == inventoryTabIdx) {
                     drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY]);
                 } else {
-                    drawSpriteSheetPart(itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
+                    drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
                 }
                 
                 spriteAltRenderFlag = 0;
@@ -2158,19 +2128,19 @@ function drawGameUI() {
 
                     if (0 != itemForgeLvls[c]) {
                         if (-1 == h) {
-                            drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
+                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
                             if (isMouseReleased) {
                                 partyEquipmentTable[selectingHero][k] = c;
                             }
                         } else if (h == selectingHero) {
-                            drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                                 0);
                             if (isMouseReleased) {
                                 partyEquipmentTable[selectingHero][k] = 0;
                             }
                         } else {
-                            drawText(gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0);
-                            drawText(gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
+                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0);
+                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
                             if (isMouseReleased) {
                                 partyEquipmentTable[h][k] = 0;
                                 partyEquipmentTable[selectingHero][k] = c;
@@ -2184,17 +2154,17 @@ function drawGameUI() {
                 }
             }
             if (0 < itemIsNew[c]) {
-                drawText(gameFontSmall, b, d, "NEW", 16776960, -1);
+                drawText(LoadedFonts.gameFontSmall, b, d, "NEW", 16776960, -1);
             }
             if (0 != c) {
                 if (partyEquipmentTable[0][k] == c) {
-                    drawText(gameFontSmall, b + 14, d + 17, "E1", 16777215, -1);
+                    drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E1", 16777215, -1);
                 } else if (partyEquipmentTable[1][k] == c) {
-                    drawText(gameFontSmall, b + 14, d + 17, "E2", 16777215, -1);
+                    drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E2", 16777215, -1);
                 } else if (partyEquipmentTable[2][k] == c) {
-                    drawText(gameFontSmall, b + 14, d + 17, "E3", 16777215, -1);
+                    drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E3", 16777215, -1);
                 } else if (partyEquipmentTable[3][k] == c) {
-                    drawText(gameFontSmall, b + 14, d + 17, "E4", 16777215, -1);
+                    drawText(LoadedFonts.gameFontSmall, b + 14, d + 17, "E4", 16777215, -1);
                 }
             }
         }
@@ -2208,7 +2178,7 @@ function drawGameUI() {
             c = 0;
             for (b = inventoryItemLists[hidx].length - 1; 0 <= b; b--) c += itemIsNew[inventoryItemLists[hidx][b]];
             if (0 < c) {
-                drawText(gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1);
+                drawText(LoadedFonts.gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1);
             }
         }
         if (drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked) {
@@ -2219,7 +2189,7 @@ function drawGameUI() {
         }
         h = ~~(inventoryItemLists[inventoryTabIdx].length / 28);
         inventoryPageIdx = RMath.clamp(inventoryPageIdx, 0, h - 1);
-        drawTextCentered(gameFontSmall, _ox + 96, _oy + 209, "" + (inventoryPageIdx + 1) + "/" + h, 3355443, -1);
+        drawTextCentered(LoadedFonts.gameFontSmall, _ox + 96, _oy + 209, "" + (inventoryPageIdx + 1) + "/" + h, 3355443, -1);
     }
 
     if (bestiaryUIVisible) {
@@ -2233,7 +2203,7 @@ function drawGameUI() {
         let c = bestiaryPageItems[currentBestiaryPage][bestiaryEnemySelection];
 
         if (0 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
-            drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+            drawTextCentered(LoadedFonts.gameFont, f + 96, g + 48, "Not reached", -1, 0);
         } else {
             if (0 == bestiaryEntryState[c]) {
                 h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
@@ -2242,10 +2212,10 @@ function drawGameUI() {
                     bestiaryEntryState[c] = 1;
                 }
             } else {
-                drawText(gameFontMed, f, g + 0, "LV " + enemyCatalog[c][EnemyProps.Level], 16777215, 0);
-                drawText(gameFontMed, f, g + 12, "LP " + enemyCatalog[c][EnemyProps.Health], 16777215, 0);
-                drawText(gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][EnemyProps.GoldReward], 16777215, 0);
-                drawText(gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][EnemyProps.ExpReward], 16777215, 0);
+                drawText(LoadedFonts.gameFontMed, f, g + 0, "LV " + enemyCatalog[c][EnemyProps.Level], 16777215, 0);
+                drawText(LoadedFonts.gameFontMed, f, g + 12, "LP " + enemyCatalog[c][EnemyProps.Health], 16777215, 0);
+                drawText(LoadedFonts.gameFontMed, f, g + 24, "GOLD " + enemyCatalog[c][EnemyProps.GoldReward], 16777215, 0);
+                drawText(LoadedFonts.gameFontMed, f, g + 36, "EXP " + enemyCatalog[c][EnemyProps.ExpReward], 16777215, 0);
                 b = 0;
                 if (0 != enemyCatalog[c][EnemyProps.PhysResistPct]) {
                     drawMedTextNoOutline(f + 22 + b, g + 48, "ph", 10066329);
@@ -2268,9 +2238,9 @@ function drawGameUI() {
                     b += 13;
                 }
                 if (0 < b) {
-                    drawText(gameFontMed, f, g + 48, "RES ", 16777215, 0);
+                    drawText(LoadedFonts.gameFontMed, f, g + 48, "RES ", 16777215, 0);
                 }
-                drawText(gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0);
+                drawText(LoadedFonts.gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0);
                 if (1 == bestiaryEntryState[c]) {
                     h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
                     if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= partyGold && isMouseClicked) {
@@ -2287,7 +2257,7 @@ function drawGameUI() {
                         spriteAltRenderFlag = 2;
                         h = itemList[hidx][ItemProps.HeadwearType];
                         if (10 == itemList[hidx][ItemProps.Appearance]) {
-                            drawSpriteSheetPartTintedScaled(itemsSpriteSheet,
+                            drawSpriteSheetPartTintedScaled(LoadedSprites.itemsSpriteSheet,
                                 f + 80, g + 12 + 20 * d,
                                 16, 16,
                                 16 * (h & 15), 16 * (h >> 4),
@@ -2304,12 +2274,12 @@ function drawGameUI() {
                                     itemList[hidx][ModifierColumns.itemSpriteLocY]
                                 );
                             } else {
-                                drawSpriteSheetPart(itemsSpriteSheet,
+                                drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet,
                                     f + 80, g + 12 + 20 * d,
                                     16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][ItemProps.SpriteSourceX]);
                                 spriteAltRenderFlag = 0;
-                                gameFontMed.a = 4;
-                                drawText(gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][ItemProps.Name], -1, 0);
+                                LoadedFonts.gameFontMed.a = 4;
+                                drawText(LoadedFonts.gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][ItemProps.Name], -1, 0);
                                 if (0 < itemForgeLvls[hidx]) {
                                     drawRect(f + 80 - 6, g + 12 + 20 * d + 6, 4, 4, 0);
                                     drawRect(f + 80 - 5, g + 12 + 20 * d + 7, 2, 2, 39168);
@@ -2345,9 +2315,9 @@ function drawGameUI() {
             currentBestiaryPage++;    
         }
         currentBestiaryPage = wrapStageIndex(currentBestiaryPage);
-        drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
         if (1 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
-            drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][StageProps.stageNameCol], -1, 0);
+            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][StageProps.stageNameCol], -1, 0);
         }
     }
     if (badgesUIVisible) {
@@ -2358,7 +2328,7 @@ function drawGameUI() {
             badgesUIVisible = false;
         }
         if (0 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) 
-            drawTextCentered(gameFont, f + 96, g + 48, "Not reached", -1, 0);
+            drawTextCentered(LoadedFonts.gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else for (hidx = 0; hidx < badgeIndicesByStage[badgesUIStageIdx].length; hidx++) {
                 c = badgeIndicesByStage[badgesUIStageIdx][hidx];
                 if (badgeList[c]) {
@@ -2368,22 +2338,22 @@ function drawGameUI() {
                     drawRect(b + 14, d, 20, 20, 0);
                     h = badgeList[c][3];
                     if (badgeCounterArray[c] == badgeList[c][4]) {
-                        drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168);
-                        drawSpriteSheetPartTintedScaled(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true);
+                        drawSpriteSheetPart(LoadedSprites.iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168);
+                        drawSpriteSheetPartTintedScaled(LoadedSprites.medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 14540253, 2236962, true);
                     } else {
-                        drawSpriteSheetPart(medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924);
+                        drawSpriteSheetPart(LoadedSprites.medalSpriteSheet, b + 14, d + 0, 20, 20, h % 5 * 20, 20 * ~~(h / 5), 20, 20, 4473924);
                         if (0 < badgeCounterArray[c]) {
-                            gameFontMed.b = -1;
-                            drawTextCentered(gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1);
+                            LoadedFonts.gameFontMed.b = -1;
+                            drawTextCentered(LoadedFonts.gameFontMed, b + 3, d + 10, "" + badgeCounterArray[c], 16777215, -1);
                         }
                     }
-                    gameFontMed.a = 3;
+                    LoadedFonts.gameFontMed.a = 3;
                     if (0 == badgeList[c][1].length) {
-                        drawText(gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215, 0);
+                        drawText(LoadedFonts.gameFontMed, b + 40, d + 6, badgeList[c][0], 16777215, 0);
                     } else {
-                        drawText(gameFontMed, b + 40, d + 1, badgeList[c][0], 16777215, 0);
-                        gameFontMed.a = 3;
-                        drawText(gameFontMed, b + 40, d + 11, badgeList[c][1], 16777215, 0);
+                        drawText(LoadedFonts.gameFontMed, b + 40, d + 1, badgeList[c][0], 16777215, 0);
+                        LoadedFonts.gameFontMed.a = 3;
+                        drawText(LoadedFonts.gameFontMed, b + 40, d + 11, badgeList[c][1], 16777215, 0);
                     }
                 }
             }
@@ -2394,9 +2364,9 @@ function drawGameUI() {
             badgesUIStageIdx++;
         }
         badgesUIStageIdx = wrapStageIndex(badgesUIStageIdx);
-        drawTextCentered(gameFontSmall, f + 96, g + 156, "" + (badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
         if (1 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) {
-            drawTextCentered(gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[badgesUIStageIdx]][StageProps.stageNameCol], -1, 0);
+            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[badgesUIStageIdx]][StageProps.stageNameCol], -1, 0);
         }
     }
     if (optionsUIVisible) {
@@ -2408,7 +2378,7 @@ function drawGameUI() {
             optionsUIVisible = false;
         }
         c = ["ON", "OFF"];
-        drawText(gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
+        drawText(LoadedFonts.gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
         for (hidx = 0; hidx < partyMemberCount; hidx++) {
             drawRect(f + 72 + hidx * d, g + 20, 24, 24, 0);
             drawLine(f + 72 + hidx * d + 7, g + 42, f + 72 + hidx * d + 16, g + 42, 15908203);
@@ -2418,27 +2388,27 @@ function drawGameUI() {
                 l[b].y = g + 20 + t[b];
             }
             drawHero(hidx, l, 0, 1, 15908203, 16777215, 2);
-            drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16777215, 0);
+            drawTextCentered(LoadedFonts.gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16777215, 0);
             if (buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40)) {
                 fillEmptyPixelsRect(f + 72 + hidx * d, g + 20, 24, 24, 8388608);
-                drawTextCentered(gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16711680, 0);
+                drawTextCentered(LoadedFonts.gameFontMed, f + 84 + hidx * d, g + 52, c[autoMoveEnabled[hidx]], 16711680, 0);
                 if (isMouseClicked) {
                     autoMoveEnabled[hidx] = 1 - autoMoveEnabled[hidx];
                 }
             }
         }
-        drawText(gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
-        drawText(gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16777215, 0);
+        drawText(LoadedFonts.gameFontMed, f + 0, g + 64, "Cliff stop :", 16777215, 0);
+        drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16777215, 0);
         if (buttonCheck(f + 0, g + 64 - 2, 192, 12)) {
-            drawText(gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16711680, 0);
+            drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[cliffStopEnabled], 16711680, 0);
             if (isMouseClicked) {
                 cliffStopEnabled = 1 - cliffStopEnabled;
             }
         }
         if (1 == currentStage) {
-            drawTextCentered(gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0);
+            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0);
         } else {
-            drawTextCentered(gameFontMed, f + 96, g + 100, "Return to Village",
+            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 100, "Return to Village",
                 -1, 0);
         }
         h = stageListArray[currentStage][StageProps.stageReturnCost];
@@ -2476,27 +2446,27 @@ function drawGameUI() {
             if (badgeList[hidx] && badgeCounterArray[hidx] == badgeList[hidx][4]) {
                 h++;
             }
-        gameFontMed.a = 3;
-        drawText(gameFontMed, f + 27, g + 6, "Achievement Medal", 16777215, 0);
-        gameFont.a = 1;
-        drawText(gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
+        LoadedFonts.gameFontMed.a = 3;
+        drawText(LoadedFonts.gameFontMed, f + 27, g + 6, "Achievement Medal", 16777215, 0);
+        LoadedFonts.gameFont.a = 1;
+        drawText(LoadedFonts.gameFont, f + 129, g + 6 - 3, "" + h, 16777215, 0);
         c = -1;
         for (hidx = 0; hidx < shrineRewardOptions.length; hidx++) {
             b = f + 6;
             d = g + 26 + 24 * hidx;
             drawRect(b + 14, d, 20, 20, 0);
             if (100 > shrineRewardOptions[hidx][1]) {
-                gameFontSmall.b = -2;
-                drawScaledTintedTextCentered(gameFontSmall,
+                LoadedFonts.gameFontSmall.b = -2;
+                drawScaledTintedTextCentered(LoadedFonts.gameFontSmall,
                     b + 23, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14);
             } else {
-                gameFontSmall.a = 3;
-                gameFontSmall.b = -3;
-                drawScaledTintedTextCentered(gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14);
+                LoadedFonts.gameFontSmall.a = 3;
+                LoadedFonts.gameFontSmall.b = -3;
+                drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, b + 25, d + 10, "" + shrineRewardOptions[hidx][1], 255, 255, 255, 255, 0, 0, 0, 0, 10, 14);
             }
             if (1 == shrineRewardClaimed[hidx]) {
                 drawRect(b - 1, d + 5, 10, 10, 0);
-                drawSpriteSheetPart(iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168);
+                drawSpriteSheetPart(LoadedSprites.iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168);
             } else if (buttonCheck(b + 14, d, 20, 20)) {
                 fillEmptyPixelsRect(b + 14, d, 20, 20, 6684672);
                 if (shrineRewardOptions[hidx][1] <= h && isMouseClicked) {
@@ -2504,9 +2474,9 @@ function drawGameUI() {
                 }
             }
             
-            gameFontMed.a = 3;
-            gameFontMed.b = 1;
-            drawText(gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
+            LoadedFonts.gameFontMed.a = 3;
+            LoadedFonts.gameFontMed.b = 1;
+            drawText(LoadedFonts.gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         }
         if (!c)
             for (shrineRewardClaimed[c] = 1, shrineUIVisible = false, hidx = 0; 100 > hidx;) {
@@ -2533,9 +2503,9 @@ function drawGameUI() {
             }
         }
     }
-    gameFontSmall.a = 2;
-    drawScaledTintedText(gameFontSmall, 476, 421, Consts.copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
-    drawScaledTintedText(gameFontSmall, 607, 421, "" + GameState.currentFPS + Consts.fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    LoadedFonts.gameFontSmall.a = 2;
+    drawScaledTintedText(LoadedFonts.gameFontSmall, 476, 421, Consts.copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    drawScaledTintedText(LoadedFonts.gameFontSmall, 607, 421, "" + GameState.currentFPS + Consts.fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
 }
 
 
@@ -3444,7 +3414,7 @@ function drawPlayerParty() {
             f = 16711680;
         }
         spriteAltRenderFlag = isSolidRender = 1;
-        for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(effectSpriteSheet, RMath.floor(heroJointPositionsByHero[a][c].x), RMath.floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
+        for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(LoadedSprites.effectSpriteSheet, RMath.floor(heroJointPositionsByHero[a][c].x), RMath.floor(heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
         isSolidRender = spriteAltRenderFlag = 0;
         drawHero(a, heroJointPositionsByHero[a], heroBodyDrawStateByHero[a][0], heroBodyDrawStateByHero[a][1], d, f, heroUpperJointMode[a]);
         if (0 < heroAttackTrailTimerByHero[a]) {
@@ -3579,31 +3549,31 @@ function drawPlayerParty() {
             }
             c = RMath.min(60 - levelUpPopupTimer - 0, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 16, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
             c = RMath.min(60 - levelUpPopupTimer - 3, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 12, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
             c = RMath.min(60 - levelUpPopupTimer - 6, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 8, f - 2 * c, "V", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
             c = RMath.min(60 - levelUpPopupTimer - 9, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 4, f - 2 * c, "E", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
             c = RMath.min(60 - levelUpPopupTimer - 12, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 0, f - 2 * c, "L", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
             c = RMath.min(60 - levelUpPopupTimer - 15, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 8, f - 2 * c, "U", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
             c = RMath.min(60 - levelUpPopupTimer - 18, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 12, f - 2 * c, "P", 255, 255, 34, g, 34, 34, 0, g, 5, 7);
             }
         }
         if (
@@ -3617,29 +3587,29 @@ function drawPlayerParty() {
             }
             c = RMath.min(60 - stageClearPopupTimer - 0, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 8, f - 2 * c, "C", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
             c = RMath.min(60 - stageClearPopupTimer - 3, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 4, f - 2 * c, "L", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
             c = RMath.min(60 - stageClearPopupTimer - 6, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 0, f - 2 * c, "E", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
             c = RMath.min(60 - stageClearPopupTimer - 9, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 4, f -
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 4, f -
                     2 * c, "A", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
             c = RMath.min(60 - stageClearPopupTimer - 12, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 8, f - 2 * c, "R", 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
             c = RMath.min(60 - stageClearPopupTimer - 15, 4);
             if (0 < c) {
-                gameFontSmall.b = -1;
-                drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + stageClearBaseGoldPerHero, 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+                LoadedFonts.gameFontSmall.b = -1;
+                drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, d + 2, f - 2 * c + 9, "+" + stageClearBaseGoldPerHero, 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
         }
         if (0 < comboPopupTimer) {
@@ -3652,29 +3622,29 @@ function drawPlayerParty() {
             }
             c = RMath.min(60 - comboPopupTimer - 0, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 8, f - 2 * c, "C", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
             c = RMath.min(60 - comboPopupTimer - 3, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d - 4, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
             c = RMath.min(60 - comboPopupTimer - 6, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 0, f - 2 * c, "M", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
             c = RMath.min(60 - comboPopupTimer - 9, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 4, f -
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 4, f -
                     2 * c, "B", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
             c = RMath.min(60 - comboPopupTimer - 12, 4);
             if (0 < c) {
-                drawScaledTintedText(gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+                drawScaledTintedText(LoadedFonts.gameFontSmall, d + 8, f - 2 * c, "O", 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
             c = RMath.min(60 - comboPopupTimer - 15, 4);
             if (0 < c) {
-                gameFontSmall.b = -1;
-                drawScaledTintedTextCentered(gameFontSmall, d + 2, f - 2 * c + 9, "+" + comboGoldPayoutPerHero, 255, 128, 0, g, 48, 24, 0, g, 5, 7);
+                LoadedFonts.gameFontSmall.b = -1;
+                drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, d + 2, f - 2 * c + 9, "+" + comboGoldPayoutPerHero, 255, 128, 0, g, 48, 24, 0, g, 5, 7);
             }
         }
     }
@@ -3749,7 +3719,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     if (headwearType != 0) {
         if (heroBodyDrawStateByHero[heroIdx][2] == 0)
             drawSpriteSheetPartTintedScaled(
-                itemsSpriteSheet,
+                LoadedSprites.itemsSpriteSheet,
                 ~~joints[0].x - 8, ~~joints[0].y - 8,
                 16, 16,
                 16 * (headwearType & 15) + 0, 16 * (headwearType >> 4),
@@ -3760,7 +3730,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
         else
 
             drawSpriteSheetPartTintedScaled(
-                itemsSpriteSheet,
+                LoadedSprites.itemsSpriteSheet,
                 ~~joints[0].x - 8, ~~joints[0].y - 8,
                 16, 16,
                 16 * (headwearType & 15) + 16, 16 * (headwearType >> 4),
@@ -3826,7 +3796,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
             case 5:
                 isSolidRender = 2;
                 spriteAltRenderFlag = 1;
-                drawSpriteSheetPartCentered(effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p);
+                drawSpriteSheetPartCentered(LoadedSprites.effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p);
                 isSolidRender = spriteAltRenderFlag = 0;
                 break;
 
@@ -3838,16 +3808,16 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
 function loadLevelData(a) {
     if (loadedLevelIndex != a) {
         loadedLevelIndex = a;
-        currentLevelSprite = new Sprite;
-        currentLevelSprite.f("m" + a + ".png");
+        LoadedSprites.currentLevelSprite = new Sprite;
+        LoadedSprites.currentLevelSprite.f("m" + a + ".png");
     }
-    loadSprite(currentLevelSprite); // check if loaded sprite is valid
+    loadSprite(LoadedSprites.currentLevelSprite); // check if loaded sprite is valid
     if (uncheckedSpriteCount.value) return false;
     lastStageIdx = currentStage;
     isStageReachedArray[currentStage] = 1;
-    stageHeight = currentLevelSprite.i;
+    stageHeight = LoadedSprites.currentLevelSprite.i;
     let d = 0;
-    let spriteData = currentLevelSprite.g;
+    let spriteData = LoadedSprites.currentLevelSprite.g;
     for (let b = 0; b < stageHeight; b++) {
         for (let a = 0; a < stageWidth; a++, d++) {
             let pu = (b > 0) ? (d - stageWidth) : d; // up
@@ -4215,7 +4185,7 @@ function drawGameStage() {
         for (b = 0; b < stageWidth; b++)
             if (d = stageTileData[c][b], 64 == d) drawRect(8 * b, 8 * c, 8, 8, 0);
             else {
-                var f = tilesetSprites[a],
+                var f = LoadedSprites.tilesetSprites[a],
                     g = 8,
                     h = 8,
                     k, p, t, l;
@@ -6362,7 +6332,7 @@ function drawEnemies() { // Cg
             if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 drawLine(enemyJointPosArray[enemyIdx][drawScale].x, enemyJointPosArray[enemyIdx][drawScale].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
             }
-            drawSpriteSheetPartCentered(enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+            drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
         } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type8) {
             let _a = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA];
             for (let _i = 1; _i < _a; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x - 1, enemyJointPosArray[enemyIdx][_i].y - 1, enemyJointPosArray[enemyIdx][_i + 1].x - 1, enemyJointPosArray[enemyIdx][_i + 1].y - 1, accentTint);
@@ -6382,7 +6352,7 @@ function drawEnemies() { // Cg
             }
             drawLine(enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, secTint);
             drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, secTint);
-            drawSpriteSheetPartCentered(enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+            drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
         } else {
             if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type10) {
                 drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
@@ -6538,7 +6508,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         for (_px = 1; 6 > _px; _px++) drawLine(posY[_px], posX[_px], posY[_px + 1], posX[_px + 1], secTint);
         drawLine(posY[_px], posX[_px], posY[1], posX[1], secTint);
         drawSpriteSheetPartCentered(
-            enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
+            LoadedSprites.enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
             16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
         );
     } else if (behaviorIdx == BehaviorTypes.Type8) {
@@ -6583,7 +6553,7 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
         drawLine(RMath.floor(posY[5]), RMath.floor(posX[5]), RMath.floor(posY[6]), RMath.floor(posX[6]), secTint);
         drawLine(RMath.floor(posY[7]), RMath.floor(posX[7]), RMath.floor(posY[8]), RMath.floor(posX[8]), secTint);
         drawSpriteSheetPartCentered(
-            enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
+            LoadedSprites.enemySpriteSheet, RMath.floor(posY[0]), RMath.floor(posX[0]), RMath.floor(16 * _scale), RMath.floor(16 * _scale), 
             16 * (spriteIdx & 7), 16 * (spriteIdx >> 3), 16, 16, primTint
         );
     } else if (behaviorIdx == BehaviorTypes.Type10) {
@@ -7103,7 +7073,7 @@ function drawProjectiles() {
                 }
             }
             if (0 == projectileDrawMode[a]) {
-                drawSpriteSheetPartCentered(effectSpriteSheet, p.x, p.y, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
+                drawSpriteSheetPartCentered(LoadedSprites.effectSpriteSheet, p.x, p.y, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
             } else if (1 == projectileDrawMode[a]) {
                 g.set(t);
                 RMath.Vec2Norm(g);
@@ -7130,7 +7100,7 @@ function drawProjectiles() {
                     fb = b,
                     ob = c + 16;
                 l = d;
-                var Bb = effectSpriteSheet;
+                var Bb = LoadedSprites.effectSpriteSheet;
                 w <<= 16;
                 B <<= 16;
                 y <<= 16;
@@ -7233,7 +7203,7 @@ function drawProjectiles() {
                 l = RMath.max(enemyCatalog[enemyTypeArray[l]][EnemyProps.DrawScale], 1);
                 B = 0;
                 if (n == BehaviorTypes.Slime || n == BehaviorTypes.BoxSnake) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
-                drawSpriteSheetPartCentered(enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
+                drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);
             }
             spriteAltRenderFlag = isSolidRender = 0;
         }
@@ -7306,13 +7276,13 @@ function drawPopups() { // Fg
     let a, b, c, d, f;
     for (a = 0; a < popupCount; a++)
         if (20 <= popupLife[a]) {
-            drawTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0);
+            drawTextCentered(LoadedFonts.gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], popupColor[a], 0);
         } else {
             b = popupColor[a] >> 16 & 255;
             c = popupColor[a] >> 8 & 255;
             d = popupColor[a] & 255;
             f = RMath.floor(255 * RMath.min(popupLife[a], 20) / 20);
-            drawScaledTintedTextCentered(gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7);
+            drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, ~~popupPos[a].x, ~~popupPos[a].y, "" + popupValue[a], b, c, d, f, 0, 0, 0, f, 5, 7);
         }
 
 }
@@ -7425,7 +7395,7 @@ function drawDrops() { // Dg
     spriteAltRenderFlag = 2;
     for (a = 0; a < dropCount; a++)
         (100 == dropState[a] || dropState[a] & 6) &&
-            drawSpriteSheetPart(droppedItemSpriteSheet,
+            drawSpriteSheetPart(LoadedSprites.droppedItemSpriteSheet,
                 dropPos[a].x - 6, dropPos[a].y - 12,
                 12, 12,
                 12 * itemList[dropType[a]][ItemProps.DropIconCol], 0,
@@ -7568,14 +7538,14 @@ function drawTextCentered(font, x, y, text, color, outlineColor) {
 }
 
 function drawMedTextNoOutline(x, y, text, color) {
-    let f = gameFontMed;
+    let f = LoadedFonts.gameFontMed;
     f.b = -1;
     f.a = 3;
     drawText(f, x, y, text, color, 0)
 }
 
 function drawSmallTextNoOutline(x, y, text, color) {
-    let f = gameFontSmall;
+    let f = LoadedFonts.gameFontSmall;
     f.b = -1;
     f.a = 0;
     drawTextCentered(f, x, y, text, color, -1)
@@ -7874,7 +7844,7 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
     // fl
     centerX -= dstWidth >> 1;
     centerY -= dstHeight >> 1;
-    let l, n = enemySpriteSheet.g,
+    let l, n = LoadedSprites.enemySpriteSheet.g,
         w, B, M, J, y, x, K;
     l = ~~(4096 / dstWidth);
     srcHeight = ~~((srcHeight << 8) / dstHeight);
@@ -7892,7 +7862,7 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
     centerY = 0 > centerY ? 0 : ~~centerY;
     B = 640 * centerY + centerX;
     for (M = 640 - (dstWidth - centerX); centerY < dstHeight; centerY++, B += M, srcY += srcHeight)
-        for (J = ((srcY >> 8) * enemySpriteSheet.h << 8) + srcX, w = centerX; w < dstWidth; w++, B++, J += l) {
+        for (J = ((srcY >> 8) * LoadedSprites.enemySpriteSheet.h << 8) + srcX, w = centerX; w < dstWidth; w++, B++, J += l) {
             y = n[J >> 8];
             if (-1 != y) {
                 if (255 == blendAmount) {
@@ -7922,7 +7892,7 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
 function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tintColor) {
     // gh
     let h = 16, k = 16, p, t, 
-        l = itemsSpriteSheet.g, n, w, B, M;
+        l = LoadedSprites.itemsSpriteSheet.g, n, w, B, M;
     p = ~~(4096 / h);
     t = ~~(4096 / k);
     _sourceX <<= 8;
@@ -7941,7 +7911,7 @@ function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tint
     w = 640 - (h - _px);
     let J, y, x = _tintColor >> 16 & 255, K = _tintColor >> 8 & 255;
     for (ba = _tintColor & 255; _py < k; _py++, n += w, _sourceY += t) {
-        for (B = ((_sourceY >> 8) * itemsSpriteSheet.h << 8) + _sourceX, _tintColor = _px; _tintColor < h; _tintColor++, n++, B += p) {
+        for (B = ((_sourceY >> 8) * LoadedSprites.itemsSpriteSheet.h << 8) + _sourceX, _tintColor = _px; _tintColor < h; _tintColor++, n++, B += p) {
             M = l[B >> 8];
             if (0 < M) {
                 J = M >> 16 & 255;
@@ -8216,18 +8186,18 @@ function drawIconButton(x, y, iconIndex, label, color) {
     isSolidRender = 1;
     drawRectCentered(x, y, 32, 32, 2147483648);
     isSolidRender = 0;
-    drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, color);
+    drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, color);
     if (6 <= label.length) {
         drawSmallTextNoOutline(x, y + 10, label, color);
     } else {
-        drawTextCentered(gameFontSmall, x, y + 10, label, color, -1);
+        drawTextCentered(LoadedFonts.gameFontSmall, x, y + 10, label, color, -1);
     }
     if (buttonCheckCentered(x, y, 32, 32)) {
-        drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, 16750950);
+        drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, 16750950);
         if (6 <= label.length) {
             drawSmallTextNoOutline(x, y + 10, label, 16750950);
         } else {
-            drawTextCentered(gameFontSmall, x, y + 10, label, 16750950, -1);
+            drawTextCentered(LoadedFonts.gameFontSmall, x, y + 10, label, 16750950, -1);
         }
         return true;
     }
@@ -8239,18 +8209,18 @@ function drawMenuButton(x, y, iconIndex, text, color) {
     isSolidRender = 1;
     drawRectCentered(x, y, 24, 24, 2147483648);
     isSolidRender = 0;
-    drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, color);
+    drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, color);
     if (6 <= text.length) {
         drawSmallTextNoOutline(x, y + 8, text, color);
     } else {
-        drawTextCentered(gameFontSmall, x, y + 8, text, color, -1);
+        drawTextCentered(LoadedFonts.gameFontSmall, x, y + 8, text, color, -1);
     }
     if (buttonCheckCentered(x, y, 24, 24)) {
-        drawSpriteSheetPartCentered(iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, 16737894);
+        drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, 16737894);
         if (6 <= text.length) {
             drawSmallTextNoOutline(x, y + 8, text, 16737894) 
         } else {
-            drawTextCentered(gameFontSmall, x, y + 8, text, 16737894, -1);
+            drawTextCentered(LoadedFonts.gameFontSmall, x, y + 8, text, 16737894, -1);
         }
         return true;
     }
@@ -8262,16 +8232,16 @@ function drawCancelButton(x, y) {
     isSolidRender = 1;
     drawRectCentered(x, y, 20, 20, 2147483648);
     isSolidRender = 0;
-    drawSpriteSheetPartCentered(iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16777215);
+    drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16777215);
     if (buttonCheckCentered(x, y, 20, 20)) {
-        drawSpriteSheetPartCentered(iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16737894);
+        drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16737894);
         return true;
     }
 }
 
 function drawButtonBoldedText(x, y, w, h, text) {
     drawRectCentered(x, y, w, h, 0);
-    drawTextCentered(gameFont, x, y, text, 16777215, 8409120);
+    drawTextCentered(LoadedFonts.gameFont, x, y, text, 16777215, 8409120);
     if (buttonCheckCentered(x, y, w, h)) {
         fillEmptyPixelsRect(x - (w >> 1), y - (h >> 1), w, h, 6684672);
         return true;

@@ -1,3 +1,5 @@
+import { Sprite } from "./sprite.js";
+
 export let CanvasState = {
     element : document.getElementById("cv"),
     canvasImage: undefined,

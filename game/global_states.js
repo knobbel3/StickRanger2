@@ -37,3 +37,19 @@ export let GameState = {
 GameState.lastTimestamp = GameState.timestampAnim; // Xm
 GameState.nextFrameTime = GameState.timestampAnim + GameState.frameInteval; // fn
 GameState.secondWindowDeadline = GameState.timestampAnim; // gn
+
+export let RenderingState = {
+    frameBufferArray : new Int32Array(276480),
+
+    // per-scanline X ranges (16.16 fixed-point) used for rasterization
+    scanlineMinX : new Int32Array(432),         // Ji,
+    scanlineMaxX : new Int32Array(432),         // Ki,
+
+    // per-scanline start texture U ranges (16.16 fixed-point) for sampling during rasterization.
+    scanlineTexUStart : new Float32Array(432),  // om, 
+    scanlineTexUEnd : new Float32Array(432),    // nm, 
+
+    // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
+    scanlineTexVStart : new Float32Array(432),  // qm, 
+    scanlineTexVEnd : new Float32Array(432),    // pm,
+};

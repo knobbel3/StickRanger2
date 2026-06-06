@@ -12,7 +12,7 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { CanvasState, GameState } from "./game/global_states.js";
+import { CanvasState, GameState, RenderingState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
 
 export {gameInit as Init, toggleFullscreen as full_screen};
@@ -30,21 +30,7 @@ CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
-// rendering maybe
-let frameBufferArray = new Int32Array(276480),
-
-    // per-scanline X ranges (16.16 fixed-point) used for rasterization
-    scanlineMinX = new Int32Array(432),         // Ji,
-    scanlineMaxX = new Int32Array(432),         // Ki,
-
-    // per-scanline start texture U ranges (16.16 fixed-point) for sampling during rasterization.
-    scanlineTexUStart = new Float32Array(432),  // om, 
-    scanlineTexUEnd = new Float32Array(432),    // nm, 
-
-    // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
-    scanlineTexVStart = new Float32Array(432),  // qm, 
-    scanlineTexVEnd = new Float32Array(432);    // pm, 
-let canvasImageBuffer = new Sprite;
+// let canvasImageBuffer = new Sprite;
 
 // sprites
 let titleSprite = new Sprite,
@@ -997,7 +983,7 @@ function gameInit(a, b) {
         keyMapShift[160] = 126;
         let _t2;
         for (_t0 = 0; 276480 > _t0; _t0++) 
-            frameBufferArray[_t0] = 0;
+            RenderingState.frameBufferArray[_t0] = 0;
         
         // uncheckedSpriteCount is incremented
         RMath.InitStates();
@@ -1091,7 +1077,7 @@ function gameInit(a, b) {
         }
 
         // updatePartyChecksum();
-        spriteCreateBuffer(canvasImageBuffer, 640, 432);
+        // spriteCreateBuffer(canvasImageBuffer, 640, 432);
         setupAnimRequest();
     }
 }
@@ -1100,7 +1086,7 @@ function gameInit(a, b) {
 function drawCanvas() {
 
     var a, b, c, d;
-    for (let a = Consts.CANVAS_WIDTH * Consts.CANVAS_HEIGHT - 1; 0 <= a; a--) frameBufferArray[a] = 0; // clear buffer
+    for (let a = Consts.CANVAS_WIDTH * Consts.CANVAS_HEIGHT - 1; 0 <= a; a--) RenderingState.frameBufferArray[a] = 0; // clear buffer
     var d;
 
     tamperCheckScanOffset = tamperCheckScanOffset + 1 & 63;
@@ -1146,7 +1132,7 @@ function drawCanvas() {
             while (_dx < d) {
                 let _px = titleSpriteData[idxmask >> 8];
                 if (-1 != _px) {
-                    frameBufferArray[n] = _px;
+                    RenderingState.frameBufferArray[n] = _px;
                 }
                 _dx++; 
                 n++; 
@@ -3537,8 +3523,8 @@ function drawPlayerParty() {
                     n = 431;
                 }
                 for (l = U; l <= n; l++) {
-                    scanlineMinX[l] = 640;
-                    scanlineMaxX[l] = -1;
+                    RenderingState.scanlineMinX[l] = 640;
+                    RenderingState.scanlineMaxX[l] = -1;
                 }
                 updateScanlineBoundsFromLine(w, B, M, J);
                 updateScanlineBoundsFromLine(M, J, y, x);
@@ -3549,34 +3535,34 @@ function drawPlayerParty() {
                 M = t >> 8 & 255;
                 J = t & 255;
                 for (l = U; l < n; l++)
-                    for (0 > scanlineMinX[l] && (scanlineMinX[l] = 0), 640 <= scanlineMaxX[l] && (scanlineMaxX[l] = 639), U = 640 * l + scanlineMinX[l], y = U + (scanlineMaxX[l] - scanlineMinX[l]), x = 640 * l + scanlineMinX[l + 1], K = x + (scanlineMaxX[l + 1] - scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = RMath.min(y - 1, K)); U <= y; U++)
+                    for (0 > RenderingState.scanlineMinX[l] && (RenderingState.scanlineMinX[l] = 0), 640 <= RenderingState.scanlineMaxX[l] && (RenderingState.scanlineMaxX[l] = 639), U = 640 * l + RenderingState.scanlineMinX[l], y = U + (RenderingState.scanlineMaxX[l] - RenderingState.scanlineMinX[l]), x = 640 * l + RenderingState.scanlineMinX[l + 1], K = x + (RenderingState.scanlineMaxX[l + 1] - RenderingState.scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = RMath.min(y - 1, K)); U <= y; U++)
                         if (0 == isSolidRender) {
-                            frameBufferArray[U] = t;
+                            RenderingState.frameBufferArray[U] = t;
                         } else {
                             if (1 == isSolidRender) {
-                                x = frameBufferArray[U] >> 16 & 255;
+                                x = RenderingState.frameBufferArray[U] >> 16 & 255;
                                 x = ((B - x) * w >> 8) + x;
-                                K = frameBufferArray[U] >> 8 & 255;
+                                K = RenderingState.frameBufferArray[U] >> 8 & 255;
                                 K = ((M - K) * w >> 8) + K;
-                                ba = frameBufferArray[U] & 255;
+                                ba = RenderingState.frameBufferArray[U] & 255;
                                 ba = ((J - ba) * w >> 8) + ba;
-                                frameBufferArray[U] = x << 16 | K << 8 | ba;
+                                RenderingState.frameBufferArray[U] = x << 16 | K << 8 | ba;
                             } else {
                                 if (2 == isSolidRender) {
-                                    x = (frameBufferArray[U] >>
+                                    x = (RenderingState.frameBufferArray[U] >>
                                         16 & 255) + (B * w >> 8);
                                     if (255 < x) {
                                         x = 255;
                                     }
-                                    K = (frameBufferArray[U] >> 8 & 255) + (M * w >> 8);
+                                    K = (RenderingState.frameBufferArray[U] >> 8 & 255) + (M * w >> 8);
                                     if (255 < K) {
                                         K = 255;
                                     }
-                                    ba = (frameBufferArray[U] & 255) + (J * w >> 8);
+                                    ba = (RenderingState.frameBufferArray[U] & 255) + (J * w >> 8);
                                     if (255 < ba) {
                                         ba = 255;
                                     }
-                                    frameBufferArray[U] = x << 16 | K << 8 | ba;
+                                    RenderingState.frameBufferArray[U] = x << 16 | K << 8 | ba;
                                 }
                             }
                         }
@@ -4242,7 +4228,7 @@ function drawGameStage() {
                     for (; k < g; k++, d++) {
                         l = f.g[d];
                         if (-1 != l) {
-                            frameBufferArray[k] = l;
+                            RenderingState.frameBufferArray[k] = l;
                         }
                     }
             } for (c = 0; c < stageHeight; c++)
@@ -7175,7 +7161,7 @@ function drawProjectiles() {
                 c >>= 16;
                 0 > n && (n = 0);
                 432 <= c && (c = 431);
-                for (b = n; b <= c; b++) scanlineMinX[b] = 640, scanlineMaxX[b] = -1;
+                for (b = n; b <= c; b++) RenderingState.scanlineMinX[b] = 640, RenderingState.scanlineMaxX[b] = -1;
                 rasterizeLineToScanlineBounds(w, B, M, J, y, x, K, ba);
                 rasterizeLineToScanlineBounds(y, x, K, ba, U, na, Fa, Ga);
                 rasterizeLineToScanlineBounds(U, na, Fa, Ga, Ca, ua, fb, ob);
@@ -7187,54 +7173,54 @@ function drawProjectiles() {
                 y = l >> 8 & 255;
                 x = l & 255;
                 for (b = n; b <= c; b++){  
-                    l = scanlineMaxX[b] - scanlineMinX[b] + 1;
-                    n = RMath.floor((scanlineTexUEnd[b] - scanlineTexUStart[b]) / l);
-                    Fa = RMath.floor((scanlineTexVEnd[b] - scanlineTexVStart[b]) / l);
-                    U = scanlineTexUStart[b];
-                    na = scanlineTexVStart[b];
-                    if (0 > scanlineMinX[b]) {
-                        U += n * -scanlineMinX[b];
-                        na += Fa * -scanlineMinX[b];
-                        scanlineMinX[b] = 0;
+                    l = RenderingState.scanlineMaxX[b] - RenderingState.scanlineMinX[b] + 1;
+                    n = RMath.floor((RenderingState.scanlineTexUEnd[b] - RenderingState.scanlineTexUStart[b]) / l);
+                    Fa = RMath.floor((RenderingState.scanlineTexVEnd[b] - RenderingState.scanlineTexVStart[b]) / l);
+                    U = RenderingState.scanlineTexUStart[b];
+                    na = RenderingState.scanlineTexVStart[b];
+                    if (0 > RenderingState.scanlineMinX[b]) {
+                        U += n * -RenderingState.scanlineMinX[b];
+                        na += Fa * -RenderingState.scanlineMinX[b];
+                        RenderingState.scanlineMinX[b] = 0;
                     }
-                    if (640 <= scanlineMaxX[b]) {
-                        scanlineMaxX[b] = 639;
+                    if (640 <= RenderingState.scanlineMaxX[b]) {
+                        RenderingState.scanlineMaxX[b] = 639;
                     }
-                    K = 640 * b + scanlineMinX[b];
-                    for (ba = K + (scanlineMaxX[b] - scanlineMinX[b]); K <= ba; K++, U += n, na += Fa) {
+                    K = 640 * b + RenderingState.scanlineMinX[b];
+                    for (ba = K + (RenderingState.scanlineMaxX[b] - RenderingState.scanlineMinX[b]); K <= ba; K++, U += n, na += Fa) {
                         l = w[(na >> 16) * B + (U >> 16)];
                         if (0 != l) {
                             l = (l & 255) * M >> 8;
                             if (1 == isSolidRender) {
-                                Ga = frameBufferArray[K] >> 16 & 255;
+                                Ga = RenderingState.frameBufferArray[K] >> 16 & 255;
                                 Ga = ((J - Ga) * l >> 8) + Ga;
-                                Ca = frameBufferArray[K] >> 8 & 255;
+                                Ca = RenderingState.frameBufferArray[K] >> 8 & 255;
                                 Ca = ((y - Ca) * l >> 8) + Ca;
-                                ua = frameBufferArray[K] & 255;
+                                ua = RenderingState.frameBufferArray[K] & 255;
                                 ua = ((x - ua) * l >> 8) + ua;
-                                frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
+                                RenderingState.frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
                             } else if (2 == isSolidRender) {
-                                Ga = (frameBufferArray[K] >> 16 & 255) + (J * l >> 8);
+                                Ga = (RenderingState.frameBufferArray[K] >> 16 & 255) + (J * l >> 8);
                                 if (255 < Ga) {
                                     Ga = 255;
                                 }
-                                Ca = (frameBufferArray[K] >> 8 & 255) + (y * l >> 8);
+                                Ca = (RenderingState.frameBufferArray[K] >> 8 & 255) + (y * l >> 8);
                                 if (255 < Ca) {
                                     Ca = 255;
                                 }
-                                ua = (frameBufferArray[K] & 255) + (x * l >> 8);
+                                ua = (RenderingState.frameBufferArray[K] & 255) + (x * l >> 8);
                                 if (255 < ua) {
                                     ua = 255;
                                 }
-                                frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
+                                RenderingState.frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
                             } else if (3 == isSolidRender) {
-                                Ga = (frameBufferArray[K] >> 16 & 255) - (J * l >> 8);
+                                Ga = (RenderingState.frameBufferArray[K] >> 16 & 255) - (J * l >> 8);
                                 if (Ga < 0) Ga = 0;
-                                Ca = (frameBufferArray[K] >> 8 & 255) - (y * l >> 8);
+                                Ca = (RenderingState.frameBufferArray[K] >> 8 & 255) - (y * l >> 8);
                                 if (Ca < 0) Ca = 0;
-                                ua = (frameBufferArray[K] & 255) - (x * l >> 8);
+                                ua = (RenderingState.frameBufferArray[K] & 255) - (x * l >> 8);
                                 if (ua < 0) ua = 0;
-                                frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
+                                RenderingState.frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
                             }
                         }
                     }
@@ -7503,16 +7489,16 @@ function setupAnimRequest() {
     if (1 <= screenFadeFactor){
         for (a = 0; a < canvasBufferLength; a++) {
             CanvasState.canvasBuffer[a] = 4278190080 | 
-            (frameBufferArray[a] & 255) << 16 | 
-            frameBufferArray[a] & 65280 | 
-            frameBufferArray[a] >> 16 & 255;
+            (RenderingState.frameBufferArray[a] & 255) << 16 | 
+            RenderingState.frameBufferArray[a] & 65280 | 
+            RenderingState.frameBufferArray[a] >> 16 & 255;
         }
     } else {
         for (a = 0; a < canvasBufferLength; a++) {
             CanvasState.canvasBuffer[a] = 4278190080 | 
-            (frameBufferArray[a] & 255) * screenFadeFactor << 16 | 
-            (frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | 
-            (frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
+            (RenderingState.frameBufferArray[a] & 255) * screenFadeFactor << 16 | 
+            (RenderingState.frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | 
+            (RenderingState.frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
         }
     }
     canvasDrawImage(CanvasState.canvasImage, 0, 0);
@@ -7562,9 +7548,9 @@ function drawText(_font, px, py, text, color, outlineColor) {
             for (p = _font.c; 0 < p; p--, l++, n++) {
                 w = J[n];
                 if (w == y) {
-                    frameBufferArray[l] = color;
+                    RenderingState.frameBufferArray[l] = color;
                 } else if (w == x) {
-                    frameBufferArray[l] = outlineColor;
+                    RenderingState.frameBufferArray[l] = outlineColor;
                 }
             }
         if (0 != _font.a) {
@@ -7621,9 +7607,9 @@ function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, al
             for (ba = ~~(idx_1 * font.j / glyphHeight) * font.i.h + U << 8, idx_2 = 0; idx_2 < glyphWidth; idx_2++, K++, ba += Ga) {
                 na = Ca[ba >> 8];
                 if (na == ua) {
-                    frameBufferArray[K] = fgR + ((frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((frameBufferArray[K] & 255) * fgAlpha >> 8);
+                    RenderingState.frameBufferArray[K] = fgR + ((RenderingState.frameBufferArray[K] >> 16 & 255) * fgAlpha >> 8) << 16 | fgG + ((RenderingState.frameBufferArray[K] >> 8 & 255) * fgAlpha >> 8) << 8 | fgB + ((RenderingState.frameBufferArray[K] & 255) * fgAlpha >> 8);
                 } else if (na == fb) {
-                    frameBufferArray[K] = altR + ((frameBufferArray[K] >> 16 & 255) * altAlpha >> 8) << 16 | altG + ((frameBufferArray[K] >> 8 & 255) * altAlpha >> 8) << 8 | altB + ((frameBufferArray[K] & 255) * altAlpha >> 8);
+                    RenderingState.frameBufferArray[K] = altR + ((RenderingState.frameBufferArray[K] >> 16 & 255) * altAlpha >> 8) << 16 | altG + ((RenderingState.frameBufferArray[K] >> 8 & 255) * altAlpha >> 8) << 8 | altB + ((RenderingState.frameBufferArray[K] & 255) * altAlpha >> 8);
                 }
             }
         if (0 != font.a) {
@@ -7663,7 +7649,7 @@ function drawLine(x1, y1, x2, y2, color) {
     if (0 == isSolidRender)
         for (; 0 <= h; h--, x1 += x2, y1 += y2)
             0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 || (
-                g = 640 * (y1 >> 16) + (x1 >> 16), frameBufferArray[g] = color);
+                g = 640 * (y1 >> 16) + (x1 >> 16), RenderingState.frameBufferArray[g] = color);
     else {
         var k = color >> 24 & 255,
             p = (color >> 16 & 255) * k >> 8,
@@ -7672,9 +7658,9 @@ function drawLine(x1, y1, x2, y2, color) {
         for (k = 255 - k; 0 <= h; h--, x1 += x2, y1 += y2)
             0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 || (
                 g = 640 * (y1 >> 16) + (x1 >> 16),
-                frameBufferArray[g] = p + ((frameBufferArray[g] >> 16 & 255) * k >> 8) << 16 |
-                t + ((frameBufferArray[g] >> 8 & 255) * k >> 8) << 8 |
-                color + ((frameBufferArray[g] & 255) * k >> 8));
+                RenderingState.frameBufferArray[g] = p + ((RenderingState.frameBufferArray[g] >> 16 & 255) * k >> 8) << 16 |
+                t + ((RenderingState.frameBufferArray[g] >> 8 & 255) * k >> 8) << 8 |
+                color + ((RenderingState.frameBufferArray[g] & 255) * k >> 8));
 
     }
 }
@@ -7703,7 +7689,7 @@ function drawRect(_x, _y, _w, _h, _color) {
 
     if (0 == isSolidRender)
         for (; _y < _h; _y++, h += k)
-            for (g = _x; g < _w; g++, h++) frameBufferArray[h] = _color;
+            for (g = _x; g < _w; g++, h++) RenderingState.frameBufferArray[h] = _color;
     else {
         var p = _color >> 24 & 255,
             t = (_color >> 16 & 255) * p >> 8,
@@ -7711,9 +7697,9 @@ function drawRect(_x, _y, _w, _h, _color) {
         _color = (_color & 255) * p >> 8;
         for (p = 255 - p; _y < _h; _y++, h += k)
             for (g = _x; g < _w; g++, h++)
-                frameBufferArray[h] = t + ((frameBufferArray[h] >> 16 & 255) * p >> 8) << 16 |
-                    l + ((frameBufferArray[h] >> 8 & 255) * p >> 8) << 8 |
-                    _color + ((frameBufferArray[h] & 255) * p >> 8)
+                RenderingState.frameBufferArray[h] = t + ((RenderingState.frameBufferArray[h] >> 16 & 255) * p >> 8) << 16 |
+                    l + ((RenderingState.frameBufferArray[h] >> 8 & 255) * p >> 8) << 8 |
+                    _color + ((RenderingState.frameBufferArray[h] & 255) * p >> 8)
     }
 }
 
@@ -7750,26 +7736,26 @@ function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX
                 y = U * (tintColor >> 8 & 255) >> 8;
                 x = na * (tintColor & 255) >> 8;
                 if (0 == isSolidRender) {
-                    frameBufferArray[w] = J << 16 | y << 8 | x;
+                    RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
                 } else if (1 == isSolidRender) {
-                    tintColor = frameBufferArray[w] >> 16 & 255;
+                    tintColor = RenderingState.frameBufferArray[w] >> 16 & 255;
                     J = ((J - tintColor) * K >> 8) + tintColor;
-                    tintColor = frameBufferArray[w] >> 8 & 255;
+                    tintColor = RenderingState.frameBufferArray[w] >> 8 & 255;
                     y = ((y - tintColor) * K >> 8) + tintColor;
-                    tintColor = frameBufferArray[w] & 255;
+                    tintColor = RenderingState.frameBufferArray[w] & 255;
                     x = ((x - tintColor) * K >> 8) + tintColor;
-                    frameBufferArray[w] = J << 16 | y << 8 | x;
+                    RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
                 } else if (2 == isSolidRender) {
-                    J = (frameBufferArray[w] >> 16 & 255) + (J * K >> 8);
+                    J = (RenderingState.frameBufferArray[w] >> 16 & 255) + (J * K >> 8);
                     if (255 < J) {
                         if (J = 255) {
-                            y = (frameBufferArray[w] >> 8 & 255) + (y * K >> 8);
+                            y = (RenderingState.frameBufferArray[w] >> 8 & 255) + (y * K >> 8);
                             if (255 < y) {
                                 if (y = 255) {
-                                    x = (frameBufferArray[w] & 255) + (x * K >> 8);
+                                    x = (RenderingState.frameBufferArray[w] & 255) + (x * K >> 8);
                                     if (255 < x) {
                                         if (x = 255) {
-                                            frameBufferArray[w] = J << 16 | y << 8 | x;
+                                            RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
                                         }
                                     }
                                 }
@@ -7787,38 +7773,38 @@ function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX
                 if (0 != tintColor) {
                     tintColor = (tintColor & 255) * K >> 8;
                     if (1 == isSolidRender) {
-                        J = frameBufferArray[w] >> 16 & 255;
+                        J = RenderingState.frameBufferArray[w] >> 16 & 255;
                         J = ((ba - J) * tintColor >> 8) + J;
-                        y = frameBufferArray[w] >> 8 & 255;
+                        y = RenderingState.frameBufferArray[w] >> 8 & 255;
                         y = ((U - y) * tintColor >> 8) + y;
-                        x = frameBufferArray[w] & 255;
+                        x = RenderingState.frameBufferArray[w] & 255;
                         x = ((na - x) * tintColor >> 8) + x;
-                        frameBufferArray[w] = J << 16 | y << 8 | x;
+                        RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
                     } else if (2 == isSolidRender) {
-                        J = (frameBufferArray[w] >> 16 & 255) + (ba * tintColor >> 8);
+                        J = (RenderingState.frameBufferArray[w] >> 16 & 255) + (ba * tintColor >> 8);
                         if (255 < J) {
                             J = 255;
                         }
-                        y = (frameBufferArray[w] >> 8 & 255) + (U * tintColor >> 8);
+                        y = (RenderingState.frameBufferArray[w] >> 8 & 255) + (U * tintColor >> 8);
                         if (255 < y) {
                             y = 255;
                         }
-                        x = (frameBufferArray[w] & 255) + (na * tintColor >> 8);
+                        x = (RenderingState.frameBufferArray[w] & 255) + (na * tintColor >> 8);
                         if (255 < x) {
                             x = 255;
                         }
-                        frameBufferArray[w] = J << 16 | y << 8 | x;
+                        RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
                     } else if (3 == isSolidRender) {
-                        J = (frameBufferArray[w] >> 16 & 255) - (ba * tintColor >> 8);
+                        J = (RenderingState.frameBufferArray[w] >> 16 & 255) - (ba * tintColor >> 8);
                         if (0 > J) {
                             if (J = 0) {
-                                y = (frameBufferArray[w] >> 8 & 255) - (U * tintColor >> 8);
+                                y = (RenderingState.frameBufferArray[w] >> 8 & 255) - (U * tintColor >> 8);
                                 if (0 > y) {
                                     if (y = 0) {
-                                        x = (frameBufferArray[w] & 255) - (na * tintColor >> 8);
+                                        x = (RenderingState.frameBufferArray[w] & 255) - (na * tintColor >> 8);
                                         if (0 > x) {
                                             if (x = 0) {
-                                                frameBufferArray[w] = J << 16 | y << 8 | x;
+                                                RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
                                             }
                                         }
                                     }
@@ -7837,7 +7823,7 @@ function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX
                     J = tintColor >> 16 & 255;
                     y = tintColor >> 8 & 255;
                     x = tintColor & 255;
-                    frameBufferArray[w] = J == y && y == x ? ba * J >> 8 << 16 | U * y >> 8 << 8 | na * x >> 8 : tintColor;
+                    RenderingState.frameBufferArray[w] = J == y && y == x ? ba * J >> 8 << 16 | U * y >> 8 << 8 | na * x >> 8 : tintColor;
                 }
             }
         }
@@ -7874,11 +7860,11 @@ function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawH
             x = w[y >> 8];
             if (-1 != x) {
                 if (16777215 == x) {
-                    frameBufferArray[M] = whiteRCol;
+                    RenderingState.frameBufferArray[M] = whiteRCol;
                 } else if (6710886 == x) {
-                    frameBufferArray[M] = grayRCol;
+                    RenderingState.frameBufferArray[M] = grayRCol;
                 } else if (copySource) {
-                    frameBufferArray[M] = x;
+                    RenderingState.frameBufferArray[M] = x;
                 }
             }
         }
@@ -7910,24 +7896,24 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
             y = n[J >> 8];
             if (-1 != y) {
                 if (255 == blendAmount) {
-                    frameBufferArray[B] = 16777215 == y ? replaceColW : replaceColAlt;
+                    RenderingState.frameBufferArray[B] = 16777215 == y ? replaceColW : replaceColAlt;
                 } else {
                     if (16777215 == y) {
-                        y = frameBufferArray[B] >> 16 & 255;
+                        y = RenderingState.frameBufferArray[B] >> 16 & 255;
                         x = (((replaceColW >> 16 & 255) - y) * blendAmount >> 8) + y;
-                        y = frameBufferArray[B] >> 8 & 255;
+                        y = RenderingState.frameBufferArray[B] >> 8 & 255;
                         K = (((replaceColW >> 8 & 255) - y) * blendAmount >> 8) + y;
-                        y = frameBufferArray[B] & 255;
+                        y = RenderingState.frameBufferArray[B] & 255;
                         y = (((replaceColW & 255) - y) * blendAmount >> 8) + y;
                     } else {
-                        y = frameBufferArray[B] >> 16 & 255;
+                        y = RenderingState.frameBufferArray[B] >> 16 & 255;
                         x = (((replaceColAlt >> 16 & 255) - y) * blendAmount >> 8) + y;
-                        y = frameBufferArray[B] >> 8 & 255;
+                        y = RenderingState.frameBufferArray[B] >> 8 & 255;
                         K = (((replaceColAlt >> 8 & 255) - y) * blendAmount >> 8) + y;
-                        y = frameBufferArray[B] & 255;
+                        y = RenderingState.frameBufferArray[B] & 255;
                         y = (((replaceColAlt & 255) - y) * blendAmount >> 8) + y;
                     }
-                    frameBufferArray[B] = x << 16 | K << 8 | y;
+                    RenderingState.frameBufferArray[B] = x << 16 | K << 8 | y;
                 }
             }
         }
@@ -7961,7 +7947,7 @@ function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tint
                 J = M >> 16 & 255;
                 y = M >> 8 & 255;
                 M &= 255;
-                frameBufferArray[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : _defaultColor;
+                RenderingState.frameBufferArray[n] = J == y && y == M ? x * J >> 8 << 16 | K * y >> 8 << 8 | ba * M >> 8 : _defaultColor;
             }
         }
     }
@@ -7973,8 +7959,8 @@ function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
     h = 640 - _width;
     for (_top = 0; _top < _height; _top++, g += h)
         for (_left = 0; _left < _width; _left++, g++)
-            if (0 == frameBufferArray[g]) {
-                frameBufferArray[g] = _color;
+            if (0 == RenderingState.frameBufferArray[g]) {
+                RenderingState.frameBufferArray[g] = _color;
             }
 }
 
@@ -7991,11 +7977,11 @@ function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
             }
             g = _y0 >> 16;
             if (!(0 > g || 432 <= g)) {
-                if (scanlineMinX[g] > _x0) {
-                    scanlineMinX[g] = _x0;
+                if (RenderingState.scanlineMinX[g] > _x0) {
+                    RenderingState.scanlineMinX[g] = _x0;
                 }
-                if (scanlineMaxX[g] < _x0) {
-                    scanlineMaxX[g] = _x0;
+                if (RenderingState.scanlineMaxX[g] < _x0) {
+                    RenderingState.scanlineMaxX[g] = _x0;
                 }
             }
         }
@@ -8010,11 +7996,11 @@ function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
             }
             g = _x0 >> 16;
             if (!(0 > _y0 || 432 <= _y0)) {
-                if (scanlineMinX[_y0] > g) {
-                    scanlineMinX[_y0] = g;
+                if (RenderingState.scanlineMinX[_y0] > g) {
+                    RenderingState.scanlineMinX[_y0] = g;
                 }
-                if (scanlineMaxX[_y0] < g) {
-                    scanlineMaxX[_y0] = g;
+                if (RenderingState.scanlineMaxX[_y0] < g) {
+                    RenderingState.scanlineMaxX[_y0] = g;
                 }
             }
         }
@@ -8031,15 +8017,15 @@ function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay
         t = _x0 >> 16;
         l = _y0 >> 16;
         if (!(0 > l || 432 <= l)) {
-            if (scanlineMinX[l] > t) {
-                scanlineMinX[l] = t;
-                scanlineTexUStart[l] = _ax0;
-                scanlineTexVStart[l] = _ay0;
+            if (RenderingState.scanlineMinX[l] > t) {
+                RenderingState.scanlineMinX[l] = t;
+                RenderingState.scanlineTexUStart[l] = _ax0;
+                RenderingState.scanlineTexVStart[l] = _ay0;
             }
-            if (scanlineMaxX[l] < t) {
-                scanlineMaxX[l] = t;
-                scanlineTexUEnd[l] = _ax0;
-                scanlineTexVEnd[l] = _ay0;
+            if (RenderingState.scanlineMaxX[l] < t) {
+                RenderingState.scanlineMaxX[l] = t;
+                RenderingState.scanlineTexUEnd[l] = _ax0;
+                RenderingState.scanlineTexVEnd[l] = _ay0;
             }
         }
     }

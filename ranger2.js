@@ -3,7 +3,7 @@
 */
 
 import { ItemProps, ModifierColumns, AccessoryPrefixes, AccessoryProps } from "./game/item_enums.js";
-import { enemyCatalog, enemyTypeCount } from "./game/enemy_list.js";
+import { enemyCatalog, enemyDispatchTable, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex, enemyTypeCount } from "./game/enemy_list.js";
 import { EnemyProps, BehaviorTypes } from "./game/enemy_enums.js";
 import { itemList } from "./game/item_list.js";
 import * as RMath from "./game/math.js";
@@ -20,6 +20,7 @@ import { inventoryItemLists, PartyState } from "./game/party_state.js";
 import { shrineRewardClaimed, shrineRewardClaimSlotCount, shrineRewardOptions } from "./game/shrine_data.js";
 import { GameplayState, HeroesState } from "./game/heroes.js";
 import { StageState } from "./game/stages.js";
+import { EnemyState } from "./game/enemy_state.js";
 
 
 export {gameInit as Init, toggleFullscreen as full_screen};
@@ -37,56 +38,6 @@ CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
-
-// enemy states
-let enemyJointPosArray = Array(999), // Q, 
-    enemyPrevJointPosArray = Array(999), // Z, 
-    enemyTypeArray = new Int32Array(999), // 
-    enemyUpdateFuncIdxArray = new Int32Array(999),
-    enemyPoseTrailWriteIdxArray  = new Int32Array(999), // Y , 
-    enemyDeathTimerArray = new Int32Array(999), // Ck, 
-    enemyTileContactFlagsArray = new Int32Array(999), // Dk, 
-    enemySpawnGroupIdxArray = new Int32Array(999), // fj, 
-    enemyHealthArray = new Int32Array(999),
-    enemyAuxStateArray = new Int32Array(999), // Ek
-    enemyActionCooldownTimerArray = new Int32Array(999), // Fk
-    enemySkipDurationLeftArray = new Int32Array(999),
-    enemyUpdateSkipProbArray = new Int32Array(999),
-    enemyDmgDurationLeftArray = new Int32Array(999),
-    enemyDmgPerFrameArray = new Int32Array(999),
-    enemyFreezeTimerArray = new Int32Array(999),
-    enemyCount = 0,
-    enemyTargetJointIdx = 20, // yi, default enemy joint index used as the target/aim/spawn point for projectiles and AI
-    stageMaxEnemyLevel = 0,  // $i, maximum enemy level among spawned enemies (used for reward/EXP scaling)
-    enemyHitboxHalfWidthByBehavior = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10], // Lk
-    enemyHitboxHalfHeightByBehavior = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10], // Mk
-    enemySpriteAnchorYBySpriteIndex = [4, 4, 5, 4, 4, 4, 5, 5, 4, 3, 5, 5, 5, 5, 6, 7, 3, 0, 2, 2, 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Nk
-    enemyDispatchTable = [
-        enemySlimeBehavior,
-        enemyBoxSnakeBehavior,
-        enemyBatBehavior,
-        enemyDragonBehavior,
-        enemyStickmanBehavior,
-        enemyTreeBehavior,
-        enemyTreeBehavior,
-        enemyHangingTreeBehavior,
-        enemyUpdateFunc7,
-        enemyUpdateFunc8,
-        enemyUpdateFunc9,
-        enemyStickmanBehavior
-    ];
-
-
-for (let _i = 0; 999 > _i; _i++) enemyPrevJointPosArray[_i] = Array(21);
-for (let _i = 0; 999 > _i; _i++) enemyJointPosArray[_i] = Array(21);
-
-for (let _i = 0; 999 > _i; _i++)
-    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
-
-for (let _i = 0; 999 > _i; _i++)
-    for (let iterIdxTemp_2 = 0; 21 > iterIdxTemp_2; iterIdxTemp_2++)
-        enemyPrevJointPosArray[_i][iterIdxTemp_2] = new RMath.Vec2;
 
 // projectiles
 let projectileCount = 0,
@@ -2605,8 +2556,8 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
     }
 
     selectedItem = selectedItem[ItemProps.ProjectileTemplate];
-    let jointX = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].x;
-    let jointY = enemyJointPosArray[targetEnemyIdx][enemyTargetJointIdx].y;
+    let jointX = EnemyState.enemyJointPosArray[targetEnemyIdx][EnemyState.enemyTargetJointIdx].x;
+    let jointY = EnemyState.enemyJointPosArray[targetEnemyIdx][EnemyState.enemyTargetJointIdx].y;
 
     if (pwidth == 0) return;
     if (1 == pwidth) {
@@ -2736,7 +2687,7 @@ function updatePartyMemberAI(memberIdx) { // Di
         HeroesState.heroEnemySeekTimer[memberIdx]--;
     } else {
         HeroesState.heroEnemySeekTimer[memberIdx] = 15;
-        let f = b > enemyJointPosArray[nearestEnem][enemyTargetJointIdx].x ? -1 : 1;
+        let f = b > EnemyState.enemyJointPosArray[nearestEnem][EnemyState.enemyTargetJointIdx].x ? -1 : 1;
         let g = .6;
         let h = getStageTileAt(b + 14 * f, c + 4);
         if (0 <= h && 26 >= h) {
@@ -2768,7 +2719,7 @@ function updatePartyMemberAI(memberIdx) { // Di
         HeroesState.heroJointPositionsByHero[memberIdx][k].y -= 3 * g;
     }
     if (2 == HeroesState.heroTileContactFlags[memberIdx]) {
-        if (b < enemyJointPosArray[nearestEnem][enemyTargetJointIdx].x) {
+        if (b < EnemyState.enemyJointPosArray[nearestEnem][EnemyState.enemyTargetJointIdx].x) {
             HeroesState.heroJointPositionsByHero[memberIdx][0].x += .25;
             HeroesState.heroJointPositionsByHero[memberIdx][1].x += .25;
             HeroesState.heroBodyDrawStateByHero[memberIdx][2] = 1;
@@ -2777,7 +2728,7 @@ function updatePartyMemberAI(memberIdx) { // Di
             HeroesState.heroJointPositionsByHero[memberIdx][1].x -= .25;
             HeroesState.heroBodyDrawStateByHero[memberIdx][2] = 0;
         }
-        if (c < enemyJointPosArray[nearestEnem][enemyTargetJointIdx].y) {
+        if (c < EnemyState.enemyJointPosArray[nearestEnem][EnemyState.enemyTargetJointIdx].y) {
             HeroesState.heroJointPositionsByHero[memberIdx][0].y += .25;
             HeroesState.heroJointPositionsByHero[memberIdx][1].y += .25;
         } else {
@@ -2873,7 +2824,7 @@ function updatePlayerParty() {
                 if (0 < HeroesState.heroAttackCooldownFrames[a]) HeroesState.heroAttackCooldownFrames[a]--;
                 else if (GameplayState.draggedHeroIndex != a && 0 != b && -1 != c) {
                     HeroesState.heroAttackCooldownFrames[a] = PartyState.heroAgiValues[a] + RMath.randIntRange(-1, 1);
-                    HeroesState.heroBodyDrawStateByHero[a][2] = d < enemyJointPosArray[c][enemyTargetJointIdx].x ? 1 : 0;
+                    HeroesState.heroBodyDrawStateByHero[a][2] = d < EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx].x ? 1 : 0;
                     k = 0;
                     if (-1 == PartyState.heroEmitValues[a]) {
                         PartyState.heroEmitCurrent[a] =
@@ -2901,8 +2852,8 @@ function updatePlayerParty() {
                     }
                     if (0 != b)
                         if (3 == b) {
-                            RMath.Vec2Sub(g, enemyJointPosArray[c][enemyTargetJointIdx], HeroesState.heroJointPositionsByHero[a][5]);
-                            RMath.Vec2Sub(h, enemyJointPosArray[c][enemyTargetJointIdx], HeroesState.heroJointPositionsByHero[a][6]);
+                            RMath.Vec2Sub(g, EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx], HeroesState.heroJointPositionsByHero[a][5]);
+                            RMath.Vec2Sub(h, EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx], HeroesState.heroJointPositionsByHero[a][6]);
                             if (g.x * g.x + g.y * g.y >= h.x * h.x + h.y * h.y) {
                                 RMath.Vec2Norm(g);
                                 RMath.Vec2Scale(g, 3);
@@ -2920,7 +2871,7 @@ function updatePlayerParty() {
                                 k = 1540;
                                 HeroesState.attackTrailSideIdx[a] = 1;
                             }
-                            HeroesState.heroAimPosByHero[a].set(enemyJointPosArray[c][enemyTargetJointIdx]);
+                            HeroesState.heroAimPosByHero[a].set(EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx]);
                             HeroesState.heroAttackLineTimer[a] = 5;
                         } else
                     if (4 == b) {
@@ -2929,7 +2880,7 @@ function updatePlayerParty() {
                             HeroesState.attackWeaponSlotIdx[a],
                             t = 4 - HeroesState.attackWeaponSlotIdx[a];
                         if (
-                            d < enemyJointPosArray[c][enemyTargetJointIdx].x) {
+                            d < EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx].x) {
                             HeroesState.heroJointPositionsByHero[a][k].x += .5;
                             HeroesState.heroJointPositionsByHero[a][p].x += .5;
                             --HeroesState.heroJointPositionsByHero[a][t].x;
@@ -2942,7 +2893,7 @@ function updatePlayerParty() {
                         k = k << 8 | 3;
                         HeroesState.attackTrailSideIdx[a] = HeroesState.attackWeaponSlotIdx[a];
                     } else if (5 == b) {
-                        if (d < enemyJointPosArray[c][enemyTargetJointIdx].x) {
+                        if (d < EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx].x) {
                             HeroesState.heroJointPositionsByHero[a][5].x += 1;
                             HeroesState.heroJointPositionsByHero[a][6].x += 1;
                             HeroesState.heroJointPositionsByHero[a][1].x -= 2;
@@ -2962,7 +2913,7 @@ function updatePlayerParty() {
                         }
                         applySeparationCorrection(HeroesState.heroJointPositionsByHero[a][5], HeroesState.heroJointPositionsByHero[a][6], 5, .1, .1);
                     } else {
-                        if (d < enemyJointPosArray[c][enemyTargetJointIdx].x) {
+                        if (d < EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx].x) {
                             if (HeroesState.heroJointPositionsByHero[a][5].x < HeroesState.heroJointPositionsByHero[a][6].x) {
                                 HeroesState.heroJointPositionsByHero[a][5].x += 4;
                                 HeroesState.heroJointPositionsByHero[a][4].x -= 4;
@@ -3716,7 +3667,7 @@ function loadLevelData(a) {
             };
         }
         let b = enemyCatalog[c][EnemyProps.Level];
-        if (stageMaxEnemyLevel < b) stageMaxEnemyLevel = b;
+        if (EnemyState.stageMaxEnemyLevel < b) EnemyState.stageMaxEnemyLevel = b;
     }
     popupCount = projectileCount = 0;
     clearDrops();
@@ -3768,7 +3719,7 @@ function updateStageEdgeSpawns() { // wg
                         StageState.partySpawnYByHero[d] = 2;
                     }
             } for (a = 0; 20 > a; a++) StageState.activeSpawnCountByGroup[a] = 0;
-    for (a = 0; a < enemyCount; a++) StageState.activeSpawnCountByGroup[enemySpawnGroupIdxArray[a]]++;
+    for (a = 0; a < EnemyState.enemyCount; a++) StageState.activeSpawnCountByGroup[EnemyState.enemySpawnGroupIdxArray[a]]++;
     for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[GUIState.currentStage].length; b += 7) {
         a = stageListArray[GUIState.currentStage][b + 0];
         var f = stageListArray[GUIState.currentStage][b + 1],
@@ -4329,12 +4280,12 @@ function updateStageTick() { // xg
         }
     } else if (9 == GUIState.currentStage) {
         b = -1;
-        for (a = 0; a < enemyCount; a++)
-            if (36 == enemyTypeArray[a] && 0 != enemyHealthArray[a]) {
+        for (a = 0; a < EnemyState.enemyCount; a++)
+            if (36 == EnemyState.enemyTypeArray[a] && 0 != EnemyState.enemyHealthArray[a]) {
                 b = a;
             }
-        if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && 500 > enemyHealthArray[b])
-            for (enemyHealthArray[b] += 1500, enemyPoseTrailWriteIdxArray[b]--, c = 2 * (19 - enemyPoseTrailWriteIdxArray[b] + 1), a = 0; a < c; a++) {
+        if (-1 != b && 10 < EnemyState.enemyPoseTrailWriteIdxArray[b] && 500 > EnemyState.enemyHealthArray[b])
+            for (EnemyState.enemyHealthArray[b] += 1500, EnemyState.enemyPoseTrailWriteIdxArray[b]--, c = 2 * (19 - EnemyState.enemyPoseTrailWriteIdxArray[b] + 1), a = 0; a < c; a++) {
                 spawnEnemy(RMath.randIntRange(25, 57), RMath.randIntRange(25, 39), 35, 1);
                 StageState.activeSpawnCountByGroup[1]++;
                 StageState.totalSpawnedCountByGroup[1]++;
@@ -4345,7 +4296,7 @@ function updateStageTick() { // xg
             }
         }
         if (isBadgeIncompleteForCurrentStage(32)) {
-            if (100 <= enemyCount) {
+            if (100 <= EnemyState.enemyCount) {
                 IncrementBadgeCount(32);
             }
         }
@@ -4505,14 +4456,14 @@ function updateStageTick() { // xg
             }
         }
         b = -1;
-        for (a = 0; a < enemyCount; a++)
-            if (70 == enemyTypeArray[a] && 0 != enemyHealthArray[a]) {
+        for (a = 0; a < EnemyState.enemyCount; a++)
+            if (70 == EnemyState.enemyTypeArray[a] && 0 != EnemyState.enemyHealthArray[a]) {
                 b = a;
             }
-        if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && enemyHealthArray[b] < 1E4 * (enemyPoseTrailWriteIdxArray[b] - 10) - 5E3)
-            for (enemyPoseTrailWriteIdxArray[b]--, t = RMath.min(256, 1 << 20 - enemyPoseTrailWriteIdxArray[b]), a = 0; a < t; a++) {
-                g = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].x;
-                h = enemyJointPosArray[b][enemyPoseTrailWriteIdxArray[b]].y;
+        if (-1 != b && 10 < EnemyState.enemyPoseTrailWriteIdxArray[b] && EnemyState.enemyHealthArray[b] < 1E4 * (EnemyState.enemyPoseTrailWriteIdxArray[b] - 10) - 5E3)
+            for (EnemyState.enemyPoseTrailWriteIdxArray[b]--, t = RMath.min(256, 1 << 20 - EnemyState.enemyPoseTrailWriteIdxArray[b]), a = 0; a < t; a++) {
+                g = EnemyState.enemyJointPosArray[b][EnemyState.enemyPoseTrailWriteIdxArray[b]].x;
+                h = EnemyState.enemyJointPosArray[b][EnemyState.enemyPoseTrailWriteIdxArray[b]].y;
                 c = .5 * RMath.rotationLUT[512 * a / t][0];
                 d = .5 * -RMath.rotationLUT[512 * a / t][1];
                 spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -4611,34 +4562,34 @@ function updateStageTick() { // xg
 
 
 function clearEnemies() {
-    stageMaxEnemyLevel = enemyCount = 0
+    EnemyState.stageMaxEnemyLevel = EnemyState.enemyCount = 0
 }
 
 
 /** spawns an enemy at coordinates (8 * gridX, 8 * gridY) */
 function spawnEnemy(gridX, gridY, enemyType, d) {
-    if (999 != enemyCount) {
+    if (999 != EnemyState.enemyCount) {
         gridX *= 8;
         gridY *= 8;
         for (var f = 0; 21 > f; f++)
-            RMath.Vec2Set(enemyJointPosArray[enemyCount][f], gridX + RMath.randFloat(1), gridY + RMath.randFloat(1)),
-                enemyPrevJointPosArray[enemyCount][f].set(enemyJointPosArray[enemyCount][f]);
+            RMath.Vec2Set(EnemyState.enemyJointPosArray[EnemyState.enemyCount][f], gridX + RMath.randFloat(1), gridY + RMath.randFloat(1)),
+                EnemyState.enemyPrevJointPosArray[EnemyState.enemyCount][f].set(EnemyState.enemyJointPosArray[EnemyState.enemyCount][f]);
 
-        enemyTypeArray[enemyCount] = enemyType;
-        enemyUpdateFuncIdxArray[enemyCount] = enemyCatalog[enemyType][EnemyProps.BehaviorIdx];
-        enemyPoseTrailWriteIdxArray[enemyCount] = 0;
-        enemyDeathTimerArray[enemyCount] = 0;
-        enemyTileContactFlagsArray[enemyCount] = 0;
-        enemySpawnGroupIdxArray[enemyCount] = d;
-        enemyHealthArray[enemyCount] = enemyCatalog[enemyType][EnemyProps.Health];
-        enemyAuxStateArray[enemyCount] = 0;
-        enemyActionCooldownTimerArray[enemyCount] = enemyCatalog[enemyType][EnemyProps.PArg22];
-        enemySkipDurationLeftArray[enemyCount] = 0;
-        enemyUpdateSkipProbArray[enemyCount] = 0;
-        enemyDmgDurationLeftArray[enemyCount] = 0;
-        enemyDmgPerFrameArray[enemyCount] = 0;
-        enemyFreezeTimerArray[enemyCount] = 0;
-        enemyCount++
+        EnemyState.enemyTypeArray[EnemyState.enemyCount] = enemyType;
+        EnemyState.enemyUpdateFuncIdxArray[EnemyState.enemyCount] = enemyCatalog[enemyType][EnemyProps.BehaviorIdx];
+        EnemyState.enemyPoseTrailWriteIdxArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyDeathTimerArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyTileContactFlagsArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemySpawnGroupIdxArray[EnemyState.enemyCount] = d;
+        EnemyState.enemyHealthArray[EnemyState.enemyCount] = enemyCatalog[enemyType][EnemyProps.Health];
+        EnemyState.enemyAuxStateArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyActionCooldownTimerArray[EnemyState.enemyCount] = enemyCatalog[enemyType][EnemyProps.PArg22];
+        EnemyState.enemySkipDurationLeftArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyUpdateSkipProbArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyDmgDurationLeftArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyDmgPerFrameArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyFreezeTimerArray[EnemyState.enemyCount] = 0;
+        EnemyState.enemyCount++
     }
 }
 
@@ -4647,64 +4598,64 @@ function spawnEnemy(gridX, gridY, enemyType, d) {
 // and decrements the enemyCount variable to invalidate it
 function deleteEnemy(enemyIdx) {
     for (var b = 0; 21 > b; b++)
-        enemyJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyCount - 1][b]),
-            enemyPrevJointPosArray[enemyIdx][b].set(enemyPrevJointPosArray[enemyCount - 1][b]);
-    enemyTypeArray[enemyIdx] = enemyTypeArray[enemyCount - 1];
-    enemyUpdateFuncIdxArray[enemyIdx] = enemyUpdateFuncIdxArray[enemyCount - 1];
-    enemyPoseTrailWriteIdxArray[enemyIdx] = enemyPoseTrailWriteIdxArray[enemyCount - 1];
-    enemyDeathTimerArray[enemyIdx] = enemyDeathTimerArray[enemyCount - 1];
-    enemyTileContactFlagsArray[enemyIdx] = enemyTileContactFlagsArray[enemyCount - 1];
-    enemySpawnGroupIdxArray[enemyIdx] = enemySpawnGroupIdxArray[enemyCount - 1];
-    enemyHealthArray[enemyIdx] = enemyHealthArray[enemyCount - 1];
-    enemyAuxStateArray[enemyIdx] = enemyAuxStateArray[enemyCount - 1];
-    enemyActionCooldownTimerArray[enemyIdx] = enemyActionCooldownTimerArray[enemyCount - 1];
-    enemySkipDurationLeftArray[enemyIdx] = enemySkipDurationLeftArray[enemyCount - 1];
-    enemyUpdateSkipProbArray[enemyIdx] = enemyUpdateSkipProbArray[enemyCount - 1];
-    enemyDmgDurationLeftArray[enemyIdx] = enemyDmgDurationLeftArray[enemyCount - 1];
-    enemyDmgPerFrameArray[enemyIdx] = enemyDmgPerFrameArray[enemyCount - 1];
-    enemyFreezeTimerArray[enemyIdx] = enemyFreezeTimerArray[enemyCount - 1];
-    enemyCount--
+        EnemyState.enemyJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[EnemyState.enemyCount - 1][b]),
+            EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyPrevJointPosArray[EnemyState.enemyCount - 1][b]);
+    EnemyState.enemyTypeArray[enemyIdx] = EnemyState.enemyTypeArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyUpdateFuncIdxArray[enemyIdx] = EnemyState.enemyUpdateFuncIdxArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = EnemyState.enemyPoseTrailWriteIdxArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyDeathTimerArray[enemyIdx] = EnemyState.enemyDeathTimerArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyTileContactFlagsArray[enemyIdx] = EnemyState.enemyTileContactFlagsArray[EnemyState.enemyCount - 1];
+    EnemyState.enemySpawnGroupIdxArray[enemyIdx] = EnemyState.enemySpawnGroupIdxArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyHealthArray[enemyIdx] = EnemyState.enemyHealthArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyAuxStateArray[enemyIdx] = EnemyState.enemyAuxStateArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyActionCooldownTimerArray[enemyIdx] = EnemyState.enemyActionCooldownTimerArray[EnemyState.enemyCount - 1];
+    EnemyState.enemySkipDurationLeftArray[enemyIdx] = EnemyState.enemySkipDurationLeftArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyUpdateSkipProbArray[enemyIdx] = EnemyState.enemyUpdateSkipProbArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyDmgDurationLeftArray[enemyIdx] = EnemyState.enemyDmgDurationLeftArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyDmgPerFrameArray[enemyIdx] = EnemyState.enemyDmgPerFrameArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyFreezeTimerArray[enemyIdx] = EnemyState.enemyFreezeTimerArray[EnemyState.enemyCount - 1];
+    EnemyState.enemyCount--
 }
 
 
 function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
     let d = new RMath.Vec2();
-    RMath.Vec2Sub(d, enemyJointPosArray[enemyIdx][jointIdx], enemyPrevJointPosArray[enemyIdx][jointIdx]);
-    enemyJointPosArray[enemyIdx][jointIdx].set(enemyPrevJointPosArray[enemyIdx][jointIdx]);
+    RMath.Vec2Sub(d, EnemyState.enemyJointPosArray[enemyIdx][jointIdx], EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
+    EnemyState.enemyJointPosArray[enemyIdx][jointIdx].set(EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
     let f = (RMath.Vec2Mag(d) >> 2) + 1;
     RMath.Vec2Scale(d, 1 / f);
     for (let g, h, k = 0; k < f; k++) {
-        g = enemyJointPosArray[enemyIdx][jointIdx].y + d.y;
-        h = getStageTileAt(enemyJointPosArray[enemyIdx][jointIdx].x, g);
+        g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y + d.y;
+        h = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x, g);
         if (0 > g || 8 * StageState.stageHeight <= g) {
-            enemyTileContactFlagsArray[enemyIdx] |= 2;
+            EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
         } else if (0 <= h && 25 >= h) {
             if (0 < d.y) {
-                enemyTileContactFlagsArray[enemyIdx] |= 2;
+                EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
             }
             d.x *= bounceScale;
             d.y = -d.y;
         } else if (26 <= h && 26 >= h && 0 < d.y) {
-            enemyTileContactFlagsArray[enemyIdx] |= 2;
+            EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
             d.x *= bounceScale;
             d.y = -d.y;
         } else {
-            enemyJointPosArray[enemyIdx][jointIdx].y = g;
+            EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y = g;
         }
-        g = enemyJointPosArray[enemyIdx][jointIdx].x + d.x;
-        h = getStageTileAt(g, enemyJointPosArray[enemyIdx][jointIdx].y);
+        g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x + d.x;
+        h = getStageTileAt(g, EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y);
         if (0 > g || 640 <= g) {
-            enemyTileContactFlagsArray[enemyIdx] |= 1;
+            EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
         } else if (0 <= h && 25 >= h) {
             d.y *= bounceScale;
             d.x = -d.x;
-            enemyTileContactFlagsArray[enemyIdx] |= 1;
+            EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
         } else if (27 <= h && 29 >= h) {
             d.y *= bounceScale;
             d.x = -d.x;
-            enemyTileContactFlagsArray[enemyIdx] |= 1;
+            EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
         } else {
-            enemyJointPosArray[enemyIdx][jointIdx].x = g;
+            EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x = g;
         }
     }
 }
@@ -4722,13 +4673,13 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
     let l = new RMath.Vec2();
     let n = 1E3;
     let w = -1;
-    for (let _i = 0; _i < enemyCount; _i++)
-        if (0 != enemyHealthArray[_i]) {
-            let h = enemyHitboxHalfWidthByBehavior[enemyCatalog[enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[enemyTypeArray[_i]][EnemyProps.DrawScale];
-            let k = enemyHitboxHalfHeightByBehavior[enemyCatalog[enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[enemyTypeArray[_i]][EnemyProps.DrawScale];
-            if (enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeLeft || enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeRight)
-                k = 3 * enemyPoseTrailWriteIdxArray[_i] + 5 * enemyCatalog[enemyTypeArray[_i]][EnemyProps.DrawScale];
-            let p = enemyJointPosArray[_i][enemyTargetJointIdx];
+    for (let _i = 0; _i < EnemyState.enemyCount; _i++)
+        if (0 != EnemyState.enemyHealthArray[_i]) {
+            let h = enemyHitboxHalfWidthByBehavior[enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
+            let k = enemyHitboxHalfHeightByBehavior[enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
+            if (EnemyState.enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeLeft || EnemyState.enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeRight)
+                k = 3 * EnemyState.enemyPoseTrailWriteIdxArray[_i] + 5 * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
+            let p = EnemyState.enemyJointPosArray[_i][EnemyState.enemyTargetJointIdx];
             if (!(p.x - h > rx || p.x + h < f || p.y - k > ry || p.y + k < g)) {
                 l.x = p.x - cx;
                 l.y = p.y - cy;
@@ -4804,13 +4755,13 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
     }
     
 
-    for (height = 0; height < enemyCount; height++)
-        if (0 != enemyHealthArray[height]) {
-            x = enemyJointPosArray[height][enemyTargetJointIdx];
-            y = enemyHitboxHalfWidthByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][EnemyProps.DrawScale];
-            width = enemyHitboxHalfHeightByBehavior[enemyUpdateFuncIdxArray[height]] * enemyCatalog[enemyTypeArray[height]][EnemyProps.DrawScale];
-            if (enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeLeft || enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeRight)
-                width = 3 * enemyPoseTrailWriteIdxArray[height] + 5 * enemyCatalog[enemyTypeArray[height]][EnemyProps.DrawScale];
+    for (height = 0; height < EnemyState.enemyCount; height++)
+        if (0 != EnemyState.enemyHealthArray[height]) {
+            x = EnemyState.enemyJointPosArray[height][EnemyState.enemyTargetJointIdx];
+            y = enemyHitboxHalfWidthByBehavior[EnemyState.enemyUpdateFuncIdxArray[height]] * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.DrawScale];
+            width = enemyHitboxHalfHeightByBehavior[EnemyState.enemyUpdateFuncIdxArray[height]] * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.DrawScale];
+            if (EnemyState.enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeLeft || EnemyState.enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeRight)
+                width = 3 * EnemyState.enemyPoseTrailWriteIdxArray[height] + 5 * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.DrawScale];
             if (!(x.x - y > M || x.x + y < w || x.y - width > J || x.y + width < B)) {
                 if (0 == shapeMode) {
                     ba.x = x.x - centerPos.x;
@@ -4846,39 +4797,39 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                 if (0 == applyFlag) {
                     n = damageMin + RMath.floor(RMath.randFloat(damageMax - damageMin + 1));
                     if (4 == effectType) {
-                        enemyDmgPerFrameArray[height] = RMath.max(
-                            enemyDmgPerFrameArray[height],
-                            RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100))
+                        EnemyState.enemyDmgPerFrameArray[height] = RMath.max(
+                            EnemyState.enemyDmgPerFrameArray[height],
+                            RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100))
                         );
-                        enemyDmgDurationLeftArray[height] = RMath.max(
-                            enemyDmgDurationLeftArray[height],
-                            effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100)
+                        EnemyState.enemyDmgDurationLeftArray[height] = RMath.max(
+                            EnemyState.enemyDmgDurationLeftArray[height],
+                            effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100)
                         );
                     } else {
                         if (0 == effectType) {
-                            n = RMath.max(1, n - enemyCatalog[enemyTypeArray[height]][EnemyProps.PhysResistPct]);
+                            n = RMath.max(1, n - enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.PhysResistPct]);
                         } else if (1 == effectType) {
-                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.FireResistPct] / 100));
+                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.FireResistPct] / 100));
                         } else if (2 == effectType) {
-                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.IceResistPct] / 100));
+                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.IceResistPct] / 100));
                         } else {
-                            3 == effectType && (n = RMath.max(1, n - RMath.floor(n * enemyCatalog[enemyTypeArray[height]][EnemyProps.LightResistPct] / 100)));
+                            3 == effectType && (n = RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.LightResistPct] / 100)));
                         }
-                        enemyHealthArray[height] = RMath.max(enemyHealthArray[height] - n, 0);
-                        spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
+                        EnemyState.enemyHealthArray[height] = RMath.max(EnemyState.enemyHealthArray[height] - n, 0);
+                        spawnPopup(EnemyState.enemyJointPosArray[height][EnemyState.enemyTargetJointIdx].x, EnemyState.enemyJointPosArray[height][EnemyState.enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
                         StageState.stage_totalDamageDealt += n;
                     }
                     if (2 == effectType) {
-                        enemySkipDurationLeftArray[height] = 120 - RMath.floor(120 * enemyCatalog[enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
-                        enemyUpdateSkipProbArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
+                        EnemyState.enemySkipDurationLeftArray[height] = 120 - RMath.floor(120 * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
+                        EnemyState.enemyUpdateSkipProbArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
                     } else {
-                        5 == effectType && (enemyFreezeTimerArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[enemyTypeArray[height]][EnemyProps.FreezeResistPct] / 100));
+                        5 == effectType && (EnemyState.enemyFreezeTimerArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.FreezeResistPct] / 100));
                     }
 
-                    enemyAuxStateArray[height] = 120;
+                    EnemyState.enemyAuxStateArray[height] = 120;
                     30 != GUIState.gameScreenState && (GameplayState.comboWindowTimer = GameplayState.comboWindowMaxFrames);
-                    isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && StageState.stageConditionMask++;
-                    isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && StageState.stageConditionMask++;
+                    isBadgeIncompleteForCurrentStage(11) && 17 == EnemyState.enemyTypeArray[height] && 0 != effectType && StageState.stageConditionMask++;
+                    isBadgeIncompleteForCurrentStage(41) && 45 == EnemyState.enemyTypeArray[height] && 0 == effectType && StageState.stageConditionMask++;
                 }
 
                 n = height;
@@ -4891,7 +4842,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
 
 function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     let itemPos = new RMath.Vec2(),
-        itemIdx = enemyTypeArray[enemyIdx] + lootVariant,
+        itemIdx = EnemyState.enemyTypeArray[enemyIdx] + lootVariant,
         selectedItem = enemyCatalog[itemIdx];
     lootVariant = -enemyIdx - 1;
     let k = selectedItem[EnemyProps.ProjectileAttachMode];
@@ -4955,10 +4906,10 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     if (_foundHero == -1)
         return;
     
-    if (0 < enemyActionCooldownTimerArray[enemyIdx]) {
-        enemyActionCooldownTimerArray[enemyIdx]--;
+    if (0 < EnemyState.enemyActionCooldownTimerArray[enemyIdx]) {
+        EnemyState.enemyActionCooldownTimerArray[enemyIdx]--;
     } else if (!(RMath.randFloat(1E3) >= _p23)) {
-        enemyActionCooldownTimerArray[enemyIdx] = _p22;
+        EnemyState.enemyActionCooldownTimerArray[enemyIdx] = _p22;
         let pVelY;
         if (0 == _s0) {
             spawnProjectile(
@@ -4985,7 +4936,7 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
             }
         } else if (3 == _s0 || 6 == _s0) {
             if (3 == _s0) {
-                RMath.Vec2Set(itemPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y);
+                RMath.Vec2Set(itemPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y);
             } else if (6 == _s0) {
                 RMath.Vec2Set(itemPos, 0, -1);
             }
@@ -5008,7 +4959,7 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
             } 
         } else if (4 == _s0) {
             for (_s0 = 0; _s0 < _p20; _s0++) {
-                RMath.Vec2Set(itemPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - enemyJointPosArray[enemyIdx][0].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - enemyJointPosArray[enemyIdx][0].y);
+                RMath.Vec2Set(itemPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[enemyIdx][0].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[enemyIdx][0].y);
                 itemIdx = 0 < _s1 ? _s1 - 1 : _p20;
                 if (0 < _p20) {
                     _p24 = RMath.floor(RMath.randFloat(512));
@@ -5050,9 +5001,9 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
 
 
 function onEnemyDeath(_enemyIdx) { // cl
-    let lvlDiff = RMath.abs(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.Level] - PartyState.partyLevel);
-    let expRewardValue = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.ExpReward] * (100 + PartyState.partyEnemyHpBonusPercent) / 100);
-    if (stageMaxEnemyLevel + 10 <= PartyState.partyLevel) {
+    let lvlDiff = RMath.abs(enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][EnemyProps.Level] - PartyState.partyLevel);
+    let expRewardValue = RMath.floor(enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][EnemyProps.ExpReward] * (100 + PartyState.partyEnemyHpBonusPercent) / 100);
+    if (EnemyState.stageMaxEnemyLevel + 10 <= PartyState.partyLevel) {
         expRewardValue = 0;
     } else if (10 > lvlDiff) {
         expRewardValue = RMath.floor(expRewardValue * (10 - lvlDiff) / 10);
@@ -5067,78 +5018,78 @@ function onEnemyDeath(_enemyIdx) { // cl
         GameplayState.levelUpPopupTimer = 60;
     }
     for (let _dropIdx = EnemyProps.DropTableStartIdx; _dropIdx < EnemyProps.DropTableStartIdx + 8; _dropIdx += 2) {
-        let itemIdx = enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx];
+        let itemIdx = enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][_dropIdx];
         if (0 != itemIdx) {
             let randComp = RMath.floor(100 * (100 + PartyState.partyDropChanceBonusPercent) / 100);
             if (2 == itemIdx) {
-                itemIdx = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * (100 + PartyState.partyRewardValueBonusPercent) / 100);
-                spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, itemIdx, 0);
-            } else if (RMath.rand() * enemyCatalog[enemyTypeArray[_enemyIdx]][_dropIdx + 1] * 100 < randComp) {
+                itemIdx = RMath.floor(enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][_dropIdx + 1] * (100 + PartyState.partyRewardValueBonusPercent) / 100);
+                spawnDrop(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, 2, itemIdx, 0);
+            } else if (RMath.rand() * enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][_dropIdx + 1] * 100 < randComp) {
                 if (1 > PartyState.itemForgeLvls[itemIdx] && isDropTypeAbsent(itemIdx)) {
-                    spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, itemIdx, 1, 0);    
+                    spawnDrop(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, itemIdx, 1, 0);    
                 }
             }
         }
     }
-    let val = RMath.floor(enemyCatalog[enemyTypeArray[_enemyIdx]][EnemyProps.GoldReward] * (100 + PartyState.partyRewardValueBonusPercent) / 100);
+    let val = RMath.floor(enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][EnemyProps.GoldReward] * (100 + PartyState.partyRewardValueBonusPercent) / 100);
     if (1 > 3 * RMath.rand()) {
-        spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, val, 0);
+        spawnDrop(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, 2, val, 0);
     }
     if (30 != GUIState.gameScreenState) {
         GameplayState.comboCount++;
     }
-    if (isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx]) {
+    if (isBadgeIncompleteForCurrentStage(2) && 3 == EnemyState.enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(2);
     }
-    if (isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx]) {
+    if (isBadgeIncompleteForCurrentStage(5) && 4 == EnemyState.enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(5);
     }
     if (3 == GUIState.currentStage) {
-        if (8 == enemyTypeArray[_enemyIdx]) {
+        if (8 == EnemyState.enemyTypeArray[_enemyIdx]) {
             if (isBadgeIncompleteForCurrentStage(8) && 1800 > StageState.gameFrameCounter) {
                 IncrementBadgeCount(8);
             }
-            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
+            spawnPopup(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
         }
 
-        if (15 == enemyTypeArray[_enemyIdx]) {
+        if (15 == EnemyState.enemyTypeArray[_enemyIdx]) {
             StageState.stageEncounterCounter++;
             if (3 == StageState.stageEncounterCounter) {
                 if (isBadgeIncompleteForCurrentStage(9) && 600 > StageState.consecutiveConditionFrameCount) {
                     IncrementBadgeCount(9);    
                 }
-                spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + RMath.floor(StageState.consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431);
+                spawnPopup(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, 0, "" + RMath.floor(StageState.consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431);
             }
         }
     }
     if (5 == GUIState.currentStage) {
-        if (22 == enemyTypeArray[_enemyIdx]) {
+        if (22 == EnemyState.enemyTypeArray[_enemyIdx]) {
             if (isBadgeIncompleteForCurrentStage(18) && 1200 > StageState.gameFrameCounter) {
                 IncrementBadgeCount(18);
             }
-            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
+            spawnPopup(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
         }
     }
-    if (isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[_enemyIdx]) {
+    if (isBadgeIncompleteForCurrentStage(22) && 28 == EnemyState.enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(22);    
     }
-    if (isBadgeIncompleteForCurrentStage(47) && !(50 != enemyTypeArray[_enemyIdx] && 52 != enemyTypeArray[_enemyIdx])) {
+    if (isBadgeIncompleteForCurrentStage(47) && !(50 != EnemyState.enemyTypeArray[_enemyIdx] && 52 != EnemyState.enemyTypeArray[_enemyIdx])) {
         IncrementBadgeCount(47);
     }
-    if (51 == enemyTypeArray[_enemyIdx]) {
+    if (51 == EnemyState.enemyTypeArray[_enemyIdx]) {
         if (isBadgeIncompleteForCurrentStage(49) && 1500 > StageState.gameFrameCounter) {
             IncrementBadgeCount(49);    
         }
-        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
+        spawnPopup(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
     }
-    !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[_enemyIdx] && 57 != enemyTypeArray[_enemyIdx] && 58 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(52);
-    if (63 == enemyTypeArray[_enemyIdx]) {
+    !isBadgeIncompleteForCurrentStage(52) || 56 != EnemyState.enemyTypeArray[_enemyIdx] && 57 != EnemyState.enemyTypeArray[_enemyIdx] && 58 != EnemyState.enemyTypeArray[_enemyIdx] || IncrementBadgeCount(52);
+    if (63 == EnemyState.enemyTypeArray[_enemyIdx]) {
         if (isBadgeIncompleteForCurrentStage(58) && 3600 > StageState.gameFrameCounter) {
             IncrementBadgeCount(58);
         }
-        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
+        spawnPopup(EnemyState.enemyJointPosArray[_enemyIdx][0].x, EnemyState.enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
     }
-    if (isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[_enemyIdx]) {
+    if (isBadgeIncompleteForCurrentStage(69) && 72 == EnemyState.enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(69);
     }
 }
@@ -5146,67 +5097,67 @@ function onEnemyDeath(_enemyIdx) { // cl
 
 function updateEnemies() {
     var enemyIdx;
-    for (enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
-        if (0 < enemyDmgDurationLeftArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) {
-            enemyDmgDurationLeftArray[enemyIdx]--;
-            var b = RMath.floor(enemyDmgPerFrameArray[enemyIdx] / 60),
-                c = enemyDmgPerFrameArray[enemyIdx] - 60 * b;
+    for (enemyIdx = 0; enemyIdx < EnemyState.enemyCount; enemyIdx++) {
+        if (0 < EnemyState.enemyDmgDurationLeftArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyDmgDurationLeftArray[enemyIdx]--;
+            var b = RMath.floor(EnemyState.enemyDmgPerFrameArray[enemyIdx] / 60),
+                c = EnemyState.enemyDmgPerFrameArray[enemyIdx] - 60 * b;
             RMath.randFloat(60) < c && (b += 1);
-            enemyHealthArray[enemyIdx] = RMath.max(enemyHealthArray[enemyIdx] - b, 0);
+            EnemyState.enemyHealthArray[enemyIdx] = RMath.max(EnemyState.enemyHealthArray[enemyIdx] - b, 0);
             StageState.stage_totalDamageDealt += b
         }
-        if (0 < enemyFreezeTimerArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) // effect type 5 in al
-            enemyFreezeTimerArray[enemyIdx]--;
+        if (0 < EnemyState.enemyFreezeTimerArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) // effect type 5 in al
+            EnemyState.enemyFreezeTimerArray[enemyIdx]--;
         else {
             // if (0 < Gk[enemyIdx] && 0 < enemyHealthArray[enemyIdx] && (Gk[enemyIdx]--, randFloat(100) < Hk[enemyIdx])) continue;
-            if (0 < enemySkipDurationLeftArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) { // effect type 2
-                enemySkipDurationLeftArray[enemyIdx]--;
-                if (RMath.randFloat(100) < enemyUpdateSkipProbArray[enemyIdx])
+            if (0 < EnemyState.enemySkipDurationLeftArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) { // effect type 2
+                EnemyState.enemySkipDurationLeftArray[enemyIdx]--;
+                if (RMath.randFloat(100) < EnemyState.enemyUpdateSkipProbArray[enemyIdx])
                     continue;
             }
-            enemyIdx = enemyDispatchTable[enemyUpdateFuncIdxArray[enemyIdx]](enemyIdx)
+            enemyIdx = enemyDispatchTable[EnemyState.enemyUpdateFuncIdxArray[enemyIdx]](enemyIdx)
         }
     }
 }
 
 
-function enemySlimeBehavior(enemyIdx) {
+export function enemySlimeBehavior(enemyIdx) {
 
-    var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        enemyJointPosArray[enemyIdx][0].x += 4;
-        enemyJointPosArray[enemyIdx][0].y += 6;
-        for (b = 0; 1 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
-    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .03, .99);
-        if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2) && 5 > RMath.randFloat(100)) {
-            enemyJointPosArray[enemyIdx][0].x += RMath.randFloat(1 == enemyPoseTrailWriteIdxArray[enemyIdx] ? -.2 : .2);
-            if (enemyJointPosArray[enemyIdx][0].y -= RMath.randFloat(.5)) {
+    var b, c = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        EnemyState.enemyJointPosArray[enemyIdx][0].x += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][0].y += 6;
+        for (b = 0; 1 > b; b++) EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
+    } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], .03, .99);
+        if (0 < (EnemyState.enemyTileContactFlagsArray[enemyIdx] & 2) && 5 > RMath.randFloat(100)) {
+            EnemyState.enemyJointPosArray[enemyIdx][0].x += RMath.randFloat(1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] ? -.2 : .2);
+            if (EnemyState.enemyJointPosArray[enemyIdx][0].y -= RMath.randFloat(.5)) {
                 if (1 > RMath.randFloat(100)) {
-                    enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
+                    EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
                 }
             }
         }
-        var d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - d * c + 1);
-        enemyTileContactFlagsArray[enemyIdx] = 0;
-        if (0 >= enemyHealthArray[enemyIdx])
+        var d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - d * c + 1);
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx])
             for (b = 0; 1 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.3, .3);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.3, .3);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
         for (b = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = enemyJointPosArray[enemyIdx][0].x;
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y = enemyJointPosArray[enemyIdx][0].y - d * c + 1;
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].x = EnemyState.enemyJointPosArray[enemyIdx][0].x;
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y = EnemyState.enemyJointPosArray[enemyIdx][0].y - d * c + 1;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 1 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (50 <= enemyDeathTimerArray[enemyIdx]++) {
+        for (b = 0; 1 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (50 <= EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5214,59 +5165,59 @@ function enemySlimeBehavior(enemyIdx) {
 }
 
 
-function enemyBoxSnakeBehavior(enemyIdx) {
-    var b, c = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        enemyJointPosArray[enemyIdx][0].x += 2;
-        enemyJointPosArray[enemyIdx][1].x += 3;
-        enemyJointPosArray[enemyIdx][2].x += 4;
-        for (b = 0; 3 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
-    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .05, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], .05, .9);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], .05, .9);
-        var d = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
+export function enemyBoxSnakeBehavior(enemyIdx) {
+    var b, c = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        EnemyState.enemyJointPosArray[enemyIdx][0].x += 2;
+        EnemyState.enemyJointPosArray[enemyIdx][1].x += 3;
+        EnemyState.enemyJointPosArray[enemyIdx][2].x += 4;
+        for (b = 0; 3 > b; b++) EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], .05, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyPrevJointPosArray[enemyIdx][1], .05, .9);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyPrevJointPosArray[enemyIdx][2], .05, .9);
+        var d = findNearestPartyMemberInRect(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
         if (-1 != d) {
-            enemyJointPosArray[enemyIdx][0].x += HeroesState.heroJointPositionsByHero[d][2].x < enemyJointPosArray[enemyIdx][0].x ? -.001 : .001;
+            EnemyState.enemyJointPosArray[enemyIdx][0].x += HeroesState.heroJointPositionsByHero[d][2].x < EnemyState.enemyJointPosArray[enemyIdx][0].x ? -.001 : .001;
         }
-        if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
+        if (0 < (EnemyState.enemyTileContactFlagsArray[enemyIdx] & 2)) {
             b = 0;
             if (-1 != d) {
-                b = HeroesState.heroJointPositionsByHero[d][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1;
+                b = HeroesState.heroJointPositionsByHero[d][2].x < EnemyState.enemyJointPosArray[enemyIdx][0].x ? -1 : 1;
             } else {
                 b = RMath.randSelect(-1, 1);
             }
             if (10 > RMath.randFloat(100)) {
-                enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(.4, .6) * b;
-                enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1.5, -2);
+                EnemyState.enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(.4, .6) * b;
+                EnemyState.enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1.5, -2);
             }
         }
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 0, 0, .01);
-        d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - d * c + 1);
-        enemyTileContactFlagsArray[enemyIdx] = 0;
-        if (0 >= enemyHealthArray[enemyIdx])
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][1], 0, 0, .01);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], 0, 0, .01);
+        d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - d * c + 1);
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx])
             for (b = 0; 3 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
         moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
-        b = enemyTileContactFlagsArray[enemyIdx];
+        b = EnemyState.enemyTileContactFlagsArray[enemyIdx];
         moveEnemyJointWithTileCollision(enemyIdx, 1, .5);
         moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
-        enemyTileContactFlagsArray[enemyIdx] = b;
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = enemyJointPosArray[enemyIdx][0].x;
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y = enemyJointPosArray[enemyIdx][0].y - d * c + 1;
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = b;
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].x = EnemyState.enemyJointPosArray[enemyIdx][0].x;
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y = EnemyState.enemyJointPosArray[enemyIdx][0].y - d * c + 1;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 3 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        for (b = 0; 3 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5274,91 +5225,91 @@ function enemyBoxSnakeBehavior(enemyIdx) {
 }
 
 
-function enemyBatBehavior(enemyIdx) {
+export function enemyBatBehavior(enemyIdx) {
     var b, c = new RMath.Vec2();
-    b = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        enemyJointPosArray[enemyIdx][0].x += 4;
-        enemyJointPosArray[enemyIdx][0].y += 4;
-        enemyJointPosArray[enemyIdx][1].x += 4;
-        enemyJointPosArray[enemyIdx][1].y += 4;
-        enemyJointPosArray[enemyIdx][2].x += 2;
-        enemyJointPosArray[enemyIdx][2].y += 2;
-        enemyJointPosArray[enemyIdx][3].x += 2;
-        enemyJointPosArray[enemyIdx][3].y += 6;
-        enemyJointPosArray[enemyIdx][4].x += 4;
-        enemyJointPosArray[enemyIdx][4].y += 4;
-        enemyJointPosArray[enemyIdx][5].x += 6;
-        enemyJointPosArray[enemyIdx][5].y += 2;
-        enemyJointPosArray[enemyIdx][6].x += 6;
-        enemyJointPosArray[enemyIdx][6].y += 6;
-        for (b = 0; 7 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
-    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], 0, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4], 0, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
+    b = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        EnemyState.enemyJointPosArray[enemyIdx][0].x += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][0].y += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][1].x += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][1].y += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][2].x += 2;
+        EnemyState.enemyJointPosArray[enemyIdx][2].y += 2;
+        EnemyState.enemyJointPosArray[enemyIdx][3].x += 2;
+        EnemyState.enemyJointPosArray[enemyIdx][3].y += 6;
+        EnemyState.enemyJointPosArray[enemyIdx][4].x += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][4].y += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][5].x += 6;
+        EnemyState.enemyJointPosArray[enemyIdx][5].y += 2;
+        EnemyState.enemyJointPosArray[enemyIdx][6].x += 6;
+        EnemyState.enemyJointPosArray[enemyIdx][6].y += 6;
+        for (b = 0; 7 > b; b++) EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyPrevJointPosArray[enemyIdx][1], 0, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyPrevJointPosArray[enemyIdx][2], 0, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyPrevJointPosArray[enemyIdx][3], 0, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyPrevJointPosArray[enemyIdx][4], 0, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyPrevJointPosArray[enemyIdx][5], 0, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][6], EnemyState.enemyPrevJointPosArray[enemyIdx][6], 0, .99);
         RMath.Vec2Set(c, 0, 0);
-        var d = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x,
-            enemyJointPosArray[enemyIdx][0].y, 150, 150, 0);
+        var d = findNearestPartyMemberInRect(EnemyState.enemyJointPosArray[enemyIdx][0].x,
+            EnemyState.enemyJointPosArray[enemyIdx][0].y, 150, 150, 0);
         if (-1 != d) {
-            RMath.Vec2Sub(c, HeroesState.heroJointPositionsByHero[d][2], enemyJointPosArray[enemyIdx][0]);
+            RMath.Vec2Sub(c, HeroesState.heroJointPositionsByHero[d][2], EnemyState.enemyJointPosArray[enemyIdx][0]);
             d = RMath.Vec2Norm(c);
-            d -= enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.PArg24] - 10;
+            d -= enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.PArg24] - 10;
             if (0 > d) {
                 RMath.Vec2Scale(c, -.05);
             } else {
                 RMath.Vec2Scale(c, .05);
             }
         }
-        enemyJointPosArray[enemyIdx][0].add(c);
+        EnemyState.enemyJointPosArray[enemyIdx][0].add(c);
         if (10 > RMath.randFloat(100)) {
-            enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(-1, 1);
-            enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1, 1);
+            EnemyState.enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(-1, 1);
+            EnemyState.enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1, 1);
         }
-        enemyJointPosArray[enemyIdx][2].x += RMath.randFloatRange(0, -.1);
-        enemyJointPosArray[enemyIdx][3].x += RMath.randFloatRange(0, -.1);
-        enemyJointPosArray[enemyIdx][5].x += RMath.randFloatRange(0, .1);
-        enemyJointPosArray[enemyIdx][6].x += RMath.randFloatRange(0, .1);
+        EnemyState.enemyJointPosArray[enemyIdx][2].x += RMath.randFloatRange(0, -.1);
+        EnemyState.enemyJointPosArray[enemyIdx][3].x += RMath.randFloatRange(0, -.1);
+        EnemyState.enemyJointPosArray[enemyIdx][5].x += RMath.randFloatRange(0, .1);
+        EnemyState.enemyJointPosArray[enemyIdx][6].x += RMath.randFloatRange(0, .1);
         c = .5;
         d = 6 * b;
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 3 * b, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][4], 3 * b, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][3], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][5], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], d, c, c);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        enemyTileContactFlagsArray[enemyIdx] = 0;
-        if (0 >= enemyHealthArray[enemyIdx])
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][1], 3 * b, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][4], 3 * b, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyJointPosArray[enemyIdx][5], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyJointPosArray[enemyIdx][6], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyJointPosArray[enemyIdx][6], d, c, c);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx])
             for (b = 0; 7 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
         for (b = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, 1);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].set(EnemyState.enemyJointPosArray[enemyIdx][0]);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 8 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = 0; 8 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        d = 6 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][3], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][5], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], d, c, c);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        d = 6 * (150 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyJointPosArray[enemyIdx][5], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyJointPosArray[enemyIdx][6], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyJointPosArray[enemyIdx][6], d, c, c);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 7 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5366,18 +5317,18 @@ function enemyBatBehavior(enemyIdx) {
 }
 
 
-function enemyDragonBehavior(enemyIdx) {
+export function enemyDragonBehavior(enemyIdx) {
     var b, c, d, f = new RMath.Vec2();
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) 
-        enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA];
-    else if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
-        for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
-        RMath.Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) 
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA];
+    else if (20 >= EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        for (b = 1; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], 0, .9);
+        RMath.Vec2Sub(f, EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0]);
         RMath.Vec2Norm(f);
         RMath.Vec2Scale(f, .008);
-        b = enemyJointPosArray[enemyIdx][0].x;
-        c = enemyJointPosArray[enemyIdx][0].y;
+        b = EnemyState.enemyJointPosArray[enemyIdx][0].x;
+        c = EnemyState.enemyJointPosArray[enemyIdx][0].y;
         d = getStageTileAt(b - 24, c);
         if (28 >= d || 24 > b) f.x += .03;
         d = getStageTileAt(b + 24, c);
@@ -5390,32 +5341,32 @@ function enemyDragonBehavior(enemyIdx) {
             f.x += RMath.randFloatRange(-.1, .1);
             f.y += RMath.randFloatRange(-.1, .1);
         }
-        enemyJointPosArray[enemyIdx][0].add(f);
+        EnemyState.enemyJointPosArray[enemyIdx][0].add(f);
         f = .013;
         c = 5;
-        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], c, 0, f);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x,
-            enemyJointPosArray[enemyIdx][0].y);
-        enemyTileContactFlagsArray[enemyIdx] = 0;
-        if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
+        for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyJointPosArray[enemyIdx][b + 1], c, 0, f);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x,
+            EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx])
+            for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
-        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] += 20;
-            enemyDeathTimerArray[enemyIdx] = 0;
+        for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].set(EnemyState.enemyJointPosArray[enemyIdx][0]);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] += 20;
+            EnemyState.enemyDeathTimerArray[enemyIdx] = 0;
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         f = .5;
-        c = 10 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
-        for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 21; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], c, f, f);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        c = 10 * (150 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 150;
+        for (b = 1; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 21; b++) applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyJointPosArray[enemyIdx][b + 1], c, f, f);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5423,117 +5374,117 @@ function enemyDragonBehavior(enemyIdx) {
 }
 
 
-function enemyStickmanBehavior(enemyIdx) {
+export function enemyStickmanBehavior(enemyIdx) {
     var b;
-    b = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    b = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
     else
-    if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Stickman) {
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.2, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.1, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .3, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .3, .99);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.02, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], -.01, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][4],
-                enemyPrevJointPosArray[enemyIdx][4], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], 0, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][9], enemyPrevJointPosArray[enemyIdx][9], .1, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][10], enemyPrevJointPosArray[enemyIdx][10], .1, .99);
+    if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Stickman) {
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], -.2, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyPrevJointPosArray[enemyIdx][1], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyPrevJointPosArray[enemyIdx][2], -.1, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyPrevJointPosArray[enemyIdx][3], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyPrevJointPosArray[enemyIdx][4], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyPrevJointPosArray[enemyIdx][5], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][6], EnemyState.enemyPrevJointPosArray[enemyIdx][6], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyPrevJointPosArray[enemyIdx][7], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][8], EnemyState.enemyPrevJointPosArray[enemyIdx][8], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][9], EnemyState.enemyPrevJointPosArray[enemyIdx][9], .3, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][10], EnemyState.enemyPrevJointPosArray[enemyIdx][10], .3, .99);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], -.02, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyPrevJointPosArray[enemyIdx][1], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyPrevJointPosArray[enemyIdx][2], -.01, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyPrevJointPosArray[enemyIdx][3], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][4],
+                EnemyState.enemyPrevJointPosArray[enemyIdx][4], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyPrevJointPosArray[enemyIdx][5], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][6], EnemyState.enemyPrevJointPosArray[enemyIdx][6], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyPrevJointPosArray[enemyIdx][7], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][8], EnemyState.enemyPrevJointPosArray[enemyIdx][8], 0, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][9], EnemyState.enemyPrevJointPosArray[enemyIdx][9], .1, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][10], EnemyState.enemyPrevJointPosArray[enemyIdx][10], .1, .99);
         }
-        if (50 > RMath.randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
+        if (50 > RMath.randFloat(100) && 0 < (EnemyState.enemyTileContactFlagsArray[enemyIdx] & 2)) {
+            var c = findNearestPartyMemberInRect(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
             if (-1 != c) {
-                enemyPoseTrailWriteIdxArray[enemyIdx] = HeroesState.heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
+                EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = HeroesState.heroJointPositionsByHero[c][2].x < EnemyState.enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
             } else if (10 > RMath.randFloat(100)) {
-                enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
+                EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
             }
             var d = c = 1,
                 f = 0;
-            if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
+            if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
                 c = .25;
                 d = .3;
                 f = .25;
             }
-            if (1 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                if (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x) {
-                    enemyJointPosArray[enemyIdx][10].x += RMath.randFloat(-c);
-                    enemyJointPosArray[enemyIdx][10].y += -d;
+            if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                if (EnemyState.enemyJointPosArray[enemyIdx][9].x < EnemyState.enemyJointPosArray[enemyIdx][10].x) {
+                    EnemyState.enemyJointPosArray[enemyIdx][10].x += RMath.randFloat(-c);
+                    EnemyState.enemyJointPosArray[enemyIdx][10].y += -d;
                 } else {
-                    enemyJointPosArray[enemyIdx][9].x += RMath.randFloat(-c);
-                    enemyJointPosArray[enemyIdx][9].y += -d;
+                    EnemyState.enemyJointPosArray[enemyIdx][9].x += RMath.randFloat(-c);
+                    EnemyState.enemyJointPosArray[enemyIdx][9].y += -d;
                 }
-                enemyJointPosArray[enemyIdx][5].x += RMath.randFloat(-f);
-                enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(-f);
+                EnemyState.enemyJointPosArray[enemyIdx][5].x += RMath.randFloat(-f);
+                EnemyState.enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(-f);
             } else {
-                if (enemyJointPosArray[enemyIdx][9].x < enemyJointPosArray[enemyIdx][10].x) {
-                    enemyJointPosArray[enemyIdx][9].x +=
+                if (EnemyState.enemyJointPosArray[enemyIdx][9].x < EnemyState.enemyJointPosArray[enemyIdx][10].x) {
+                    EnemyState.enemyJointPosArray[enemyIdx][9].x +=
                         RMath.randFloat(c);
-                    enemyJointPosArray[enemyIdx][9].y += -d;
+                    EnemyState.enemyJointPosArray[enemyIdx][9].y += -d;
                 } else {
-                    enemyJointPosArray[enemyIdx][10].x += RMath.randFloat(c);
-                    enemyJointPosArray[enemyIdx][10].y += -d;
+                    EnemyState.enemyJointPosArray[enemyIdx][10].x += RMath.randFloat(c);
+                    EnemyState.enemyJointPosArray[enemyIdx][10].y += -d;
                 }
-                enemyJointPosArray[enemyIdx][5].x += RMath.randFloat(f);
-                enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(f);
+                EnemyState.enemyJointPosArray[enemyIdx][5].x += RMath.randFloat(f);
+                EnemyState.enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(f);
             }
         }
         c = .5;
         d = 1.2 * b;
-        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
+        if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
             c = .02;
             d = 1 * b;
         }
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 3 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 3 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][3], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][4], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][5], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][7], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][8], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][9], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][8], enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 5 * d, c, c);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SecondaryProjectileEnabled]) {
-            spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][1], 3 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], 3 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][3], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][4], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyJointPosArray[enemyIdx][5], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyJointPosArray[enemyIdx][6], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][7], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][8], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyJointPosArray[enemyIdx][9], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][8], EnemyState.enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyJointPosArray[enemyIdx][8], 5 * d, c, c);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        if (0 != enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SecondaryProjectileEnabled]) {
+            spawnEnemyLoot(enemyIdx, 1, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
         }
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][1]);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
-            for (b = enemyDeathTimerArray[enemyIdx] = 0; 11 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].set(EnemyState.enemyJointPosArray[enemyIdx][1]);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            for (b = EnemyState.enemyDeathTimerArray[enemyIdx] = 0; 11 > b; b++) {
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 11 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = 0; 11 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        d = 1.2 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 3 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][5], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][4], enemyJointPosArray[enemyIdx][6], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][9], 4 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][8], enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        d = 1.2 * (150 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], 3 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyJointPosArray[enemyIdx][5], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyJointPosArray[enemyIdx][6], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyJointPosArray[enemyIdx][9], 4 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][8], EnemyState.enemyJointPosArray[enemyIdx][10], 4 * d, c, c);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 11 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5541,47 +5492,47 @@ function enemyStickmanBehavior(enemyIdx) {
 }
 
 
-function enemyTreeBehavior(enemyIdx) {
+export function enemyTreeBehavior(enemyIdx) {
     var b;
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx])
-        for (enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.floor(RMath.randFloatRange(enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA] + 1, enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamB] + 2)), b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
-            enemyJointPosArray[enemyIdx][b].x += 4;
-            enemyJointPosArray[enemyIdx][b].y += 4;
-            enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx])
+        for (EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.floor(RMath.randFloatRange(enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA] + 1, enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamB] + 2)), b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
+            EnemyState.enemyJointPosArray[enemyIdx][b].x += 4;
+            EnemyState.enemyJointPosArray[enemyIdx][b].y += 4;
+            EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
         } else
-    if (20 >= enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft) {
-            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], -.04, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 1, .99);
+    if (20 >= EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft) {
+            for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], -.04, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], 1, .99);
         } else {
-            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .04, .99);
-            stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], -1, .99);
+            for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .04, .99);
+            stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], -1, .99);
         }
         if (10 > RMath.randFloat(100)) {
-            b = RMath.floor(RMath.randFloat(enemyPoseTrailWriteIdxArray[enemyIdx] - 1));
-            enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+            b = RMath.floor(RMath.randFloat(EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1));
+            EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
         }
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 8, .2, .2);
-        for (b = 1; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 2; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], 6, .2, .2);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], 6, .2, 0);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        enemyTileContactFlagsArray[enemyIdx] = 0;
-        if (0 >= enemyHealthArray[enemyIdx])
-            for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][1], 8, .2, .2);
+        for (b = 1; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 2; b++) applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyJointPosArray[enemyIdx][b + 1], 6, .2, .2);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyJointPosArray[enemyIdx][b + 1], 6, .2, 0);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx])
+            for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]; b++) {
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
-        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].x = .5 * (enemyJointPosArray[enemyIdx][0].x + enemyJointPosArray[enemyIdx][enemyPoseTrailWriteIdxArray[enemyIdx] - 1].x);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].y = .5 * (enemyJointPosArray[enemyIdx][0].y + enemyJointPosArray[enemyIdx][enemyPoseTrailWriteIdxArray[enemyIdx] - 1].y);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] += 20;
+        for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].x = .5 * (EnemyState.enemyJointPosArray[enemyIdx][0].x + EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1].x);
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y = .5 * (EnemyState.enemyJointPosArray[enemyIdx][0].y + EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1].y);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] += 20;
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b < enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        for (b = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; b < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 20; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5589,58 +5540,58 @@ function enemyTreeBehavior(enemyIdx) {
 }
 
 
-function enemyHangingTreeBehavior(enemyIdx) {
+export function enemyHangingTreeBehavior(enemyIdx) {
     var b;
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        enemyJointPosArray[enemyIdx][0].x += 2;
-        enemyJointPosArray[enemyIdx][1].x += 3;
-        enemyJointPosArray[enemyIdx][2].x += 4;
-        for (b = 0; 3 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
-    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], .05, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], .05, .9);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], .05, .9);
-        b = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        EnemyState.enemyJointPosArray[enemyIdx][0].x += 2;
+        EnemyState.enemyJointPosArray[enemyIdx][1].x += 3;
+        EnemyState.enemyJointPosArray[enemyIdx][2].x += 4;
+        for (b = 0; 3 > b; b++) EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], .05, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyPrevJointPosArray[enemyIdx][1], .05, .9);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyPrevJointPosArray[enemyIdx][2], .05, .9);
+        b = findNearestPartyMemberInRect(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 200, 50, 0);
         if (-1 != b) {
-            enemyJointPosArray[enemyIdx][0].x += HeroesState.heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -.001 : .001;
+            EnemyState.enemyJointPosArray[enemyIdx][0].x += HeroesState.heroJointPositionsByHero[b][2].x < EnemyState.enemyJointPosArray[enemyIdx][0].x ? -.001 : .001;
         }
-        if (0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
+        if (0 < (EnemyState.enemyTileContactFlagsArray[enemyIdx] & 2)) {
             var c = 0;
             if (-1 != b) {
-                c = HeroesState.heroJointPositionsByHero[b][2].x < enemyJointPosArray[enemyIdx][0].x ? -1 : 1;
+                c = HeroesState.heroJointPositionsByHero[b][2].x < EnemyState.enemyJointPosArray[enemyIdx][0].x ? -1 : 1;
             } else {
                 c = RMath.randSelect(-1, 1);
             }
             if (10 > RMath.randFloat(100)) {
-                enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(.4, .6) * c;
-                enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1.5, -2);
+                EnemyState.enemyJointPosArray[enemyIdx][0].x += RMath.randFloatRange(.4, .6) * c;
+                EnemyState.enemyJointPosArray[enemyIdx][0].y += RMath.randFloatRange(-1.5, -2);
             }
         }
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 0, 0, .01);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 0, 0, .01);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x,
-            enemyJointPosArray[enemyIdx][0].y);
-        enemyTileContactFlagsArray[enemyIdx] = 0;
-        if (0 >= enemyHealthArray[enemyIdx])
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][1], 0, 0, .01);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], 0, 0, .01);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x,
+            EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0;
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx])
             for (b = 0; 3 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
         moveEnemyJointWithTileCollision(enemyIdx, 0, .5);
-        b = enemyTileContactFlagsArray[enemyIdx];
+        b = EnemyState.enemyTileContactFlagsArray[enemyIdx];
         moveEnemyJointWithTileCollision(enemyIdx, 1, .5);
         moveEnemyJointWithTileCollision(enemyIdx, 2, .5);
-        enemyTileContactFlagsArray[enemyIdx] = b;
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+        EnemyState.enemyTileContactFlagsArray[enemyIdx] = b;
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].set(EnemyState.enemyJointPosArray[enemyIdx][0]);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 3 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        for (b = 0; 3 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 3 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5648,30 +5599,30 @@ function enemyHangingTreeBehavior(enemyIdx) {
 }
 
 
-function enemyUpdateFunc7(enemyIdx) {
+export function enemyUpdateFunc7(enemyIdx) {
     var b, c, d, f = new RMath.Vec2(),
-        g = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA],
-        h = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamB] * enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        g = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA],
+        h = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamB] * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
         for (b = 0; b < g; b++) {
             c = 360 * b / g * RMath.PI / 180;
-            enemyJointPosArray[enemyIdx][1 + b].x += Math.cos(c) * h;
-            enemyJointPosArray[enemyIdx][1 + b].y += Math.sin(c) * h;
+            EnemyState.enemyJointPosArray[enemyIdx][1 + b].x += Math.cos(c) * h;
+            EnemyState.enemyJointPosArray[enemyIdx][1 + b].y += Math.sin(c) * h;
         }
         for (b = 0; b <= g; b++) {
-            enemyJointPosArray[enemyIdx][b].x += 4;
-            enemyJointPosArray[enemyIdx][b].y += 4;
-            enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
+            EnemyState.enemyJointPosArray[enemyIdx][b].x += 4;
+            EnemyState.enemyJointPosArray[enemyIdx][b].y += 4;
+            EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
         }
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
-    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
-        for (b = 1; b <= g; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .99);
-        RMath.Vec2Sub(f, enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0]);
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        for (b = 1; b <= g; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], 0, .99);
+        RMath.Vec2Sub(f, EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0]);
         RMath.Vec2Norm(f);
         RMath.Vec2Scale(f, .008);
-        b = enemyJointPosArray[enemyIdx][0].x;
-        c = enemyJointPosArray[enemyIdx][0].y;
+        b = EnemyState.enemyJointPosArray[enemyIdx][0].x;
+        c = EnemyState.enemyJointPosArray[enemyIdx][0].y;
         d = getStageTileAt(b - 16, c);
         if (30 >= d) {
             f.x += .05;
@@ -5709,31 +5660,31 @@ function enemyUpdateFunc7(enemyIdx) {
             f.x += RMath.randFloatRange(-.1, .1);
             f.y += RMath.randFloatRange(-.1, .1);
         }
-        enemyJointPosArray[enemyIdx][0].add(f);
+        EnemyState.enemyJointPosArray[enemyIdx][0].add(f);
         c = 360 / g * RMath.PI / 180;
         f.x = Math.cos(0) * h - Math.cos(c) * h;
         f.y = Math.sin(0) * h - Math.sin(c) * h;
         f = RMath.Vec2Mag(f);
-        for (b = 0; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][b + 1], h, 0, .2);
-        for (b = 1; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], f, .2, .2);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][1], f, .2, .2);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
-            for (b = enemyDeathTimerArray[enemyIdx] = 0; b <= g; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
+        for (b = 0; b < g; b++) applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][b + 1], h, 0, .2);
+        for (b = 1; b < g; b++) applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyJointPosArray[enemyIdx][b + 1], f, .2, .2);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyJointPosArray[enemyIdx][1], f, .2, .2);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].set(EnemyState.enemyJointPosArray[enemyIdx][0]);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            for (b = EnemyState.enemyDeathTimerArray[enemyIdx] = 0; b <= g; b++) {
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.5, .5);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 3);
             }
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; b <= g; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
-        h = h * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
-        for (b = 1; b < g; b++) applySeparationCorrection(enemyJointPosArray[enemyIdx][b], enemyJointPosArray[enemyIdx][b + 1], h, .5, .5);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        for (b = 0; b <= g; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        h = h * (150 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 150;
+        for (b = 1; b < g; b++) applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyJointPosArray[enemyIdx][b + 1], h, .5, .5);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; b <= g; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5741,130 +5692,130 @@ function enemyUpdateFunc7(enemyIdx) {
 }
 
 
-function enemyUpdateFunc8(enemyIdx) {
+export function enemyUpdateFunc8(enemyIdx) {
     var b;
-    b = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        enemyJointPosArray[enemyIdx][0].x += 4;
-        enemyJointPosArray[enemyIdx][0].y += 0;
-        enemyJointPosArray[enemyIdx][1].x += 0;
-        enemyJointPosArray[enemyIdx][1].y += 0;
-        enemyJointPosArray[enemyIdx][2].x += 0;
-        enemyJointPosArray[enemyIdx][2].y += 7.99;
-        enemyJointPosArray[enemyIdx][3].x += 7.99;
-        enemyJointPosArray[enemyIdx][3].y += 0;
-        enemyJointPosArray[enemyIdx][4].x += 7.99;
-        enemyJointPosArray[enemyIdx][4].y += 7.99;
-        enemyJointPosArray[enemyIdx][5].x += 0;
-        enemyJointPosArray[enemyIdx][5].y += 0;
-        enemyJointPosArray[enemyIdx][6].x += 0;
-        enemyJointPosArray[enemyIdx][6].y += 7.99;
-        enemyJointPosArray[enemyIdx][7].x += 7.99;
-        enemyJointPosArray[enemyIdx][7].y += 0;
-        enemyJointPosArray[enemyIdx][8].x += 7.99;
-        enemyJointPosArray[enemyIdx][8].y += 7.99;
-        for (b = 0; 9 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
-    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], -.05, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][1], enemyPrevJointPosArray[enemyIdx][1], -.1, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][2], enemyPrevJointPosArray[enemyIdx][2], .8, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][3], enemyPrevJointPosArray[enemyIdx][3], -.1, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][4], enemyPrevJointPosArray[enemyIdx][4],
+    b = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        EnemyState.enemyJointPosArray[enemyIdx][0].x += 4;
+        EnemyState.enemyJointPosArray[enemyIdx][0].y += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][1].x += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][1].y += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][2].x += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][2].y += 7.99;
+        EnemyState.enemyJointPosArray[enemyIdx][3].x += 7.99;
+        EnemyState.enemyJointPosArray[enemyIdx][3].y += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][4].x += 7.99;
+        EnemyState.enemyJointPosArray[enemyIdx][4].y += 7.99;
+        EnemyState.enemyJointPosArray[enemyIdx][5].x += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][5].y += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][6].x += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][6].y += 7.99;
+        EnemyState.enemyJointPosArray[enemyIdx][7].x += 7.99;
+        EnemyState.enemyJointPosArray[enemyIdx][7].y += 0;
+        EnemyState.enemyJointPosArray[enemyIdx][8].x += 7.99;
+        EnemyState.enemyJointPosArray[enemyIdx][8].y += 7.99;
+        for (b = 0; 9 > b; b++) EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], -.05, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyPrevJointPosArray[enemyIdx][1], -.1, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyPrevJointPosArray[enemyIdx][2], .8, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyPrevJointPosArray[enemyIdx][3], -.1, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][4], EnemyState.enemyPrevJointPosArray[enemyIdx][4],
             .8, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][5], enemyPrevJointPosArray[enemyIdx][5], -.1, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][6], enemyPrevJointPosArray[enemyIdx][6], .8, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][7], enemyPrevJointPosArray[enemyIdx][7], -.1, .99);
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][8], enemyPrevJointPosArray[enemyIdx][8], .8, .99);
-        if (50 > RMath.randFloat(100) && 0 < (enemyTileContactFlagsArray[enemyIdx] & 2)) {
-            var c = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 500, 25, 0);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyPrevJointPosArray[enemyIdx][5], -.1, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][6], EnemyState.enemyPrevJointPosArray[enemyIdx][6], .8, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyPrevJointPosArray[enemyIdx][7], -.1, .99);
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][8], EnemyState.enemyPrevJointPosArray[enemyIdx][8], .8, .99);
+        if (50 > RMath.randFloat(100) && 0 < (EnemyState.enemyTileContactFlagsArray[enemyIdx] & 2)) {
+            var c = findNearestPartyMemberInRect(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 500, 25, 0);
             if (-1 != c) {
-                enemyPoseTrailWriteIdxArray[enemyIdx] = HeroesState.heroJointPositionsByHero[c][2].x < enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
+                EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = HeroesState.heroJointPositionsByHero[c][2].x < EnemyState.enemyJointPosArray[enemyIdx][0].x ? 1 : 2;
             } else if (10 > RMath.randFloat(100)) {
-                enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
+                EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
             }
-            if (1 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                if (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x) {
-                    enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(-1);
-                    enemyJointPosArray[enemyIdx][6].y += RMath.randFloatRange(-1, -1);
+            if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                if (EnemyState.enemyJointPosArray[enemyIdx][2].x < EnemyState.enemyJointPosArray[enemyIdx][6].x) {
+                    EnemyState.enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(-1);
+                    EnemyState.enemyJointPosArray[enemyIdx][6].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][2].x += RMath.randFloat(-1);
-                    enemyJointPosArray[enemyIdx][2].y += RMath.randFloatRange(-1, -1);
+                    EnemyState.enemyJointPosArray[enemyIdx][2].x += RMath.randFloat(-1);
+                    EnemyState.enemyJointPosArray[enemyIdx][2].y += RMath.randFloatRange(-1, -1);
                 }
-                if (enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x) {
-                    enemyJointPosArray[enemyIdx][8].x += RMath.randFloat(-1);
-                    enemyJointPosArray[enemyIdx][8].y += RMath.randFloatRange(-1, -1);
+                if (EnemyState.enemyJointPosArray[enemyIdx][4].x < EnemyState.enemyJointPosArray[enemyIdx][8].x) {
+                    EnemyState.enemyJointPosArray[enemyIdx][8].x += RMath.randFloat(-1);
+                    EnemyState.enemyJointPosArray[enemyIdx][8].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][4].x += RMath.randFloat(-1);
-                    enemyJointPosArray[enemyIdx][4].y += RMath.randFloatRange(-1, -1);
+                    EnemyState.enemyJointPosArray[enemyIdx][4].x += RMath.randFloat(-1);
+                    EnemyState.enemyJointPosArray[enemyIdx][4].y += RMath.randFloatRange(-1, -1);
                 }
                 if (1 > RMath.randFloat(100)) {
-                    --enemyJointPosArray[enemyIdx][0].x;
-                    enemyJointPosArray[enemyIdx][0].y -= 3;
+                    --EnemyState.enemyJointPosArray[enemyIdx][0].x;
+                    EnemyState.enemyJointPosArray[enemyIdx][0].y -= 3;
                 }
             } else {
-                if (enemyJointPosArray[enemyIdx][2].x < enemyJointPosArray[enemyIdx][6].x) {
-                    enemyJointPosArray[enemyIdx][2].x += RMath.randFloat(1);
-                    enemyJointPosArray[enemyIdx][2].y += RMath.randFloatRange(-1, -1);
+                if (EnemyState.enemyJointPosArray[enemyIdx][2].x < EnemyState.enemyJointPosArray[enemyIdx][6].x) {
+                    EnemyState.enemyJointPosArray[enemyIdx][2].x += RMath.randFloat(1);
+                    EnemyState.enemyJointPosArray[enemyIdx][2].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(1);
-                    enemyJointPosArray[enemyIdx][6].y += RMath.randFloatRange(-1, -1);
+                    EnemyState.enemyJointPosArray[enemyIdx][6].x += RMath.randFloat(1);
+                    EnemyState.enemyJointPosArray[enemyIdx][6].y += RMath.randFloatRange(-1, -1);
                 }
-                if (enemyJointPosArray[enemyIdx][4].x < enemyJointPosArray[enemyIdx][8].x) {
-                    enemyJointPosArray[enemyIdx][4].x += RMath.randFloat(1);
-                    enemyJointPosArray[enemyIdx][4].y += RMath.randFloatRange(-1, -1);
+                if (EnemyState.enemyJointPosArray[enemyIdx][4].x < EnemyState.enemyJointPosArray[enemyIdx][8].x) {
+                    EnemyState.enemyJointPosArray[enemyIdx][4].x += RMath.randFloat(1);
+                    EnemyState.enemyJointPosArray[enemyIdx][4].y += RMath.randFloatRange(-1, -1);
                 } else {
-                    enemyJointPosArray[enemyIdx][8].x += RMath.randFloat(1);
-                    enemyJointPosArray[enemyIdx][8].y += RMath.randFloatRange(-1, -1);
+                    EnemyState.enemyJointPosArray[enemyIdx][8].x += RMath.randFloat(1);
+                    EnemyState.enemyJointPosArray[enemyIdx][8].y += RMath.randFloatRange(-1, -1);
                 }
                 if (1 > RMath.randFloat(100)) {
-                    enemyJointPosArray[enemyIdx][0].x += 1;
-                    enemyJointPosArray[enemyIdx][0].y -= 3;
+                    EnemyState.enemyJointPosArray[enemyIdx][0].x += 1;
+                    EnemyState.enemyJointPosArray[enemyIdx][0].y -= 3;
                 }
             }
         }
         c = .3;
         b = 2.2 * b;
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][5], 3 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][7], 3 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][6], 3 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][6], 2 * b, .2 * c, .2 * c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][8], 3 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 2 * b, .2 * c, .2 * c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 4 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][3], 4 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][2], 4 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 3 * b, .2 * c, .2 * c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][4], 4 * b, .1 * c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], 3 * b, .2 * c, .2 * c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], 8 * b, .1 * c, .1 * c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][5], enemyJointPosArray[enemyIdx][7], 7 * b, .1 * c, .1 * c);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        if (0 != enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SecondaryProjectileEnabled]) {
-            spawnEnemyLoot(enemyIdx, 1, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][5], 3 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][7], 3 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][6], 3 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyJointPosArray[enemyIdx][6], 2 * b, .2 * c, .2 * c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][8], 3 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyJointPosArray[enemyIdx][8], 2 * b, .2 * c, .2 * c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][1], 4 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][3], 4 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][2], 4 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], 3 * b, .2 * c, .2 * c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][4], 4 * b, .1 * c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyJointPosArray[enemyIdx][4], 3 * b, .2 * c, .2 * c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][4], 8 * b, .1 * c, .1 * c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][5], EnemyState.enemyJointPosArray[enemyIdx][7], 7 * b, .1 * c, .1 * c);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        if (0 != enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SecondaryProjectileEnabled]) {
+            spawnEnemyLoot(enemyIdx, 1, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
         }
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
-            enemyDeathTimerArray[enemyIdx] = 0;
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].set(EnemyState.enemyJointPosArray[enemyIdx][0]);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            EnemyState.enemyDeathTimerArray[enemyIdx] = 0;
             for (b = 1; 9 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-1, 1);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
             }
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 9 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = 0; 9 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        b = 1.2 * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 4 * b, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], 4 * b, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][5],
-            enemyJointPosArray[enemyIdx][6], 3 * b, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][7], enemyJointPosArray[enemyIdx][8], 3 * b, c, c);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        b = 1.2 * (150 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], 4 * b, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyJointPosArray[enemyIdx][4], 4 * b, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][5],
+            EnemyState.enemyJointPosArray[enemyIdx][6], 3 * b, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][7], EnemyState.enemyJointPosArray[enemyIdx][8], 3 * b, c, c);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 9 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5872,57 +5823,57 @@ function enemyUpdateFunc8(enemyIdx) {
 }
 
 
-function enemyUpdateFunc9(enemyIdx) {
+export function enemyUpdateFunc9(enemyIdx) {
     var b, c = new RMath.Vec2(),
-        d = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-    if (0 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        d = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
         if (1 > RMath.randFloat(2)) {
-            enemyJointPosArray[enemyIdx][0].x += 0;
-            enemyJointPosArray[enemyIdx][1].x += 2;
-            enemyJointPosArray[enemyIdx][2].x += 4;
-            enemyJointPosArray[enemyIdx][3].x += 6;
-            enemyJointPosArray[enemyIdx][4].x += 6;
+            EnemyState.enemyJointPosArray[enemyIdx][0].x += 0;
+            EnemyState.enemyJointPosArray[enemyIdx][1].x += 2;
+            EnemyState.enemyJointPosArray[enemyIdx][2].x += 4;
+            EnemyState.enemyJointPosArray[enemyIdx][3].x += 6;
+            EnemyState.enemyJointPosArray[enemyIdx][4].x += 6;
         } else {
-            enemyJointPosArray[enemyIdx][0].x += 6;
-            enemyJointPosArray[enemyIdx][1].x += 4;
-            enemyJointPosArray[enemyIdx][2].x += 2;
-            enemyJointPosArray[enemyIdx][3].x += 0;
-            enemyJointPosArray[enemyIdx][4].x += 0;
+            EnemyState.enemyJointPosArray[enemyIdx][0].x += 6;
+            EnemyState.enemyJointPosArray[enemyIdx][1].x += 4;
+            EnemyState.enemyJointPosArray[enemyIdx][2].x += 2;
+            EnemyState.enemyJointPosArray[enemyIdx][3].x += 0;
+            EnemyState.enemyJointPosArray[enemyIdx][4].x += 0;
         }
-        for (b = 0; 5 > b; b++) enemyPrevJointPosArray[enemyIdx][b].set(enemyJointPosArray[enemyIdx][b]);
-        enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
-    } else if (1 == enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == enemyPoseTrailWriteIdxArray[enemyIdx]) {
-        stepWithVerticalBias(enemyJointPosArray[enemyIdx][0], enemyPrevJointPosArray[enemyIdx][0], 0, .99);
-        for (b = 1; 5 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], 0, .9);
+        for (b = 0; 5 > b; b++) EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
+        EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 1;
+    } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], 0, .99);
+        for (b = 1; 5 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], 0, .9);
         RMath.Vec2Set(c, 0, 0);
-        b = findNearestPartyMemberInRect(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 150, 50, 0);
+        b = findNearestPartyMemberInRect(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 150, 50, 0);
         if (-1 != b) {
-            RMath.Vec2Sub(c, HeroesState.heroJointPositionsByHero[b][2], enemyJointPosArray[enemyIdx][0]);
+            RMath.Vec2Sub(c, HeroesState.heroJointPositionsByHero[b][2], EnemyState.enemyJointPosArray[enemyIdx][0]);
             b = RMath.Vec2Norm(c);
-            b -= enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.PArg24] / 2 - 10;
+            b -= enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.PArg24] / 2 - 10;
             if (0 > b) {
                 RMath.Vec2Scale(c, -.01);
             } else {
                 RMath.Vec2Scale(c, .01);
             }
         }
-        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
+        b = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
         if (31 != b) {
             c.y += .03;
         }
-        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x - 8, enemyJointPosArray[enemyIdx][0].y);
+        b = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][0].x - 8, EnemyState.enemyJointPosArray[enemyIdx][0].y);
         if (0 <= b && 23 >= b) {
             c.x += .03;
         }
-        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x + 8, enemyJointPosArray[enemyIdx][0].y);
+        b = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][0].x + 8, EnemyState.enemyJointPosArray[enemyIdx][0].y);
         if (0 <= b && 23 >= b) {
             c.x -= .03;
         }
-        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - 8);
+        b = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - 8);
         if (0 <= b && 23 >= b) {
             c.y += .03;
         }
-        b = getStageTileAt(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y + 8);
+        b = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y + 8);
         if (0 <= b && 23 >= b) {
             c.y -= .03;
         }
@@ -5930,34 +5881,34 @@ function enemyUpdateFunc9(enemyIdx) {
             c.x += RMath.randFloatRange(-.5, .5);
             c.y += RMath.randFloatRange(-.5, .5);
         }
-        enemyJointPosArray[enemyIdx][0].add(c);
+        EnemyState.enemyJointPosArray[enemyIdx][0].add(c);
         c = .1;
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][1], 6 * d, 0, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][1], enemyJointPosArray[enemyIdx][2], 4 * d, 0, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], 6 * d, 0, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], 6 * d, 0, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], 8 * d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][0], enemyJointPosArray[enemyIdx][2], 10 * d, 0, c);
-        spawnEnemyLoot(enemyIdx, 0, enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        enemyJointPosArray[enemyIdx][enemyTargetJointIdx].set(enemyJointPosArray[enemyIdx][0]);
-        if (0 >= enemyHealthArray[enemyIdx]) {
-            enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
-            for (b = enemyDeathTimerArray[enemyIdx] = 0; 5 > b; b++) {
-                enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-2, 2);
-                enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 4);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][1], 6 * d, 0, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][1], EnemyState.enemyJointPosArray[enemyIdx][2], 4 * d, 0, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][3], 6 * d, 0, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][4], 6 * d, 0, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyJointPosArray[enemyIdx][4], 8 * d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyJointPosArray[enemyIdx][2], 10 * d, 0, c);
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].set(EnemyState.enemyJointPosArray[enemyIdx][0]);
+        if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
+            EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
+            for (b = EnemyState.enemyDeathTimerArray[enemyIdx] = 0; 5 > b; b++) {
+                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-2, 2);
+                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(2, 4);
             }
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 5 > b; b++) stepWithVerticalBias(enemyJointPosArray[enemyIdx][b], enemyPrevJointPosArray[enemyIdx][b], .05, .99);
+        for (b = 0; 5 > b; b++) stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
         c = .5;
-        d = 7 * d * (150 - enemyDeathTimerArray[enemyIdx]) / 150;
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][3], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][2], enemyJointPosArray[enemyIdx][4], d, c, c);
-        applySeparationCorrection(enemyJointPosArray[enemyIdx][3], enemyJointPosArray[enemyIdx][4], d, c, c);
-        for (b = enemyTileContactFlagsArray[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
-        if (150 < enemyDeathTimerArray[enemyIdx]++) {
+        d = 7 * d * (150 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 150;
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][3], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][2], EnemyState.enemyJointPosArray[enemyIdx][4], d, c, c);
+        applySeparationCorrection(EnemyState.enemyJointPosArray[enemyIdx][3], EnemyState.enemyJointPosArray[enemyIdx][4], d, c, c);
+        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 5 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        if (150 < EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }
     }
@@ -5966,134 +5917,134 @@ function enemyUpdateFunc9(enemyIdx) {
 
 
 function drawEnemies() { // Cg
-    for (let enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
-        let sprIdx = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex],
-            primTint = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.PrimaryTint],
-            secTint = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.SecondaryTint],
-            accentTint = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.AccentTint];
-        let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    for (let enemyIdx = 0; enemyIdx < EnemyState.enemyCount; enemyIdx++) {
+        let sprIdx = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex],
+            primTint = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.PrimaryTint],
+            secTint = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SecondaryTint],
+            accentTint = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.AccentTint];
+        let drawScale = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
         let yAnchor = enemySpriteAnchorYBySpriteIndex[sprIdx];
-        if (0 < enemyFreezeTimerArray[enemyIdx]) {
+        if (0 < EnemyState.enemyFreezeTimerArray[enemyIdx]) {
             primTint = 5934817;
             secTint = 1989840;
-        } else if (0 < enemySkipDurationLeftArray[enemyIdx]) {
+        } else if (0 < EnemyState.enemySkipDurationLeftArray[enemyIdx]) {
             primTint = 3368652;
             accentTint = secTint = 13158;
-        } else if (0 < enemyDmgDurationLeftArray[enemyIdx]) {
+        } else if (0 < EnemyState.enemyDmgDurationLeftArray[enemyIdx]) {
             primTint = 3407616;
             accentTint = secTint = 3381504;
         }
         
-        let k = (150 - enemyDeathTimerArray[enemyIdx]) / 150 * drawScale;
-        if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Slime) {
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        let k = (150 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 150 * drawScale;
+        if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Slime) {
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             } else {
-                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 15, -15, primTint, secTint, RMath.floor(128 * (50 - enemyDeathTimerArray[enemyIdx]) / 50));
+                drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - yAnchor * drawScale + 1, 16 * drawScale, 16 * drawScale, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 15, -15, primTint, secTint, RMath.floor(128 * (50 - EnemyState.enemyDeathTimerArray[enemyIdx]) / 50));
             }
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.BoxSnake) {
-            drawRectCentered(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y - 2 * k, 4 * k, 4 * k, accentTint);
-            drawRectCentered(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y - 2.5 * k, 5 * k, 5 * k, accentTint);
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.BoxSnake) {
+            drawRectCentered(EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y - 2 * k, 4 * k, 4 * k, accentTint);
+            drawRectCentered(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y - 2.5 * k, 5 * k, 5 * k, accentTint);
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 k = RMath.max(1, k);
             }
-            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y - yAnchor * k + 1, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Bat) {
-            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, accentTint);
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+            drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - yAnchor * k + 1, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Bat) {
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][4].x, EnemyState.enemyJointPosArray[enemyIdx][4].y, EnemyState.enemyJointPosArray[enemyIdx][5].x, EnemyState.enemyJointPosArray[enemyIdx][5].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][5].x, EnemyState.enemyJointPosArray[enemyIdx][5].y, EnemyState.enemyJointPosArray[enemyIdx][6].x, EnemyState.enemyJointPosArray[enemyIdx][6].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][6].x, EnemyState.enemyJointPosArray[enemyIdx][6].y, EnemyState.enemyJointPosArray[enemyIdx][4].x, EnemyState.enemyJointPosArray[enemyIdx][4].y, accentTint);
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 k = RMath.max(1, k);
             }
-            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Dragon) {
+            drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Dragon) {
             let _a = 0;
-            let _b = enemyPoseTrailWriteIdxArray[enemyIdx] - 1;
-            if (20 < enemyPoseTrailWriteIdxArray[enemyIdx]) {
+            let _b = EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1;
+            if (20 < EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
                 _a = 1;
-                _b = enemyPoseTrailWriteIdxArray[enemyIdx] - 20 - 1;
+                _b = EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 20 - 1;
             }
-            for (; _a < _b; _a++) drawLine(enemyJointPosArray[enemyIdx][_a].x, enemyJointPosArray[enemyIdx][_a].y, enemyJointPosArray[enemyIdx][_a + 1].x, enemyJointPosArray[enemyIdx][_a + 1].y, accentTint);
-            drawRectCentered(RMath.floor(enemyJointPosArray[enemyIdx][_b].x) + 1, RMath.floor(enemyJointPosArray[enemyIdx][_b].y) + 1, RMath.floor(2 * k), RMath.floor(2 * k), primTint);
-            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Stickman || enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
-            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
-                drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, accentTint);
+            for (; _a < _b; _a++) drawLine(EnemyState.enemyJointPosArray[enemyIdx][_a].x, EnemyState.enemyJointPosArray[enemyIdx][_a].y, EnemyState.enemyJointPosArray[enemyIdx][_a + 1].x, EnemyState.enemyJointPosArray[enemyIdx][_a + 1].y, accentTint);
+            drawRectCentered(RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][_b].x) + 1, RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][_b].y) + 1, RMath.floor(2 * k), RMath.floor(2 * k), primTint);
+            drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Stickman || EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.StickmanAlt) {
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, accentTint);
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, accentTint);
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, EnemyState.enemyJointPosArray[enemyIdx][4].x, EnemyState.enemyJointPosArray[enemyIdx][4].y, accentTint);
             }
-            drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, accentTint);
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y,
-                    enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, accentTint);
-                drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, EnemyState.enemyJointPosArray[enemyIdx][5].x, EnemyState.enemyJointPosArray[enemyIdx][5].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][4].x, EnemyState.enemyJointPosArray[enemyIdx][4].y, EnemyState.enemyJointPosArray[enemyIdx][6].x, EnemyState.enemyJointPosArray[enemyIdx][6].y, accentTint);
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y,
+                    EnemyState.enemyJointPosArray[enemyIdx][7].x, EnemyState.enemyJointPosArray[enemyIdx][7].y, accentTint);
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, EnemyState.enemyJointPosArray[enemyIdx][8].x, EnemyState.enemyJointPosArray[enemyIdx][8].y, accentTint);
             }
-            drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][9].x, enemyJointPosArray[enemyIdx][9].y, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, enemyJointPosArray[enemyIdx][10].x, enemyJointPosArray[enemyIdx][10].y, accentTint);
-            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft || enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeRight) {
-            let leftHanded = enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft ? -2 : 2;
-            let startI = 20 >= enemyPoseTrailWriteIdxArray[enemyIdx] ? enemyPoseTrailWriteIdxArray[enemyIdx] - 1 : enemyPoseTrailWriteIdxArray[enemyIdx] - 21;
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][7].x, EnemyState.enemyJointPosArray[enemyIdx][7].y, EnemyState.enemyJointPosArray[enemyIdx][9].x, EnemyState.enemyJointPosArray[enemyIdx][9].y, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][8].x, EnemyState.enemyJointPosArray[enemyIdx][8].y, EnemyState.enemyJointPosArray[enemyIdx][10].x, EnemyState.enemyJointPosArray[enemyIdx][10].y, accentTint);
+            drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft || EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeRight) {
+            let leftHanded = EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft ? -2 : 2;
+            let startI = 20 >= EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] ? EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 1 : EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] - 21;
             for (let _i = startI; 0 < _i; _i--) 
-                drawRectOutlineCentered(RMath.floor(enemyJointPosArray[enemyIdx][_i].x), RMath.floor(enemyJointPosArray[enemyIdx][_i].y + leftHanded), 5, 5, accentTint);
-            if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft) {
-                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+                drawRectOutlineCentered(RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][_i].x), RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][_i].y + leftHanded), 5, 5, accentTint);
+            if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft) {
+                drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             } else {
-                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 16, -16, primTint, secTint, 255);
+                drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3) + 16, -16, primTint, secTint, 255);
             }
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.HangingTree) {
-            for (let _i = 1; 6 > _i; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x, enemyJointPosArray[enemyIdx][_i].y, enemyJointPosArray[enemyIdx][_i + 1].x, enemyJointPosArray[enemyIdx][_i + 1].y, secTint);
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                drawLine(enemyJointPosArray[enemyIdx][drawScale].x, enemyJointPosArray[enemyIdx][drawScale].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.HangingTree) {
+            for (let _i = 1; 6 > _i; _i++) drawLine(EnemyState.enemyJointPosArray[enemyIdx][_i].x, EnemyState.enemyJointPosArray[enemyIdx][_i].y, EnemyState.enemyJointPosArray[enemyIdx][_i + 1].x, EnemyState.enemyJointPosArray[enemyIdx][_i + 1].y, secTint);
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][drawScale].x, EnemyState.enemyJointPosArray[enemyIdx][drawScale].y, EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, secTint);
             }
-            drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type8) {
-            let _a = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA];
-            for (let _i = 1; _i < _a; _i++) drawLine(enemyJointPosArray[enemyIdx][_i].x - 1, enemyJointPosArray[enemyIdx][_i].y - 1, enemyJointPosArray[enemyIdx][_i + 1].x - 1, enemyJointPosArray[enemyIdx][_i + 1].y - 1, accentTint);
-            drawLine(enemyJointPosArray[enemyIdx][drawScale].x - 1, enemyJointPosArray[enemyIdx][drawScale].y - 1, enemyJointPosArray[enemyIdx][1].x - 1, enemyJointPosArray[enemyIdx][1].y - 1, accentTint);
-            drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
-        } else if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type9) {
-            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, secTint);
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, secTint);
-                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, secTint);
+            drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].x), RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type8) {
+            let _a = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.ShapeParamA];
+            for (let _i = 1; _i < _a; _i++) drawLine(EnemyState.enemyJointPosArray[enemyIdx][_i].x - 1, EnemyState.enemyJointPosArray[enemyIdx][_i].y - 1, EnemyState.enemyJointPosArray[enemyIdx][_i + 1].x - 1, EnemyState.enemyJointPosArray[enemyIdx][_i + 1].y - 1, accentTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][drawScale].x - 1, EnemyState.enemyJointPosArray[enemyIdx][drawScale].y - 1, EnemyState.enemyJointPosArray[enemyIdx][1].x - 1, EnemyState.enemyJointPosArray[enemyIdx][1].y - 1, accentTint);
+            drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+        } else if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type9) {
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, secTint);
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, secTint);
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, secTint);
             }
-            drawLine(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, secTint);
-            drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, secTint);
-            if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
-                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, secTint);
-                drawLine(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, secTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, secTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, EnemyState.enemyJointPosArray[enemyIdx][4].x, EnemyState.enemyJointPosArray[enemyIdx][4].y, secTint);
+            if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, EnemyState.enemyJointPosArray[enemyIdx][5].x, EnemyState.enemyJointPosArray[enemyIdx][5].y, secTint);
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, EnemyState.enemyJointPosArray[enemyIdx][7].x, EnemyState.enemyJointPosArray[enemyIdx][7].y, secTint);
             }
-            drawLine(enemyJointPosArray[enemyIdx][5].x, enemyJointPosArray[enemyIdx][5].y, enemyJointPosArray[enemyIdx][6].x, enemyJointPosArray[enemyIdx][6].y, secTint);
-            drawLine(enemyJointPosArray[enemyIdx][7].x, enemyJointPosArray[enemyIdx][7].y, enemyJointPosArray[enemyIdx][8].x, enemyJointPosArray[enemyIdx][8].y, secTint);
-            drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, RMath.floor(enemyJointPosArray[enemyIdx][0].x), RMath.floor(enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][5].x, EnemyState.enemyJointPosArray[enemyIdx][5].y, EnemyState.enemyJointPosArray[enemyIdx][6].x, EnemyState.enemyJointPosArray[enemyIdx][6].y, secTint);
+            drawLine(EnemyState.enemyJointPosArray[enemyIdx][7].x, EnemyState.enemyJointPosArray[enemyIdx][7].y, EnemyState.enemyJointPosArray[enemyIdx][8].x, EnemyState.enemyJointPosArray[enemyIdx][8].y, secTint);
+            drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].x), RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].y), RMath.floor(16 * k), RMath.floor(16 * k), 16 * sprIdx, 0, 16, 16, primTint);
         } else {
-            if (enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type10) {
-                drawLine(enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, accentTint);
-                drawLine(enemyJointPosArray[enemyIdx][3].x, enemyJointPosArray[enemyIdx][3].y, enemyJointPosArray[enemyIdx][4].x,
-                    enemyJointPosArray[enemyIdx][4].y, accentTint);
-                drawLine(enemyJointPosArray[enemyIdx][4].x, enemyJointPosArray[enemyIdx][4].y, enemyJointPosArray[enemyIdx][2].x, enemyJointPosArray[enemyIdx][2].y, accentTint);
-                drawRectOutlineCentered(enemyJointPosArray[enemyIdx][1].x, enemyJointPosArray[enemyIdx][1].y, 6 * k + 1, 6 * k + 1, accentTint);
-                if (3 > enemyPoseTrailWriteIdxArray[enemyIdx]) {
+            if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.Type10) {
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, accentTint);
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][3].x, EnemyState.enemyJointPosArray[enemyIdx][3].y, EnemyState.enemyJointPosArray[enemyIdx][4].x,
+                    EnemyState.enemyJointPosArray[enemyIdx][4].y, accentTint);
+                drawLine(EnemyState.enemyJointPosArray[enemyIdx][4].x, EnemyState.enemyJointPosArray[enemyIdx][4].y, EnemyState.enemyJointPosArray[enemyIdx][2].x, EnemyState.enemyJointPosArray[enemyIdx][2].y, accentTint);
+                drawRectOutlineCentered(EnemyState.enemyJointPosArray[enemyIdx][1].x, EnemyState.enemyJointPosArray[enemyIdx][1].y, 6 * k + 1, 6 * k + 1, accentTint);
+                if (3 > EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
                     k = RMath.max(1, k);
                 }
-                drawEnemyScaledSprite(enemyJointPosArray[enemyIdx][0].x, enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
+                drawEnemyScaledSprite(EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y, 16 * k, 16 * k, 16 * (sprIdx & 7), 16 * (sprIdx >> 3), 16, primTint, secTint, 255);
             }
         }
     }
-    for (let enemyIdx = 0; enemyIdx < enemyCount; enemyIdx++) {
-        if (enemyAuxStateArray[enemyIdx] > 0){
-            enemyAuxStateArray[enemyIdx]--;
-            if (enemyHealthArray[enemyIdx] > 0) {
-                let drawScale = enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
-                drawRect(RMath.floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale, 14 * drawScale, 1, 10027008);
+    for (let enemyIdx = 0; enemyIdx < EnemyState.enemyCount; enemyIdx++) {
+        if (EnemyState.enemyAuxStateArray[enemyIdx] > 0){
+            EnemyState.enemyAuxStateArray[enemyIdx]--;
+            if (EnemyState.enemyHealthArray[enemyIdx] > 0) {
+                let drawScale = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+                drawRect(RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale, 14 * drawScale, 1, 10027008);
                 drawRect(
-                    RMath.floor(enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale,
-                    RMath.floor(14 * drawScale * enemyHealthArray[enemyIdx] / enemyCatalog[enemyTypeArray[enemyIdx]][EnemyProps.Health]), 1, 52224
+                    RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].x) - 7 * drawScale, RMath.floor(EnemyState.enemyJointPosArray[enemyIdx][0].y) - 10 * drawScale,
+                    RMath.floor(14 * drawScale * EnemyState.enemyHealthArray[enemyIdx] / enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.Health]), 1, 52224
                 )
             }
         }
@@ -6507,7 +6458,7 @@ function updateProjectiles() { // Bg
                 b = 0 <= projectileOwnerIdx[a] ? findEnemyInArea(projectilePosition[a].x, projectilePosition[a].y, b, b) : findNearestPartyMemberInRect(projectilePosition[a].x, projectilePosition[a].y, b, b, 0);
                 if (-1 != b) {
                     if (0 <= projectileOwnerIdx[a]) {
-                        RMath.Vec2Sub(d, enemyJointPosArray[b][0], projectilePosition[a]);
+                        RMath.Vec2Sub(d, EnemyState.enemyJointPosArray[b][0], projectilePosition[a]);
                     } else {
                         RMath.Vec2Sub(d, HeroesState.heroJointPositionsByHero[b][0], projectilePosition[a]);
                     }
@@ -6526,7 +6477,7 @@ function updateProjectiles() { // Bg
                     d.set(projectilePosition[a]);
                 } else {
                     c = projectileOwnerIdx[a];
-                    l = 0 <= c ? HeroesState.heroJointPositionsByHero : enemyJointPosArray;
+                    l = 0 <= c ? HeroesState.heroJointPositionsByHero : EnemyState.enemyJointPosArray;
                     c = 0 <= c ? c : -c - 1;
                     RMath.Vec2Sub(d, projectilePosition[a], l[c][projectileAttachJointIndex[a]]);
                 }
@@ -6548,7 +6499,7 @@ function updateProjectiles() { // Bg
                 c = projectileOwnerIdx[a];
                 p = projectileJointPair[a] >> 8;
                 t = projectileJointPair[a] & 255;
-                l = 0 <= c ? HeroesState.heroJointPositionsByHero : enemyJointPosArray;
+                l = 0 <= c ? HeroesState.heroJointPositionsByHero : EnemyState.enemyJointPosArray;
                 c = 0 <= c ? c : -c - 1;
                 if (p == t) {
                     RMath.Vec2Add(h, l[c][p], projectilePosition[a]);
@@ -6713,7 +6664,7 @@ function updateProjectiles() { // Bg
                     }
             } else if (14 == projectileImpactSpawnMode[a]) {
                 if (RMath.randFloat(60) < projectileSpawnParam[a] && (c = findEnemyInArea(h.x, h.y, 200, 200), -1 != c))
-                    for (d.x = enemyJointPosArray[c][enemyTargetJointIdx].x - h.x, d.y = enemyJointPosArray[c][enemyTargetJointIdx].y - h.y, RMath.Vec2Norm(d), b = 0; b < projectileChildCount[a]; b++) {
+                    for (d.x = EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx].x - h.x, d.y = EnemyState.enemyJointPosArray[c][EnemyState.enemyTargetJointIdx].y - h.y, RMath.Vec2Norm(d), b = 0; b < projectileChildCount[a]; b++) {
                         c = RMath.floor(RMath.randFloat(512));
                         p = .1 * RMath.randFloat(projectileChildCount[a] - 1);
                         k.x = d.x * projectileChildSpeed[a] * .1 + RMath.rotationLUT[c][0] * p;
@@ -6774,7 +6725,7 @@ function drawProjectiles() {
                 l = projectileOwnerIdx[a];
                 n = projectileJointPair[a] >> 8;
                 w = projectileJointPair[a] & 255;
-                B = 0 <= l ? HeroesState.heroJointPositionsByHero : enemyJointPosArray;
+                B = 0 <= l ? HeroesState.heroJointPositionsByHero : EnemyState.enemyJointPosArray;
                 l = 0 <= l ? l : -l - 1;
                 if (n == w) {
                     RMath.Vec2Add(p, B[l][n], projectilePosition[a]);
@@ -6916,9 +6867,9 @@ function drawProjectiles() {
             } else if (2 == projectileDrawMode[a]) {
                 spriteAltRenderFlag = 0;
                 l = -projectileOwnerIdx[a] - 1;
-                n = enemyCatalog[enemyTypeArray[l]][EnemyProps.BehaviorIdx];
-                w = enemyCatalog[enemyTypeArray[l]][EnemyProps.SpriteIndex];
-                l = RMath.max(enemyCatalog[enemyTypeArray[l]][EnemyProps.DrawScale], 1);
+                n = enemyCatalog[EnemyState.enemyTypeArray[l]][EnemyProps.BehaviorIdx];
+                w = enemyCatalog[EnemyState.enemyTypeArray[l]][EnemyProps.SpriteIndex];
+                l = RMath.max(enemyCatalog[EnemyState.enemyTypeArray[l]][EnemyProps.DrawScale], 1);
                 B = 0;
                 if (n == BehaviorTypes.Slime || n == BehaviorTypes.BoxSnake) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
                 drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, p.x, p.y + B, projectileSpriteWidth[a], projectileSpriteHeight[a], b, c, 16, 16, d);

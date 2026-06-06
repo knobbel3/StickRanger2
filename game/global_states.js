@@ -17,6 +17,12 @@ CanvasState.canvasBuffer = new Uint32Array(CanvasState.canvasImage.data.buffer);
 export let SaveState = {
     userSaveCode : undefined, // ca
     userSaveKey : [0, 0, 0, 0, 0, 0, 0, 0], // da
+    gameSaveString : "",
+    gameSaveStatusDuration : 0,
+    gameLoadStatusCode : 0,
+    statusDuration : 0,
+    gameSaveBuffer : new Int32Array(5E3),
+    saveLoadCodecScratchBuffer : new Int32Array(5E3), // lf, scratch buffer used while encoding and decoding save strings
 };
 
 export let GameState = {

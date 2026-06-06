@@ -12,7 +12,7 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { BadgeState, CanvasState, GameState, GUIState, RenderingState } from "./game/global_states.js";
+import { BadgeState, CanvasState, GameState, GUIState, RenderingState, SaveState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
 import { LoadedSprites } from "./game/game_sprites.js";
 import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
@@ -33,13 +33,6 @@ CanvasState.element.ontouchend = onTouchEnd;
 CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
-
-let gameSaveString = "",
-    gameSaveStatusDuration = 0,
-    gameLoadStatusCode = 0,
-    statusDuration = 0,
-    gameSaveBuffer = new Int32Array(5E3),
-    saveLoadCodecScratchBuffer = new Int32Array(5E3); // lf, scratch buffer used while encoding and decoding save strings
 
 let partyChecksum = 0,
     basePartyChecksum = 0,
@@ -503,103 +496,103 @@ function IncrementBadgeCount(badgeIndex) {
 function saveGame() {
     let b, c;
     let a = 0;
-    gameSaveBuffer[a++] = 1;
-    gameSaveBuffer[a++] = 0;
-    gameSaveBuffer[a++] = 0;
-    gameSaveBuffer[a++] = RMath.randInt(64);
-    gameSaveBuffer[a++] = RMath.randInt(64);
-    for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = GameState.userSaveKey[b];
-    gameSaveBuffer[a++] = 0;
-    gameSaveBuffer[a++] = GUIState.currentStage >> 6 & 63;
-    gameSaveBuffer[a++] = GUIState.currentStage >> 0 & 63;
+    SaveState.gameSaveBuffer[a++] = 1;
+    SaveState.gameSaveBuffer[a++] = 0;
+    SaveState.gameSaveBuffer[a++] = 0;
+    SaveState.gameSaveBuffer[a++] = RMath.randInt(64);
+    SaveState.gameSaveBuffer[a++] = RMath.randInt(64);
+    for (b = 0; 8 > b; b++) SaveState.gameSaveBuffer[a++] = GameState.userSaveKey[b];
+    SaveState.gameSaveBuffer[a++] = 0;
+    SaveState.gameSaveBuffer[a++] = GUIState.currentStage >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = GUIState.currentStage >> 0 & 63;
     for (b = 0; 4 > b; b++) {
-        gameSaveBuffer[a++] = 0;
-        gameSaveBuffer[a++] = 0;
-        gameSaveBuffer[a++] = 0;
+        SaveState.gameSaveBuffer[a++] = 0;
+        SaveState.gameSaveBuffer[a++] = 0;
+        SaveState.gameSaveBuffer[a++] = 0;
     }
-    gameSaveBuffer[a++] = PartyState.partyMemberCount;
-    gameSaveBuffer[a++] = PartyState.partyLevel >> 6 & 63;
-    gameSaveBuffer[a++] = PartyState.partyLevel >> 0 & 63;
-    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 18 & 63;
-    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 12 & 63;
-    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 6 & 63;
-    gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 0 & 63;
-    gameSaveBuffer[a++] = PartyState.partyGold >> 18 & 63;
-    gameSaveBuffer[a++] = PartyState.partyGold >> 12 & 63;
-    gameSaveBuffer[a++] = PartyState.partyGold >> 6 & 63;
-    gameSaveBuffer[a++] = PartyState.partyGold >> 0 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyMemberCount;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyLevel >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyLevel >> 0 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 18 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 12 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyEXPAccum >> 0 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyGold >> 18 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyGold >> 12 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyGold >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = PartyState.partyGold >> 0 & 63;
     for (b = 0; 4 > b; b++) {
-        gameSaveBuffer[a++] = PartyState.partySP[b] >> 6 & 63;
-        gameSaveBuffer[a++] = PartyState.partySP[b] >> 0 & 63;
+        SaveState.gameSaveBuffer[a++] = PartyState.partySP[b] >> 6 & 63;
+        SaveState.gameSaveBuffer[a++] = PartyState.partySP[b] >> 0 & 63;
     }
     for (b = 0; 4 > b; b++) {
-        gameSaveBuffer[a++] = PartyState.partyLP[b] >> 12 & 63;
-        gameSaveBuffer[a++] = PartyState.partyLP[b] >> 6 & 63;
-        gameSaveBuffer[a++] = PartyState.partyLP[b] >> 0 & 63;
+        SaveState.gameSaveBuffer[a++] = PartyState.partyLP[b] >> 12 & 63;
+        SaveState.gameSaveBuffer[a++] = PartyState.partyLP[b] >> 6 & 63;
+        SaveState.gameSaveBuffer[a++] = PartyState.partyLP[b] >> 0 & 63;
     }
     for (b = 0; 4 > b; b++)
         for (c = 0; c < PartyState.partyStats.length; c++) {
-            gameSaveBuffer[a++] = PartyState.partyStats[c][b] >> 6 & 63;
-            gameSaveBuffer[a++] = PartyState.partyStats[c][b] >> 0 & 63;
+            SaveState.gameSaveBuffer[a++] = PartyState.partyStats[c][b] >> 6 & 63;
+            SaveState.gameSaveBuffer[a++] = PartyState.partyStats[c][b] >> 0 & 63;
         }
     for (b = 0; 4 > b; b++)
         for (c = 0; 8 > c; c++) {
-            gameSaveBuffer[a++] = PartyState.partyEquipmentTable[b][c] >> 6 & 63;
-            gameSaveBuffer[a++] = PartyState.partyEquipmentTable[b][c] >> 0 & 63;
+            SaveState.gameSaveBuffer[a++] = PartyState.partyEquipmentTable[b][c] >> 6 & 63;
+            SaveState.gameSaveBuffer[a++] = PartyState.partyEquipmentTable[b][c] >> 0 & 63;
         }
 
-    gameSaveBuffer[a++] = 4;
-    for (b = gameSaveBuffer[a++] = 0; 256 > b; b++) gameSaveBuffer[a++] = PartyState.itemForgeLvls[b];
-    gameSaveBuffer[a++] = 0;
-    gameSaveBuffer[a++] = 10;
-    for (b = 0; 9 > b; b++) gameSaveBuffer[a++] = PartyState.stageEventFlags[b];
-    gameSaveBuffer[a++] = PartyState.collectedStageFlagsCount;
-    gameSaveBuffer[a++] = stageCount >> 6 & 63;
-    gameSaveBuffer[a++] = stageCount >> 0 & 63;
-    for (b = 0; b < stageCount; b++) gameSaveBuffer[a++] = isStageReachedArray[b];
-    gameSaveBuffer[a++] = enemyTypeCount >> 6 & 63;
-    gameSaveBuffer[a++] = enemyTypeCount >> 0 & 63;
-    for (b = 0; b < enemyTypeCount; b++) gameSaveBuffer[a++] = bestiaryEntryState[b];
+    SaveState.gameSaveBuffer[a++] = 4;
+    for (b = SaveState.gameSaveBuffer[a++] = 0; 256 > b; b++) SaveState.gameSaveBuffer[a++] = PartyState.itemForgeLvls[b];
+    SaveState.gameSaveBuffer[a++] = 0;
+    SaveState.gameSaveBuffer[a++] = 10;
+    for (b = 0; 9 > b; b++) SaveState.gameSaveBuffer[a++] = PartyState.stageEventFlags[b];
+    SaveState.gameSaveBuffer[a++] = PartyState.collectedStageFlagsCount;
+    SaveState.gameSaveBuffer[a++] = stageCount >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = stageCount >> 0 & 63;
+    for (b = 0; b < stageCount; b++) SaveState.gameSaveBuffer[a++] = isStageReachedArray[b];
+    SaveState.gameSaveBuffer[a++] = enemyTypeCount >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = enemyTypeCount >> 0 & 63;
+    for (b = 0; b < enemyTypeCount; b++) SaveState.gameSaveBuffer[a++] = bestiaryEntryState[b];
 
     let f = 5;
-    gameSaveBuffer[a++] = f >> 6 & 63;
-    gameSaveBuffer[a++] = f >> 0 & 63;
+    SaveState.gameSaveBuffer[a++] = f >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = f >> 0 & 63;
     for (b = 0; 4 > b; b++)
-        gameSaveBuffer[a++] = PartyState.autoMoveEnabled[b];
-    gameSaveBuffer[a++] = PartyState.cliffStopEnabled;
-    gameSaveBuffer[a++] = badgeCount >> 6 & 63;
-    gameSaveBuffer[a++] = badgeCount >> 0 & 63;
-    for (b = 0; b < badgeCount; b++) gameSaveBuffer[a++] = BadgeState.badgeCounterArray[b];
-    gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 6 & 63;
-    gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 0 & 63;
-    for (b = 0; b < shrineRewardClaimSlotCount; b++) gameSaveBuffer[a++] = shrineRewardClaimed[b];
+        SaveState.gameSaveBuffer[a++] = PartyState.autoMoveEnabled[b];
+    SaveState.gameSaveBuffer[a++] = PartyState.cliffStopEnabled;
+    SaveState.gameSaveBuffer[a++] = badgeCount >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = badgeCount >> 0 & 63;
+    for (b = 0; b < badgeCount; b++) SaveState.gameSaveBuffer[a++] = BadgeState.badgeCounterArray[b];
+    SaveState.gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = shrineRewardClaimSlotCount >> 0 & 63;
+    for (b = 0; b < shrineRewardClaimSlotCount; b++) SaveState.gameSaveBuffer[a++] = shrineRewardClaimed[b];
     f = 4;
-    gameSaveBuffer[a++] = f >> 6 & 63;
-    gameSaveBuffer[a++] = f >> 0 & 63;
-    for (b = 0; b < f; b++) gameSaveBuffer[a++] = PartyState.stageEventFlags[b];
+    SaveState.gameSaveBuffer[a++] = f >> 6 & 63;
+    SaveState.gameSaveBuffer[a++] = f >> 0 & 63;
+    for (b = 0; b < f; b++) SaveState.gameSaveBuffer[a++] = PartyState.stageEventFlags[b];
 
     let gameSaveHash = 0;
-    for (b = 3; b < a; b++) gameSaveHash += gameSaveBuffer[b];
+    for (b = 3; b < a; b++) gameSaveHash += SaveState.gameSaveBuffer[b];
 
-    gameSaveBuffer[1] = gameSaveHash >> 6 & 63;
-    gameSaveBuffer[2] = gameSaveHash >> 0 & 63;
+    SaveState.gameSaveBuffer[1] = gameSaveHash >> 6 & 63;
+    SaveState.gameSaveBuffer[2] = gameSaveHash >> 0 & 63;
     for (b = gameSaveHash = 0; b < a;)
-        if (c = gameSaveBuffer[b++], saveLoadCodecScratchBuffer[gameSaveHash++] = c, 1 >= c) {
-            for (f = 0; b < a && 63 != f && c == gameSaveBuffer[b]; b++) f++;
-            saveLoadCodecScratchBuffer[gameSaveHash++] = f
+        if (c = SaveState.gameSaveBuffer[b++], SaveState.saveLoadCodecScratchBuffer[gameSaveHash++] = c, 1 >= c) {
+            for (f = 0; b < a && 63 != f && c == SaveState.gameSaveBuffer[b]; b++) f++;
+            SaveState.saveLoadCodecScratchBuffer[gameSaveHash++] = f
         }
     a = RMath.randInt(64);
     f = RMath.randInt(64);
-    gameSaveString = "";
+    SaveState.gameSaveString = "";
     c = a + gameSaveHash & 63;
     for (b = 0; b < gameSaveHash; b++) {
-        gameSaveString += Consts.encodingCharTable[saveLoadCodecScratchBuffer[b] + c & 63];
-        c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
+        SaveState.gameSaveString += Consts.encodingCharTable[SaveState.saveLoadCodecScratchBuffer[b] + c & 63];
+        c = (c * c >> 4) + SaveState.saveLoadCodecScratchBuffer[b] + b + f & 65535;
     }
-    gameSaveString += Consts.encodingCharTable[a];
-    gameSaveString += Consts.encodingCharTable[f];
-    gameSaveString += Consts.encodingCharTable[c >> 6 & 63];
-    let saveItem = gameSaveString += Consts.encodingCharTable[c >> 0 & 63];
+    SaveState.gameSaveString += Consts.encodingCharTable[a];
+    SaveState.gameSaveString += Consts.encodingCharTable[f];
+    SaveState.gameSaveString += Consts.encodingCharTable[c >> 6 & 63];
+    let saveItem = SaveState.gameSaveString += Consts.encodingCharTable[c >> 0 & 63];
     if (window.localStorage) {
         if ("" != saveItem) {
             window.localStorage.setItem("ranger2", saveItem);
@@ -607,7 +600,7 @@ function saveGame() {
             window.localStorage.removeItem("ranger2");
         }
     }
-    gameSaveStatusDuration = 50
+    SaveState.gameSaveStatusDuration = 50
 }
 
 
@@ -621,63 +614,63 @@ function loadGame(saveString) {
     let f = Consts.inverseCodingCharTable[saveString[d + 1]];
     let c = b + d & 63;
     for (b = 0; b < d; b++) {
-        saveLoadCodecScratchBuffer[b] = Consts.inverseCodingCharTable[saveString[b]] - c & 63;
-        c = (c * c >> 4) + saveLoadCodecScratchBuffer[b] + b + f & 65535;
+        SaveState.saveLoadCodecScratchBuffer[b] = Consts.inverseCodingCharTable[saveString[b]] - c & 63;
+        c = (c * c >> 4) + SaveState.saveLoadCodecScratchBuffer[b] + b + f & 65535;
     }
     if (Consts.inverseCodingCharTable[saveString[d + 2]] != (c >> 6 & 63) || Consts.inverseCodingCharTable[saveString[d + 3]] != (c >> 0 & 63)) return 4; // load err
 
     let i = 0;
     for (c = 0; i < d;)
-        if (f = saveLoadCodecScratchBuffer[i++], gameSaveBuffer[c++] = f, 1 >= f)
-            for (let g = saveLoadCodecScratchBuffer[i++], b = 0; b < g; b++) gameSaveBuffer[c++] = f;
+        if (f = SaveState.saveLoadCodecScratchBuffer[i++], SaveState.gameSaveBuffer[c++] = f, 1 >= f)
+            for (let g = SaveState.saveLoadCodecScratchBuffer[i++], b = 0; b < g; b++) SaveState.gameSaveBuffer[c++] = f;
     d = 0;
-    for (b = 3; b < c; b++) d += gameSaveBuffer[b];
-    if (gameSaveBuffer[1] != (d >> 6 & 63) || gameSaveBuffer[2] != (d >> 0 & 63)) return 4; // load err
+    for (b = 3; b < c; b++) d += SaveState.gameSaveBuffer[b];
+    if (SaveState.gameSaveBuffer[1] != (d >> 6 & 63) || SaveState.gameSaveBuffer[2] != (d >> 0 & 63)) return 4; // load err
     for (b = 0; 8 > b; b++)
-        if (gameSaveBuffer[b + 5] != GameState.userSaveKey[b]) return 5; // user err
+        if (SaveState.gameSaveBuffer[b + 5] != GameState.userSaveKey[b]) return 5; // user err
     resetGameProgress();
 
     let p = 16 + 3*4;
     b = 4;
 
-    PartyState.partyMemberCount = gameSaveBuffer[p++];
-    PartyState.partyLevel = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    PartyState.partyEXPAccum = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    PartyState.partyGold = (gameSaveBuffer[p++] << 18) + (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; 4 > b; b++) PartyState.partySP[b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; 4 > b; b++) PartyState.partyLP[b] = (gameSaveBuffer[p++] << 12) + (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    PartyState.partyMemberCount = SaveState.gameSaveBuffer[p++];
+    PartyState.partyLevel = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
+    PartyState.partyEXPAccum = (SaveState.gameSaveBuffer[p++] << 18) + (SaveState.gameSaveBuffer[p++] << 12) + (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
+    PartyState.partyGold = (SaveState.gameSaveBuffer[p++] << 18) + (SaveState.gameSaveBuffer[p++] << 12) + (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
+    for (b = 0; 4 > b; b++) PartyState.partySP[b] = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
+    for (b = 0; 4 > b; b++) PartyState.partyLP[b] = (SaveState.gameSaveBuffer[p++] << 12) + (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; c < PartyState.partyStats.length; c++) PartyState.partyStats[c][b] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+        for (c = 0; c < PartyState.partyStats.length; c++) PartyState.partyStats[c][b] = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     for (b = 0; 4 > b; b++)
-        for (c = 0; 8 > c; c++) PartyState.partyEquipmentTable[b][c] = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+        for (c = 0; 8 > c; c++) PartyState.partyEquipmentTable[b][c] = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
 
-    let g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; b < g; b++) PartyState.itemForgeLvls[b] = gameSaveBuffer[p++];
+    let g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) PartyState.itemForgeLvls[b] = SaveState.gameSaveBuffer[p++];
 
-    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; 9 > b; b++) PartyState.stageEventFlags[b] = gameSaveBuffer[p++];
-    PartyState.collectedStageFlagsCount = gameSaveBuffer[p++];
-    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; 9 > b; b++) PartyState.stageEventFlags[b] = SaveState.gameSaveBuffer[p++];
+    PartyState.collectedStageFlagsCount = SaveState.gameSaveBuffer[p++];
+    g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) isStageReachedArray[b] = gameSaveBuffer[p++];
-    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
-    for (b = 0; b < g; b++) bestiaryEntryState[b] = gameSaveBuffer[p++];
-    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) isStageReachedArray[b] = SaveState.gameSaveBuffer[p++];
+    g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) bestiaryEntryState[b] = SaveState.gameSaveBuffer[p++];
+    g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
     if (5 <= g) {
-        for (b = 0; 4 > b; b++) PartyState.autoMoveEnabled[b] = gameSaveBuffer[p++];
-        PartyState.cliffStopEnabled = gameSaveBuffer[p++];
+        for (b = 0; 4 > b; b++) PartyState.autoMoveEnabled[b] = SaveState.gameSaveBuffer[p++];
+        PartyState.cliffStopEnabled = SaveState.gameSaveBuffer[p++];
     }
-    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) BadgeState.badgeCounterArray[b] = gameSaveBuffer[p++];
-    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) BadgeState.badgeCounterArray[b] = SaveState.gameSaveBuffer[p++];
+    g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) shrineRewardClaimed[b] = gameSaveBuffer[p++];
-    g = (gameSaveBuffer[p++] << 6) + gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) shrineRewardClaimed[b] = SaveState.gameSaveBuffer[p++];
+    g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) PartyState.stageEventFlags[b] = gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) PartyState.stageEventFlags[b] = SaveState.gameSaveBuffer[p++];
     return 0;
 }
 
@@ -842,12 +835,12 @@ function gameInit(a, b) {
     if (2 == GameState.gameInitStage) {
         if (window.localStorage) {
             _t0 = window.localStorage.getItem("ranger2");
-            gameSaveString = _t0 ?? "";
+            SaveState.gameSaveString = _t0 ?? "";
         } else {
-            gameSaveString = "";
+            SaveState.gameSaveString = "";
         }
-        gameLoadStatusCode = loadGame(gameSaveString);
-        statusDuration = 100;
+        SaveState.gameLoadStatusCode = loadGame(SaveState.gameSaveString);
+        SaveState.statusDuration = 100;
 
         let _t1;
         itemHashTable = Array(256);
@@ -954,11 +947,11 @@ function drawCanvas() {
             drawTextCentered(LoadedFonts.gameFont, 320, 220, "NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
                 if (isMouseClicked) {
-                    GUIState.gameScreenState = 0 == gameLoadStatusCode ? 3 : 4;
+                    GUIState.gameScreenState = 0 == SaveState.gameLoadStatusCode ? 3 : 4;
                 }
                 drawLine(256, 228, 384, 228, 11141120);
             }
-            if (0 == gameLoadStatusCode) {
+            if (0 == SaveState.gameLoadStatusCode) {
                 drawTextCentered(LoadedFonts.gameFont, 320, 260, "LOAD GAME", 16777215, 10053171);
                 if (buttonCheckCentered(320, 260, 128, 24)) {
                     if (isMouseClicked) {
@@ -990,8 +983,8 @@ function drawCanvas() {
                 drawText(LoadedFonts.gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
             } else if (isMouseClicked) {
                 if (a = promptInput("Import Game Data", "")) {
-                    gameLoadStatusCode = loadGame(a);
-                    statusDuration = 100;
+                    SaveState.gameLoadStatusCode = loadGame(a);
+                    SaveState.statusDuration = 100;
                 }
             }
         }
@@ -999,7 +992,7 @@ function drawCanvas() {
             if (8 != GameState.userSaveCode.length) {
                 drawText(LoadedFonts.gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
             } else if (isMouseClicked) {
-                promptInput("Export Game Data", gameSaveString);
+                promptInput("Export Game Data", SaveState.gameSaveString);
             }
         }
         drawRect(0, 408, 640, 16, 0);
@@ -1221,18 +1214,18 @@ function drawCanvas() {
     }
 
 
-    if (statusDuration > 0) {
-        statusDuration--;
-        if (10 > statusDuration)
-            c = RMath.floor(255 * statusDuration / 10);
+    if (SaveState.statusDuration > 0) {
+        SaveState.statusDuration--;
+        if (10 > SaveState.statusDuration)
+            c = RMath.floor(255 * SaveState.statusDuration / 10);
         else {
             c = 255;
-            drawScaledTintedText(LoadedFonts.gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
+            drawScaledTintedText(LoadedFonts.gameFont, 568, 398, " LOAD OK;; str err; len err;load err;user err".split(";")[SaveState.gameLoadStatusCode], 0, 0, 0, 0, 140, 0, 0, c, 8, 12);
         }
-    } else if (gameSaveStatusDuration > 0) {
-        gameSaveStatusDuration--;
-        if (10 > gameSaveStatusDuration)
-            c = RMath.floor(255 * gameSaveStatusDuration / 10);
+    } else if (SaveState.gameSaveStatusDuration > 0) {
+        SaveState.gameSaveStatusDuration--;
+        if (10 > SaveState.gameSaveStatusDuration)
+            c = RMath.floor(255 * SaveState.gameSaveStatusDuration / 10);
         else {
             c = 255;
             drawScaledTintedText(LoadedFonts.gameFont, 568, 398, " SAVE OK", 0, 0, 0, 0, 102, 0, 0, c, 8, 12);

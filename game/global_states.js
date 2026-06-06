@@ -63,6 +63,10 @@ export let RenderingState = {
     // per-scanline end texture V ranges (16.16 fixed-point) for sampling during rasterization.    
     scanlineTexVStart : new Float32Array(432),  // qm, 
     scanlineTexVEnd : new Float32Array(432),    // pm,
+
+    screenFadeFactor : 1, // ug, screen fade multiplier used when composing final canvas (0..1).
+    isSolidRender : 0,
+    spriteAltRenderFlag : 0, // fh, auxiliary sprite render-mode flag used for temporary tint/alt-draw modes.
 };
 
 export let GUIState = {
@@ -145,3 +149,4 @@ export let BestiaryState = {
     bestiaryEntryState : Array(enemyTypeCount) // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
 };
 for (let _i = 0; _i < enemyTypeCount; _i++) BestiaryState.bestiaryEntryState[_i] = 0;
+

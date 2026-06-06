@@ -41,11 +41,6 @@ CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
-// rendering params maybe
-let screenFadeFactor = 1, // ug, screen fade multiplier used when composing final canvas (0..1).
-    isSolidRender = 0,
-    spriteAltRenderFlag = 0; // fh, auxiliary sprite render-mode flag used for temporary tint/alt-draw modes.
-
 // vector math stuff
 var scratchVec2 = new RMath.Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
 
@@ -772,7 +767,7 @@ export function drawCanvas() {
             StageState.partySpawnYByHero[3] = 40;
         }
         
-        screenFadeFactor = 0;
+        RenderingState.screenFadeFactor = 0;
         GUIState.gameScreenState = 10;
     } else if (10 == GUIState.gameScreenState) {
         if (loadLevelData(GUIState.currentStage)) {
@@ -822,9 +817,9 @@ export function drawCanvas() {
         drawPopups();
 
         // display current stage name
-        isSolidRender = 1;
+        RenderingState.isSolidRender = 1;
         drawRect(4, 4, 8 * stageListArray[GUIState.currentStage][StageProps.stageNameCol].length + 8, 20, 2151694400); // background
-        isSolidRender = 0;
+        RenderingState.isSolidRender = 0;
         drawText(LoadedFonts.gameFont, 8, 8, stageListArray[GUIState.currentStage][StageProps.stageNameCol], 16777215, 0);
         drawGameUI();
         if (11 == GUIState.gameScreenState) {
@@ -838,9 +833,9 @@ export function drawCanvas() {
             a = 640 - RMath.floor(500 * GUIState.screenStateTimer / 20);
             drawLine(a, 193, a + 1E3, 193, 8421504);
             GUIState.screenStateTimer++;
-            screenFadeFactor = RMath.clamp(GUIState.screenStateTimer / 30, 0, 1);
+            RenderingState.screenFadeFactor = RMath.clamp(GUIState.screenStateTimer / 30, 0, 1);
             if (70 <= GUIState.screenStateTimer) {
-                screenFadeFactor = 1;
+                RenderingState.screenFadeFactor = 1;
                 GUIState.screenStateTimer = 0;
                 GUIState.gameScreenState++;
             }
@@ -887,9 +882,9 @@ export function drawCanvas() {
 
         } else if (13 == GUIState.gameScreenState) {
             GUIState.screenStateTimer++;
-            screenFadeFactor = RMath.clamp(1 - GUIState.screenStateTimer / 20, 0, 1);
+            RenderingState.screenFadeFactor = RMath.clamp(1 - GUIState.screenStateTimer / 20, 0, 1);
             if (20 == GUIState.screenStateTimer) {
-                screenFadeFactor = 0;
+                RenderingState.screenFadeFactor = 0;
                 GUIState.gameScreenState = 10;
                 StageState.lastClearedStageIdx = GUIState.currentStage;
                 GUIState.currentStage = StageState.lastStageIdx;
@@ -904,7 +899,7 @@ export function drawCanvas() {
                     PartyState.partyLP[a] = 1;
                     PartyState.heroEmitCurrent[a] = 0;
                 }
-                screenFadeFactor = 0;
+                RenderingState.screenFadeFactor = 0;
                 GUIState.gameScreenState = 10;
                 GUIState.currentStage = 1;
                 StageState.partySpawnXByHero[0] = 20;
@@ -1250,7 +1245,7 @@ export function drawGameUI() {
             var n = g + 28 + 20 * RMath.floor(b / 3);
             drawRect(k, n, 16, 16, 0);
             if (0 != c) {
-                spriteAltRenderFlag = 2;
+                RenderingState.spriteAltRenderFlag = 2;
                 h = itemList[c][ItemProps.HeadwearType];
                 if (2 == b) {
                     drawSpriteSheetPartTintedScaled(LoadedSprites.itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY], true);
@@ -1259,7 +1254,7 @@ export function drawGameUI() {
                 } else {
                     drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet, k, n, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
                 }
-                spriteAltRenderFlag = 0;
+                RenderingState.spriteAltRenderFlag = 0;
             }
             handleInventoryButton(k, n, 16, 16, c, b);
             if (buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c) {
@@ -1506,10 +1501,10 @@ export function drawGameUI() {
             b = f + 28 * hidx;
             d = g;
             drawRect(b, d, 24, 24, 0);
-            spriteAltRenderFlag = 2;
+            RenderingState.spriteAltRenderFlag = 2;
             h = itemList[c][ItemProps.HeadwearType];
             drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
-            spriteAltRenderFlag = 0;
+            RenderingState.spriteAltRenderFlag = 0;
             
             drawTextCentered(LoadedFonts.gameFontSmall, b + 12, d + 0, k[hidx], 16777215, 0);
             handleInventoryButton(b, d, 24, 24, c, hidx);
@@ -1673,7 +1668,7 @@ export function drawGameUI() {
             d = _oy + 84 + 28 * ~~(hidx / 7);
             drawRect(b, d, 24, 24, 0);
             if (0 < PartyState.itemForgeLvls[c]) {
-                spriteAltRenderFlag = 2;
+                RenderingState.spriteAltRenderFlag = 2;
                 h = itemList[c][ItemProps.HeadwearType];
                 if (2 == GUIState.inventoryTabIdx) {
                     drawSpriteSheetPartTintedScaled(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY], true);
@@ -1683,7 +1678,7 @@ export function drawGameUI() {
                     drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
                 }
                 
-                spriteAltRenderFlag = 0;
+                RenderingState.spriteAltRenderFlag = 0;
             }
             if (hidx == GUIState.inventorySlotIdx) {
                 drawRectOutline(b, d, 24, 24, 16711680);
@@ -1834,7 +1829,7 @@ export function drawGameUI() {
                             continue;
                         }
                         drawRect(f + 80, g + 12 + 20 * d, 16, 16, 0);
-                        spriteAltRenderFlag = 2;
+                        RenderingState.spriteAltRenderFlag = 2;
                         h = itemList[hidx][ItemProps.HeadwearType];
                         if (10 == itemList[hidx][ItemProps.Appearance]) {
                             drawSpriteSheetPartTintedScaled(LoadedSprites.itemsSpriteSheet,
@@ -1857,7 +1852,7 @@ export function drawGameUI() {
                                 drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet,
                                     f + 80, g + 12 + 20 * d,
                                     16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[hidx][ItemProps.SpriteSourceX]);
-                                spriteAltRenderFlag = 0;
+                                RenderingState.spriteAltRenderFlag = 0;
                                 LoadedFonts.gameFontMed.a = 4;
                                 drawText(LoadedFonts.gameFontMed, f + 100, g + 12 + 20 * d + 4, itemList[hidx][ItemProps.Name], -1, 0);
                                 if (0 < PartyState.itemForgeLvls[hidx]) {
@@ -1998,7 +1993,7 @@ export function drawGameUI() {
                 if (1 == GUIState.currentStage) {
                     GUIState.gameScreenState = 0;
                 } else {
-                    screenFadeFactor = 0;
+                    RenderingState.screenFadeFactor = 0;
                     GUIState.gameScreenState = 10;
                     GUIState.currentStage = 1;
                     StageState.partySpawnXByHero[0] = 20;
@@ -2993,9 +2988,9 @@ export function drawPlayerParty() {
             HeroesState.heroHitFlashTimer[a]--;
             f = 16711680;
         }
-        spriteAltRenderFlag = isSolidRender = 1;
+        RenderingState.spriteAltRenderFlag = RenderingState.isSolidRender = 1;
         for (c = 0; 11 > c; c++) drawSpriteSheetPartCentered(LoadedSprites.effectSpriteSheet, RMath.floor(HeroesState.heroJointPositionsByHero[a][c].x), RMath.floor(HeroesState.heroJointPositionsByHero[a][c].y), 16, 16, 0, 0, 16, 16, 1073741824);
-        isSolidRender = spriteAltRenderFlag = 0;
+        RenderingState.isSolidRender = RenderingState.spriteAltRenderFlag = 0;
         drawHero(a, HeroesState.heroJointPositionsByHero[a], HeroesState.heroBodyDrawStateByHero[a][0], HeroesState.heroBodyDrawStateByHero[a][1], d, f, HeroesState.heroUpperJointMode[a]);
         if (0 < HeroesState.heroAttackTrailTimerByHero[a]) {
             b = PartyState.partyEquipmentTable[a][HeroesState.attackWeaponSlotIdx[a]];
@@ -3020,7 +3015,7 @@ export function drawPlayerParty() {
                 RMath.Vec2Norm(k);
                 RMath.Vec2Scale(k, c);
                 g = RMath.floor(f * (12 - b) / 12);
-                isSolidRender = p;
+                RenderingState.isSolidRender = p;
                 var w = t[a][l].x + h.x,
                     B = t[a][l].y + h.y,
                     M = t[a][n].x + k.x,
@@ -3086,10 +3081,10 @@ export function drawPlayerParty() {
                 J = t & 255;
                 for (l = U; l < n; l++)
                     for (0 > RenderingState.scanlineMinX[l] && (RenderingState.scanlineMinX[l] = 0), 640 <= RenderingState.scanlineMaxX[l] && (RenderingState.scanlineMaxX[l] = 639), U = 640 * l + RenderingState.scanlineMinX[l], y = U + (RenderingState.scanlineMaxX[l] - RenderingState.scanlineMinX[l]), x = 640 * l + RenderingState.scanlineMinX[l + 1], K = x + (RenderingState.scanlineMaxX[l + 1] - RenderingState.scanlineMinX[l + 1]), U < x && (U = x), y >= K && (y = RMath.min(y - 1, K)); U <= y; U++)
-                        if (0 == isSolidRender) {
+                        if (0 == RenderingState.isSolidRender) {
                             RenderingState.frameBufferArray[U] = t;
                         } else {
-                            if (1 == isSolidRender) {
+                            if (1 == RenderingState.isSolidRender) {
                                 x = RenderingState.frameBufferArray[U] >> 16 & 255;
                                 x = ((B - x) * w >> 8) + x;
                                 K = RenderingState.frameBufferArray[U] >> 8 & 255;
@@ -3098,7 +3093,7 @@ export function drawPlayerParty() {
                                 ba = ((J - ba) * w >> 8) + ba;
                                 RenderingState.frameBufferArray[U] = x << 16 | K << 8 | ba;
                             } else {
-                                if (2 == isSolidRender) {
+                                if (2 == RenderingState.isSolidRender) {
                                     x = (RenderingState.frameBufferArray[U] >>
                                         16 & 255) + (B * w >> 8);
                                     if (255 < x) {
@@ -3116,7 +3111,7 @@ export function drawPlayerParty() {
                                 }
                             }
                         }
-                isSolidRender = 0;
+                RenderingState.isSolidRender = 0;
             }
         }
         if (0 < GameplayState.levelUpPopupTimer) {
@@ -3374,10 +3369,10 @@ export function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoi
                 drawLine(t.x, t.y, t.x - 2 * baseDrawPos.x - 4 * baseDrawPos.y, t.y - 2 * baseDrawPos.y + 4 * baseDrawPos.x, 8421504);
                 break;
             case 5:
-                isSolidRender = 2;
-                spriteAltRenderFlag = 1;
+                RenderingState.isSolidRender = 2;
+                RenderingState.spriteAltRenderFlag = 1;
                 drawSpriteSheetPartCentered(LoadedSprites.effectSpriteSheet, t.x, t.y, 16, 16, 0, 0, 16, 16, 3422552064 | p);
-                isSolidRender = spriteAltRenderFlag = 0;
+                RenderingState.isSolidRender = RenderingState.spriteAltRenderFlag = 0;
                 break;
 
         }
@@ -6627,8 +6622,8 @@ export function drawProjectiles() {
             if (0 < ProjectileState.projectileHitCooldownFrames[a]) {
                 d = RMath.floor((d >> 24 & 255) / 2) << 24 | d & 16777215;
             }
-            isSolidRender = ProjectileState.projectileSolidRenderMode[a];
-            spriteAltRenderFlag = 1;
+            RenderingState.isSolidRender = ProjectileState.projectileSolidRenderMode[a];
+            RenderingState.spriteAltRenderFlag = 1;
             if (0 > ProjectileState.projectileJointPair[a]) {
                 p.set(ProjectileState.projectilePosition[a]);
                 t.set(ProjectileState.projectileVelocity[a]);
@@ -6741,7 +6736,7 @@ export function drawProjectiles() {
                         l = w[(na >> 16) * B + (U >> 16)];
                         if (0 != l) {
                             l = (l & 255) * M >> 8;
-                            if (1 == isSolidRender) {
+                            if (1 == RenderingState.isSolidRender) {
                                 Ga = RenderingState.frameBufferArray[K] >> 16 & 255;
                                 Ga = ((J - Ga) * l >> 8) + Ga;
                                 Ca = RenderingState.frameBufferArray[K] >> 8 & 255;
@@ -6749,7 +6744,7 @@ export function drawProjectiles() {
                                 ua = RenderingState.frameBufferArray[K] & 255;
                                 ua = ((x - ua) * l >> 8) + ua;
                                 RenderingState.frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
-                            } else if (2 == isSolidRender) {
+                            } else if (2 == RenderingState.isSolidRender) {
                                 Ga = (RenderingState.frameBufferArray[K] >> 16 & 255) + (J * l >> 8);
                                 if (255 < Ga) {
                                     Ga = 255;
@@ -6763,7 +6758,7 @@ export function drawProjectiles() {
                                     ua = 255;
                                 }
                                 RenderingState.frameBufferArray[K] = Ga << 16 | Ca << 8 | ua;
-                            } else if (3 == isSolidRender) {
+                            } else if (3 == RenderingState.isSolidRender) {
                                 Ga = (RenderingState.frameBufferArray[K] >> 16 & 255) - (J * l >> 8);
                                 if (Ga < 0) Ga = 0;
                                 Ca = (RenderingState.frameBufferArray[K] >> 8 & 255) - (y * l >> 8);
@@ -6776,7 +6771,7 @@ export function drawProjectiles() {
                     }
                 }
             } else if (2 == ProjectileState.projectileDrawMode[a]) {
-                spriteAltRenderFlag = 0;
+                RenderingState.spriteAltRenderFlag = 0;
                 l = -ProjectileState.projectileOwnerIdx[a] - 1;
                 n = enemyCatalog[EnemyState.enemyTypeArray[l]][EnemyProps.BehaviorIdx];
                 w = enemyCatalog[EnemyState.enemyTypeArray[l]][EnemyProps.SpriteIndex];
@@ -6785,7 +6780,7 @@ export function drawProjectiles() {
                 if (n == BehaviorTypes.Slime || n == BehaviorTypes.BoxSnake) B = -enemySpriteAnchorYBySpriteIndex[w] * l + 1;
                 drawSpriteSheetPartCentered(LoadedSprites.enemySpriteSheet, p.x, p.y + B, ProjectileState.projectileSpriteWidth[a], ProjectileState.projectileSpriteHeight[a], b, c, 16, 16, d);
             }
-            spriteAltRenderFlag = isSolidRender = 0;
+            RenderingState.spriteAltRenderFlag = RenderingState.isSolidRender = 0;
         }
 }
 
@@ -6972,7 +6967,7 @@ export function updateDrops() { // zg
 
 export function drawDrops() { // Dg
     let a;
-    spriteAltRenderFlag = 2;
+    RenderingState.spriteAltRenderFlag = 2;
     for (a = 0; a < DropState.dropCount; a++)
         (100 == DropState.dropState[a] || DropState.dropState[a] & 6) &&
             drawSpriteSheetPart(LoadedSprites.droppedItemSpriteSheet,
@@ -6982,7 +6977,7 @@ export function drawDrops() { // Dg
                 12, 12,
                 itemList[DropState.dropType[a]][ItemProps.SpriteSourceX]
             );
-    spriteAltRenderFlag = 0
+    RenderingState.spriteAltRenderFlag = 0
 }
 
 
@@ -7036,7 +7031,7 @@ export function setupAnimRequest() {
     drawCanvas();
 
     var canvasBufferLength = Consts.CANVAS_WIDTH * Consts.CANVAS_HEIGHT;
-    if (1 <= screenFadeFactor){
+    if (1 <= RenderingState.screenFadeFactor){
         for (a = 0; a < canvasBufferLength; a++) {
             CanvasState.canvasBuffer[a] = 4278190080 | 
             (RenderingState.frameBufferArray[a] & 255) << 16 | 
@@ -7046,9 +7041,9 @@ export function setupAnimRequest() {
     } else {
         for (a = 0; a < canvasBufferLength; a++) {
             CanvasState.canvasBuffer[a] = 4278190080 | 
-            (RenderingState.frameBufferArray[a] & 255) * screenFadeFactor << 16 | 
-            (RenderingState.frameBufferArray[a] >> 8 & 255) * screenFadeFactor << 8 | 
-            (RenderingState.frameBufferArray[a] >> 16 & 255) * screenFadeFactor << 0;
+            (RenderingState.frameBufferArray[a] & 255) * RenderingState.screenFadeFactor << 16 | 
+            (RenderingState.frameBufferArray[a] >> 8 & 255) * RenderingState.screenFadeFactor << 8 | 
+            (RenderingState.frameBufferArray[a] >> 16 & 255) * RenderingState.screenFadeFactor << 0;
         }
     }
     canvasDrawImage(CanvasState.canvasImage, 0, 0);
@@ -7196,7 +7191,7 @@ export function drawLine(x1, y1, x2, y2, color) {
 
     x1 = RMath.floor(65536 * x1) + 32768;
     y1 = RMath.floor(65536 * y1) + 32768;
-    if (0 == isSolidRender)
+    if (0 == RenderingState.isSolidRender)
         for (; 0 <= h; h--, x1 += x2, y1 += y2)
             0 > x1 || 640 <= x1 >> 16 || 0 > y1 || 432 <= y1 >> 16 || (
                 g = 640 * (y1 >> 16) + (x1 >> 16), RenderingState.frameBufferArray[g] = color);
@@ -7237,7 +7232,7 @@ export function drawRect(_x, _y, _w, _h, _color) {
     h = 640 * _y + _x;
     k = 640 - (_w - _x);
 
-    if (0 == isSolidRender)
+    if (0 == RenderingState.isSolidRender)
         for (; _y < _h; _y++, h += k)
             for (g = _x; g < _w; g++, h++) RenderingState.frameBufferArray[h] = _color;
     else {
@@ -7277,7 +7272,7 @@ export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, 
     B = 640 - (drawWidth - _x);
     var J, y, x,
         K = tintColor >> 24 & 255, ba = tintColor >> 16 & 255, U = tintColor >> 8 & 255, na = tintColor & 255;
-    if (!spriteAltRenderFlag) {
+    if (!RenderingState.spriteAltRenderFlag) {
         for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight) {
             for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) {
                 tintColor = l[M >> 8];
@@ -7285,9 +7280,9 @@ export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, 
                 J = ba * (tintColor >> 16 & 255) >> 8;
                 y = U * (tintColor >> 8 & 255) >> 8;
                 x = na * (tintColor & 255) >> 8;
-                if (0 == isSolidRender) {
+                if (0 == RenderingState.isSolidRender) {
                     RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
-                } else if (1 == isSolidRender) {
+                } else if (1 == RenderingState.isSolidRender) {
                     tintColor = RenderingState.frameBufferArray[w] >> 16 & 255;
                     J = ((J - tintColor) * K >> 8) + tintColor;
                     tintColor = RenderingState.frameBufferArray[w] >> 8 & 255;
@@ -7295,7 +7290,7 @@ export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, 
                     tintColor = RenderingState.frameBufferArray[w] & 255;
                     x = ((x - tintColor) * K >> 8) + tintColor;
                     RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
-                } else if (2 == isSolidRender) {
+                } else if (2 == RenderingState.isSolidRender) {
                     J = (RenderingState.frameBufferArray[w] >> 16 & 255) + (J * K >> 8);
                     if (255 < J) {
                         if (J = 255) {
@@ -7316,13 +7311,13 @@ export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, 
             }
             }
         }
-    } else if (1 == spriteAltRenderFlag) {
+    } else if (1 == RenderingState.spriteAltRenderFlag) {
         for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight) {
             for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) {
                 tintColor = l[M >> 8];
                 if (0 != tintColor) {
                     tintColor = (tintColor & 255) * K >> 8;
-                    if (1 == isSolidRender) {
+                    if (1 == RenderingState.isSolidRender) {
                         J = RenderingState.frameBufferArray[w] >> 16 & 255;
                         J = ((ba - J) * tintColor >> 8) + J;
                         y = RenderingState.frameBufferArray[w] >> 8 & 255;
@@ -7330,7 +7325,7 @@ export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, 
                         x = RenderingState.frameBufferArray[w] & 255;
                         x = ((na - x) * tintColor >> 8) + x;
                         RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
-                    } else if (2 == isSolidRender) {
+                    } else if (2 == RenderingState.isSolidRender) {
                         J = (RenderingState.frameBufferArray[w] >> 16 & 255) + (ba * tintColor >> 8);
                         if (255 < J) {
                             J = 255;
@@ -7344,7 +7339,7 @@ export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, 
                             x = 255;
                         }
                         RenderingState.frameBufferArray[w] = J << 16 | y << 8 | x;
-                    } else if (3 == isSolidRender) {
+                    } else if (3 == RenderingState.isSolidRender) {
                         J = (RenderingState.frameBufferArray[w] >> 16 & 255) - (ba * tintColor >> 8);
                         if (0 > J) {
                             if (J = 0) {
@@ -7365,7 +7360,7 @@ export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, 
                 }
             }
         }
-    } else if (2 == spriteAltRenderFlag) {
+    } else if (2 == RenderingState.spriteAltRenderFlag) {
         for (; _y < drawHeight; _y++, w += B, sourceY += sourceHeight) {
             for (M = ((sourceY >> 8) * spriteSheet.h << 8) + sourceX, n = _x; n < drawWidth; n++, w++, M += sourceWidth) {
                 tintColor = l[M >> 8];
@@ -7763,9 +7758,9 @@ export function wrapStageIndex(a) {
 
 
 export function drawIconButton(x, y, iconIndex, label, color) {
-    isSolidRender = 1;
+    RenderingState.isSolidRender = 1;
     drawRectCentered(x, y, 32, 32, 2147483648);
-    isSolidRender = 0;
+    RenderingState.isSolidRender = 0;
     drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y - 3, 24, 24, 24 * iconIndex, 0, 24, 24, color);
     if (6 <= label.length) {
         drawSmallTextNoOutline(x, y + 10, label, color);
@@ -7786,9 +7781,9 @@ export function drawIconButton(x, y, iconIndex, label, color) {
 }
 
 export function drawMenuButton(x, y, iconIndex, text, color) {
-    isSolidRender = 1;
+    RenderingState.isSolidRender = 1;
     drawRectCentered(x, y, 24, 24, 2147483648);
-    isSolidRender = 0;
+    RenderingState.isSolidRender = 0;
     drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y - 3, 16, 16, 16 * iconIndex, 24, 16, 16, color);
     if (6 <= text.length) {
         drawSmallTextNoOutline(x, y + 8, text, color);
@@ -7809,9 +7804,9 @@ export function drawMenuButton(x, y, iconIndex, text, color) {
 }
 
 export function drawCancelButton(x, y) {
-    isSolidRender = 1;
+    RenderingState.isSolidRender = 1;
     drawRectCentered(x, y, 20, 20, 2147483648);
-    isSolidRender = 0;
+    RenderingState.isSolidRender = 0;
     drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16777215);
     if (buttonCheckCentered(x, y, 20, 20)) {
         drawSpriteSheetPartCentered(LoadedSprites.iconSpriteSheet, x, y, 16, 16, 96, 24, 16, 16, 16737894);

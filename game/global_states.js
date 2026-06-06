@@ -129,3 +129,13 @@ export let BadgeState = {
 };
 for (let _i = 0; _i < badgeCount; _i++) BadgeState.badgeCounterArray[_i] = 0;
 for (let _i = 0; _i < shrineRewardClaimSlotCount; _i++) BadgeState.badgeCounterArray[_i] = 0;
+
+export let GameStateChecksum = {
+    partyChecksum : 0,
+    basePartyChecksum : 0,
+    tamperCheckScanOffset : 0, // vf, rotating start offset for the chunked tamper-check hash pass
+    itemHashTable : [],
+    levelHashTable : [],
+    itemCatalogHashTable : [],
+    inventoryItemListsChecksum : 0, // zf, checksum of inventoryItemLists used by the tamper-check path
+};

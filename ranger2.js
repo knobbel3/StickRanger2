@@ -12,7 +12,7 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { BadgeState, CanvasState, GameState, GUIState, RenderingState, SaveState } from "./game/global_states.js";
+import { BadgeState, CanvasState, GameState, GameStateChecksum, GUIState, RenderingState, SaveState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
 import { LoadedSprites } from "./game/game_sprites.js";
 import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
@@ -33,15 +33,6 @@ CanvasState.element.ontouchend = onTouchEnd;
 CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
-
-let partyChecksum = 0,
-    basePartyChecksum = 0,
-    tamperCheckScanOffset = 0, // vf, rotating start offset for the chunked tamper-check hash pass
-    itemHashTable = [],
-    levelHashTable = [],
-    itemCatalogHashTable = [],
-    inventoryItemListsChecksum = 0; // zf, checksum of inventoryItemLists used by the tamper-check path
-
 
 // heros
 let areUpperJointsDisabled = 1, // rig mode flag
@@ -682,7 +673,7 @@ function hashAdjust(a, b) {
 
 function updatePartyChecksum() {
     var a, b, c;
-    basePartyChecksum = c = RMath.floor(RMath.randFloat(1024));
+    GameStateChecksum.basePartyChecksum = c = RMath.floor(RMath.randFloat(1024));
     c = hashAdjust(c, 0);
     c = hashAdjust(c, GUIState.currentStage);
     c = hashAdjust(c, PartyState.partyMemberCount);
@@ -714,7 +705,7 @@ function updatePartyChecksum() {
     for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, bestiaryEntryState[a]);
     for (a = 0; a < badgeCount; a++) c = hashAdjust(c, BadgeState.badgeCounterArray[a]);
     for (a = 0; a < shrineRewardClaimSlotCount; a++) c = hashAdjust(c, shrineRewardClaimed[a]);
-    partyChecksum = c ^ 16777215
+    GameStateChecksum.partyChecksum = c ^ 16777215
 }
 
 
@@ -843,39 +834,39 @@ function gameInit(a, b) {
         SaveState.statusDuration = 100;
 
         let _t1;
-        itemHashTable = Array(256);
+        GameStateChecksum.itemHashTable = Array(256);
         for (_t0 = 0; 256 > _t0; _t0++) {
-            itemHashTable[_t0] = 0;
+            GameStateChecksum.itemHashTable[_t0] = 0;
             if (itemList[_t0]) {
                 for (_t1 = 1; _t1 < itemList[_t0].length; _t1++) {
-                    itemHashTable[_t0] = hashAdjust(itemHashTable[_t0], itemList[_t0][_t1]);
+                    GameStateChecksum.itemHashTable[_t0] = hashAdjust(GameStateChecksum.itemHashTable[_t0], itemList[_t0][_t1]);
                 }
             }
         }
 
-        levelHashTable = Array(stageListArray.length);
+        GameStateChecksum.levelHashTable = Array(stageListArray.length);
         for (_t0 = 0; _t0 < stageListArray.length; _t0++) {
-            levelHashTable[_t0] = 0;
+            GameStateChecksum.levelHashTable[_t0] = 0;
             if (stageListArray[_t0]) {
                 for (_t1 = 2; _t1 < stageListArray[_t0].length; _t1++) {
-                    levelHashTable[_t0] = hashAdjust(levelHashTable[_t0], stageListArray[_t0][_t1]);
+                    GameStateChecksum.levelHashTable[_t0] = hashAdjust(GameStateChecksum.levelHashTable[_t0], stageListArray[_t0][_t1]);
                 }
             }
         }
 
-        itemCatalogHashTable = Array(enemyCatalog.length);
+        GameStateChecksum.itemCatalogHashTable = Array(enemyCatalog.length);
         for (_t0 = 0; _t0 < enemyCatalog.length; _t0++) {
-            itemCatalogHashTable[_t0] = 0;
+            GameStateChecksum.itemCatalogHashTable[_t0] = 0;
             if (enemyCatalog[_t0]) {
                 for (_t1 = 0; _t1 < enemyCatalog[_t0].length; _t1++) {
-                    itemCatalogHashTable[_t0] = hashAdjust(itemCatalogHashTable[_t0], enemyCatalog[_t0][_t1]);
+                    GameStateChecksum.itemCatalogHashTable[_t0] = hashAdjust(GameStateChecksum.itemCatalogHashTable[_t0], enemyCatalog[_t0][_t1]);
                 }
             }
         }
 
-        for (_t0 = inventoryItemListsChecksum = 0; _t0 < inventoryItemLists.length; _t0++) {
+        for (_t0 = GameStateChecksum.inventoryItemListsChecksum = 0; _t0 < inventoryItemLists.length; _t0++) {
             for (_t1 = 0; _t1 < inventoryItemLists[_t0].length; _t1++) {
-                inventoryItemListsChecksum = hashAdjust(inventoryItemListsChecksum, inventoryItemLists[_t0][_t1]);
+                GameStateChecksum.inventoryItemListsChecksum = hashAdjust(GameStateChecksum.inventoryItemListsChecksum, inventoryItemLists[_t0][_t1]);
             }
         }
 
@@ -892,7 +883,7 @@ function drawCanvas() {
     for (let a = Consts.CANVAS_WIDTH * Consts.CANVAS_HEIGHT - 1; 0 <= a; a--) RenderingState.frameBufferArray[a] = 0; // clear buffer
     var d;
 
-    tamperCheckScanOffset = tamperCheckScanOffset + 1 & 63;
+    GameStateChecksum.tamperCheckScanOffset = GameStateChecksum.tamperCheckScanOffset + 1 & 63;
     if (!GUIState.gameScreenState) {
         GUIState.currentStage = 0;
         partySpawnXByHero[0] = 20;

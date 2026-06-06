@@ -1,4 +1,5 @@
 import { badgeCount } from "./badge_list.js";
+import { enemyTypeCount } from "./enemy_list.js";
 import { shrineRewardClaimSlotCount } from "./shrine_data.js";
 import { Sprite } from "./sprite.js";
 
@@ -139,3 +140,8 @@ export let GameStateChecksum = {
     itemCatalogHashTable : [],
     inventoryItemListsChecksum : 0, // zf, checksum of inventoryItemLists used by the tamper-check path
 };
+
+export let BestiaryState = {
+    bestiaryEntryState : Array(enemyTypeCount) // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
+};
+for (let _i = 0; _i < enemyTypeCount; _i++) BestiaryState.bestiaryEntryState[_i] = 0;

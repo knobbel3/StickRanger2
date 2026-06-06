@@ -12,14 +12,14 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { BadgeState, CanvasState, GameState, GameStateChecksum, GUIState, RenderingState, SaveState } from "./game/global_states.js";
+import { BadgeState, BestiaryState, CanvasState, GameState, GameStateChecksum, GUIState, RenderingState, SaveState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
 import { LoadedSprites } from "./game/game_sprites.js";
 import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
 import { inventoryItemLists, PartyState } from "./game/party_state.js";
 import { shrineRewardClaimed, shrineRewardClaimSlotCount, shrineRewardOptions } from "./game/shrine_data.js";
 import { GameplayState, HeroesState } from "./game/heroes.js";
-
+import { StageState } from "./game/stages.js";
 
 
 export {gameInit as Init, toggleFullscreen as full_screen};
@@ -37,37 +37,6 @@ CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
-// stage state
-let isStageReachedArray = Array(stageCount),
-    stageWidth = 80, // Gi
-    stageHeight = 60, // si
-    stageTileData = Array(stageHeight); // P
-for (let _i = 0; _i < stageCount; _i++) isStageReachedArray[_i] = 0;
-for (let i = 0; i < stageHeight; i++) stageTileData[i] = Array(stageWidth);
-
-let loadedLevelIndex = -1,
-    lastStageIdx = 0, // Mg
-    lastClearedStageIdx = 0, // Ng, last cleared stage index (stage just completed before returning)
-    partySpawnXByHero = [0, 0, 0, 0], // per-hero spawn Y (tile/row) positions used when placing party members on stage
-    partySpawnYByHero = [0, 0, 0, 0], // per-hero spawn X (tile/column) positions used when placing party members on stage
-    activeSpawnCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // V[group], active spawn counts per spawn-group (number of currently active enemies)
-    totalSpawnedCountByGroup = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Xi[group], cumulative spawned count per spawn-group (used to cap spawns and compute stage-clear payouts)
-    stageClearBaseGoldPerHero = 0; // Mi, per-hero stage-clear gold payout (base amount computed from spawned enemies)
-
-// stage state 2
-let stage_partyDamageTaken = 0, // Og, accumulated party LP lost this stage (used for badges and payouts).
-    stage_totalDamageDealt = 0, // total damage dealt this stage (used for badges/conditions).
-    gameFrameCounter = 0, // gj, global frame tick counter (drives time-based events and UI timers).
-    consecutiveConditionFrameCount = 0, // hj, consecutive-frame counter for stage condition (used for timed badges/popups).
-    stageEncounterCounter = 0, // ij, counter for specific enemy presences/encounters this stage (used for badge triggers).
-    stageConditionMask = 0, // Hi, bitmask of stage tile/contact conditions set by heroes (per-stage).
-    stageFlagUseCount = 0, // jh, count of stage-flag uses (increments when stage flags are triggered).
-    stageEventFlagArray = [0, 0, 0, 0]; // of, array of per-stage event flags (saved/loaded and used for one-off stage events).
-
-    
-// bestiary
-let bestiaryEntryState = Array(enemyTypeCount); // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
-for (let _i = 0; _i < enemyTypeCount; _i++) bestiaryEntryState[_i] = 0;
 
 // enemy states
 let enemyJointPosArray = Array(999), // Q, 
@@ -254,8 +223,8 @@ function resetGameProgress() { // bc
     for (a = 0; 4 > a; a++)
         for (b = 0; 8 > b; b++) PartyState.partyEquipmentTable[a][b] = 0;
     for (a = 0; 256 > a; a++) PartyState.itemForgeLvls[a] = 0, PartyState.itemIsNew[a] = 0;
-    for (a = 0; a < stageCount; a++) isStageReachedArray[a] = 0;
-    for (a = 0; a < enemyTypeCount; a++) bestiaryEntryState[a] = 0;
+    for (a = 0; a < stageCount; a++) StageState.isStageReachedArray[a] = 0;
+    for (a = 0; a < enemyTypeCount; a++) BestiaryState.bestiaryEntryState[a] = 0;
     for (a = 0; a < badgeCount; a++) BadgeState.badgeCounterArray[a] = 0;
     for (a = 0; a < shrineRewardClaimSlotCount; a++) shrineRewardClaimed[a] = 0;
     for (a = 0; 4 > a; a++) PartyState.autoMoveEnabled[a] = 0;
@@ -465,10 +434,10 @@ function saveGame() {
     SaveState.gameSaveBuffer[a++] = PartyState.collectedStageFlagsCount;
     SaveState.gameSaveBuffer[a++] = stageCount >> 6 & 63;
     SaveState.gameSaveBuffer[a++] = stageCount >> 0 & 63;
-    for (b = 0; b < stageCount; b++) SaveState.gameSaveBuffer[a++] = isStageReachedArray[b];
+    for (b = 0; b < stageCount; b++) SaveState.gameSaveBuffer[a++] = StageState.isStageReachedArray[b];
     SaveState.gameSaveBuffer[a++] = enemyTypeCount >> 6 & 63;
     SaveState.gameSaveBuffer[a++] = enemyTypeCount >> 0 & 63;
-    for (b = 0; b < enemyTypeCount; b++) SaveState.gameSaveBuffer[a++] = bestiaryEntryState[b];
+    for (b = 0; b < enemyTypeCount; b++) SaveState.gameSaveBuffer[a++] = BestiaryState.bestiaryEntryState[b];
 
     let f = 5;
     SaveState.gameSaveBuffer[a++] = f >> 6 & 63;
@@ -569,9 +538,9 @@ function loadGame(saveString) {
     PartyState.collectedStageFlagsCount = SaveState.gameSaveBuffer[p++];
     g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
-    for (b = 0; b < g; b++) isStageReachedArray[b] = SaveState.gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) StageState.isStageReachedArray[b] = SaveState.gameSaveBuffer[p++];
     g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
-    for (b = 0; b < g; b++) bestiaryEntryState[b] = SaveState.gameSaveBuffer[p++];
+    for (b = 0; b < g; b++) BestiaryState.bestiaryEntryState[b] = SaveState.gameSaveBuffer[p++];
     g = (SaveState.gameSaveBuffer[p++] << 6) + SaveState.gameSaveBuffer[p++];
     if (!g) return 0;
     if (5 <= g) {
@@ -626,8 +595,8 @@ function updatePartyChecksum() {
     for (a = 0; 256 > a; a++) c = hashAdjust(c, PartyState.itemForgeLvls[a]);
     for (a = 0; 9 > a; a++) c = hashAdjust(c, PartyState.stageEventFlags[a]);
     c = hashAdjust(c, PartyState.collectedStageFlagsCount);
-    for (a = 0; a < stageCount; a++) c = hashAdjust(c, isStageReachedArray[a]);
-    for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, bestiaryEntryState[a]);
+    for (a = 0; a < stageCount; a++) c = hashAdjust(c, StageState.isStageReachedArray[a]);
+    for (a = 0; a < enemyTypeCount; a++) c = hashAdjust(c, BestiaryState.bestiaryEntryState[a]);
     for (a = 0; a < badgeCount; a++) c = hashAdjust(c, BadgeState.badgeCounterArray[a]);
     for (a = 0; a < shrineRewardClaimSlotCount; a++) c = hashAdjust(c, shrineRewardClaimed[a]);
     GameStateChecksum.partyChecksum = c ^ 16777215
@@ -811,14 +780,14 @@ function drawCanvas() {
     GameStateChecksum.tamperCheckScanOffset = GameStateChecksum.tamperCheckScanOffset + 1 & 63;
     if (!GUIState.gameScreenState) {
         GUIState.currentStage = 0;
-        partySpawnXByHero[0] = 20;
-        partySpawnXByHero[1] = 28;
-        partySpawnXByHero[2] = 36;
-        partySpawnXByHero[3] = 44;
-        partySpawnYByHero[0] = 45;
-        partySpawnYByHero[1] = 45;
-        partySpawnYByHero[2] = 45;
-        partySpawnYByHero[3] = 45;
+        StageState.partySpawnXByHero[0] = 20;
+        StageState.partySpawnXByHero[1] = 28;
+        StageState.partySpawnXByHero[2] = 36;
+        StageState.partySpawnXByHero[3] = 44;
+        StageState.partySpawnYByHero[0] = 45;
+        StageState.partySpawnYByHero[1] = 45;
+        StageState.partySpawnYByHero[2] = 45;
+        StageState.partySpawnYByHero[3] = 45;
         GUIState.gameScreenState++;
     } else if (1 == GUIState.gameScreenState) {
         if (loadLevelData(0)) {
@@ -919,26 +888,26 @@ function drawCanvas() {
             resetGameProgress();
             PartyState.partyEquipmentTable[0][0] = 4;
             GUIState.currentStage = PartyState.itemForgeLvls[4] = 1;
-            partySpawnXByHero[0] = 20;
-            partySpawnXByHero[1] = 28;
-            partySpawnXByHero[2] = 36;
-            partySpawnXByHero[3] = 44;
-            partySpawnYByHero[0] = 40;
-            partySpawnYByHero[1] = 40;
-            partySpawnYByHero[2] = 40;
-            partySpawnYByHero[3] = 40;
+            StageState.partySpawnXByHero[0] = 20;
+            StageState.partySpawnXByHero[1] = 28;
+            StageState.partySpawnXByHero[2] = 36;
+            StageState.partySpawnXByHero[3] = 44;
+            StageState.partySpawnYByHero[0] = 40;
+            StageState.partySpawnYByHero[1] = 40;
+            StageState.partySpawnYByHero[2] = 40;
+            StageState.partySpawnYByHero[3] = 40;
             updatePartyStats();
         } else if (5 == GUIState.gameScreenState) {
             resetUIStates();
             GUIState.currentStage = 1;
-            partySpawnXByHero[0] = 20;
-            partySpawnXByHero[1] = 28;
-            partySpawnXByHero[2] = 36;
-            partySpawnXByHero[3] = 44;
-            partySpawnYByHero[0] = 40;
-            partySpawnYByHero[1] = 40;
-            partySpawnYByHero[2] = 40;
-            partySpawnYByHero[3] = 40;
+            StageState.partySpawnXByHero[0] = 20;
+            StageState.partySpawnXByHero[1] = 28;
+            StageState.partySpawnXByHero[2] = 36;
+            StageState.partySpawnXByHero[3] = 44;
+            StageState.partySpawnYByHero[0] = 40;
+            StageState.partySpawnYByHero[1] = 40;
+            StageState.partySpawnYByHero[2] = 40;
+            StageState.partySpawnYByHero[3] = 40;
         }
         
         screenFadeFactor = 0;
@@ -1033,21 +1002,21 @@ function drawCanvas() {
                 saveGame();
                 for (a = 0; a < PartyState.partyMemberCount; a++)
                     PartyState.partyLP[a] = 0;
-            } else if (GUIState.currentStage != lastStageIdx) {
+            } else if (GUIState.currentStage != StageState.lastStageIdx) {
                 GUIState.screenStateTimer = 0;
                 GUIState.gameScreenState = 13;
                 if (isBadgeIncompleteForCurrentStage(6)) {
-                    if ((2 == lastClearedStageIdx && 4 == lastStageIdx || 4 == lastClearedStageIdx && 2 == lastStageIdx) &&
-                        0 == stage_partyDamageTaken &&
-                        0 == stage_totalDamageDealt
+                    if ((2 == StageState.lastClearedStageIdx && 4 == StageState.lastStageIdx || 4 == StageState.lastClearedStageIdx && 2 == StageState.lastStageIdx) &&
+                        0 == StageState.stage_partyDamageTaken &&
+                        0 == StageState.stage_totalDamageDealt
                     ) {
                         IncrementBadgeCount(6);
                     }
                 }
                 if (isBadgeIncompleteForCurrentStage(51)) {
-                    if ((13 == lastClearedStageIdx && 15 == lastStageIdx || 15 == lastClearedStageIdx && 13 == lastStageIdx) && 
-                        0 == stage_partyDamageTaken &&
-                        0 == stage_totalDamageDealt
+                    if ((13 == StageState.lastClearedStageIdx && 15 == StageState.lastStageIdx || 15 == StageState.lastClearedStageIdx && 13 == StageState.lastStageIdx) && 
+                        0 == StageState.stage_partyDamageTaken &&
+                        0 == StageState.stage_totalDamageDealt
                     ) {
                         IncrementBadgeCount(51);
                     }
@@ -1060,8 +1029,8 @@ function drawCanvas() {
             if (20 == GUIState.screenStateTimer) {
                 screenFadeFactor = 0;
                 GUIState.gameScreenState = 10;
-                lastClearedStageIdx = GUIState.currentStage;
-                GUIState.currentStage = lastStageIdx;
+                StageState.lastClearedStageIdx = GUIState.currentStage;
+                GUIState.currentStage = StageState.lastStageIdx;
                 saveGame();
             }
         } else if (30 == GUIState.gameScreenState) {
@@ -1076,14 +1045,14 @@ function drawCanvas() {
                 screenFadeFactor = 0;
                 GUIState.gameScreenState = 10;
                 GUIState.currentStage = 1;
-                partySpawnXByHero[0] = 20;
-                partySpawnXByHero[1] = 28;
-                partySpawnXByHero[2] = 36;
-                partySpawnXByHero[3] = 44;
-                partySpawnYByHero[0] = 40;
-                partySpawnYByHero[1] = 40;
-                partySpawnYByHero[2] = 40;
-                partySpawnYByHero[3] = 40;
+                StageState.partySpawnXByHero[0] = 20;
+                StageState.partySpawnXByHero[1] = 28;
+                StageState.partySpawnXByHero[2] = 36;
+                StageState.partySpawnXByHero[3] = 44;
+                StageState.partySpawnYByHero[0] = 40;
+                StageState.partySpawnYByHero[1] = 40;
+                StageState.partySpawnYByHero[2] = 40;
+                StageState.partySpawnYByHero[3] = 40;
                 saveGame();
             }
         }
@@ -1450,7 +1419,7 @@ function drawGameUI() {
                 PartyState.partyLP[hidx] = PartyState.partyMaxLP[hidx];
             }
             PartyState.collectedStageFlagsCount--;
-            stageFlagUseCount++;
+            StageState.stageFlagUseCount++;
         }
     }
     if (drawIconButton(f + 0 * d, g, 1, "STATUS", GUIState.memberUIVisible ? 16750950 : 16777215)) {
@@ -1951,14 +1920,14 @@ function drawGameUI() {
         GUIState.bestiaryEnemySelection = RMath.clamp(GUIState.bestiaryEnemySelection, 0, bestiaryPageItems[GUIState.currentBestiaryPage].length - 1);
         let c = bestiaryPageItems[GUIState.currentBestiaryPage][GUIState.bestiaryEnemySelection];
 
-        if (0 == isStageReachedArray[stageIndexOrder[GUIState.currentBestiaryPage]]) {
+        if (0 == StageState.isStageReachedArray[stageIndexOrder[GUIState.currentBestiaryPage]]) {
             drawTextCentered(LoadedFonts.gameFont, f + 96, g + 48, "Not reached", -1, 0);
         } else {
-            if (0 == bestiaryEntryState[c]) {
+            if (0 == BestiaryState.bestiaryEntryState[c]) {
                 h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
                 if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= PartyState.partyGold && isMouseClicked) {
                     PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
-                    bestiaryEntryState[c] = 1;
+                    BestiaryState.bestiaryEntryState[c] = 1;
                 }
             } else {
                 drawText(LoadedFonts.gameFontMed, f, g + 0, "LV " + enemyCatalog[c][EnemyProps.Level], 16777215, 0);
@@ -1990,11 +1959,11 @@ function drawGameUI() {
                     drawText(LoadedFonts.gameFontMed, f, g + 48, "RES ", 16777215, 0);
                 }
                 drawText(LoadedFonts.gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0);
-                if (1 == bestiaryEntryState[c]) {
+                if (1 == BestiaryState.bestiaryEntryState[c]) {
                     h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
                     if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= PartyState.partyGold && isMouseClicked) {
                         PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
-                        bestiaryEntryState[c] = 2;
+                        BestiaryState.bestiaryEntryState[c] = 2;
                     }
                 } else {
                     for (d = b = 0; 4 > b; b++) {
@@ -2065,7 +2034,7 @@ function drawGameUI() {
         }
         GUIState.currentBestiaryPage = wrapStageIndex(GUIState.currentBestiaryPage);
         drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (GUIState.currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
-        if (1 == isStageReachedArray[stageIndexOrder[GUIState.currentBestiaryPage]]) {
+        if (1 == StageState.isStageReachedArray[stageIndexOrder[GUIState.currentBestiaryPage]]) {
             drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[GUIState.currentBestiaryPage]][StageProps.stageNameCol], -1, 0);
         }
     }
@@ -2076,7 +2045,7 @@ function drawGameUI() {
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
             GUIState.badgesUIVisible = false;
         }
-        if (0 == isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) 
+        if (0 == StageState.isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) 
             drawTextCentered(LoadedFonts.gameFont, f + 96, g + 48, "Not reached", -1, 0);
         else for (hidx = 0; hidx < BadgeState.badgeIndicesByStage[GUIState.badgesUIStageIdx].length; hidx++) {
                 c = BadgeState.badgeIndicesByStage[GUIState.badgesUIStageIdx][hidx];
@@ -2114,7 +2083,7 @@ function drawGameUI() {
         }
         GUIState.badgesUIStageIdx = wrapStageIndex(GUIState.badgesUIStageIdx);
         drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (GUIState.badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
-        if (1 == isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) {
+        if (1 == StageState.isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) {
             drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[GUIState.badgesUIStageIdx]][StageProps.stageNameCol], -1, 0);
         }
     }
@@ -2170,14 +2139,14 @@ function drawGameUI() {
                     screenFadeFactor = 0;
                     GUIState.gameScreenState = 10;
                     GUIState.currentStage = 1;
-                    partySpawnXByHero[0] = 20;
-                    partySpawnXByHero[1] = 28;
-                    partySpawnXByHero[2] = 36;
-                    partySpawnXByHero[3] = 44;
-                    partySpawnYByHero[0] = 40;
-                    partySpawnYByHero[1] = 40;
-                    partySpawnYByHero[2] = 40;
-                    partySpawnYByHero[3] = 40;
+                    StageState.partySpawnXByHero[0] = 20;
+                    StageState.partySpawnXByHero[1] = 28;
+                    StageState.partySpawnXByHero[2] = 36;
+                    StageState.partySpawnXByHero[3] = 44;
+                    StageState.partySpawnYByHero[0] = 40;
+                    StageState.partySpawnYByHero[1] = 40;
+                    StageState.partySpawnYByHero[2] = 40;
+                    StageState.partySpawnYByHero[3] = 40;
                 }
                 saveGame();
                 GUIState.optionsUIVisible = false;
@@ -2231,7 +2200,7 @@ function drawGameUI() {
             for (shrineRewardClaimed[c] = 1, GUIState.shrineUIVisible = false, hidx = 0; 100 > hidx;) {
                 f = RMath.randIntRange(2, 78);
                 g = RMath.randIntRange(1, 44);
-                25 >= stageTileData[g][f] || (h = RMath.floor(100 * (100 + PartyState.partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
+                25 >= StageState.stageTileData[g][f] || (h = RMath.floor(100 * (100 + PartyState.partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
         } else if (1 == c)
             for (shrineRewardClaimed[c] = 1, hidx = 0; 4 > hidx; hidx++)
                 for (b = 0; b < PartyState.partyStats.length; b++) {
@@ -2314,7 +2283,7 @@ function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
     for (var h = 0; h < d; h++) {
         f = HeroesState.heroJointPositionsByHero[_entityIdx][_jointIdx].y + c.y;
         g = getStageTileAt(HeroesState.heroJointPositionsByHero[_entityIdx][_jointIdx].x, f);
-        if (!(0 > f || 8 * stageHeight <= f)) {
+        if (!(0 > f || 8 * StageState.stageHeight <= f)) {
             if (0 <= g && 23 >= g) {
                 c.x *= .5;
                 c.y = -c.y;
@@ -2468,13 +2437,13 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
                     }
                     PartyState.partyLP[x] -= y;
                     spawnPopup(HeroesState.heroJointPositionsByHero[x][0].x, HeroesState.heroJointPositionsByHero[x][0].y, M, y, 60, J);
-                    stage_partyDamageTaken += y;
+                    StageState.stage_partyDamageTaken += y;
                     if (0 > PartyState.partyLP[x])
                         for (y = RMath.max(~~-PartyState.partyLP[x], 1), n = PartyState.partyLP[x] = 0; n < PartyState.partyMemberCount; n++)
                             if (x != n) {
                                 PartyState.partyLP[n] = RMath.clamp(PartyState.partyLP[n] - y, 0, PartyState.partyMaxLP[n]);
                                 spawnPopup(HeroesState.heroJointPositionsByHero[n][0].x, HeroesState.heroJointPositionsByHero[n][0].y, M, y, 60, J);
-                                stage_partyDamageTaken += y;
+                                StageState.stage_partyDamageTaken += y;
                             }
                     y = x;
                     if (0 == stopOnHit) break;
@@ -2829,12 +2798,12 @@ function updatePlayerParty() {
         h = new RMath.Vec2();
     pickHeroJointUnderMouse();
     for (a = 0; a < PartyState.partyMemberCount; a++) {
-        if (0 < HeroesState.heroTimedDamageTimer[a] && (HeroesState.heroTimedDamageTimer[a]--, d = RMath.floor(HeroesState.heroTimedDamageAmount[a] / 60), b = HeroesState.heroTimedDamageAmount[a] - 60 * d, RMath.randFloat(60) < b && (d += 1), PartyState.partyLP[a] -= d, stage_partyDamageTaken += d, 0 > PartyState.partyLP[a]))
+        if (0 < HeroesState.heroTimedDamageTimer[a] && (HeroesState.heroTimedDamageTimer[a]--, d = RMath.floor(HeroesState.heroTimedDamageAmount[a] / 60), b = HeroesState.heroTimedDamageAmount[a] - 60 * d, RMath.randFloat(60) < b && (d += 1), PartyState.partyLP[a] -= d, StageState.stage_partyDamageTaken += d, 0 > PartyState.partyLP[a]))
             for (c = 0 == HeroesState.heroBodyDrawStateByHero[a][2] ? 1 : -1, d = RMath.max(~~-PartyState.partyLP[a], 1), b = PartyState.partyLP[a] = 0; b < PartyState.partyMemberCount; b++)
                 if (a != b) {
                     PartyState.partyLP[b] = RMath.clamp(PartyState.partyLP[b] - d, 0, PartyState.partyMaxLP[b]);
                     spawnPopup(HeroesState.heroJointPositionsByHero[b][0].x, HeroesState.heroJointPositionsByHero[b][0].y, c, d, 60, 16711680);
-                    stage_partyDamageTaken += d;
+                    StageState.stage_partyDamageTaken += d;
                 }
 
 
@@ -3087,15 +3056,15 @@ function updatePlayerParty() {
             if (HeroesState.heroTileContactFlags[a] & 2) {
                 if (0 == HeroesState.heroTileEffectLatch[a])
                     for (HeroesState.heroTileEffectLatch[a] = 1, b = 0; 11 > b; b++) {
-                        d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][b].x, 0, 8 * stageWidth - 1) >> 3;
-                        c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][b].y, 0, 8 * stageHeight - 1) >> 3;
-                        if (30 == stageTileData[c][d]) {
+                        d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][b].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+                        c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][b].y, 0, 8 * StageState.stageHeight - 1) >> 3;
+                        if (30 == StageState.stageTileData[c][d]) {
                             spawnProjectile(a, -1, HeroesState.heroJointPositionsByHero[a][b].x, HeroesState.heroJointPositionsByHero[a][b].y, 0, -.8, 0, 29, 4284900966, 2, 16, 16, 0, 0, 0, 0, 1E3, 30, 20, 0, 1, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         }
                     }
-                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][0].x, 0, 8 * stageWidth - 1) >> 3;
-                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][0].y, 0, 8 * stageHeight - 1) >> 3;
-                if (31 == stageTileData[c][d]) {
+                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][0].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][0].y, 0, 8 * StageState.stageHeight - 1) >> 3;
+                if (31 == StageState.stageTileData[c][d]) {
                     if (1 > RMath.randFloat(50)) {
                         b = RMath.randFloatRange(-1, 2);
                         spawnProjectile(a, -1, HeroesState.heroJointPositionsByHero[a][0].x + b, HeroesState.heroJointPositionsByHero[a][0].y, 0, 0, 0, 2, 4281545523, 2, 8, 8, 0, 0, 0, 0, 1E3, 50, 5, 0, -1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -3104,32 +3073,32 @@ function updatePlayerParty() {
             } else HeroesState.heroTileEffectLatch[a] = 0;
             if (5 == GUIState.currentStage) {
                 if (HeroesState.heroTileContactFlags[a] & 1) {
-                    stageConditionMask |= 1;
+                    StageState.stageConditionMask |= 1;
                 }
             }
             if (5 == GUIState.currentStage) {
                 if (HeroesState.heroTileContactFlags[a] & 2) {
-                    stageConditionMask |= 2;
+                    StageState.stageConditionMask |= 2;
                 }
             }
             if (16 == GUIState.currentStage) {
                 if (HeroesState.heroTileContactFlags[a] & 1) {
-                    stageConditionMask |= 1;
+                    StageState.stageConditionMask |= 1;
                 }
             }
             if (16 == GUIState.currentStage) {
                 if (HeroesState.heroTileContactFlags[a] & 2) {
-                    stageConditionMask |= 2;
+                    StageState.stageConditionMask |= 2;
                 }
             }
             if (18 == GUIState.currentStage) {
                 if (HeroesState.heroTileContactFlags[a] & 1) {
-                    stageConditionMask |= 1;
+                    StageState.stageConditionMask |= 1;
                 }
             }
             if (18 == GUIState.currentStage) {
                 if (HeroesState.heroTileContactFlags[a] & 2) {
-                    stageConditionMask |= 2;
+                    StageState.stageConditionMask |= 2;
                 }
             }
         }
@@ -3358,7 +3327,7 @@ function drawPlayerParty() {
             c = RMath.min(60 - GameplayState.stageClearPopupTimer - 15, 4);
             if (0 < c) {
                 LoadedFonts.gameFontSmall.b = -1;
-                drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, d + 2, f - 2 * c + 9, "+" + stageClearBaseGoldPerHero, 255, 255, 255, g, 34, 34, 34, g, 5, 7);
+                drawScaledTintedTextCentered(LoadedFonts.gameFontSmall, d + 2, f - 2 * c + 9, "+" + StageState.stageClearBaseGoldPerHero, 255, 255, 255, g, 34, 34, 34, g, 5, 7);
             }
         }
         if (0 < GameplayState.comboPopupTimer) {
@@ -3555,26 +3524,26 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
 
 
 function loadLevelData(a) {
-    if (loadedLevelIndex != a) {
-        loadedLevelIndex = a;
+    if (StageState.loadedLevelIndex != a) {
+        StageState.loadedLevelIndex = a;
         LoadedSprites.currentLevelSprite = new Sprite;
         LoadedSprites.currentLevelSprite.f("m" + a + ".png");
     }
     loadSprite(LoadedSprites.currentLevelSprite); // check if loaded sprite is valid
     if (uncheckedSpriteCount.value) return false;
-    lastStageIdx = GUIState.currentStage;
-    isStageReachedArray[GUIState.currentStage] = 1;
-    stageHeight = LoadedSprites.currentLevelSprite.i;
+    StageState.lastStageIdx = GUIState.currentStage;
+    StageState.isStageReachedArray[GUIState.currentStage] = 1;
+    StageState.stageHeight = LoadedSprites.currentLevelSprite.i;
     let d = 0;
     let spriteData = LoadedSprites.currentLevelSprite.g;
-    for (let b = 0; b < stageHeight; b++) {
-        for (let a = 0; a < stageWidth; a++, d++) {
-            let pu = (b > 0) ? (d - stageWidth) : d; // up
-            let pd = (b == stageHeight - 1) ? d : d + stageWidth; // down
+    for (let b = 0; b < StageState.stageHeight; b++) {
+        for (let a = 0; a < StageState.stageWidth; a++, d++) {
+            let pu = (b > 0) ? (d - StageState.stageWidth) : d; // up
+            let pd = (b == StageState.stageHeight - 1) ? d : d + StageState.stageWidth; // down
             let pl = (a > 0) ? d - 1 : d; // left 
-            let pr = (a == stageWidth - 1) ? d : d + 1; // right
+            let pr = (a == StageState.stageWidth - 1) ? d : d + 1; // right
 
-            stageTileData[b][a] = 64; // default
+            StageState.stageTileData[b][a] = 64; // default
             const _isPixelSolid = (i) => {
                 let _a, _b, _c;
                 _a = spriteData[i] >> 16 & 255;
@@ -3593,128 +3562,128 @@ function loadLevelData(a) {
 
                 switch (adjacencyMask) {
                     case 0:
-                        stageTileData[b][a] = 3;
+                        StageState.stageTileData[b][a] = 3;
                         break;
                     case 1:
-                        stageTileData[b][a] = 5;
+                        StageState.stageTileData[b][a] = 5;
                         break;
                     case 2:
-                        stageTileData[b][a] = 4;
+                        StageState.stageTileData[b][a] = 4;
                         break;
                     case 3:
-                        stageTileData[b][a] = 19;
+                        StageState.stageTileData[b][a] = 19;
                         break;
                     case 4:
-                        stageTileData[b][a] = 7;
+                        StageState.stageTileData[b][a] = 7;
                         break;
                     case 5:
-                        stageTileData[b][a] = 18;
+                        StageState.stageTileData[b][a] = 18;
                         break;
                     case 6:
-                        stageTileData[b][a] = 2;
+                        StageState.stageTileData[b][a] = 2;
                         break;
                     case 7:
-                        stageTileData[b][a] = 10;
+                        StageState.stageTileData[b][a] = 10;
                         break;
                     case 8:
-                        stageTileData[b][a] = 6;
+                        StageState.stageTileData[b][a] = 6;
                         break;
                     case 9:
-                        stageTileData[b][a] = 16;
+                        StageState.stageTileData[b][a] = 16;
                         break;
                     case 10:
-                        stageTileData[b][a] = 0;
+                        StageState.stageTileData[b][a] = 0;
                         break;
                     case 11:
-                        stageTileData[b][a] = 8;
+                        StageState.stageTileData[b][a] = 8;
                         break;
                     case 12:
-                        stageTileData[b][a] = 11;
+                        StageState.stageTileData[b][a] = 11;
                         break;
                     case 13:
-                        stageTileData[b][a] = 17;
+                        StageState.stageTileData[b][a] = 17;
                         break;
                     case 14:
-                        stageTileData[b][a] = 1;
+                        StageState.stageTileData[b][a] = 1;
                         break;
                     case 15:
-                        stageTileData[b][a] = 9;
+                        StageState.stageTileData[b][a] = 9;
                         break;
                 }
             } else {
                 const tileColor = spriteData[d];
                 if (tileColor === 12303291) {
-                    stageTileData[b][a] = 12;
+                    StageState.stageTileData[b][a] = 12;
                 } else if (tileColor === 11184810) {
-                    stageTileData[b][a] = 13;
+                    StageState.stageTileData[b][a] = 13;
                 } else if (tileColor === 10066329) {
-                    stageTileData[b][a] = 14;
+                    StageState.stageTileData[b][a] = 14;
                 } else if (tileColor === 6684774) {
-                    stageTileData[b][a] = 20;
+                    StageState.stageTileData[b][a] = 20;
                 } else if (tileColor === 6697728) {
-                    stageTileData[b][a] = 24;
+                    StageState.stageTileData[b][a] = 24;
                 } else if (tileColor === 10053171) {
-                    stageTileData[b][a] = 25;
+                    StageState.stageTileData[b][a] = 25;
                 } else if (tileColor === 13408614) {
-                    stageTileData[b][a] = 26;
+                    StageState.stageTileData[b][a] = 26;
                 } else if (tileColor === 16764057 && spriteData[pl] === 0) {
-                    stageTileData[b][a] = 27;
+                    StageState.stageTileData[b][a] = 27;
                 } else if (tileColor === 16764057 && spriteData[pl] === 21913) {
-                    stageTileData[b][a] = 29;
+                    StageState.stageTileData[b][a] = 29;
                 } else if (tileColor === 16764057 && spriteData[pl] !== 0) {
-                    stageTileData[b][a] = 28;
+                    StageState.stageTileData[b][a] = 28;
                 } else if (tileColor === 21913 && spriteData[pu] === 0) {
-                    stageTileData[b][a] = 30;
+                    StageState.stageTileData[b][a] = 30;
                 } else if (tileColor === 21913 && spriteData[pu] !== 0) {
-                    stageTileData[b][a] = 31;
+                    StageState.stageTileData[b][a] = 31;
                 } else if (tileColor === 3355392) {
-                    stageTileData[b][a] = 32;
+                    StageState.stageTileData[b][a] = 32;
                 } else if (tileColor === 6710835) {
-                    stageTileData[b][a] = 33;
+                    StageState.stageTileData[b][a] = 33;
                 } else if (tileColor === 10066278) {
-                    stageTileData[b][a] = 34;
+                    StageState.stageTileData[b][a] = 34;
                 } else if (tileColor === 13421721) {
-                    stageTileData[b][a] = 35;
+                    StageState.stageTileData[b][a] = 35;
                 } else if (tileColor === 10053120 && spriteData[pd] === 10053120) {
-                    stageTileData[b][a] = 36;
+                    StageState.stageTileData[b][a] = 36;
                 } else if (tileColor === 16724736 && spriteData[pu] !== 16724736) {
-                    stageTileData[b][a] = 37;
+                    StageState.stageTileData[b][a] = 37;
                 } else if (tileColor === 3355494 && spriteData[pu] !== 3355494) {
-                    stageTileData[b][a] = 38;
+                    StageState.stageTileData[b][a] = 38;
                 } else if (tileColor === 16776960) {
-                    stageTileData[b][a] = 39;
+                    StageState.stageTileData[b][a] = 39;
                 } else if (tileColor === 3368448) {
-                    stageTileData[b][a] = 40;
+                    StageState.stageTileData[b][a] = 40;
                 } else if (tileColor === 6723891) {
-                    stageTileData[b][a] = 41;
+                    StageState.stageTileData[b][a] = 41;
                 } else if (tileColor === 10079334) {
-                    stageTileData[b][a] = 42;
+                    StageState.stageTileData[b][a] = 42;
                 } else if (tileColor === 10053120 && spriteData[pd] !== 10053120) {
-                    stageTileData[b][a] = 44;
+                    StageState.stageTileData[b][a] = 44;
                 } else if (tileColor === 16724736 && spriteData[pu] === 16724736) {
-                    stageTileData[b][a] = 45;
+                    StageState.stageTileData[b][a] = 45;
                 } else if (tileColor === 3355494 && spriteData[pu] === 3355494) {
-                    stageTileData[b][a] = 46;
+                    StageState.stageTileData[b][a] = 46;
                 } else if (tileColor === 6710784) {
-                    stageTileData[b][a] = 47;
+                    StageState.stageTileData[b][a] = 47;
                 } else if (tileColor === 16724940) {
-                    stageTileData[b][a] = 48;
+                    StageState.stageTileData[b][a] = 48;
                 } else if (tileColor === 13056) {
-                    stageTileData[b][a] = 49;
+                    StageState.stageTileData[b][a] = 49;
                 } else if (tileColor === 51) {
-                    stageTileData[b][a] = 50;
+                    StageState.stageTileData[b][a] = 50;
                 } else if (tileColor === 10040064) {
-                    stageTileData[b][a] = 51;
+                    StageState.stageTileData[b][a] = 51;
                 } else if (tileColor === 10066431 && spriteData[pd] === 10066431) {
-                    stageTileData[b][a] = 52;
+                    StageState.stageTileData[b][a] = 52;
                 } else if (tileColor === 16737792 && spriteData[pu] !== 16737792) {
-                    stageTileData[b][a] = 53;
+                    StageState.stageTileData[b][a] = 53;
                 } else if (tileColor === 16763904) {
-                    stageTileData[b][a] = 55;
+                    StageState.stageTileData[b][a] = 55;
                 } else if (tileColor === 10066431 && spriteData[pu] === 10066431) {
-                    stageTileData[b][a] = 60;
+                    StageState.stageTileData[b][a] = 60;
                 } else if (tileColor === 16737792 && spriteData[pu] === 16737792) {
-                    stageTileData[b][a] = 61;
+                    StageState.stageTileData[b][a] = 61;
                 }
             }
         }
@@ -3722,12 +3691,12 @@ function loadLevelData(a) {
 
     for (let a = 0; 4 > a; a++) PartyState.heroEmitCooldown[a] = 0;
     resetDragSelection();
-    for (let a = 0; 4 > a; a++) resetHeroPose(a, partySpawnXByHero[a], partySpawnYByHero[a]);
+    for (let a = 0; 4 > a; a++) resetHeroPose(a, StageState.partySpawnXByHero[a], StageState.partySpawnYByHero[a]);
     for (let a = 0; 20 > a; a++) {
-        activeSpawnCountByGroup[a] = 0;
-        totalSpawnedCountByGroup[a] = 0;
+        StageState.activeSpawnCountByGroup[a] = 0;
+        StageState.totalSpawnedCountByGroup[a] = 0;
     }
-    stageClearBaseGoldPerHero = 0;
+    StageState.stageClearBaseGoldPerHero = 0;
     clearEnemies();
     for (let a = StageProps.stageSpawnGroupsStartIdx; a < stageListArray[GUIState.currentStage].length; a += 7) {
         let c = stageListArray[GUIState.currentStage][a + 0];
@@ -3740,10 +3709,10 @@ function loadLevelData(a) {
             let h = RMath.randIntRange(k, p + 1);
             let g = RMath.randIntRange(f, t + 1);
 
-            if (stageTileData[g][h] > 25) {
+            if (StageState.stageTileData[g][h] > 25) {
                 spawnEnemy(h, g, c, (a - StageProps.stageSpawnGroupsStartIdx) / 7);
-                activeSpawnCountByGroup[(a - StageProps.stageSpawnGroupsStartIdx) / 7]++;
-                totalSpawnedCountByGroup[(a - StageProps.stageSpawnGroupsStartIdx) / 7]++;
+                StageState.activeSpawnCountByGroup[(a - StageProps.stageSpawnGroupsStartIdx) / 7]++;
+                StageState.totalSpawnedCountByGroup[(a - StageProps.stageSpawnGroupsStartIdx) / 7]++;
             };
         }
         let b = enemyCatalog[c][EnemyProps.Level];
@@ -3757,16 +3726,16 @@ function loadLevelData(a) {
 
 
 function getStageTileAt(x, y) { // ri
-    x = RMath.clamp(x, 0, 8 * stageWidth - 1) >> 3; // divide by 8
-    y = RMath.clamp(y, 0, 8 * stageHeight - 1) >> 3;
-    return stageTileData[y][x]
+    x = RMath.clamp(x, 0, 8 * StageState.stageWidth - 1) >> 3; // divide by 8
+    y = RMath.clamp(y, 0, 8 * StageState.stageHeight - 1) >> 3;
+    return StageState.stageTileData[y][x]
 }
 
 
 function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
     let _row;
     for (_row = _ty0; _row <= _ty1; _row++)
-        for (_ty0 = _tx0; _ty0 <= _tx1; _ty0++) stageTileData[_row][_ty0] = _tid
+        for (_ty0 = _tx0; _ty0 <= _tx1; _ty0++) StageState.stageTileData[_row][_ty0] = _tid
 }
 
 
@@ -3778,28 +3747,28 @@ function updateStageEdgeSpawns() { // wg
                 var b = HeroesState.heroJointPositionsByHero[a][1].x,
                     c = HeroesState.heroJointPositionsByHero[a][1].y;
                 if (4 > b && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitLeftIdx]) {
-                    lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitLeftIdx];
+                    StageState.lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitLeftIdx];
                     for (var d = 0; 4 > d; d++) {
-                        partySpawnXByHero[d] = 77;
-                        partySpawnYByHero[d] = c >> 3;
+                        StageState.partySpawnXByHero[d] = 77;
+                        StageState.partySpawnYByHero[d] = c >> 3;
                     }
                 } else if (636 <= b && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitRightIdx])
-                    for (lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitRightIdx], d = 0; 4 > d; d++) {
-                        partySpawnXByHero[d] = 2;
-                        partySpawnYByHero[d] = c >> 3;
+                    for (StageState.lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitRightIdx], d = 0; 4 > d; d++) {
+                        StageState.partySpawnXByHero[d] = 2;
+                        StageState.partySpawnYByHero[d] = c >> 3;
                     }
                 if (4 > c && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitTopIdx])
-                    for (lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitTopIdx], d = 0; 4 > d; d++) {
-                        partySpawnXByHero[d] = b >> 3;
-                        partySpawnYByHero[d] = 42;
+                    for (StageState.lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitTopIdx], d = 0; 4 > d; d++) {
+                        StageState.partySpawnXByHero[d] = b >> 3;
+                        StageState.partySpawnYByHero[d] = 42;
                     } else
                 if (356 <= c && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitBottomIdx])
-                    for (lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitBottomIdx], d = 0; 4 > d; d++) {
-                        partySpawnXByHero[d] = b >> 3;
-                        partySpawnYByHero[d] = 2;
+                    for (StageState.lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitBottomIdx], d = 0; 4 > d; d++) {
+                        StageState.partySpawnXByHero[d] = b >> 3;
+                        StageState.partySpawnYByHero[d] = 2;
                     }
-            } for (a = 0; 20 > a; a++) activeSpawnCountByGroup[a] = 0;
-    for (a = 0; a < enemyCount; a++) activeSpawnCountByGroup[enemySpawnGroupIdxArray[a]]++;
+            } for (a = 0; 20 > a; a++) StageState.activeSpawnCountByGroup[a] = 0;
+    for (a = 0; a < enemyCount; a++) StageState.activeSpawnCountByGroup[enemySpawnGroupIdxArray[a]]++;
     for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[GUIState.currentStage].length; b += 7) {
         a = stageListArray[GUIState.currentStage][b + 0];
         var f = stageListArray[GUIState.currentStage][b + 1],
@@ -3808,15 +3777,15 @@ function updateStageEdgeSpawns() { // wg
             d = stageListArray[GUIState.currentStage][b + 4],
             h = stageListArray[GUIState.currentStage][b + 5],
             k = stageListArray[GUIState.currentStage][b + 6];
-        if (!(c <= totalSpawnedCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7])) {
-            if (activeSpawnCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7] < f) {
+        if (!(c <= StageState.totalSpawnedCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7])) {
+            if (StageState.activeSpawnCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7] < f) {
                 if (1E3 * RMath.rand() < stageListArray[GUIState.currentStage][StageProps.stageSpawnChance]) {
                     c = RMath.randIntRange(g, h + 1);
                     d = RMath.randIntRange(d, k + 1);
-                    if (!25 >= stageTileData[d][c]) {
+                    if (!25 >= StageState.stageTileData[d][c]) {
                         spawnEnemy(c, d, a, (b - StageProps.stageSpawnGroupsStartIdx) / 7);
-                        activeSpawnCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7]++;
-                        totalSpawnedCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7]++;
+                        StageState.activeSpawnCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7]++;
+                        StageState.totalSpawnedCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7]++;
                     }
                 }
             }
@@ -3828,33 +3797,33 @@ function updateStageEdgeSpawns() { // wg
     for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[GUIState.currentStage].length; b += 7) {
         a = (b - StageProps.stageSpawnGroupsStartIdx) / 7;
         c = stageListArray[GUIState.currentStage][b + 2];
-        if (0 != activeSpawnCountByGroup[a] || totalSpawnedCountByGroup[a] < c) {
+        if (0 != StageState.activeSpawnCountByGroup[a] || StageState.totalSpawnedCountByGroup[a] < c) {
             d++;
         }
     }
     for (; 20 > a; a++)
-        if (0 != activeSpawnCountByGroup[a]) {
+        if (0 != StageState.activeSpawnCountByGroup[a]) {
             d++;
         }
-    if (!d && 0 == stageClearBaseGoldPerHero) {
-        for (a = 0; 20 > a; a++) stageClearBaseGoldPerHero += totalSpawnedCountByGroup[a];
-        stageClearBaseGoldPerHero = RMath.floor((stageClearBaseGoldPerHero + PartyState.partyMemberCount - 1) / PartyState.partyMemberCount);
-        if (0 < stageClearBaseGoldPerHero) {
+    if (!d && 0 == StageState.stageClearBaseGoldPerHero) {
+        for (a = 0; 20 > a; a++) StageState.stageClearBaseGoldPerHero += StageState.totalSpawnedCountByGroup[a];
+        StageState.stageClearBaseGoldPerHero = RMath.floor((StageState.stageClearBaseGoldPerHero + PartyState.partyMemberCount - 1) / PartyState.partyMemberCount);
+        if (0 < StageState.stageClearBaseGoldPerHero) {
             b = 100 + GameplayState.comboMultBonus;
-            GameplayState.comboMultBonus += stageClearBaseGoldPerHero;
-            stageClearBaseGoldPerHero = RMath.floor(stageClearBaseGoldPerHero * b / 100);
+            GameplayState.comboMultBonus += StageState.stageClearBaseGoldPerHero;
+            StageState.stageClearBaseGoldPerHero = RMath.floor(StageState.stageClearBaseGoldPerHero * b / 100);
             GameplayState.stageClearPopupTimer = 60;
-            PartyState.partyGold = RMath.clamp(PartyState.partyGold + stageClearBaseGoldPerHero * PartyState.partyMemberCount, 0, 9999999);
+            PartyState.partyGold = RMath.clamp(PartyState.partyGold + StageState.stageClearBaseGoldPerHero * PartyState.partyMemberCount, 0, 9999999);
             if (isBadgeIncompleteForCurrentStage(0)) {
                 IncrementBadgeCount(0);
             }
             if (isBadgeIncompleteForCurrentStage(10)) {
-                if (3600 > gameFrameCounter) {
+                if (3600 > StageState.gameFrameCounter) {
                     IncrementBadgeCount(10);
                 }
             }
             if (isBadgeIncompleteForCurrentStage(15)) {
-                if (!stageFlagUseCount) {
+                if (!StageState.stageFlagUseCount) {
                     IncrementBadgeCount(15);
                 }
             }
@@ -3874,22 +3843,22 @@ function updateStageEdgeSpawns() { // wg
                 }
             }
             if (isBadgeIncompleteForCurrentStage(35)) {
-                if (!stageFlagUseCount) {
+                if (!StageState.stageFlagUseCount) {
                     IncrementBadgeCount(35);
                 }
             }
             if (isBadgeIncompleteForCurrentStage(40)) {
-                if (3600 > gameFrameCounter) {
+                if (3600 > StageState.gameFrameCounter) {
                     IncrementBadgeCount(40);
                 }
             }
             if (isBadgeIncompleteForCurrentStage(45)) {
-                if (7200 > gameFrameCounter) {
+                if (7200 > StageState.gameFrameCounter) {
                     IncrementBadgeCount(45);
                 }
             }
             if (isBadgeIncompleteForCurrentStage(50)) {
-                if (!stageFlagUseCount) {
+                if (!StageState.stageFlagUseCount) {
                     IncrementBadgeCount(50);
                 }
             }
@@ -3902,12 +3871,12 @@ function updateStageEdgeSpawns() { // wg
                 IncrementBadgeCount(60);
             }
             if (isBadgeIncompleteForCurrentStage(65)) {
-                if (!stageFlagUseCount) {
+                if (!StageState.stageFlagUseCount) {
                     IncrementBadgeCount(65);
                 }
             }
             if (isBadgeIncompleteForCurrentStage(70)) {
-                if (9E3 > gameFrameCounter) {
+                if (9E3 > StageState.gameFrameCounter) {
                     IncrementBadgeCount(70);
                 }
             }
@@ -3917,9 +3886,9 @@ function updateStageEdgeSpawns() { // wg
                 }
             }
             spawnPopup(320, 213, 0, "STAGE CLEAR", 300, 16777215);
-            let popupText = RMath.floor(gameFrameCounter / 3600) + ":" + RMath.floor(gameFrameCounter % 3600 / 60) + "." + gameFrameCounter % 60;
-            if (3600 > gameFrameCounter) {
-                popupText = RMath.floor(gameFrameCounter / 60) + "." + gameFrameCounter % 60;
+            let popupText = RMath.floor(StageState.gameFrameCounter / 3600) + ":" + RMath.floor(StageState.gameFrameCounter % 3600 / 60) + "." + StageState.gameFrameCounter % 60;
+            if (3600 > StageState.gameFrameCounter) {
+                popupText = RMath.floor(StageState.gameFrameCounter / 60) + "." + StageState.gameFrameCounter % 60;
             }
             spawnPopup(320, 223, 0, popupText, 300, 16777215);
         }
@@ -3930,9 +3899,9 @@ function updateStageEdgeSpawns() { // wg
 function drawGameStage() {
     var a, b, c, d;
     a = stageListArray[GUIState.currentStage][StageProps.stageTilesetIdxCol];
-    for (c = 0; c < stageHeight; c++)
-        for (b = 0; b < stageWidth; b++)
-            if (d = stageTileData[c][b], 64 == d) drawRect(8 * b, 8 * c, 8, 8, 0);
+    for (c = 0; c < StageState.stageHeight; c++)
+        for (b = 0; b < StageState.stageWidth; b++)
+            if (d = StageState.stageTileData[c][b], 64 == d) drawRect(8 * b, 8 * c, 8, 8, 0);
             else {
                 var f = LoadedSprites.tilesetSprites[a],
                     g = 8,
@@ -3950,27 +3919,27 @@ function drawGameStage() {
                             RenderingState.frameBufferArray[k] = l;
                         }
                     }
-            } for (c = 0; c < stageHeight; c++)
-        for (b = 1; b < stageWidth - 1; b++)
-            if (30 == stageTileData[c][b]) {
-                if (30 != stageTileData[c][b - 1]) {
+            } for (c = 0; c < StageState.stageHeight; c++)
+        for (b = 1; b < StageState.stageWidth - 1; b++)
+            if (30 == StageState.stageTileData[c][b]) {
+                if (30 != StageState.stageTileData[c][b - 1]) {
                     fillEmptyPixelsRect(8 * b - 2, 8 * c + 6, 2, 2, 21913);
                 }
-                if (30 != stageTileData[c][b + 1]) {
+                if (30 != StageState.stageTileData[c][b + 1]) {
                     fillEmptyPixelsRect(8 * b + 8, 8 * c + 6, 2, 2, 21913);
                 }
             } else {
-                if (31 == stageTileData[c][b]) {
-                    if (31 != stageTileData[c][b - 1]) {
+                if (31 == StageState.stageTileData[c][b]) {
+                    if (31 != StageState.stageTileData[c][b - 1]) {
                         fillEmptyPixelsRect(8 * b - 2, 8 * c, 2, 8, 21913);
                     }
-                    if (31 != stageTileData[c][b + 1]) {
+                    if (31 != StageState.stageTileData[c][b + 1]) {
                         fillEmptyPixelsRect(8 * b + 8, 8 * c, 2, 8, 21913);
                     }
                 }
             }
     if (1 == GUIState.currentStage) {
-        if (1 == isStageReachedArray[6]) {
+        if (1 == StageState.isStageReachedArray[6]) {
             b = 184 + RMath.randFloatRange(4, 28);
             c = 192 + RMath.randFloatRange(3, 7);
             spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -3982,20 +3951,20 @@ function drawGameStage() {
         spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     } else
     if (14 == GUIState.currentStage) {
-        b = 2 * RMath.rotationLUT[gameFrameCounter >> 2 & 511][0];
-        c = 2 * RMath.rotationLUT[gameFrameCounter >> 2 & 511][1];
+        b = 2 * RMath.rotationLUT[StageState.gameFrameCounter >> 2 & 511][0];
+        c = 2 * RMath.rotationLUT[StageState.gameFrameCounter >> 2 & 511][1];
         spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     } else
     if (17 == GUIState.currentStage) {
-        if (70 == gameFrameCounter % 360) {
+        if (70 == StageState.gameFrameCounter % 360) {
             spawnProjectile(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     } else
     if (18 == GUIState.currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
-            for (h = 0; h < PartyState.partyMemberCount && !(b = RMath.clamp(HeroesState.heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = RMath.clamp(HeroesState.heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
-            h == PartyState.partyMemberCount || gameFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
+            for (h = 0; h < PartyState.partyMemberCount && !(b = RMath.clamp(HeroesState.heroJointPositionsByHero[h][2].x, 0, 8 * StageState.stageWidth - 1) >> 3, c = RMath.clamp(HeroesState.heroJointPositionsByHero[h][2].y, 0, 8 * StageState.stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
+            h == PartyState.partyMemberCount || StageState.gameFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
 }
@@ -4003,7 +3972,7 @@ function drawGameStage() {
 
 
 function initStageState() { // cj
-    stageFlagUseCount = stageConditionMask = stageEncounterCounter = consecutiveConditionFrameCount = gameFrameCounter = stage_totalDamageDealt = stage_partyDamageTaken = 0;
+    StageState.stageFlagUseCount = StageState.stageConditionMask = StageState.stageEncounterCounter = StageState.consecutiveConditionFrameCount = StageState.gameFrameCounter = StageState.stage_totalDamageDealt = StageState.stage_partyDamageTaken = 0;
     let a, b, c, d;
     if (17 == GUIState.currentStage) {
         b = PartyState.partyGold % 100;
@@ -4011,7 +3980,7 @@ function initStageState() { // cj
             c = ~~RMath.randFloatRange(27, 70);
             d = RMath.randFloat(2.1);
             d = 3 + ~~(d * d * d);
-            if (32 == stageTileData[d][c]) {
+            if (32 == StageState.stageTileData[d][c]) {
                 fillStageTilesRect(c, d, c, d, 39);
                 a++;
             }
@@ -4026,8 +3995,8 @@ function initStageState() { // cj
         for (a = 0; 39 > a; a++) {
             if (0 != b[a]) {
                 spawnEnemy(19 + a, b[a], 88, 6);
-                activeSpawnCountByGroup[6]++;
-                totalSpawnedCountByGroup[6]++;
+                StageState.activeSpawnCountByGroup[6]++;
+                StageState.totalSpawnedCountByGroup[6]++;
             }
         }
     }
@@ -4040,17 +4009,17 @@ function updateStageTick() { // xg
         p = 0,
         t = 59,
         l = 0;
-    gameFrameCounter++;
+    StageState.gameFrameCounter++;
     if (-1 != GameplayState.draggedHeroIndex) {
-        b = RMath.clamp(HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][2].x, 0, 8 * stageWidth - 1) >> 3;
-        f = RMath.clamp(HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][2].y, 0, 8 * stageHeight - 1) >> 3;
+        b = RMath.clamp(HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+        f = RMath.clamp(HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
     }
 
-    g = RMath.clamp(HeroesState.heroJointPositionsByHero[GUIState.selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
-    h = RMath.clamp(HeroesState.heroJointPositionsByHero[GUIState.selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
+    g = RMath.clamp(HeroesState.heroJointPositionsByHero[GUIState.selectingHero][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+    h = RMath.clamp(HeroesState.heroJointPositionsByHero[GUIState.selectingHero][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
     for (a = 0; a < PartyState.partyMemberCount; a++) {
-        c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-        d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+        c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+        d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
         if (k > c) {
             k = c;
         }
@@ -4067,10 +4036,10 @@ function updateStageTick() { // xg
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
-        var n = RMath.clamp(mouseXCurrent + c[a] >> 3, 0, stageWidth - 1),
-            w = RMath.clamp(mouseYCurrent + d[a] >> 3, 0, stageHeight - 1);
+        var n = RMath.clamp(mouseXCurrent + c[a] >> 3, 0, StageState.stageWidth - 1),
+            w = RMath.clamp(mouseYCurrent + d[a] >> 3, 0, StageState.stageHeight - 1);
         if (isMouseClicked) {
-            if (39 == stageTileData[w][n]) {
+            if (39 == StageState.stageTileData[w][n]) {
                 fillStageTilesRect(n, w, n, w, 32);
                 a = 1;
                 if (1 > RMath.randFloat(200)) {
@@ -4087,17 +4056,17 @@ function updateStageTick() { // xg
                 if (13 == GUIState.currentStage)
                     for (a = 0; 15 > a; a++) {
                         spawnEnemy(n, w, 48, 6);
-                        activeSpawnCountByGroup[6]++;
-                        totalSpawnedCountByGroup[6]++;
+                        StageState.activeSpawnCountByGroup[6]++;
+                        StageState.totalSpawnedCountByGroup[6]++;
                     }
                 if (19 == GUIState.currentStage) {
                     spawnEnemy(n, w, 87, 5);
-                    activeSpawnCountByGroup[5]++;
-                    totalSpawnedCountByGroup[5]++;
+                    StageState.activeSpawnCountByGroup[5]++;
+                    StageState.totalSpawnedCountByGroup[5]++;
                 }
                 break;
             }
-            if (47 == stageTileData[w][n]) {
+            if (47 == StageState.stageTileData[w][n]) {
                 if (2 == GUIState.currentStage) {
                     if (isBadgeIncompleteForCurrentStage(4)) {
                         IncrementBadgeCount(4);
@@ -4107,20 +4076,20 @@ function updateStageTick() { // xg
                     c = 8 * n + 4 - mouseXCurrent;
                     d = 8 * w + 4 - mouseYCurrent;
                     if (RMath.abs(c) >= RMath.abs(d)) {
-                        if (0 < c && 32 == stageTileData[w][n + 1]) {
+                        if (0 < c && 32 == StageState.stageTileData[w][n + 1]) {
                             fillStageTilesRect(n + 1, w, n + 1, w, 47);
                             fillStageTilesRect(n, w, n, w, 32);
                             n += 1;
-                        } else if (0 > c && 32 == stageTileData[w][n - 1]) {
+                        } else if (0 > c && 32 == StageState.stageTileData[w][n - 1]) {
                             fillStageTilesRect(n - 1, w, n - 1, w, 47);
                             fillStageTilesRect(n, w, n, w, 32);
                             --n;
                         }
-                    } else if (0 < d && 32 == stageTileData[w + 1][n]) {
+                    } else if (0 < d && 32 == StageState.stageTileData[w + 1][n]) {
                         fillStageTilesRect(n, w + 1, n, w + 1, 47);
                         fillStageTilesRect(n, w, n, w, 32);
                         w += 1;
-                    } else if (0 > d && 32 == stageTileData[w - 1][n]) {
+                    } else if (0 > d && 32 == StageState.stageTileData[w - 1][n]) {
                         fillStageTilesRect(n, w - 1, n, w - 1, 47);
                         fillStageTilesRect(n, w, n, w, 32);
                         --w;
@@ -4140,31 +4109,31 @@ function updateStageTick() { // xg
         }
     }
     if (1 == GUIState.currentStage) {
-        if (12 == GUIState.gameScreenState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h) {
-            lastStageIdx = 6;
-            partySpawnXByHero[0] = 33;
-            partySpawnYByHero[0] = 24;
-            partySpawnXByHero[1] = 35;
-            partySpawnYByHero[1] = 24;
-            partySpawnXByHero[2] = 44;
-            partySpawnYByHero[2] = 24;
-            partySpawnXByHero[3] = 46;
-            partySpawnYByHero[3] = 24;
+        if (12 == GUIState.gameScreenState && 1 == StageState.isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h) {
+            StageState.lastStageIdx = 6;
+            StageState.partySpawnXByHero[0] = 33;
+            StageState.partySpawnYByHero[0] = 24;
+            StageState.partySpawnXByHero[1] = 35;
+            StageState.partySpawnYByHero[1] = 24;
+            StageState.partySpawnXByHero[2] = 44;
+            StageState.partySpawnYByHero[2] = 24;
+            StageState.partySpawnXByHero[3] = 46;
+            StageState.partySpawnYByHero[3] = 24;
         }
-        if (12 == GUIState.gameScreenState && 1 == isStageReachedArray[12] && 1 > h) {
-            lastStageIdx = 12;
-            partySpawnXByHero[0] = 67;
-            partySpawnYByHero[0] = 42;
-            partySpawnXByHero[1] = 69;
-            partySpawnYByHero[1] = 42;
-            partySpawnXByHero[2] = 71;
-            partySpawnYByHero[2] = 42;
-            partySpawnXByHero[3] = 73;
-            partySpawnYByHero[3] = 42;
+        if (12 == GUIState.gameScreenState && 1 == StageState.isStageReachedArray[12] && 1 > h) {
+            StageState.lastStageIdx = 12;
+            StageState.partySpawnXByHero[0] = 67;
+            StageState.partySpawnYByHero[0] = 42;
+            StageState.partySpawnXByHero[1] = 69;
+            StageState.partySpawnYByHero[1] = 42;
+            StageState.partySpawnXByHero[2] = 71;
+            StageState.partySpawnYByHero[2] = 42;
+            StageState.partySpawnXByHero[3] = 73;
+            StageState.partySpawnYByHero[3] = 42;
         }
     } else if (2 != GUIState.currentStage)
         if (3 == GUIState.currentStage) {
-            if (1 == PartyState.partyMemberCount && 0 == activeSpawnCountByGroup[0]) {
+            if (1 == PartyState.partyMemberCount && 0 == StageState.activeSpawnCountByGroup[0]) {
                 resetHeroPose(PartyState.partyMemberCount, 25, 14);
                 PartyState.partyMemberCount++;
             }
@@ -4172,38 +4141,38 @@ function updateStageTick() { // xg
                 fillStageTilesRect(25, 13, 25, 14, 64);
                 fillStageTilesRect(31, 11, 31, 14, 64);
             }
-            if (1 == stageEventFlagArray[0]) {
+            if (1 == StageState.stageEventFlagArray[0]) {
                 fillStageTilesRect(11, 30, 11, 30, 63);
-            } else if (32 == stageTileData[30][11]) {
-                if (0 == activeSpawnCountByGroup[1]) {
+            } else if (32 == StageState.stageTileData[30][11]) {
+                if (0 == StageState.activeSpawnCountByGroup[1]) {
                     fillStageTilesRect(11, 30, 11, 30, 55);
                 }
-            } else if (55 == stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f) {
+            } else if (55 == StageState.stageTileData[30][11] && 10 <= b && 12 >= b && 29 <= f && 31 >= f) {
                 fillStageTilesRect(11, 30, 11, 30, 63);
                 spawnDrop(92,
                     244, 3, 0, 0);
             }
-            if (0 == totalSpawnedCountByGroup[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f) {
+            if (0 == StageState.totalSpawnedCountByGroup[2] && 10 <= b && 20 >= b && 34 <= f && 41 >= f) {
                 spawnEnemy(14, 41, 15, 2);
                 spawnEnemy(16, 41, 15, 2);
                 spawnEnemy(18, 41, 15, 2);
-                activeSpawnCountByGroup[2] = 3;
-                totalSpawnedCountByGroup[2] = 3;
+                StageState.activeSpawnCountByGroup[2] = 3;
+                StageState.totalSpawnedCountByGroup[2] = 3;
             }
-            if (1 == stageEventFlagArray[1]) {
+            if (1 == StageState.stageEventFlagArray[1]) {
                 fillStageTilesRect(16, 41, 16, 41, 63);
-            } else if (32 == stageTileData[41][16]) {
-                if (0 == activeSpawnCountByGroup[2] && 0 != totalSpawnedCountByGroup[2]) {
+            } else if (32 == StageState.stageTileData[41][16]) {
+                if (0 == StageState.activeSpawnCountByGroup[2] && 0 != StageState.totalSpawnedCountByGroup[2]) {
                     fillStageTilesRect(16, 41, 16, 41, 55);
                 }
-            } else if (55 == stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f) {
+            } else if (55 == StageState.stageTileData[41][16] && 15 <= b && 17 >= b && 40 <= f && 42 >= f) {
                 fillStageTilesRect(16, 41, 16, 41, 63);
                 spawnDrop(132, 332, 3, 1, 0);
             }
             if (isBadgeIncompleteForCurrentStage(7)) {
                 for (a = b = 0; a < PartyState.partyMemberCount; a++) {
-                    c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                    d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                    c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+                    d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
                     if (8 <= c && 15 >= c && 19 <= d && 21 >= d) {
                         b |= 1;
                     }
@@ -4215,11 +4184,11 @@ function updateStageTick() { // xg
                     IncrementBadgeCount(7);
                 }
             }
-            if (0 != totalSpawnedCountByGroup[2]) {
-                consecutiveConditionFrameCount++;
+            if (0 != StageState.totalSpawnedCountByGroup[2]) {
+                StageState.consecutiveConditionFrameCount++;
             }
         } else if (4 == GUIState.currentStage) {
-        if (2 == PartyState.partyMemberCount && 0 == activeSpawnCountByGroup[1] && 0 != totalSpawnedCountByGroup[1]) {
+        if (2 == PartyState.partyMemberCount && 0 == StageState.activeSpawnCountByGroup[1] && 0 != StageState.totalSpawnedCountByGroup[1]) {
             resetHeroPose(PartyState.partyMemberCount, 55, 40);
             PartyState.partyMemberCount++;
         }
@@ -4227,43 +4196,43 @@ function updateStageTick() { // xg
             fillStageTilesRect(55, 39, 55, 40, 32);
             fillStageTilesRect(77, 38, 77, 41, 32);
         }
-        if (2 == PartyState.partyMemberCount && 0 == totalSpawnedCountByGroup[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
+        if (2 == PartyState.partyMemberCount && 0 == StageState.totalSpawnedCountByGroup[0] && 54 <= g && 76 >= g && 38 <= h && 41 >= h)
             for (a = 0; 20 > a; a++) {
                 spawnEnemy(RMath.randIntRange(56, 76), RMath.randIntRange(33, 38), 5, 0);
-                activeSpawnCountByGroup[0]++;
-                totalSpawnedCountByGroup[0]++;
+                StageState.activeSpawnCountByGroup[0]++;
+                StageState.totalSpawnedCountByGroup[0]++;
             }
-        if ((3 <= PartyState.partyMemberCount || 0 == activeSpawnCountByGroup[0] && 0 != totalSpawnedCountByGroup[0]) && 0 == totalSpawnedCountByGroup[1]) {
+        if ((3 <= PartyState.partyMemberCount || 0 == StageState.activeSpawnCountByGroup[0] && 0 != StageState.totalSpawnedCountByGroup[0]) && 0 == StageState.totalSpawnedCountByGroup[1]) {
             spawnEnemy(65, 35, 16, 1);
-            activeSpawnCountByGroup[1] = 1;
-            totalSpawnedCountByGroup[1] = 1;
+            StageState.activeSpawnCountByGroup[1] = 1;
+            StageState.totalSpawnedCountByGroup[1] = 1;
         }
         if (isBadgeIncompleteForCurrentStage(11)) {
-            if (0 == activeSpawnCountByGroup[6] && 20 == totalSpawnedCountByGroup[6] && !stageConditionMask) {
+            if (0 == StageState.activeSpawnCountByGroup[6] && 20 == StageState.totalSpawnedCountByGroup[6] && !StageState.stageConditionMask) {
                 IncrementBadgeCount(11);
             }
         }
         if (isBadgeIncompleteForCurrentStage(12)) {
-            if (0 == activeSpawnCountByGroup[4] && 3 == totalSpawnedCountByGroup[4] && 8 == activeSpawnCountByGroup[3]) {
+            if (0 == StageState.activeSpawnCountByGroup[4] && 3 == StageState.totalSpawnedCountByGroup[4] && 8 == StageState.activeSpawnCountByGroup[3]) {
                 IncrementBadgeCount(12);
             }
         }
         if (isBadgeIncompleteForCurrentStage(13)) {
-            if (0 == activeSpawnCountByGroup[1] && 1 == totalSpawnedCountByGroup[1] && 0 == stage_partyDamageTaken) {
+            if (0 == StageState.activeSpawnCountByGroup[1] && 1 == StageState.totalSpawnedCountByGroup[1] && 0 == StageState.stage_partyDamageTaken) {
                 IncrementBadgeCount(13);
             }
         }
         if (isBadgeIncompleteForCurrentStage(14)) {
-            if (9 == lastClearedStageIdx) {
+            if (9 == StageState.lastClearedStageIdx) {
                 IncrementBadgeCount(14);
             }
         }
     } else if (5 == GUIState.currentStage) {
-        if (3 == PartyState.partyMemberCount && 0 == activeSpawnCountByGroup[0] && 0 == activeSpawnCountByGroup[1] && (resetHeroPose(PartyState.partyMemberCount, 17, 5), PartyState.partyMemberCount++), 4 == PartyState.partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 2 || IncrementBadgeCount(16),
-            !isBadgeIncompleteForCurrentStage(17) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
+        if (3 == PartyState.partyMemberCount && 0 == StageState.activeSpawnCountByGroup[0] && 0 == StageState.activeSpawnCountByGroup[1] && (resetHeroPose(PartyState.partyMemberCount, 17, 5), PartyState.partyMemberCount++), 4 == PartyState.partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != StageState.activeSpawnCountByGroup[0] || 0 != StageState.activeSpawnCountByGroup[1] || StageState.stageConditionMask & 2 || IncrementBadgeCount(16),
+            !isBadgeIncompleteForCurrentStage(17) || 0 != StageState.activeSpawnCountByGroup[0] || 0 != StageState.activeSpawnCountByGroup[1] || StageState.stageConditionMask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
             for (a = b = 0; a < PartyState.partyMemberCount; a++) {
-                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
                 if (56 <= c && 59 >= c && 39 <= d && 41 >= d) {
                     b++;
                 }
@@ -4274,49 +4243,49 @@ function updateStageTick() { // xg
         }
     } else if (6 == GUIState.currentStage) {
         if (12 == GUIState.gameScreenState && 38 <= g && 41 >= g && 24 <= h && 24 >= h) {
-            lastStageIdx = 1;
-            partySpawnXByHero[0] = 18;
-            partySpawnYByHero[0] = 24;
-            partySpawnXByHero[1] = 20;
-            partySpawnYByHero[1] = 24;
-            partySpawnXByHero[2] = 29;
-            partySpawnYByHero[2] = 24;
-            partySpawnXByHero[3] = 31;
-            partySpawnYByHero[3] = 24;
+            StageState.lastStageIdx = 1;
+            StageState.partySpawnXByHero[0] = 18;
+            StageState.partySpawnYByHero[0] = 24;
+            StageState.partySpawnXByHero[1] = 20;
+            StageState.partySpawnYByHero[1] = 24;
+            StageState.partySpawnXByHero[2] = 29;
+            StageState.partySpawnYByHero[2] = 24;
+            StageState.partySpawnXByHero[3] = 31;
+            StageState.partySpawnYByHero[3] = 24;
         }
     } else if (7 == GUIState.currentStage) {
-        if (0 == totalSpawnedCountByGroup[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
-            if (c = 0, 39 == stageTileData[34][75] && c++, 39 == stageTileData[35][72] && c++, 39 == stageTileData[35][74] && c++, 39 == stageTileData[36][75] && c++, 39 == stageTileData[38][76] && c++, 1 == c || 2 == c) {
+        if (0 == StageState.totalSpawnedCountByGroup[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
+            if (c = 0, 39 == StageState.stageTileData[34][75] && c++, 39 == StageState.stageTileData[35][72] && c++, 39 == StageState.stageTileData[35][74] && c++, 39 == StageState.stageTileData[36][75] && c++, 39 == StageState.stageTileData[38][76] && c++, 1 == c || 2 == c) {
                 spawnEnemy(66, 42, 24, 1);
-                activeSpawnCountByGroup[1]++;
-                totalSpawnedCountByGroup[1]++;
+                StageState.activeSpawnCountByGroup[1]++;
+                StageState.totalSpawnedCountByGroup[1]++;
             } else {
                 for (5 == c ? c = 12 : 4 == c ? c = 13 : 3 == c ? c = 14 : c || (c = 20), a = 0; 15 > a; a++) {
                     spawnEnemy(RMath.randIntRange(56, 69), RMath.randIntRange(42, 43), c, 1);
-                    activeSpawnCountByGroup[1]++;
-                    totalSpawnedCountByGroup[1]++;
+                    StageState.activeSpawnCountByGroup[1]++;
+                    StageState.totalSpawnedCountByGroup[1]++;
                 }
             }
         c = 43;
         d = 30;
-        if (1 == stageEventFlagArray[2]) {
+        if (1 == StageState.stageEventFlagArray[2]) {
             fillStageTilesRect(c, d, c, d, 63);
-        } else if (32 == stageTileData[d][c]) {
-            if (0 == activeSpawnCountByGroup[2]) {
+        } else if (32 == StageState.stageTileData[d][c]) {
+            if (0 == StageState.activeSpawnCountByGroup[2]) {
                 fillStageTilesRect(c, d, c, d, 55);
             }
-        } else if (55 == stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1) {
+        } else if (55 == StageState.stageTileData[d][c] && c - 1 <= b && b <= c + 1 && d - 1 <= f && f <= d + 1) {
             fillStageTilesRect(c, d, c, d, 63);
             spawnDrop(8 * c + 4, 8 * d + 4, 3, 2, 0);
         }
-        if (1 == totalSpawnedCountByGroup[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
+        if (1 == StageState.totalSpawnedCountByGroup[9] && 40 <= k && 72 >= p && 23 <= t && 30 >= l)
             for (a = 0; 15 > a; a++) {
                 spawnEnemy(RMath.randIntRange(61, 76), 21, 28, 9);
-                activeSpawnCountByGroup[9]++;
-                totalSpawnedCountByGroup[9]++;
+                StageState.activeSpawnCountByGroup[9]++;
+                StageState.totalSpawnedCountByGroup[9]++;
             }
         if (isBadgeIncompleteForCurrentStage(21)) {
-            if (0 == activeSpawnCountByGroup[2] && 0 == stage_partyDamageTaken) {
+            if (0 == StageState.activeSpawnCountByGroup[2] && 0 == StageState.stage_partyDamageTaken) {
                 IncrementBadgeCount(21);
             }
         }
@@ -4329,32 +4298,32 @@ function updateStageTick() { // xg
             }
         }
     } else if (8 == GUIState.currentStage) {
-        if (30 > totalSpawnedCountByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > RMath.randFloat(60)) {
+        if (30 > StageState.totalSpawnedCountByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > RMath.randFloat(60)) {
             a = [5, 18, 3, 20];
             g = [18, 16, 21, 22];
             b = RMath.randInt(4);
             spawnEnemy(a[b], g[b], 32, 3);
-            activeSpawnCountByGroup[3]++;
-            totalSpawnedCountByGroup[3]++;
+            StageState.activeSpawnCountByGroup[3]++;
+            StageState.totalSpawnedCountByGroup[3]++;
         }
         if (isBadgeIncompleteForCurrentStage(27)) {
             for (a = 0; a < PartyState.partyMemberCount; a++) {
-                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
                 if (2 <= c && 15 >= c && 29 <= d && 36 >= d) {
-                    stageConditionMask = 1;
+                    StageState.stageConditionMask = 1;
                 }
             }
-            0 != activeSpawnCountByGroup[4] || stageConditionMask || IncrementBadgeCount(27);
+            0 != StageState.activeSpawnCountByGroup[4] || StageState.stageConditionMask || IncrementBadgeCount(27);
         }
         if (isBadgeIncompleteForCurrentStage(28)) {
             for (a = 0; a < PartyState.partyMemberCount && 0 == HeroesState.heroTileContactFlags[a]; a++);
             if (a == PartyState.partyMemberCount) {
-                consecutiveConditionFrameCount++;
+                StageState.consecutiveConditionFrameCount++;
             } else {
-                consecutiveConditionFrameCount = 0;
+                StageState.consecutiveConditionFrameCount = 0;
             }
-            if (300 <= consecutiveConditionFrameCount) {
+            if (300 <= StageState.consecutiveConditionFrameCount) {
                 IncrementBadgeCount(28);
             }
         }
@@ -4367,11 +4336,11 @@ function updateStageTick() { // xg
         if (-1 != b && 10 < enemyPoseTrailWriteIdxArray[b] && 500 > enemyHealthArray[b])
             for (enemyHealthArray[b] += 1500, enemyPoseTrailWriteIdxArray[b]--, c = 2 * (19 - enemyPoseTrailWriteIdxArray[b] + 1), a = 0; a < c; a++) {
                 spawnEnemy(RMath.randIntRange(25, 57), RMath.randIntRange(25, 39), 35, 1);
-                activeSpawnCountByGroup[1]++;
-                totalSpawnedCountByGroup[1]++;
+                StageState.activeSpawnCountByGroup[1]++;
+                StageState.totalSpawnedCountByGroup[1]++;
             }
         if (isBadgeIncompleteForCurrentStage(31)) {
-            if (0 == activeSpawnCountByGroup[3] && 2 == totalSpawnedCountByGroup[1]) {
+            if (0 == StageState.activeSpawnCountByGroup[3] && 2 == StageState.totalSpawnedCountByGroup[1]) {
                 IncrementBadgeCount(31);
             }
         }
@@ -4383,9 +4352,9 @@ function updateStageTick() { // xg
         if (isBadgeIncompleteForCurrentStage(33)) {
             for (a =
                 b = 0; a < PartyState.partyMemberCount; a++) {
-                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
-                if (26 == stageTileData[d][c]) {
+                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
+                if (26 == StageState.stageTileData[d][c]) {
                     b++;
                 }
             }
@@ -4394,32 +4363,32 @@ function updateStageTick() { // xg
             }
         }
         if (isBadgeIncompleteForCurrentStage(34)) {
-            if (10 == lastStageIdx && 1 >= g && 41 <= h) {
+            if (10 == StageState.lastStageIdx && 1 >= g && 41 <= h) {
                 IncrementBadgeCount(34);
             }
         }
     } else if (10 == GUIState.currentStage) {
-        if (25 >= totalSpawnedCountByGroup[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
+        if (25 >= StageState.totalSpawnedCountByGroup[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
             for (a = 0; 15 > a; a++) {
                 spawnEnemy(RMath.randIntRange(32, 53), RMath.randIntRange(33, 34), 37, 0);
-                activeSpawnCountByGroup[0]++;
-                totalSpawnedCountByGroup[0]++;
+                StageState.activeSpawnCountByGroup[0]++;
+                StageState.totalSpawnedCountByGroup[0]++;
             }
-        if (40 > totalSpawnedCountByGroup[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > RMath.randFloat(60)) {
+        if (40 > StageState.totalSpawnedCountByGroup[4] && 8 <= g && 38 >= g && 0 <= h && 7 >= h && 10 > RMath.randFloat(60)) {
             a = [24, 25, 29, 30];
             g = [4, 4, 3, 3];
             b = RMath.randInt(4);
             spawnEnemy(a[b], g[b], 41, 4);
-            activeSpawnCountByGroup[4]++;
-            totalSpawnedCountByGroup[4]++;
+            StageState.activeSpawnCountByGroup[4]++;
+            StageState.totalSpawnedCountByGroup[4]++;
         }
         if (isBadgeIncompleteForCurrentStage(37)) {
-            if (0 == activeSpawnCountByGroup[1] && activeSpawnCountByGroup[0] == totalSpawnedCountByGroup[0]) {
+            if (0 == StageState.activeSpawnCountByGroup[1] && StageState.activeSpawnCountByGroup[0] == StageState.totalSpawnedCountByGroup[0]) {
                 IncrementBadgeCount(37);
             }
         }
         if (isBadgeIncompleteForCurrentStage(38)) {
-            if (0 == activeSpawnCountByGroup[3] && 0 == stage_partyDamageTaken) {
+            if (0 == StageState.activeSpawnCountByGroup[3] && 0 == StageState.stage_partyDamageTaken) {
                 IncrementBadgeCount(38);
             }
         }
@@ -4433,26 +4402,26 @@ function updateStageTick() { // xg
         }
     } else if (11 == GUIState.currentStage) {
         if (isBadgeIncompleteForCurrentStage(41)) {
-            if (0 == activeSpawnCountByGroup[3] && !stageConditionMask) {
+            if (0 == StageState.activeSpawnCountByGroup[3] && !StageState.stageConditionMask) {
                 IncrementBadgeCount(41);
             }
         }
         if (isBadgeIncompleteForCurrentStage(42)) {
-            if (0 == activeSpawnCountByGroup[4] && 0 == stage_partyDamageTaken) {
+            if (0 == StageState.activeSpawnCountByGroup[4] && 0 == StageState.stage_partyDamageTaken) {
                 IncrementBadgeCount(42);
             }
         }
     } else if (13 == GUIState.currentStage) {
-        if (1 == stageEventFlagArray[0]) {
+        if (1 == StageState.stageEventFlagArray[0]) {
             fillStageTilesRect(77, 20, 77, 24, 31);
         }
         if (isBadgeIncompleteForCurrentStage(46)) {
-            if (0 == activeSpawnCountByGroup[1] && 45 == totalSpawnedCountByGroup[1] && 0 == activeSpawnCountByGroup[6] && 45 == totalSpawnedCountByGroup[6]) {
+            if (0 == StageState.activeSpawnCountByGroup[1] && 45 == StageState.totalSpawnedCountByGroup[1] && 0 == StageState.activeSpawnCountByGroup[6] && 45 == StageState.totalSpawnedCountByGroup[6]) {
                 IncrementBadgeCount(46);
             }
         }
         if (isBadgeIncompleteForCurrentStage(48)) {
-            if (0 == activeSpawnCountByGroup[5] && 0 == stage_partyDamageTaken) {
+            if (0 == StageState.activeSpawnCountByGroup[5] && 0 == StageState.stage_partyDamageTaken) {
                 IncrementBadgeCount(48);
             }
         }
@@ -4460,52 +4429,52 @@ function updateStageTick() { // xg
         if (isBadgeIncompleteForCurrentStage(53)) {
             for (a = 0; a < PartyState.partyMemberCount && 2 == HeroesState.heroTileContactFlags[a]; a++);
             if (a == PartyState.partyMemberCount) {
-                consecutiveConditionFrameCount++;
+                StageState.consecutiveConditionFrameCount++;
             } else {
-                consecutiveConditionFrameCount = 0;
+                StageState.consecutiveConditionFrameCount = 0;
             }
-            if (1800 <= consecutiveConditionFrameCount) {
+            if (1800 <= StageState.consecutiveConditionFrameCount) {
                 IncrementBadgeCount(53);
             }
         }
         if (isBadgeIncompleteForCurrentStage(54)) {
-            if (39 == stageTileData[12][44] && 39 == stageTileData[12][45] && 39 == stageTileData[13][43] && 39 != stageTileData[13][44] && 39 != stageTileData[13][45] && 39 == stageTileData[13][46] && 39 == stageTileData[14][43] && 39 != stageTileData[14][44] && 39 != stageTileData[14][45] && 39 == stageTileData[14][46] && 39 != stageTileData[15][43] && 39 == stageTileData[15][44] && 39 == stageTileData[15][45]) {
+            if (39 == StageState.stageTileData[12][44] && 39 == StageState.stageTileData[12][45] && 39 == StageState.stageTileData[13][43] && 39 != StageState.stageTileData[13][44] && 39 != StageState.stageTileData[13][45] && 39 == StageState.stageTileData[13][46] && 39 == StageState.stageTileData[14][43] && 39 != StageState.stageTileData[14][44] && 39 != StageState.stageTileData[14][45] && 39 == StageState.stageTileData[14][46] && 39 != StageState.stageTileData[15][43] && 39 == StageState.stageTileData[15][44] && 39 == StageState.stageTileData[15][45]) {
                 IncrementBadgeCount(54);
             }
         }
     } else if (15 == GUIState.currentStage) {
-        if (60 > totalSpawnedCountByGroup[1] && 42 <= g && 67 >= g &&
+        if (60 > StageState.totalSpawnedCountByGroup[1] && 42 <= g && 67 >= g &&
             18 <= h && 24 >= h && 4 > RMath.randFloat(60)) {
             a = [44, 45, 46, 66];
             g = [24, 24, 24, 24];
             b = RMath.randInt(4);
             spawnEnemy(a[b], g[b], 60, 1);
-            activeSpawnCountByGroup[1]++;
-            totalSpawnedCountByGroup[1]++;
+            StageState.activeSpawnCountByGroup[1]++;
+            StageState.totalSpawnedCountByGroup[1]++;
         }
-        if (0 == activeSpawnCountByGroup[5] && totalSpawnedCountByGroup[6] < 150 - (totalSpawnedCountByGroup[0] - activeSpawnCountByGroup[0])) {
+        if (0 == StageState.activeSpawnCountByGroup[5] && StageState.totalSpawnedCountByGroup[6] < 150 - (StageState.totalSpawnedCountByGroup[0] - StageState.activeSpawnCountByGroup[0])) {
             c = RMath.randIntRange(15, 65);
             d = RMath.randIntRange(1, 18);
-            if (25 < stageTileData[d][c]) {
+            if (25 < StageState.stageTileData[d][c]) {
                 spawnEnemy(c, d, 59, 6);
-                activeSpawnCountByGroup[6]++;
-                totalSpawnedCountByGroup[6]++;
+                StageState.activeSpawnCountByGroup[6]++;
+                StageState.totalSpawnedCountByGroup[6]++;
             }
         }
         if (isBadgeIncompleteForCurrentStage(57)) {
-            if (0 == activeSpawnCountByGroup[3] && 0 == stage_partyDamageTaken) {
+            if (0 == StageState.activeSpawnCountByGroup[3] && 0 == StageState.stage_partyDamageTaken) {
                 IncrementBadgeCount(57);
             }
         }
         if (isBadgeIncompleteForCurrentStage(59)) {
-            if (198 <= activeSpawnCountByGroup[0] + activeSpawnCountByGroup[6]) {
+            if (198 <= StageState.activeSpawnCountByGroup[0] + StageState.activeSpawnCountByGroup[6]) {
                 IncrementBadgeCount(59);
             }
         }
     } else if (16 == GUIState.currentStage) {
-        f = activeSpawnCountByGroup[0] + activeSpawnCountByGroup[1];
-        k = activeSpawnCountByGroup[2] + activeSpawnCountByGroup[3];
-        p = activeSpawnCountByGroup[4] + activeSpawnCountByGroup[5] + activeSpawnCountByGroup[6] + activeSpawnCountByGroup[7];
+        f = StageState.activeSpawnCountByGroup[0] + StageState.activeSpawnCountByGroup[1];
+        k = StageState.activeSpawnCountByGroup[2] + StageState.activeSpawnCountByGroup[3];
+        p = StageState.activeSpawnCountByGroup[4] + StageState.activeSpawnCountByGroup[5] + StageState.activeSpawnCountByGroup[6] + StageState.activeSpawnCountByGroup[7];
         b = 0;
         if (0 == f && 0 < k && 0 < p) {
             b = 65;
@@ -4516,23 +4485,23 @@ function updateStageTick() { // xg
         if (0 == p && 0 < f && 0 < k) {
             b = 67;
         }
-        if (0 < b && 100 > totalSpawnedCountByGroup[11]) {
+        if (0 < b && 100 > StageState.totalSpawnedCountByGroup[11]) {
             c = RMath.randIntRange(4, 59);
             d = RMath.randIntRange(30, 33);
-            if (25 < stageTileData[d][c]) {
+            if (25 < StageState.stageTileData[d][c]) {
                 spawnEnemy(c, d, b, 11);
-                activeSpawnCountByGroup[11]++;
-                totalSpawnedCountByGroup[11]++;
+                StageState.activeSpawnCountByGroup[11]++;
+                StageState.totalSpawnedCountByGroup[11]++;
             }
         }
-        if (60 > totalSpawnedCountByGroup[12] && 70 <= g && 76 >= g &&
+        if (60 > StageState.totalSpawnedCountByGroup[12] && 70 <= g && 76 >= g &&
             34 <= h && 41 >= h) {
             c = RMath.randIntRange(5, 70);
             d = RMath.randIntRange(42, 43);
-            if (25 < stageTileData[d][c]) {
+            if (25 < StageState.stageTileData[d][c]) {
                 spawnEnemy(c, d, 68, 12);
-                activeSpawnCountByGroup[12]++;
-                totalSpawnedCountByGroup[12]++;
+                StageState.activeSpawnCountByGroup[12]++;
+                StageState.totalSpawnedCountByGroup[12]++;
             }
         }
         b = -1;
@@ -4548,91 +4517,91 @@ function updateStageTick() { // xg
                 d = .5 * -RMath.rotationLUT[512 * a / t][1];
                 spawnProjectile(-1, -1, g, h, c, d, 0, 26, 4294910481, 1, 16, 16, 0, 8, 8, 0, 200, 300, 10, 0, 0, 100, 0, 3, 0, 0, 0, 33, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
-        if (0 == stageEventFlagArray[0] && 0 == activeSpawnCountByGroup[10]) {
-            stageEventFlagArray[0] = 1;
+        if (0 == StageState.stageEventFlagArray[0] && 0 == StageState.activeSpawnCountByGroup[10]) {
+            StageState.stageEventFlagArray[0] = 1;
         }
-        if (1 == stageEventFlagArray[0]) {
+        if (1 == StageState.stageEventFlagArray[0]) {
             fillStageTilesRect(2, 20, 2, 24, 31);
         }
         if (isBadgeIncompleteForCurrentStage(61)) {
-            if (0 == activeSpawnCountByGroup[10] && !stageFlagUseCount) {
+            if (0 == StageState.activeSpawnCountByGroup[10] && !StageState.stageFlagUseCount) {
                 IncrementBadgeCount(61);
             }
         }
-        !isBadgeIncompleteForCurrentStage(62) || 0 != activeSpawnCountByGroup[10] || stageConditionMask & 1 || IncrementBadgeCount(62);
+        !isBadgeIncompleteForCurrentStage(62) || 0 != StageState.activeSpawnCountByGroup[10] || StageState.stageConditionMask & 1 || IncrementBadgeCount(62);
         if (isBadgeIncompleteForCurrentStage(63)) {
             for (a = 0; a < PartyState.partyMemberCount; a++) {
-                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
-                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
+                c = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].x, 0, 8 * StageState.stageWidth - 1) >> 3;
+                d = RMath.clamp(HeroesState.heroJointPositionsByHero[a][2].y, 0, 8 * StageState.stageHeight - 1) >> 3;
                 if (58 <= c && 76 >= c && 36 <= d && 42 >= d) {
-                    stageEncounterCounter = 1;
+                    StageState.stageEncounterCounter = 1;
                 }
             }
-            0 != activeSpawnCountByGroup[9] || stageEncounterCounter || IncrementBadgeCount(63);
+            0 != StageState.activeSpawnCountByGroup[9] || StageState.stageEncounterCounter || IncrementBadgeCount(63);
         }
         if (isBadgeIncompleteForCurrentStage(64)) {
-            if (0 == p && 0 < f && 0 < k && 100 == activeSpawnCountByGroup[11]) {
+            if (0 == p && 0 < f && 0 < k && 100 == StageState.activeSpawnCountByGroup[11]) {
                 IncrementBadgeCount(64);
             }
         }
     } else if (17 == GUIState.currentStage) {
         for (a = 0; a < PartyState.partyMemberCount; a++) {
             if (0 < HeroesState.heroTimedDamageTimer[a]) {
-                stageConditionMask = 1;
+                StageState.stageConditionMask = 1;
             } 
             if (isBadgeIncompleteForCurrentStage(66)) {
-                if (0 == activeSpawnCountByGroup[0] && !stageConditionMask) {
+                if (0 == StageState.activeSpawnCountByGroup[0] && !StageState.stageConditionMask) {
                     IncrementBadgeCount(66);
                 }
             }
         }
         if (isBadgeIncompleteForCurrentStage(68)) {
-            if (0 == activeSpawnCountByGroup[6] && 5 == activeSpawnCountByGroup[5]) {
+            if (0 == StageState.activeSpawnCountByGroup[6] && 5 == StageState.activeSpawnCountByGroup[5]) {
                 IncrementBadgeCount(68);
             }
         }
     } else if (18 == GUIState.currentStage) {
-        if (6 > totalSpawnedCountByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h) {
+        if (6 > StageState.totalSpawnedCountByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h) {
             a = [29, 44, 59];
             b = RMath.randInt(3);
             spawnEnemy(a[b], 42, 83, 9);
-            activeSpawnCountByGroup[9]++;
-            totalSpawnedCountByGroup[9]++;
+            StageState.activeSpawnCountByGroup[9]++;
+            StageState.totalSpawnedCountByGroup[9]++;
         }
-        if (9 > totalSpawnedCountByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > RMath.randFloat(60)) {
+        if (9 > StageState.totalSpawnedCountByGroup[10] && 3 <= g && 4 >= g && 5 <= h && 9 >= h && 10 > RMath.randFloat(60)) {
             c = RMath.randIntRange(8, 23);
             spawnEnemy(c, 10, 83, 10);
-            activeSpawnCountByGroup[10]++;
-            totalSpawnedCountByGroup[10]++;
-        }!isBadgeIncompleteForCurrentStage(71) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 2 || IncrementBadgeCount(71);
-        !isBadgeIncompleteForCurrentStage(72) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 1 || IncrementBadgeCount(72);
+            StageState.activeSpawnCountByGroup[10]++;
+            StageState.totalSpawnedCountByGroup[10]++;
+        }!isBadgeIncompleteForCurrentStage(71) || 0 != StageState.activeSpawnCountByGroup[7] || 0 != StageState.activeSpawnCountByGroup[8] || StageState.stageConditionMask & 2 || IncrementBadgeCount(71);
+        !isBadgeIncompleteForCurrentStage(72) || 0 != StageState.activeSpawnCountByGroup[7] || 0 != StageState.activeSpawnCountByGroup[8] || StageState.stageConditionMask & 1 || IncrementBadgeCount(72);
     } else if (19 == GUIState.currentStage) {
-        if (totalSpawnedCountByGroup[7] < 20 * (35 - activeSpawnCountByGroup[6]) && 15 > RMath.randFloat(60)) {
+        if (StageState.totalSpawnedCountByGroup[7] < 20 * (35 - StageState.activeSpawnCountByGroup[6]) && 15 > RMath.randFloat(60)) {
             c = RMath.randIntRange(19, 59);
             d = RMath.randIntRange(26, 33);
-            if (33 == stageTileData[d][c]) {
-                if (19 == totalSpawnedCountByGroup[7] % 20) {
+            if (33 == StageState.stageTileData[d][c]) {
+                if (19 == StageState.totalSpawnedCountByGroup[7] % 20) {
                     spawnEnemy(c, d, 89, 7);
                 } else {
                     spawnEnemy(c, d, 84, 7);
                 }
-                activeSpawnCountByGroup[7]++;
-                totalSpawnedCountByGroup[7]++;
+                StageState.activeSpawnCountByGroup[7]++;
+                StageState.totalSpawnedCountByGroup[7]++;
             }
         }
-        if (1 > totalSpawnedCountByGroup[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h) {
+        if (1 > StageState.totalSpawnedCountByGroup[4] && 5 <= g && 12 >= g && 24 <= h && 26 >= h) {
             spawnEnemy(8, 26, 86, 4);
-            activeSpawnCountByGroup[4]++;
-            totalSpawnedCountByGroup[4]++;
+            StageState.activeSpawnCountByGroup[4]++;
+            StageState.totalSpawnedCountByGroup[4]++;
         }
-        if (1 == stageEventFlagArray[1]) {
+        if (1 == StageState.stageEventFlagArray[1]) {
             fillStageTilesRect(47, 15, 50, 15, 24);
             fillStageTilesRect(1, 31, 1, 35, 32);
         }
     } else if (20 == GUIState.currentStage) {
-        if (1 == stageEventFlagArray[4]) {
+        if (1 == StageState.stageEventFlagArray[4]) {
             fillStageTilesRect(70, 34, 70, 34, 63);
-        } else if (55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f) {
+        } else if (55 == StageState.stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f) {
             fillStageTilesRect(70, 34, 70, 34, 63);
             spawnDrop(564, 276, 3, 4, 0);
         }
@@ -4707,7 +4676,7 @@ function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $
     for (let g, h, k = 0; k < f; k++) {
         g = enemyJointPosArray[enemyIdx][jointIdx].y + d.y;
         h = getStageTileAt(enemyJointPosArray[enemyIdx][jointIdx].x, g);
-        if (0 > g || 8 * stageHeight <= g) {
+        if (0 > g || 8 * StageState.stageHeight <= g) {
             enemyTileContactFlagsArray[enemyIdx] |= 2;
         } else if (0 <= h && 25 >= h) {
             if (0 < d.y) {
@@ -4897,7 +4866,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                         }
                         enemyHealthArray[height] = RMath.max(enemyHealthArray[height] - n, 0);
                         spawnPopup(enemyJointPosArray[height][enemyTargetJointIdx].x, enemyJointPosArray[height][enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
-                        stage_totalDamageDealt += n;
+                        StageState.stage_totalDamageDealt += n;
                     }
                     if (2 == effectType) {
                         enemySkipDurationLeftArray[height] = 120 - RMath.floor(120 * enemyCatalog[enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
@@ -4908,8 +4877,8 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
 
                     enemyAuxStateArray[height] = 120;
                     30 != GUIState.gameScreenState && (GameplayState.comboWindowTimer = GameplayState.comboWindowMaxFrames);
-                    isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && stageConditionMask++;
-                    isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && stageConditionMask++;
+                    isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && StageState.stageConditionMask++;
+                    isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && StageState.stageConditionMask++;
                 }
 
                 n = height;
@@ -5126,28 +5095,28 @@ function onEnemyDeath(_enemyIdx) { // cl
     }
     if (3 == GUIState.currentStage) {
         if (8 == enemyTypeArray[_enemyIdx]) {
-            if (isBadgeIncompleteForCurrentStage(8) && 1800 > gameFrameCounter) {
+            if (isBadgeIncompleteForCurrentStage(8) && 1800 > StageState.gameFrameCounter) {
                 IncrementBadgeCount(8);
             }
-            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
         }
 
         if (15 == enemyTypeArray[_enemyIdx]) {
-            stageEncounterCounter++;
-            if (3 == stageEncounterCounter) {
-                if (isBadgeIncompleteForCurrentStage(9) && 600 > consecutiveConditionFrameCount) {
+            StageState.stageEncounterCounter++;
+            if (3 == StageState.stageEncounterCounter) {
+                if (isBadgeIncompleteForCurrentStage(9) && 600 > StageState.consecutiveConditionFrameCount) {
                     IncrementBadgeCount(9);    
                 }
-                spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + RMath.floor(consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431);
+                spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, "" + RMath.floor(StageState.consecutiveConditionFrameCount / 60) + "SEC", 120, 10066431);
             }
         }
     }
     if (5 == GUIState.currentStage) {
         if (22 == enemyTypeArray[_enemyIdx]) {
-            if (isBadgeIncompleteForCurrentStage(18) && 1200 > gameFrameCounter) {
+            if (isBadgeIncompleteForCurrentStage(18) && 1200 > StageState.gameFrameCounter) {
                 IncrementBadgeCount(18);
             }
-            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+            spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
         }
     }
     if (isBadgeIncompleteForCurrentStage(22) && 28 == enemyTypeArray[_enemyIdx]) {
@@ -5157,17 +5126,17 @@ function onEnemyDeath(_enemyIdx) { // cl
         IncrementBadgeCount(47);
     }
     if (51 == enemyTypeArray[_enemyIdx]) {
-        if (isBadgeIncompleteForCurrentStage(49) && 1500 > gameFrameCounter) {
+        if (isBadgeIncompleteForCurrentStage(49) && 1500 > StageState.gameFrameCounter) {
             IncrementBadgeCount(49);    
         }
-        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
     }
     !isBadgeIncompleteForCurrentStage(52) || 56 != enemyTypeArray[_enemyIdx] && 57 != enemyTypeArray[_enemyIdx] && 58 != enemyTypeArray[_enemyIdx] || IncrementBadgeCount(52);
     if (63 == enemyTypeArray[_enemyIdx]) {
-        if (isBadgeIncompleteForCurrentStage(58) && 3600 > gameFrameCounter) {
+        if (isBadgeIncompleteForCurrentStage(58) && 3600 > StageState.gameFrameCounter) {
             IncrementBadgeCount(58);
         }
-        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(gameFrameCounter / 60) + "SEC", 120, 10066431);
+        spawnPopup(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 0, RMath.floor(StageState.gameFrameCounter / 60) + "SEC", 120, 10066431);
     }
     if (isBadgeIncompleteForCurrentStage(69) && 72 == enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(69);
@@ -5184,7 +5153,7 @@ function updateEnemies() {
                 c = enemyDmgPerFrameArray[enemyIdx] - 60 * b;
             RMath.randFloat(60) < c && (b += 1);
             enemyHealthArray[enemyIdx] = RMath.max(enemyHealthArray[enemyIdx] - b, 0);
-            stage_totalDamageDealt += b
+            StageState.stage_totalDamageDealt += b
         }
         if (0 < enemyFreezeTimerArray[enemyIdx] && 0 < enemyHealthArray[enemyIdx]) // effect type 5 in al
             enemyFreezeTimerArray[enemyIdx]--;
@@ -5412,11 +5381,11 @@ function enemyDragonBehavior(enemyIdx) {
         d = getStageTileAt(b - 24, c);
         if (28 >= d || 24 > b) f.x += .03;
         d = getStageTileAt(b + 24, c);
-        if (28 >= d || b > 8 * stageWidth - 24) f.x -= .03;
+        if (28 >= d || b > 8 * StageState.stageWidth - 24) f.x -= .03;
         d = getStageTileAt(b, c - 24);
         if (28 >= d || 24 > c) f.y += .03;
         d = getStageTileAt(b, c + 24);
-        if (28 >= d || c > 8 * stageHeight - 24) f.y -= .03;
+        if (28 >= d || c > 8 * StageState.stageHeight - 24) f.y -= .03;
         if (3 > RMath.randFloat(100)) {
             f.x += RMath.randFloatRange(-.1, .1);
             f.y += RMath.randFloatRange(-.1, .1);
@@ -7097,12 +7066,12 @@ function updateDrops() { // zg
     for (a = 0; a < dropCount; a++) {
         dropVel[a].y += .04;
         RMath.Vec2Scale(dropVel[a], .98);
-        c = RMath.clamp(dropPos[a].y + dropVel[a].y, 8, 8 * stageHeight + 16 - 1);
+        c = RMath.clamp(dropPos[a].y + dropVel[a].y, 8, 8 * StageState.stageHeight + 16 - 1);
         b = getStageTileAt(dropPos[a].x, c);
         if (!(0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < dropVel[a].y)) {
             dropPos[a].y = c
         }
-        if (c > 8 * stageHeight + 12) {
+        if (c > 8 * StageState.stageHeight + 12) {
             if (isBadgeIncompleteForCurrentStage(29)) {
                 if (2 == dropType[a]) {
                     IncrementBadgeCount(29);
@@ -7120,7 +7089,7 @@ function updateDrops() { // zg
                     PartyState.partyGold = RMath.clamp(PartyState.partyGold + dropValue[a], 0, 9999999);
                     spawnPopup(dropPos[a].x, dropPos[a].y, 0, dropValue[a], 60, 16776960);
                 } else if (3 == dropType[a]) {
-                    stageEventFlagArray[dropValue[a]] = 1;
+                    StageState.stageEventFlagArray[dropValue[a]] = 1;
                     PartyState.collectedStageFlagsCount++;
                 } else if (PartyState.itemForgeLvls[dropType[a]] < dropValue[a]) {
                     PartyState.itemForgeLvls[dropType[a]] = dropValue[a];

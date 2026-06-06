@@ -12,7 +12,7 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { CanvasState, GameState, RenderingState } from "./game/global_states.js";
+import { CanvasState, GameState, GUIState, RenderingState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
 import { LoadedSprites } from "./game/game_sprites.js";
 import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
@@ -31,42 +31,6 @@ CanvasState.element.ontouchend = onTouchEnd;
 CanvasState.element.ontouchcancel = onTouchCancel;
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
-
-
-let gameScreenState = 0,
-    screenStateTimer = 0, // sa
-    currentStage = 0,
-    clickInUI = false, // ta
-
-    memberUIVisible = false,
-    inventoryUIVisible = false,
-    bestiaryUIVisible = false,
-    badgesUIVisible = false,
-    optionsUIVisible = false,
-    shrineUIVisible = false,
-    
-    memberUIVisibleBackup = false, // Ba
-    inventoryUIVisibleBackup = false, // Da
-    bestiaryUIVisibleBackup = false, // Ea
-    badgesUIVisibleBackup = false, // Ha
-    optionsUIVisibleBackup = false, // Ia
-    shrineUIVisibleBackup = false, // Ja
-
-    selectingHero = 0,
-    selectedStatIndex = 0, 
-    inventoryTabIdx = 0, // Na, 0..4 for "ARMS","CHARGE","HEAD","RING","AMULET"
-    inventoryPageIdx = 0, // Oa, 
-    inventorySlotIdx = 0, // Pa, 0..27 grid index; used to highlight/select a cell
-    currentBestiaryPage = 0,
-    bestiaryEnemySelection = 0,
-    badgesUIStageIdx = 0, // Sa
-    LevelExpThresholds = Array(100);
-LevelExpThresholds[0] = 0;
-
-for (let _i = 1; 98 > _i; _i++) 
-    LevelExpThresholds[_i] = LevelExpThresholds[_i - 1] + 1E3 * _i;
-LevelExpThresholds[98] = 9999999;
-LevelExpThresholds[99] = 9999999;
 
 let partyMemberCount = 1,
     partyLevel = 1,
@@ -138,8 +102,8 @@ let partyMemberCount = 1,
         []
     ],
     forgePreviewItemIdx = -1, // Zb
-    itemForgeLvls = Array(256);
-let itemIsNew = Array(256); // ac, 
+    itemForgeLvls = Array(256),
+    itemIsNew = Array(256); // ac, 
 
 for (let _i = 0; 256 > _i; _i++) itemIsNew[_i] = 0;
 for (let _i = 0; 256 > _i; _i++) itemForgeLvls[_i] = 0;
@@ -515,9 +479,9 @@ function resetGameProgress() { // bc
 
 
 function resetUIStates() {
-    screenStateTimer = 0;
-    memberUIVisibleBackup = inventoryUIVisibleBackup = bestiaryUIVisibleBackup = badgesUIVisibleBackup = optionsUIVisibleBackup = shrineUIVisibleBackup = clickInUI = memberUIVisible = inventoryUIVisible = bestiaryUIVisible = badgesUIVisible = optionsUIVisible = shrineUIVisible = false;
-    comboMultBonus = comboCount = comboWindowTimer = selectingHero = selectedStatIndex = inventoryTabIdx = inventoryPageIdx = inventorySlotIdx  = 0
+    GUIState.screenStateTimer = 0;
+    GUIState.memberUIVisibleBackup = GUIState.inventoryUIVisibleBackup = GUIState.bestiaryUIVisibleBackup = GUIState.badgesUIVisibleBackup = GUIState.optionsUIVisibleBackup = GUIState.shrineUIVisibleBackup = GUIState.clickInUI = GUIState.memberUIVisible = GUIState.inventoryUIVisible = GUIState.bestiaryUIVisible = GUIState.badgesUIVisible = GUIState.optionsUIVisible = GUIState.shrineUIVisible = false;
+    comboMultBonus = comboCount = comboWindowTimer = GUIState.selectingHero = GUIState.selectedStatIndex = GUIState.inventoryTabIdx = GUIState.inventoryPageIdx = GUIState.inventorySlotIdx  = 0
 }
 
 function getItemModifierAmount(itemIdx, columnIdx) { // Ue
@@ -631,7 +595,7 @@ function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
 
 
 function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
-    return currentStage == badgeList[badgeIdx][2] && badgeCounterArray[badgeIdx] != badgeList[badgeIdx][4] ? true : false
+    return GUIState.currentStage == badgeList[badgeIdx][2] && badgeCounterArray[badgeIdx] != badgeList[badgeIdx][4] ? true : false
 }
 
 
@@ -670,8 +634,8 @@ function saveGame() {
     gameSaveBuffer[a++] = RMath.randInt(64);
     for (b = 0; 8 > b; b++) gameSaveBuffer[a++] = GameState.userSaveKey[b];
     gameSaveBuffer[a++] = 0;
-    gameSaveBuffer[a++] = currentStage >> 6 & 63;
-    gameSaveBuffer[a++] = currentStage >> 0 & 63;
+    gameSaveBuffer[a++] = GUIState.currentStage >> 6 & 63;
+    gameSaveBuffer[a++] = GUIState.currentStage >> 0 & 63;
     for (b = 0; 4 > b; b++) {
         gameSaveBuffer[a++] = 0;
         gameSaveBuffer[a++] = 0;
@@ -851,7 +815,7 @@ function updatePartyChecksum() {
     var a, b, c;
     basePartyChecksum = c = RMath.floor(RMath.randFloat(1024));
     c = hashAdjust(c, 0);
-    c = hashAdjust(c, currentStage);
+    c = hashAdjust(c, GUIState.currentStage);
     c = hashAdjust(c, partyMemberCount);
     c = hashAdjust(c, partyLevel);
     c = hashAdjust(c, partyEXPAccum);
@@ -1060,8 +1024,8 @@ function drawCanvas() {
     var d;
 
     tamperCheckScanOffset = tamperCheckScanOffset + 1 & 63;
-    if (!gameScreenState) {
-        currentStage = 0;
+    if (!GUIState.gameScreenState) {
+        GUIState.currentStage = 0;
         partySpawnXByHero[0] = 20;
         partySpawnXByHero[1] = 28;
         partySpawnXByHero[2] = 36;
@@ -1070,13 +1034,13 @@ function drawCanvas() {
         partySpawnYByHero[1] = 45;
         partySpawnYByHero[2] = 45;
         partySpawnYByHero[3] = 45;
-        gameScreenState++;
-    } else if (1 == gameScreenState) {
+        GUIState.gameScreenState++;
+    } else if (1 == GUIState.gameScreenState) {
         if (loadLevelData(0)) {
-            gameScreenState++;
+            GUIState.gameScreenState++;
         }
-    } else if (2 == gameScreenState || 3 == gameScreenState) { // title menu
-        clickInUI = false;
+    } else if (2 == GUIState.gameScreenState || 3 == GUIState.gameScreenState) { // title menu
+        GUIState.clickInUI = false;
         updatePlayerParty();
         drawGameStage();
         drawPlayerParty();
@@ -1110,11 +1074,11 @@ function drawCanvas() {
             }
         }
 
-        if (2 == gameScreenState) {
+        if (2 == GUIState.gameScreenState) {
             drawTextCentered(LoadedFonts.gameFont, 320, 220, "NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
                 if (isMouseClicked) {
-                    gameScreenState = 0 == gameLoadStatusCode ? 3 : 4;
+                    GUIState.gameScreenState = 0 == gameLoadStatusCode ? 3 : 4;
                 }
                 drawLine(256, 228, 384, 228, 11141120);
             }
@@ -1122,16 +1086,16 @@ function drawCanvas() {
                 drawTextCentered(LoadedFonts.gameFont, 320, 260, "LOAD GAME", 16777215, 10053171);
                 if (buttonCheckCentered(320, 260, 128, 24)) {
                     if (isMouseClicked) {
-                        gameScreenState = 5;
+                        GUIState.gameScreenState = 5;
                     }
                     drawLine(256, 268, 384, 268, 11141120);
                 }
             }
-        } else if (3 == gameScreenState) {
+        } else if (3 == GUIState.gameScreenState) {
             drawTextCentered(LoadedFonts.gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
                 if (isMouseClicked) {
-                    gameScreenState = 4;
+                    GUIState.gameScreenState = 4;
                 }
                 drawLine(192, 228, 448, 228, 11141120);
             }
@@ -1139,7 +1103,7 @@ function drawCanvas() {
             drawTextCentered(LoadedFonts.gameFont, 320, 260, "CANCEL", 16777215, 10053171);
             if (buttonCheckCentered(320, 260, 128, 24)) {
                 if (isMouseClicked) {
-                    gameScreenState = 2;
+                    GUIState.gameScreenState = 2;
                 }
                 drawLine(256, 268, 384, 268, 11141120);
             }
@@ -1165,11 +1129,11 @@ function drawCanvas() {
         drawRect(0, 408, 640, 16, 0);
         drawTextCentered(LoadedFonts.gameFont, 320, 417, Consts.copyrightText2, -1, 6697728);
 
-    } else if (4 == gameScreenState || 5 == gameScreenState) {
-        if (4 == gameScreenState) {
+    } else if (4 == GUIState.gameScreenState || 5 == GUIState.gameScreenState) {
+        if (4 == GUIState.gameScreenState) {
             resetGameProgress();
             partyEquipmentTable[0][0] = 4;
-            currentStage = itemForgeLvls[4] = 1;
+            GUIState.currentStage = itemForgeLvls[4] = 1;
             partySpawnXByHero[0] = 20;
             partySpawnXByHero[1] = 28;
             partySpawnXByHero[2] = 36;
@@ -1179,9 +1143,9 @@ function drawCanvas() {
             partySpawnYByHero[2] = 40;
             partySpawnYByHero[3] = 40;
             updatePartyStats();
-        } else if (5 == gameScreenState) {
+        } else if (5 == GUIState.gameScreenState) {
             resetUIStates();
-            currentStage = 1;
+            GUIState.currentStage = 1;
             partySpawnXByHero[0] = 20;
             partySpawnXByHero[1] = 28;
             partySpawnXByHero[2] = 36;
@@ -1193,37 +1157,37 @@ function drawCanvas() {
         }
         
         screenFadeFactor = 0;
-        gameScreenState = 10;
-    } else if (10 == gameScreenState) {
-        if (loadLevelData(currentStage)) {
-            if (1 == currentStage) {
+        GUIState.gameScreenState = 10;
+    } else if (10 == GUIState.gameScreenState) {
+        if (loadLevelData(GUIState.currentStage)) {
+            if (1 == GUIState.currentStage) {
                 comboMultBonus >>= 1;
             }
-            screenStateTimer = 0;
-            gameScreenState++;
+            GUIState.screenStateTimer = 0;
+            GUIState.gameScreenState++;
         }
-    } else if (11 == gameScreenState || 12 == gameScreenState || 13 == gameScreenState || 30 == gameScreenState) {
+    } else if (11 == GUIState.gameScreenState || 12 == GUIState.gameScreenState || 13 == GUIState.gameScreenState || 30 == GUIState.gameScreenState) {
         if (isMouseClicked) {
-            clickInUI = false;
-            if (360 <= mouseYCurrent) clickInUI = true;
+            GUIState.clickInUI = false;
+            if (360 <= mouseYCurrent) GUIState.clickInUI = true;
 
-            if (memberUIVisible)
-                if (buttonCheck(8, 8, 204, 196)) clickInUI = true;
+            if (GUIState.memberUIVisible)
+                if (buttonCheck(8, 8, 204, 196)) GUIState.clickInUI = true;
 
-            if (inventoryUIVisible)
-                if (buttonCheck(218, 8, 204, 260)) clickInUI = true;
+            if (GUIState.inventoryUIVisible)
+                if (buttonCheck(218, 8, 204, 260)) GUIState.clickInUI = true;
 
-            if (bestiaryUIVisible)
-                if (buttonCheck(428, 8, 204, 180)) clickInUI = true;
+            if (GUIState.bestiaryUIVisible)
+                if (buttonCheck(428, 8, 204, 180)) GUIState.clickInUI = true;
 
-            if (badgesUIVisible)
-                if (buttonCheck(428, 8, 204, 180)) clickInUI = true;
+            if (GUIState.badgesUIVisible)
+                if (buttonCheck(428, 8, 204, 180)) GUIState.clickInUI = true;
 
-            if (optionsUIVisible)
-                if (buttonCheck(428, 196, 204, 148)) clickInUI = true;
+            if (GUIState.optionsUIVisible)
+                if (buttonCheck(428, 196, 204, 148)) GUIState.clickInUI = true;
 
-            if (shrineUIVisible)
-                if (buttonCheck(218, 8, 204, 180)) clickInUI = true;
+            if (GUIState.shrineUIVisible)
+                if (buttonCheck(218, 8, 204, 180)) GUIState.clickInUI = true;
         }
 
         updatePartyStats();
@@ -1243,33 +1207,33 @@ function drawCanvas() {
 
         // display current stage name
         isSolidRender = 1;
-        drawRect(4, 4, 8 * stageListArray[currentStage][StageProps.stageNameCol].length + 8, 20, 2151694400); // background
+        drawRect(4, 4, 8 * stageListArray[GUIState.currentStage][StageProps.stageNameCol].length + 8, 20, 2151694400); // background
         isSolidRender = 0;
-        drawText(LoadedFonts.gameFont, 8, 8, stageListArray[currentStage][StageProps.stageNameCol], 16777215, 0);
+        drawText(LoadedFonts.gameFont, 8, 8, stageListArray[GUIState.currentStage][StageProps.stageNameCol], 16777215, 0);
         drawGameUI();
-        if (11 == gameScreenState) {
+        if (11 == GUIState.gameScreenState) {
             c = 255;
-            if (50 < screenStateTimer) {
-                c = 255 - RMath.floor(255 * (screenStateTimer - 50) / 20);
+            if (50 < GUIState.screenStateTimer) {
+                c = 255 - RMath.floor(255 * (GUIState.screenStateTimer - 50) / 20);
             }
-            drawScaledTintedTextCentered(LoadedFonts.gameFont, 320, 180, stageListArray[currentStage][StageProps.stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
-            a = -1E3 + RMath.floor(500 * screenStateTimer / 20);
+            drawScaledTintedTextCentered(LoadedFonts.gameFont, 320, 180, stageListArray[GUIState.currentStage][StageProps.stageNameCol], 255, 255, 255, c, 64, 64, 64, c, 16, 24);
+            a = -1E3 + RMath.floor(500 * GUIState.screenStateTimer / 20);
             drawLine(a, 164, a + 1E3, 164, 8421504);
-            a = 640 - RMath.floor(500 * screenStateTimer / 20);
+            a = 640 - RMath.floor(500 * GUIState.screenStateTimer / 20);
             drawLine(a, 193, a + 1E3, 193, 8421504);
-            screenStateTimer++;
-            screenFadeFactor = RMath.clamp(screenStateTimer / 30, 0, 1);
-            if (70 <= screenStateTimer) {
+            GUIState.screenStateTimer++;
+            screenFadeFactor = RMath.clamp(GUIState.screenStateTimer / 30, 0, 1);
+            if (70 <= GUIState.screenStateTimer) {
                 screenFadeFactor = 1;
-                screenStateTimer = 0;
-                gameScreenState++;
+                GUIState.screenStateTimer = 0;
+                GUIState.gameScreenState++;
             }
-        } else if (12 == gameScreenState) {
+        } else if (12 == GUIState.gameScreenState) {
             for (a = b = 0; a < partyMemberCount; a++)
                 b += partyLP[a];
             if (0 == b) {
-                screenStateTimer = 0;
-                gameScreenState = 30;
+                GUIState.screenStateTimer = 0;
+                GUIState.gameScreenState = 30;
                 comboMultBonus = comboCount = comboWindowTimer = 0;
                 c = RMath.floor(partyGold / 10 / partyMemberCount);
                 if (0 < c) {
@@ -1284,9 +1248,9 @@ function drawCanvas() {
                 saveGame();
                 for (a = 0; a < partyMemberCount; a++)
                     partyLP[a] = 0;
-            } else if (currentStage != lastStageIdx) {
-                screenStateTimer = 0;
-                gameScreenState = 13;
+            } else if (GUIState.currentStage != lastStageIdx) {
+                GUIState.screenStateTimer = 0;
+                GUIState.gameScreenState = 13;
                 if (isBadgeIncompleteForCurrentStage(6)) {
                     if ((2 == lastClearedStageIdx && 4 == lastStageIdx || 4 == lastClearedStageIdx && 2 == lastStageIdx) &&
                         0 == stage_partyDamageTaken &&
@@ -1305,28 +1269,28 @@ function drawCanvas() {
                 }
             }
 
-        } else if (13 == gameScreenState) {
-            screenStateTimer++;
-            screenFadeFactor = RMath.clamp(1 - screenStateTimer / 20, 0, 1);
-            if (20 == screenStateTimer) {
+        } else if (13 == GUIState.gameScreenState) {
+            GUIState.screenStateTimer++;
+            screenFadeFactor = RMath.clamp(1 - GUIState.screenStateTimer / 20, 0, 1);
+            if (20 == GUIState.screenStateTimer) {
                 screenFadeFactor = 0;
-                gameScreenState = 10;
-                lastClearedStageIdx = currentStage;
-                currentStage = lastStageIdx;
+                GUIState.gameScreenState = 10;
+                lastClearedStageIdx = GUIState.currentStage;
+                GUIState.currentStage = lastStageIdx;
                 saveGame();
             }
-        } else if (30 == gameScreenState) {
-            100 > screenStateTimer && screenStateTimer++;
-            c = RMath.floor(255 * screenStateTimer / 100);
+        } else if (30 == GUIState.gameScreenState) {
+            100 > GUIState.screenStateTimer && GUIState.screenStateTimer++;
+            c = RMath.floor(255 * GUIState.screenStateTimer / 100);
             drawScaledTintedTextCentered(LoadedFonts.gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24);
-            if (100 == screenStateTimer && isMouseClicked) {
+            if (100 == GUIState.screenStateTimer && isMouseClicked) {
                 for (a = 0; 4 > a; a++) {
                     partyLP[a] = 1;
                     heroEmitCurrent[a] = 0;
                 }
                 screenFadeFactor = 0;
-                gameScreenState = 10;
-                currentStage = 1;
+                GUIState.gameScreenState = 10;
+                GUIState.currentStage = 1;
                 partySpawnXByHero[0] = 20;
                 partySpawnXByHero[1] = 28;
                 partySpawnXByHero[2] = 36;
@@ -1521,24 +1485,24 @@ function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // 
     var h;
     if (buttonCheck(_x, _y, _width, _height))
         if (fillEmptyPixelsRect(_x, _y, _width, _height, 6684672), isMouseClicked && 0 != _itemId) {
-            if (inventoryUIVisible = inventoryUIVisible && inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx] == _itemId ? false : true) {
-                shrineUIVisible = false;
+            if (GUIState.inventoryUIVisible = GUIState.inventoryUIVisible && inventoryItemLists[GUIState.inventoryTabIdx][28 * GUIState.inventoryPageIdx + GUIState.inventorySlotIdx] == _itemId ? false : true) {
+                GUIState.shrineUIVisible = false;
             }
             for (_x = 0; _x < inventoryItemLists.length; _x++) {
                 for (h = 0; h < inventoryItemLists[_x].length && inventoryItemLists[_x][h] != _itemId; h++);
                 if (inventoryItemLists[_x][h] == _itemId) break;
             }
             if (_x != inventoryItemLists.length) {
-                inventoryTabIdx = _x;
-                inventoryPageIdx = RMath.floor(h / 28);
-                inventorySlotIdx = h % 28;
+                GUIState.inventoryTabIdx = _x;
+                GUIState.inventoryPageIdx = RMath.floor(h / 28);
+                GUIState.inventorySlotIdx = h % 28;
             }
         } else if (isMouseClicked) {
-        if (inventoryUIVisible = inventoryUIVisible && inventoryTabIdx == _pageIdx ? false : true) {
-            shrineUIVisible = false;
+        if (GUIState.inventoryUIVisible = GUIState.inventoryUIVisible && GUIState.inventoryTabIdx == _pageIdx ? false : true) {
+            GUIState.shrineUIVisible = false;
         }
-        inventoryTabIdx = _pageIdx;
-        inventorySlotIdx = inventoryPageIdx = 0;
+        GUIState.inventoryTabIdx = _pageIdx;
+        GUIState.inventorySlotIdx = GUIState.inventoryPageIdx = 0;
     }
 }
 
@@ -1546,38 +1510,38 @@ function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // 
 function drawGameUI() {
     var hidx, b, c, d, f, g, h, k;
     if (keyJustPressed[32]) {
-        if (memberUIVisible ||
-            inventoryUIVisible ||
-            bestiaryUIVisible ||
-            badgesUIVisible ||
-            optionsUIVisible ||
-            shrineUIVisible
+        if (GUIState.memberUIVisible ||
+            GUIState.inventoryUIVisible ||
+            GUIState.bestiaryUIVisible ||
+            GUIState.badgesUIVisible ||
+            GUIState.optionsUIVisible ||
+            GUIState.shrineUIVisible
         ) {
-            memberUIVisibleBackup = memberUIVisible;
-            inventoryUIVisibleBackup = inventoryUIVisible;
-            bestiaryUIVisibleBackup = bestiaryUIVisible;
-            badgesUIVisibleBackup = badgesUIVisible;
-            optionsUIVisibleBackup = optionsUIVisible;
-            shrineUIVisibleBackup = shrineUIVisible;
-            memberUIVisible = inventoryUIVisible = bestiaryUIVisible = badgesUIVisible = optionsUIVisible = shrineUIVisible = false;
+            GUIState.memberUIVisibleBackup = GUIState.memberUIVisible;
+            GUIState.inventoryUIVisibleBackup = GUIState.inventoryUIVisible;
+            GUIState.bestiaryUIVisibleBackup = GUIState.bestiaryUIVisible;
+            GUIState.badgesUIVisibleBackup = GUIState.badgesUIVisible;
+            GUIState.optionsUIVisibleBackup = GUIState.optionsUIVisible;
+            GUIState.shrineUIVisibleBackup = GUIState.shrineUIVisible;
+            GUIState.memberUIVisible = GUIState.inventoryUIVisible = GUIState.bestiaryUIVisible = GUIState.badgesUIVisible = GUIState.optionsUIVisible = GUIState.shrineUIVisible = false;
         } else {
-            memberUIVisible = memberUIVisibleBackup;
-            inventoryUIVisible = inventoryUIVisibleBackup;
-            bestiaryUIVisible = bestiaryUIVisibleBackup;
-            badgesUIVisible = badgesUIVisibleBackup;
-            optionsUIVisible = optionsUIVisibleBackup;
-            shrineUIVisible = shrineUIVisibleBackup;
+            GUIState.memberUIVisible = GUIState.memberUIVisibleBackup;
+            GUIState.inventoryUIVisible = GUIState.inventoryUIVisibleBackup;
+            GUIState.bestiaryUIVisible = GUIState.bestiaryUIVisibleBackup;
+            GUIState.badgesUIVisible = GUIState.badgesUIVisibleBackup;
+            GUIState.optionsUIVisible = GUIState.optionsUIVisibleBackup;
+            GUIState.shrineUIVisible = GUIState.shrineUIVisibleBackup;
         }
     }
 
 
-    drawRect(0, 361, 640, 70, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
+    drawRect(0, 361, 640, 70, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
     f = 8;
     g = 348;
     drawText(LoadedFonts.gameFont, f, g, "LV " + partyLevel, 16777215, 0);
     if (99 > partyLevel) {
-        var p = LevelExpThresholds[partyLevel - 1];
-        drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + RMath.floor(100 * (partyEXPAccum - p) / (LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0);
+        var p = GUIState.LevelExpThresholds[partyLevel - 1];
+        drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + partyEXPAccum + "(" + RMath.floor(100 * (partyEXPAccum - p) / (GUIState.LevelExpThresholds[partyLevel] - p)) + "%)", 16777215, 0);
     } else drawText(LoadedFonts.gameFont, f + 48, g, "EXP " + partyEXPAccum + "(MAX)", 16777215, 0);
     drawText(LoadedFonts.gameFont, f + 184, g, "G " + partyGold, 16777215, 0);
 
@@ -1656,12 +1620,12 @@ function drawGameUI() {
         if (buttonCheck(f + hidx * d, g, 24, 24)) {
             fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608);
 
-            if (isMouseClicked && selectingHero == hidx) {
-                memberUIVisible = !memberUIVisible;
+            if (isMouseClicked && GUIState.selectingHero == hidx) {
+                GUIState.memberUIVisible = !GUIState.memberUIVisible;
             }
 
             if (isMouseClicked) {
-                selectingHero = hidx;
+                GUIState.selectingHero = hidx;
             }
         }
         for (b = 0; 5 > b; b++) {
@@ -1683,11 +1647,11 @@ function drawGameUI() {
             }
             handleInventoryButton(k, n, 16, 16, c, b);
             if (buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c) {
-                selectingHero = hidx;
+                GUIState.selectingHero = hidx;
             }
         }
     }
-    drawRectOutline(f + selectingHero * d - 1, g - 1, 26, 26, 16711680);
+    drawRectOutline(f + GUIState.selectingHero * d - 1, g - 1, 26, 26, 16711680);
     f = 472;
     g = 379;
     d = 36;
@@ -1704,33 +1668,33 @@ function drawGameUI() {
             stageFlagUseCount++;
         }
     }
-    if (drawIconButton(f + 0 * d, g, 1, "STATUS", memberUIVisible ? 16750950 : 16777215)) {
+    if (drawIconButton(f + 0 * d, g, 1, "STATUS", GUIState.memberUIVisible ? 16750950 : 16777215)) {
         if (isMouseClicked) {
-            memberUIVisible = !memberUIVisible;
+            GUIState.memberUIVisible = !GUIState.memberUIVisible;
         }
     }
 
-    if (drawIconButton(f + 1 * d, g, 2, "ITEM", inventoryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (inventoryUIVisible = !inventoryUIVisible)) {
-            shrineUIVisible = false;
+    if (drawIconButton(f + 1 * d, g, 2, "ITEM", GUIState.inventoryUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked && (GUIState.inventoryUIVisible = !GUIState.inventoryUIVisible)) {
+            GUIState.shrineUIVisible = false;
         }
     }
 
-    if (drawIconButton(f + 2 * d, g, 3, "MONSTER", bestiaryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (bestiaryUIVisible = !bestiaryUIVisible)) {
-            badgesUIVisible = false;
+    if (drawIconButton(f + 2 * d, g, 3, "MONSTER", GUIState.bestiaryUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked && (GUIState.bestiaryUIVisible = !GUIState.bestiaryUIVisible)) {
+            GUIState.badgesUIVisible = false;
         }
     }
 
-    if (drawIconButton(f + 3 * d, g, 4, "MEDAL", badgesUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (badgesUIVisible = !badgesUIVisible)) {
-            bestiaryUIVisible = false;
+    if (drawIconButton(f + 3 * d, g, 4, "MEDAL", GUIState.badgesUIVisible ? 16750950 : 16777215)) {
+        if (isMouseClicked && (GUIState.badgesUIVisible = !GUIState.badgesUIVisible)) {
+            GUIState.bestiaryUIVisible = false;
         }
     }
 
-    if (drawIconButton(f + 4 * d, g, 5, "OPTION", optionsUIVisible ? 16750950 : 16777215)) {
+    if (drawIconButton(f + 4 * d, g, 5, "OPTION", GUIState.optionsUIVisible ? 16750950 : 16777215)) {
         if (isMouseClicked) {
-            optionsUIVisible = !optionsUIVisible;
+            GUIState.optionsUIVisible = !GUIState.optionsUIVisible;
         }
     }
     c = 0;
@@ -1738,7 +1702,7 @@ function drawGameUI() {
     if (0 < c) {
         drawText(LoadedFonts.gameFontSmall, f + 1 * d - 16, g - 16, "NEW", 16776960, -1);
     }
-    if (1 == currentStage) {
+    if (1 == GUIState.currentStage) {
         LoadedFonts.gameFont.a = 1;
         drawTextCentered(LoadedFonts.gameFont, 530, 168, "INN", 16777215, 8409120);
         if (buttonCheckCentered(528, 180, 48, 40)) {
@@ -1751,7 +1715,7 @@ function drawGameUI() {
             LoadedFonts.gameFont.a = 1;
             drawTextCentered(LoadedFonts.gameFont, 530, 168, "INN", 15908203, 8409120);
             drawTextCentered(LoadedFonts.gameFont, 528, 187, "G " + c, 16777215, 8409120);
-            if (0 < c && c <= partyGold && isMouseClicked && !clickInUI) {
+            if (0 < c && c <= partyGold && isMouseClicked && !GUIState.clickInUI) {
                 for (hidx = 0; hidx < partyMemberCount; hidx++) {
                     if (partyLP[hidx] != partyMaxLP[hidx]) {
                         spawnPopup(heroJointPositionsByHero[hidx][0].x, heroJointPositionsByHero[hidx][0].y, 0, partyMaxLP[hidx] - partyLP[hidx], 60, 65280);
@@ -1770,32 +1734,32 @@ function drawGameUI() {
         if (buttonCheckCentered(52, 308, 56, 40)) {
             LoadedFonts.gameFont.a = 1;
             drawTextCentered(LoadedFonts.gameFont, 54, 296, "SMITH", 15908203, 8409120);
-            if (isMouseClicked && !clickInUI) {
-                if (inventoryUIVisible = !inventoryUIVisible) {
-                    shrineUIVisible = false;
+            if (isMouseClicked && !GUIState.clickInUI) {
+                if (GUIState.inventoryUIVisible = !GUIState.inventoryUIVisible) {
+                    GUIState.shrineUIVisible = false;
                 }
             }
         }
-    } else if (12 == currentStage) {
+    } else if (12 == GUIState.currentStage) {
         LoadedFonts.gameFont.a = 1;
         drawTextCentered(LoadedFonts.gameFont, 418, 104, "SHRINE", 16777215, 8409120);
         if (buttonCheckCentered(416, 108, 48, 40)) {
             LoadedFonts.gameFont.a = 1;
             drawTextCentered(LoadedFonts.gameFont, 418, 104, "SHRINE", 15908203, 8409120);
-            if (isMouseClicked && !clickInUI && (shrineUIVisible = !shrineUIVisible)) {
-                inventoryUIVisible = false;
+            if (isMouseClicked && !GUIState.clickInUI && (GUIState.shrineUIVisible = !GUIState.shrineUIVisible)) {
+                GUIState.inventoryUIVisible = false;
             }
         }
     };
 
-    if (memberUIVisible) {
+    if (GUIState.memberUIVisible) {
         g = f = 14;
-        drawRect(f - 6, g - 6, 204, 196, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 196, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
         LoadedFonts.gameFont.a = 1;
-        drawText(LoadedFonts.gameFont, f, g, "LP " + partyLP[selectingHero] + "/" + partyMaxLP[selectingHero] + " SP (" + partySP[selectingHero] + ")", 16777215, 0);
+        drawText(LoadedFonts.gameFont, f, g, "LP " + partyLP[GUIState.selectingHero] + "/" + partyMaxLP[GUIState.selectingHero] + " SP (" + partySP[GUIState.selectingHero] + ")", 16777215, 0);
         let k = "LP +10%;Short Attack +5%;Middle Attack +5%;Long Attack +5%;Physical +5%;Elemental +5%;Dodge +2%".split(";");
         LoadedFonts.gameFont.a = 1;
-        drawText(LoadedFonts.gameFont, f, g + 20, k[selectedStatIndex], 16777215, 0);
+        drawText(LoadedFonts.gameFont, f, g + 20, k[GUIState.selectedStatIndex], 16777215, 0);
         let statXs = [9, 0, 20, 21, 17, 22, 23];
         let maxStats = [999, 999, 999, 999, 999, 999, 25];
 
@@ -1804,83 +1768,83 @@ function drawGameUI() {
             let _clicked = drawMenuButton(
                 f + 12 + _statIdx % 7 * 28, g + 46 + 28 * ~~(_statIdx / 7),
                 statXs[_statIdx],
-                "" + partyStats[_statIdx][selectingHero],
-                selectedStatIndex == _statIdx ? 16737894 : 16777215
+                "" + partyStats[_statIdx][GUIState.selectingHero],
+                GUIState.selectedStatIndex == _statIdx ? 16737894 : 16777215
             );
             if (_clicked) {
-                if (selectedStatIndex != _statIdx) {
+                if (GUIState.selectedStatIndex != _statIdx) {
                     // mouse button is held, but the cursor is hovering over another icon
-                    if (isMouseReleased) selectedStatIndex = _statIdx;
-                } else if (0 < partySP[selectingHero] && partyStats[selectedStatIndex][selectingHero] < maxStats[selectedStatIndex]) {
+                    if (isMouseReleased) GUIState.selectedStatIndex = _statIdx;
+                } else if (0 < partySP[GUIState.selectingHero] && partyStats[GUIState.selectedStatIndex][GUIState.selectingHero] < maxStats[GUIState.selectedStatIndex]) {
                     drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481);
                     if (isMouseReleased) {
-                        partyStats[selectedStatIndex][selectingHero]++;
-                        partySP[selectingHero]--;
+                        partyStats[GUIState.selectedStatIndex][GUIState.selectingHero]++;
+                        partySP[GUIState.selectingHero]--;
                     }
                 }
             }
         }
 
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
-            memberUIVisible = false;
+            GUIState.memberUIVisible = false;
         }
 
         g += 64;
         // show stats
         for (let _slotIdx = 0; 2 > _slotIdx; _slotIdx++) { // loop over primary and secondary
-            let _equipmentIdx = partyEquipmentTable[selectingHero][_slotIdx];
+            let _equipmentIdx = partyEquipmentTable[GUIState.selectingHero][_slotIdx];
             if (0 != itemList[_equipmentIdx][ItemProps.Appearance]) { // is it empty
                 if (10 > itemList[_equipmentIdx][ItemProps.Appearance]) {
                     LoadedFonts.gameFontMed.a = 4;
                     let accessoryLevel = itemForgeLvls[_equipmentIdx];
-                    if (heroHasAccessoryEffect(selectingHero, AccessoryProps.ArmsBonus0) && 3 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
-                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, AccessoryProps.ArmsBonus0);
+                    if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.ArmsBonus0) && 3 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
+                        accessoryLevel += countAccessoryLvlBonuses(GUIState.selectingHero, AccessoryProps.ArmsBonus0);
                     }
-                    if (heroHasAccessoryEffect(selectingHero, AccessoryProps.ChargeBonus) && 4 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
-                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, AccessoryProps.ChargeBonus);
+                    if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.ChargeBonus) && 4 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
+                        accessoryLevel += countAccessoryLvlBonuses(GUIState.selectingHero, AccessoryProps.ChargeBonus);
                     }
-                    if (heroHasAccessoryEffect(selectingHero, AccessoryProps.ArmsBonus1) && 3 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
-                        accessoryLevel += countAccessoryLvlBonuses(selectingHero, AccessoryProps.ArmsBonus1);
+                    if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.ArmsBonus1) && 3 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
+                        accessoryLevel += countAccessoryLvlBonuses(GUIState.selectingHero, AccessoryProps.ArmsBonus1);
                     }
-                    if (heroHasAccessoryEffect(selectingHero, AccessoryProps.ArmsBonus1) && 4 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
-                        accessoryLevel += sumAccessorySecondaryValues(selectingHero, AccessoryProps.ArmsBonus1);
+                    if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.ArmsBonus1) && 4 == itemList[_equipmentIdx][ItemProps.DropIconCol]) {
+                        accessoryLevel += sumAccessorySecondaryValues(GUIState.selectingHero, AccessoryProps.ArmsBonus1);
                     }
 
                     drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 0, "" + itemList[_equipmentIdx][ItemProps.Name] + " " + accessoryLevel, -1, 0);
 
-                    let atkRangeTxt = "AT " + minAtkArray[4 * _slotIdx + selectingHero] + "-" + maxAtkArray[4 * _slotIdx + selectingHero];
+                    let atkRangeTxt = "AT " + minAtkArray[4 * _slotIdx + GUIState.selectingHero] + "-" + maxAtkArray[4 * _slotIdx + GUIState.selectingHero];
 
                     if (itemList[_equipmentIdx][ItemProps.AttackMode] === 10 ||
                         itemList[_equipmentIdx][ItemProps.AttackMode] === 11) {
-                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + ~~(getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.AttackCooldown) * getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.AttackPower) / 60);
+                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + GUIState.selectingHero] + ">" + ~~(getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackCooldown) * getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackPower) / 60);
                     } else if (0 != itemList[_equipmentIdx][ItemProps.AttackMode]) {
-                        let b = getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.AttackPower);
-                        if (heroHasAccessoryEffect(selectingHero, AccessoryProps.EffectLightningElemBonus) && 3 == itemList[_equipmentIdx][ItemProps.ElementType] && 20 == itemList[_equipmentIdx][ItemProps.AttackMode]) {
-                            b += countAccessoryLvlBonuses(selectingHero, AccessoryProps.EffectLightningElemBonus);
+                        let b = getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.AttackPower);
+                        if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.EffectLightningElemBonus) && 3 == itemList[_equipmentIdx][ItemProps.ElementType] && 20 == itemList[_equipmentIdx][ItemProps.AttackMode]) {
+                            b += countAccessoryLvlBonuses(GUIState.selectingHero, AccessoryProps.EffectLightningElemBonus);
                         }
-                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero] + ">" + b;
+                        atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + GUIState.selectingHero] + ">" + b;
                     } else {
-                        if (1 < atkCountArray[4 * _slotIdx + selectingHero]) {
-                            atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + selectingHero];
+                        if (1 < atkCountArray[4 * _slotIdx + GUIState.selectingHero]) {
+                            atkRangeTxt += " *" + atkCountArray[4 * _slotIdx + GUIState.selectingHero];
                         }
-                        if (99 == getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.HitCountStat)) {
+                        if (99 == getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.HitCountStat)) {
                             atkRangeTxt += " all";
-                        } else if (1 < getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.HitCountStat)) {
-                            atkRangeTxt += " " + getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.HitCountStat) + "hit";
+                        } else if (1 < getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.HitCountStat)) {
+                            atkRangeTxt += " " + getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.HitCountStat) + "hit";
                         }
                         drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 12, atkRangeTxt, 16777215, 0);
                         if (!_slotIdx) {
-                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + heroAgiValues[selectingHero], 16777215, 0);
-                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + heroRangeValues[selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 24, "AGI " + heroAgiValues[GUIState.selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 36, "RANGE " + heroRangeValues[GUIState.selectingHero], 16777215, 0);
                         }
                         if (_slotIdx) {
-                            if (-1 == heroEmitValues[selectingHero]) {
+                            if (-1 == heroEmitValues[GUIState.selectingHero]) {
                                 drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT passive", 16777215, 0);
                             } else {
-                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT " + heroEmitValues[selectingHero], 16777215, 0);
+                                drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "EMIT " + heroEmitValues[GUIState.selectingHero], 16777215, 0);
                             }
                         } else {
-                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "CHARGE +" + heroChargeValues[selectingHero], 16777215, 0);
+                            drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 48, "CHARGE +" + heroChargeValues[GUIState.selectingHero], 16777215, 0);
                             drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "SML", 16777215, 0);
                             if (0 == itemList[_equipmentIdx][ItemProps.RangeType]) {
                                 drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 60, "    short", 16764057, 0);
@@ -1899,9 +1863,9 @@ function drawGameUI() {
                                 drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "    fire", 16724736, 0);
                             }
                             if (2 == itemList[_equipmentIdx][ItemProps.ElementType]) {
-                                let iceVal = getModifiedStatVal(selectingHero, _equipmentIdx, ItemProps.IceBonusPercent);
-                                if (heroHasAccessoryEffect(selectingHero, AccessoryProps.EffectIceStatBonus)) {
-                                    iceVal += countAccessoryLvlBonuses(selectingHero, AccessoryProps.EffectIceStatBonus);
+                                let iceVal = getModifiedStatVal(GUIState.selectingHero, _equipmentIdx, ItemProps.IceBonusPercent);
+                                if (heroHasAccessoryEffect(GUIState.selectingHero, AccessoryProps.EffectIceStatBonus)) {
+                                    iceVal += countAccessoryLvlBonuses(GUIState.selectingHero, AccessoryProps.EffectIceStatBonus);
                                 }
                                 drawText(LoadedFonts.gameFontMed, f + 96 * _slotIdx, g + 72, "    ice " + iceVal + "%", 10070783, 0);
                             }
@@ -1922,7 +1886,7 @@ function drawGameUI() {
         g += 96;
         k = ["ARMS", "CHARGE"];
         for (hidx = 0; 2 > hidx; hidx++) {
-            c = partyEquipmentTable[selectingHero][hidx];
+            c = partyEquipmentTable[GUIState.selectingHero][hidx];
             b = f + 28 * hidx;
             d = g;
             drawRect(b, d, 24, 24, 0);
@@ -1937,13 +1901,13 @@ function drawGameUI() {
         }
     }
 
-    if (inventoryUIVisible) {
+    if (GUIState.inventoryUIVisible) {
         let _ox = 224;
         let _oy = 14;
-        drawRect(_ox - 6, _oy - 6, 204, 260, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
-        let c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + inventorySlotIdx];
+        drawRect(_ox - 6, _oy - 6, 204, 260, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
+        let c = inventoryItemLists[GUIState.inventoryTabIdx][28 * GUIState.inventoryPageIdx + GUIState.inventorySlotIdx];
 
-        if (0 != itemForgeLvls[c] && 1 == currentStage && 2 >= inventoryTabIdx) { // item upgrade panel
+        if (0 != itemForgeLvls[c] && 1 == GUIState.currentStage && 2 >= GUIState.inventoryTabIdx) { // item upgrade panel
             drawTextCentered(LoadedFonts.gameFontMed, _ox + 138, _oy + 28, "Lv UP", 16777215, 0);
             hidx = getItemStatWithForge(c, ItemProps.ForgeMaxLevel);
             if (0 == hidx)
@@ -1984,13 +1948,13 @@ function drawGameUI() {
                             h += " " + getItemStatWithForge(c, ItemProps.HitCountStat) + "hit";
                         }
                         drawText(LoadedFonts.gameFontMed, _ox, _oy + 12, h, 16777215, 0);
-                        if (                    0 == inventoryTabIdx) {
+                        if (                    0 == GUIState.inventoryTabIdx) {
                             drawText(LoadedFonts.gameFontMed, _ox, _oy + 24, "AGI " + getItemStatWithForge(c, ItemProps.Agility), 16777215, 0);
                         }
-                        if (0 == inventoryTabIdx) {
+                        if (0 == GUIState.inventoryTabIdx) {
                             drawText(LoadedFonts.gameFontMed, _ox, _oy + 36, "RANGE " + getItemStatWithForge(c, ItemProps.Range), 16777215, 0);
                         }
-                        if (0 == inventoryTabIdx) {
+                        if (0 == GUIState.inventoryTabIdx) {
                             drawText(LoadedFonts.gameFontMed, _ox, _oy + 48, "CHARGE +" + getItemStatWithForge(c, ItemProps.ChargeEmitValue), 16777215, 0);
                         } else {
                             if (-1 == getItemStatWithForge(c, ItemProps.ChargeEmitValue)) {
@@ -2083,21 +2047,21 @@ function drawGameUI() {
         }
 
         forgePreviewItemIdx = -1;
-        k = inventoryTabIdx;
+        k = GUIState.inventoryTabIdx;
         if (drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked) {
-            inventoryUIVisible = false;
+            GUIState.inventoryUIVisible = false;
         }
         for (hidx = 0; 28 > hidx; hidx++) {
-            c = inventoryItemLists[inventoryTabIdx][28 * inventoryPageIdx + hidx];
+            c = inventoryItemLists[GUIState.inventoryTabIdx][28 * GUIState.inventoryPageIdx + hidx];
             b = _ox + hidx % 7 * 28;
             d = _oy + 84 + 28 * ~~(hidx / 7);
             drawRect(b, d, 24, 24, 0);
             if (0 < itemForgeLvls[c]) {
                 spriteAltRenderFlag = 2;
                 h = itemList[c][ItemProps.HeadwearType];
-                if (2 == inventoryTabIdx) {
+                if (2 == GUIState.inventoryTabIdx) {
                     drawSpriteSheetPartTintedScaled(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY], true);
-                } else if (3 == inventoryTabIdx || 4 == inventoryTabIdx) {
+                } else if (3 == GUIState.inventoryTabIdx || 4 == GUIState.inventoryTabIdx) {
                     drawItemSpriteTinted(b + 4, d + 4, 16 * (h & 15), 16 * (h >> 4), itemList[c][ItemProps.SpriteSourceX], itemList[c][ModifierColumns.itemSpriteLocY]);
                 } else {
                     drawSpriteSheetPart(LoadedSprites.itemsSpriteSheet, b + 4, d + 4, 16, 16, 16 * (h & 15), 16 * (h >> 4), 16, 16, itemList[c][ItemProps.SpriteSourceX]);
@@ -2105,14 +2069,14 @@ function drawGameUI() {
                 
                 spriteAltRenderFlag = 0;
             }
-            if (hidx == inventorySlotIdx) {
+            if (hidx == GUIState.inventorySlotIdx) {
                 drawRectOutline(b, d, 24, 24, 16711680);
             }
             if (buttonCheck(b, d, 24, 24)) {
                 fillEmptyPixelsRect(b, d, 24, 24, 6684672);
-                if (inventorySlotIdx != hidx) {
+                if (GUIState.inventorySlotIdx != hidx) {
                     if (isMouseReleased) {
-                        inventorySlotIdx = hidx;
+                        GUIState.inventorySlotIdx = hidx;
                     }
                 } else {
                     h = -1;
@@ -2130,20 +2094,20 @@ function drawGameUI() {
                         if (-1 == h) {
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
                             if (isMouseReleased) {
-                                partyEquipmentTable[selectingHero][k] = c;
+                                partyEquipmentTable[GUIState.selectingHero][k] = c;
                             }
-                        } else if (h == selectingHero) {
+                        } else if (h == GUIState.selectingHero) {
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
                                 0);
                             if (isMouseReleased) {
-                                partyEquipmentTable[selectingHero][k] = 0;
+                                partyEquipmentTable[GUIState.selectingHero][k] = 0;
                             }
                         } else {
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0);
                             drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
                             if (isMouseReleased) {
                                 partyEquipmentTable[h][k] = 0;
-                                partyEquipmentTable[selectingHero][k] = c;
+                                partyEquipmentTable[GUIState.selectingHero][k] = c;
                             }
                         }
                         
@@ -2170,9 +2134,9 @@ function drawGameUI() {
         }
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
-            if (drawMenuButton(_ox + 12 + 28 * hidx, _oy + 238, hidx, k[hidx], inventoryTabIdx == hidx ? 16737894 : 16777215)) {
+            if (drawMenuButton(_ox + 12 + 28 * hidx, _oy + 238, hidx, k[hidx], GUIState.inventoryTabIdx == hidx ? 16737894 : 16777215)) {
                 if (isMouseClicked) {
-                    inventoryTabIdx = hidx;
+                    GUIState.inventoryTabIdx = hidx;
                 }
             }
             c = 0;
@@ -2182,27 +2146,27 @@ function drawGameUI() {
             }
         }
         if (drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked) {
-            inventoryPageIdx--;
+            GUIState.inventoryPageIdx--;
         }
         if (drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215) && isMouseClicked) {
-            inventoryPageIdx++;
+            GUIState.inventoryPageIdx++;
         }
-        h = ~~(inventoryItemLists[inventoryTabIdx].length / 28);
-        inventoryPageIdx = RMath.clamp(inventoryPageIdx, 0, h - 1);
-        drawTextCentered(LoadedFonts.gameFontSmall, _ox + 96, _oy + 209, "" + (inventoryPageIdx + 1) + "/" + h, 3355443, -1);
+        h = ~~(inventoryItemLists[GUIState.inventoryTabIdx].length / 28);
+        GUIState.inventoryPageIdx = RMath.clamp(GUIState.inventoryPageIdx, 0, h - 1);
+        drawTextCentered(LoadedFonts.gameFontSmall, _ox + 96, _oy + 209, "" + (GUIState.inventoryPageIdx + 1) + "/" + h, 3355443, -1);
     }
 
-    if (bestiaryUIVisible) {
+    if (GUIState.bestiaryUIVisible) {
         let f = 434;
         let g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
-            bestiaryUIVisible = false;
+            GUIState.bestiaryUIVisible = false;
         }
-        bestiaryEnemySelection = RMath.clamp(bestiaryEnemySelection, 0, bestiaryPageItems[currentBestiaryPage].length - 1);
-        let c = bestiaryPageItems[currentBestiaryPage][bestiaryEnemySelection];
+        GUIState.bestiaryEnemySelection = RMath.clamp(GUIState.bestiaryEnemySelection, 0, bestiaryPageItems[GUIState.currentBestiaryPage].length - 1);
+        let c = bestiaryPageItems[GUIState.currentBestiaryPage][GUIState.bestiaryEnemySelection];
 
-        if (0 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
+        if (0 == isStageReachedArray[stageIndexOrder[GUIState.currentBestiaryPage]]) {
             drawTextCentered(LoadedFonts.gameFont, f + 96, g + 48, "Not reached", -1, 0);
         } else {
             if (0 == bestiaryEntryState[c]) {
@@ -2291,46 +2255,46 @@ function drawGameUI() {
                     }
                 }
             }
-            for (hidx = 0; hidx < bestiaryPageItems[currentBestiaryPage].length; hidx++) {
-                let c = bestiaryPageItems[currentBestiaryPage][hidx];
+            for (hidx = 0; hidx < bestiaryPageItems[GUIState.currentBestiaryPage].length; hidx++) {
+                let c = bestiaryPageItems[GUIState.currentBestiaryPage][hidx];
                 let b = f + hidx % 7 * 28;
                 d = g + 96 + 28 * ~~(hidx / 7);
                 drawRect(b, d, 24, 24, 0);
-                if (hidx == bestiaryEnemySelection) {
+                if (hidx == GUIState.bestiaryEnemySelection) {
                     drawRectOutline(b, d, 24, 24, 16711680);
                 }
                 if (buttonCheck(b, d, 24, 24)) {
                     fillEmptyPixelsRect(b, d, 24, 24, 6684672);
                     if (isMouseClicked) {
-                        bestiaryEnemySelection = hidx;
+                        GUIState.bestiaryEnemySelection = hidx;
                     }
                 }
                 drawEnemyStatic(c, b + 12, d + 20, 2);
             }
         }
         if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked) {
-            currentBestiaryPage--;
+            GUIState.currentBestiaryPage--;
         }
         if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked) {
-            currentBestiaryPage++;    
+            GUIState.currentBestiaryPage++;    
         }
-        currentBestiaryPage = wrapStageIndex(currentBestiaryPage);
-        drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
-        if (1 == isStageReachedArray[stageIndexOrder[currentBestiaryPage]]) {
-            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[currentBestiaryPage]][StageProps.stageNameCol], -1, 0);
+        GUIState.currentBestiaryPage = wrapStageIndex(GUIState.currentBestiaryPage);
+        drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (GUIState.currentBestiaryPage + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        if (1 == isStageReachedArray[stageIndexOrder[GUIState.currentBestiaryPage]]) {
+            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[GUIState.currentBestiaryPage]][StageProps.stageNameCol], -1, 0);
         }
     }
-    if (badgesUIVisible) {
+    if (GUIState.badgesUIVisible) {
         let f = 434;
         let g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
-            badgesUIVisible = false;
+            GUIState.badgesUIVisible = false;
         }
-        if (0 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) 
+        if (0 == isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) 
             drawTextCentered(LoadedFonts.gameFont, f + 96, g + 48, "Not reached", -1, 0);
-        else for (hidx = 0; hidx < badgeIndicesByStage[badgesUIStageIdx].length; hidx++) {
-                c = badgeIndicesByStage[badgesUIStageIdx][hidx];
+        else for (hidx = 0; hidx < badgeIndicesByStage[GUIState.badgesUIStageIdx].length; hidx++) {
+                c = badgeIndicesByStage[GUIState.badgesUIStageIdx][hidx];
                 if (badgeList[c]) {
                     b = f + 6;
                     d = g + 6 + 24 * hidx;
@@ -2358,24 +2322,24 @@ function drawGameUI() {
                 }
             }
         if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked) {
-            badgesUIStageIdx--;
+            GUIState.badgesUIStageIdx--;
         }
         if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked) {
-            badgesUIStageIdx++;
+            GUIState.badgesUIStageIdx++;
         }
-        badgesUIStageIdx = wrapStageIndex(badgesUIStageIdx);
-        drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
-        if (1 == isStageReachedArray[stageIndexOrder[badgesUIStageIdx]]) {
-            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[badgesUIStageIdx]][StageProps.stageNameCol], -1, 0);
+        GUIState.badgesUIStageIdx = wrapStageIndex(GUIState.badgesUIStageIdx);
+        drawTextCentered(LoadedFonts.gameFontSmall, f + 96, g + 156, "" + (GUIState.badgesUIStageIdx + 1) + "/" + stageIndexOrder.length, 3355443, -1);
+        if (1 == isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) {
+            drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 156 - 20, stageListArray[stageIndexOrder[GUIState.badgesUIStageIdx]][StageProps.stageNameCol], -1, 0);
         }
     }
-    if (optionsUIVisible) {
+    if (GUIState.optionsUIVisible) {
         let f = 434;
         let g = 202;
         d = 32;
-        drawRect(f - 6, g - 6, 204, 148, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 148, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
-            optionsUIVisible = false;
+            GUIState.optionsUIVisible = false;
         }
         c = ["ON", "OFF"];
         drawText(LoadedFonts.gameFontMed, f + 0, g + 48, "Auto move", 16777215, 0);
@@ -2405,22 +2369,22 @@ function drawGameUI() {
                 cliffStopEnabled = 1 - cliffStopEnabled;
             }
         }
-        if (1 == currentStage) {
+        if (1 == GUIState.currentStage) {
             drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 100, "Return to TITLE", -1, 0);
         } else {
             drawTextCentered(LoadedFonts.gameFontMed, f + 96, g + 100, "Return to Village",
                 -1, 0);
         }
-        h = stageListArray[currentStage][StageProps.stageReturnCost];
+        h = stageListArray[GUIState.currentStage][StageProps.stageReturnCost];
         if (drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h)) {
             if (h <= partyGold && isMouseClicked) {
                 partyGold = RMath.clamp(partyGold - h, 0, 9999999);
-                if (1 == currentStage) {
-                    gameScreenState = 0;
+                if (1 == GUIState.currentStage) {
+                    GUIState.gameScreenState = 0;
                 } else {
                     screenFadeFactor = 0;
-                    gameScreenState = 10;
-                    currentStage = 1;
+                    GUIState.gameScreenState = 10;
+                    GUIState.currentStage = 1;
                     partySpawnXByHero[0] = 20;
                     partySpawnXByHero[1] = 28;
                     partySpawnXByHero[2] = 36;
@@ -2431,16 +2395,16 @@ function drawGameUI() {
                     partySpawnYByHero[3] = 40;
                 }
                 saveGame();
-                optionsUIVisible = false;
+                GUIState.optionsUIVisible = false;
             }
         }
     }
-    if (shrineUIVisible) {
+    if (GUIState.shrineUIVisible) {
         f = 224;
         g = 14;
-        drawRect(f - 6, g - 6, 204, 180, stageListArray[currentStage][StageProps.stageUIBgColorCol]);
+        drawRect(f - 6, g - 6, 204, 180, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
         if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
-            shrineUIVisible = false;
+            GUIState.shrineUIVisible = false;
         }
         for (hidx = h = 0; hidx < badgeList.length; hidx++)
             if (badgeList[hidx] && badgeCounterArray[hidx] == badgeList[hidx][4]) {
@@ -2479,7 +2443,7 @@ function drawGameUI() {
             drawText(LoadedFonts.gameFontMed, b + 40, d + 6, shrineRewardOptions[hidx][0], 16777215, 0);
         }
         if (!c)
-            for (shrineRewardClaimed[c] = 1, shrineUIVisible = false, hidx = 0; 100 > hidx;) {
+            for (shrineRewardClaimed[c] = 1, GUIState.shrineUIVisible = false, hidx = 0; 100 > hidx;) {
                 f = RMath.randIntRange(2, 78);
                 g = RMath.randIntRange(1, 44);
                 25 >= stageTileData[g][f] || (h = RMath.floor(100 * (100 + partyRewardValueBonusPercent) / 100), spawnDrop(8 * f + 4, 8 * g + 4, 2, h, 0), hidx++);
@@ -2495,7 +2459,7 @@ function drawGameUI() {
         } else if (3 == c){
             for (shrineRewardClaimed[c] = 1, hidx = 0; 2 > hidx; hidx++){
                 if (99 > partyLevel) {
-                    partyEXPAccum = LevelExpThresholds[partyLevel];
+                    partyEXPAccum = GUIState.LevelExpThresholds[partyLevel];
                     partyLevel++;
                     for (b = 0; 4 > b; b++) partySP[b] += 2;
                     levelUpPopupTimer = 60;
@@ -2741,15 +2705,15 @@ function pickHeroJointUnderMouse() { // vi
     var a = new RMath.Vec2(),
         b, c;
     if (-1 == draggedHeroIndex) {
-        if (isMouseClicked && !clickInUI) {
+        if (isMouseClicked && !GUIState.clickInUI) {
             b = 20;
-            a.x = mouseXCurrent - heroJointPrevPositionsByHero[selectingHero][0].x;
-            a.y = mouseYCurrent - (heroJointPrevPositionsByHero[selectingHero][0].y - 8);
+            a.x = mouseXCurrent - heroJointPrevPositionsByHero[GUIState.selectingHero][0].x;
+            a.y = mouseYCurrent - (heroJointPrevPositionsByHero[GUIState.selectingHero][0].y - 8);
             c = RMath.Vec2Mag(a);
             if (20 > c) {
                 if (c < b) {
                     b = c;
-                    draggedHeroIndex = selectingHero;
+                    draggedHeroIndex = GUIState.selectingHero;
                     draggedJointIndex = 0;
                 }
             }
@@ -2764,7 +2728,7 @@ function pickHeroJointUnderMouse() { // vi
                                 b = c;
                                 draggedHeroIndex = d;
                                 draggedJointIndex = f;
-                                selectingHero = d;
+                                GUIState.selectingHero = d;
                             }
                         }
                     }
@@ -3123,7 +3087,7 @@ function updatePlayerParty() {
                         RMath.randFloatRange(-1, -3);
                 }
             if (heroUpperJointMode[a] != areUpperJointsDisabled) {
-                if (1 == currentStage) {
+                if (1 == GUIState.currentStage) {
                     if (partyLP[a] < partyMaxLP[a]) {
                         if (1 > RMath.randFloat(100)) {
                             partyLP[a] = RMath.clamp(partyLP[a] + 5, 0, partyMaxLP[a]);
@@ -3353,32 +3317,32 @@ function updatePlayerParty() {
                     }
                 }
             } else heroTileEffectLatch[a] = 0;
-            if (5 == currentStage) {
+            if (5 == GUIState.currentStage) {
                 if (heroTileContactFlags[a] & 1) {
                     stageConditionMask |= 1;
                 }
             }
-            if (5 == currentStage) {
+            if (5 == GUIState.currentStage) {
                 if (heroTileContactFlags[a] & 2) {
                     stageConditionMask |= 2;
                 }
             }
-            if (16 == currentStage) {
+            if (16 == GUIState.currentStage) {
                 if (heroTileContactFlags[a] & 1) {
                     stageConditionMask |= 1;
                 }
             }
-            if (16 == currentStage) {
+            if (16 == GUIState.currentStage) {
                 if (heroTileContactFlags[a] & 2) {
                     stageConditionMask |= 2;
                 }
             }
-            if (18 == currentStage) {
+            if (18 == GUIState.currentStage) {
                 if (heroTileContactFlags[a] & 1) {
                     stageConditionMask |= 1;
                 }
             }
-            if (18 == currentStage) {
+            if (18 == GUIState.currentStage) {
                 if (heroTileContactFlags[a] & 2) {
                     stageConditionMask |= 2;
                 }
@@ -3813,8 +3777,8 @@ function loadLevelData(a) {
     }
     loadSprite(LoadedSprites.currentLevelSprite); // check if loaded sprite is valid
     if (uncheckedSpriteCount.value) return false;
-    lastStageIdx = currentStage;
-    isStageReachedArray[currentStage] = 1;
+    lastStageIdx = GUIState.currentStage;
+    isStageReachedArray[GUIState.currentStage] = 1;
     stageHeight = LoadedSprites.currentLevelSprite.i;
     let d = 0;
     let spriteData = LoadedSprites.currentLevelSprite.g;
@@ -3980,13 +3944,13 @@ function loadLevelData(a) {
     }
     stageClearBaseGoldPerHero = 0;
     clearEnemies();
-    for (let a = StageProps.stageSpawnGroupsStartIdx; a < stageListArray[currentStage].length; a += 7) {
-        let c = stageListArray[currentStage][a + 0];
-        let d = stageListArray[currentStage][a + 1];
-        let k = stageListArray[currentStage][a + 3];
-        let f = stageListArray[currentStage][a + 4];
-        let p = stageListArray[currentStage][a + 5];
-        let t = stageListArray[currentStage][a + 6];
+    for (let a = StageProps.stageSpawnGroupsStartIdx; a < stageListArray[GUIState.currentStage].length; a += 7) {
+        let c = stageListArray[GUIState.currentStage][a + 0];
+        let d = stageListArray[GUIState.currentStage][a + 1];
+        let k = stageListArray[GUIState.currentStage][a + 3];
+        let f = stageListArray[GUIState.currentStage][a + 4];
+        let p = stageListArray[GUIState.currentStage][a + 5];
+        let t = stageListArray[GUIState.currentStage][a + 6];
         for (let b = 0; b < d; b++) {
             let h = RMath.randIntRange(k, p + 1);
             let g = RMath.randIntRange(f, t + 1);
@@ -4023,45 +3987,45 @@ function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
 
 function updateStageEdgeSpawns() { // wg
     var a;
-    if (12 == gameScreenState)
+    if (12 == GUIState.gameScreenState)
         for (a = 0; a < partyMemberCount; a++)
             if (heroUpperJointMode[a] != areUpperJointsDisabled) {
                 var b = heroJointPositionsByHero[a][1].x,
                     c = heroJointPositionsByHero[a][1].y;
-                if (4 > b && 0 < stageListArray[currentStage][StageProps.stageExitLeftIdx]) {
-                    lastStageIdx = stageListArray[currentStage][StageProps.stageExitLeftIdx];
+                if (4 > b && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitLeftIdx]) {
+                    lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitLeftIdx];
                     for (var d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = 77;
                         partySpawnYByHero[d] = c >> 3;
                     }
-                } else if (636 <= b && 0 < stageListArray[currentStage][StageProps.stageExitRightIdx])
-                    for (lastStageIdx = stageListArray[currentStage][StageProps.stageExitRightIdx], d = 0; 4 > d; d++) {
+                } else if (636 <= b && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitRightIdx])
+                    for (lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitRightIdx], d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = 2;
                         partySpawnYByHero[d] = c >> 3;
                     }
-                if (4 > c && 0 < stageListArray[currentStage][StageProps.stageExitTopIdx])
-                    for (lastStageIdx = stageListArray[currentStage][StageProps.stageExitTopIdx], d = 0; 4 > d; d++) {
+                if (4 > c && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitTopIdx])
+                    for (lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitTopIdx], d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = b >> 3;
                         partySpawnYByHero[d] = 42;
                     } else
-                if (356 <= c && 0 < stageListArray[currentStage][StageProps.stageExitBottomIdx])
-                    for (lastStageIdx = stageListArray[currentStage][StageProps.stageExitBottomIdx], d = 0; 4 > d; d++) {
+                if (356 <= c && 0 < stageListArray[GUIState.currentStage][StageProps.stageExitBottomIdx])
+                    for (lastStageIdx = stageListArray[GUIState.currentStage][StageProps.stageExitBottomIdx], d = 0; 4 > d; d++) {
                         partySpawnXByHero[d] = b >> 3;
                         partySpawnYByHero[d] = 2;
                     }
             } for (a = 0; 20 > a; a++) activeSpawnCountByGroup[a] = 0;
     for (a = 0; a < enemyCount; a++) activeSpawnCountByGroup[enemySpawnGroupIdxArray[a]]++;
-    for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
-        a = stageListArray[currentStage][b + 0];
-        var f = stageListArray[currentStage][b + 1],
-            c = stageListArray[currentStage][b + 2],
-            g = stageListArray[currentStage][b + 3],
-            d = stageListArray[currentStage][b + 4],
-            h = stageListArray[currentStage][b + 5],
-            k = stageListArray[currentStage][b + 6];
+    for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[GUIState.currentStage].length; b += 7) {
+        a = stageListArray[GUIState.currentStage][b + 0];
+        var f = stageListArray[GUIState.currentStage][b + 1],
+            c = stageListArray[GUIState.currentStage][b + 2],
+            g = stageListArray[GUIState.currentStage][b + 3],
+            d = stageListArray[GUIState.currentStage][b + 4],
+            h = stageListArray[GUIState.currentStage][b + 5],
+            k = stageListArray[GUIState.currentStage][b + 6];
         if (!(c <= totalSpawnedCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7])) {
             if (activeSpawnCountByGroup[(b - StageProps.stageSpawnGroupsStartIdx) / 7] < f) {
-                if (1E3 * RMath.rand() < stageListArray[currentStage][StageProps.stageSpawnChance]) {
+                if (1E3 * RMath.rand() < stageListArray[GUIState.currentStage][StageProps.stageSpawnChance]) {
                     c = RMath.randIntRange(g, h + 1);
                     d = RMath.randIntRange(d, k + 1);
                     if (!25 >= stageTileData[d][c]) {
@@ -4076,9 +4040,9 @@ function updateStageEdgeSpawns() { // wg
 
     }
     a = d = 0;
-    for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[currentStage].length; b += 7) {
+    for (b = StageProps.stageSpawnGroupsStartIdx; b < stageListArray[GUIState.currentStage].length; b += 7) {
         a = (b - StageProps.stageSpawnGroupsStartIdx) / 7;
-        c = stageListArray[currentStage][b + 2];
+        c = stageListArray[GUIState.currentStage][b + 2];
         if (0 != activeSpawnCountByGroup[a] || totalSpawnedCountByGroup[a] < c) {
             d++;
         }
@@ -4162,7 +4126,7 @@ function updateStageEdgeSpawns() { // wg
                     IncrementBadgeCount(70);
                 }
             }
-            if (19 == currentStage) {
+            if (19 == GUIState.currentStage) {
                 if (0 == stageEventFlags[1]) {
                     stageEventFlags[1] = 1;
                 }
@@ -4180,7 +4144,7 @@ function updateStageEdgeSpawns() { // wg
 
 function drawGameStage() {
     var a, b, c, d;
-    a = stageListArray[currentStage][StageProps.stageTilesetIdxCol];
+    a = stageListArray[GUIState.currentStage][StageProps.stageTilesetIdxCol];
     for (c = 0; c < stageHeight; c++)
         for (b = 0; b < stageWidth; b++)
             if (d = stageTileData[c][b], 64 == d) drawRect(8 * b, 8 * c, 8, 8, 0);
@@ -4220,30 +4184,30 @@ function drawGameStage() {
                     }
                 }
             }
-    if (1 == currentStage) {
+    if (1 == GUIState.currentStage) {
         if (1 == isStageReachedArray[6]) {
             b = 184 + RMath.randFloatRange(4, 28);
             c = 192 + RMath.randFloatRange(3, 7);
             spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     } else
-    if (6 == currentStage) {
+    if (6 == GUIState.currentStage) {
         b = 304 + RMath.randFloatRange(4, 28);
         c = 192 + RMath.randFloatRange(3, 7);
         spawnProjectile(0, -1, b, c, 0, 0, 0, 35, 1080465868, 2, 32, 10, 0, 0, 0, 0, 1E3, 30, 5, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     } else
-    if (14 == currentStage) {
+    if (14 == GUIState.currentStage) {
         b = 2 * RMath.rotationLUT[gameFrameCounter >> 2 & 511][0];
         c = 2 * RMath.rotationLUT[gameFrameCounter >> 2 & 511][1];
         spawnProjectile(-1, -1, 180, 180, b, c, 0, 0, 4294927889, 2, 16, 16, 0, 8, 8, 0, 0, 78, 5, 0, 0, 100, 0, 2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     } else
-    if (17 == currentStage) {
+    if (17 == GUIState.currentStage) {
         if (70 == gameFrameCounter % 360) {
             spawnProjectile(-1, -1, 551, 179, -.5, 0, 0, 35, 4279365137, 2, 8, 48, 0, 4, 48, 0, 0, 910, 5, 0, 0, 100, 0, 0, 0, 0, 0, 6, 6, 4, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     } else
-    if (18 == currentStage)
+    if (18 == GUIState.currentStage)
         for (f = [29, 44, 59], g = [35, 34, 33], a = 0; 3 > a; a++) {
             for (h = 0; h < partyMemberCount && !(b = RMath.clamp(heroJointPositionsByHero[h][2].x, 0, 8 * stageWidth - 1) >> 3, c = RMath.clamp(heroJointPositionsByHero[h][2].y, 0, 8 * stageHeight - 1) >> 3, f[a] - 2 <= b && b <= f[a] + 2 && g[a] <= c && c <= g[a] + 9); h++);
             h == partyMemberCount || gameFrameCounter % 8 || spawnProjectile(-1, -1, 8 * f[a] + 4, 8 * g[a] + 8, 0, 1, 0, 35, 4294967057, 2, 16, 12, 0, 8, 12, 0, 0, 80, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 9, 3, 0, 0, 0, 0, 0, 0, 0,
@@ -4256,7 +4220,7 @@ function drawGameStage() {
 function initStageState() { // cj
     stageFlagUseCount = stageConditionMask = stageEncounterCounter = consecutiveConditionFrameCount = gameFrameCounter = stage_totalDamageDealt = stage_partyDamageTaken = 0;
     let a, b, c, d;
-    if (17 == currentStage) {
+    if (17 == GUIState.currentStage) {
         b = partyGold % 100;
         for (a = 0; a < b;) {
             c = ~~RMath.randFloatRange(27, 70);
@@ -4272,7 +4236,7 @@ function initStageState() { // cj
                 IncrementBadgeCount(67);
             }
         }
-    } else if (19 == currentStage) {
+    } else if (19 == GUIState.currentStage) {
         let b = [14, 13, 13, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 19, 19, 19, 17, 17, 17, 0, 0, 0, 0, 17, 17, 17, 19, 19, 19, 20];
         for (a = 0; 39 > a; a++) {
             if (0 != b[a]) {
@@ -4297,8 +4261,8 @@ function updateStageTick() { // xg
         f = RMath.clamp(heroJointPositionsByHero[draggedHeroIndex][2].y, 0, 8 * stageHeight - 1) >> 3;
     }
 
-    g = RMath.clamp(heroJointPositionsByHero[selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
-    h = RMath.clamp(heroJointPositionsByHero[selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
+    g = RMath.clamp(heroJointPositionsByHero[GUIState.selectingHero][2].x, 0, 8 * stageWidth - 1) >> 3;
+    h = RMath.clamp(heroJointPositionsByHero[GUIState.selectingHero][2].y, 0, 8 * stageHeight - 1) >> 3;
     for (a = 0; a < partyMemberCount; a++) {
         c = RMath.clamp(heroJointPositionsByHero[a][2].x, 0, 8 * stageWidth - 1) >> 3;
         d = RMath.clamp(heroJointPositionsByHero[a][2].y, 0, 8 * stageHeight - 1) >> 3;
@@ -4335,13 +4299,13 @@ function updateStageTick() { // xg
                 if (isBadgeIncompleteForCurrentStage(3)) {
                     IncrementBadgeCount(3);
                 }
-                if (13 == currentStage)
+                if (13 == GUIState.currentStage)
                     for (a = 0; 15 > a; a++) {
                         spawnEnemy(n, w, 48, 6);
                         activeSpawnCountByGroup[6]++;
                         totalSpawnedCountByGroup[6]++;
                     }
-                if (19 == currentStage) {
+                if (19 == GUIState.currentStage) {
                     spawnEnemy(n, w, 87, 5);
                     activeSpawnCountByGroup[5]++;
                     totalSpawnedCountByGroup[5]++;
@@ -4349,12 +4313,12 @@ function updateStageTick() { // xg
                 break;
             }
             if (47 == stageTileData[w][n]) {
-                if (2 == currentStage) {
+                if (2 == GUIState.currentStage) {
                     if (isBadgeIncompleteForCurrentStage(4)) {
                         IncrementBadgeCount(4);
                     }
                 }
-                if (11 == currentStage) {
+                if (11 == GUIState.currentStage) {
                     c = 8 * n + 4 - mouseXCurrent;
                     d = 8 * w + 4 - mouseYCurrent;
                     if (RMath.abs(c) >= RMath.abs(d)) {
@@ -4390,8 +4354,8 @@ function updateStageTick() { // xg
             }
         }
     }
-    if (1 == currentStage) {
-        if (12 == gameScreenState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h) {
+    if (1 == GUIState.currentStage) {
+        if (12 == GUIState.gameScreenState && 1 == isStageReachedArray[6] && 23 <= g && 26 >= g && 24 <= h && 24 >= h) {
             lastStageIdx = 6;
             partySpawnXByHero[0] = 33;
             partySpawnYByHero[0] = 24;
@@ -4402,7 +4366,7 @@ function updateStageTick() { // xg
             partySpawnXByHero[3] = 46;
             partySpawnYByHero[3] = 24;
         }
-        if (12 == gameScreenState && 1 == isStageReachedArray[12] && 1 > h) {
+        if (12 == GUIState.gameScreenState && 1 == isStageReachedArray[12] && 1 > h) {
             lastStageIdx = 12;
             partySpawnXByHero[0] = 67;
             partySpawnYByHero[0] = 42;
@@ -4413,8 +4377,8 @@ function updateStageTick() { // xg
             partySpawnXByHero[3] = 73;
             partySpawnYByHero[3] = 42;
         }
-    } else if (2 != currentStage)
-        if (3 == currentStage) {
+    } else if (2 != GUIState.currentStage)
+        if (3 == GUIState.currentStage) {
             if (1 == partyMemberCount && 0 == activeSpawnCountByGroup[0]) {
                 resetHeroPose(partyMemberCount, 25, 14);
                 partyMemberCount++;
@@ -4469,7 +4433,7 @@ function updateStageTick() { // xg
             if (0 != totalSpawnedCountByGroup[2]) {
                 consecutiveConditionFrameCount++;
             }
-        } else if (4 == currentStage) {
+        } else if (4 == GUIState.currentStage) {
         if (2 == partyMemberCount && 0 == activeSpawnCountByGroup[1] && 0 != totalSpawnedCountByGroup[1]) {
             resetHeroPose(partyMemberCount, 55, 40);
             partyMemberCount++;
@@ -4509,7 +4473,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(14);
             }
         }
-    } else if (5 == currentStage) {
+    } else if (5 == GUIState.currentStage) {
         if (3 == partyMemberCount && 0 == activeSpawnCountByGroup[0] && 0 == activeSpawnCountByGroup[1] && (resetHeroPose(partyMemberCount, 17, 5), partyMemberCount++), 4 == partyMemberCount && (fillStageTilesRect(17, 4, 17, 5, 64), fillStageTilesRect(77, 20, 77, 24, 64)), !isBadgeIncompleteForCurrentStage(16) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 2 || IncrementBadgeCount(16),
             !isBadgeIncompleteForCurrentStage(17) || 0 != activeSpawnCountByGroup[0] || 0 != activeSpawnCountByGroup[1] || stageConditionMask & 1 || IncrementBadgeCount(17), isBadgeIncompleteForCurrentStage(19)) {
             for (a = b = 0; a < partyMemberCount; a++) {
@@ -4523,8 +4487,8 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(19);
             }
         }
-    } else if (6 == currentStage) {
-        if (12 == gameScreenState && 38 <= g && 41 >= g && 24 <= h && 24 >= h) {
+    } else if (6 == GUIState.currentStage) {
+        if (12 == GUIState.gameScreenState && 38 <= g && 41 >= g && 24 <= h && 24 >= h) {
             lastStageIdx = 1;
             partySpawnXByHero[0] = 18;
             partySpawnYByHero[0] = 24;
@@ -4535,7 +4499,7 @@ function updateStageTick() { // xg
             partySpawnXByHero[3] = 31;
             partySpawnYByHero[3] = 24;
         }
-    } else if (7 == currentStage) {
+    } else if (7 == GUIState.currentStage) {
         if (0 == totalSpawnedCountByGroup[1] && 73 <= g && 76 >= g && 34 <= h && 39 >= h)
             if (c = 0, 39 == stageTileData[34][75] && c++, 39 == stageTileData[35][72] && c++, 39 == stageTileData[35][74] && c++, 39 == stageTileData[36][75] && c++, 39 == stageTileData[38][76] && c++, 1 == c || 2 == c) {
                 spawnEnemy(66, 42, 24, 1);
@@ -4579,7 +4543,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(23);
             }
         }
-    } else if (8 == currentStage) {
+    } else if (8 == GUIState.currentStage) {
         if (30 > totalSpawnedCountByGroup[3] && 2 <= g && 20 >= g && 20 <= h && 27 >= h && 4 > RMath.randFloat(60)) {
             a = [5, 18, 3, 20];
             g = [18, 16, 21, 22];
@@ -4609,7 +4573,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(28);
             }
         }
-    } else if (9 == currentStage) {
+    } else if (9 == GUIState.currentStage) {
         b = -1;
         for (a = 0; a < enemyCount; a++)
             if (36 == enemyTypeArray[a] && 0 != enemyHealthArray[a]) {
@@ -4649,7 +4613,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(34);
             }
         }
-    } else if (10 == currentStage) {
+    } else if (10 == GUIState.currentStage) {
         if (25 >= totalSpawnedCountByGroup[0] && 4 <= g && 21 >= g && 34 <= h && 40 >= h)
             for (a = 0; 15 > a; a++) {
                 spawnEnemy(RMath.randIntRange(32, 53), RMath.randIntRange(33, 34), 37, 0);
@@ -4682,7 +4646,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(39);
             }
         }
-    } else if (11 == currentStage) {
+    } else if (11 == GUIState.currentStage) {
         if (isBadgeIncompleteForCurrentStage(41)) {
             if (0 == activeSpawnCountByGroup[3] && !stageConditionMask) {
                 IncrementBadgeCount(41);
@@ -4693,7 +4657,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(42);
             }
         }
-    } else if (13 == currentStage) {
+    } else if (13 == GUIState.currentStage) {
         if (1 == stageEventFlagArray[0]) {
             fillStageTilesRect(77, 20, 77, 24, 31);
         }
@@ -4707,7 +4671,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(48);
             }
         }
-    } else if (14 == currentStage) {
+    } else if (14 == GUIState.currentStage) {
         if (isBadgeIncompleteForCurrentStage(53)) {
             for (a = 0; a < partyMemberCount && 2 == heroTileContactFlags[a]; a++);
             if (a == partyMemberCount) {
@@ -4724,7 +4688,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(54);
             }
         }
-    } else if (15 == currentStage) {
+    } else if (15 == GUIState.currentStage) {
         if (60 > totalSpawnedCountByGroup[1] && 42 <= g && 67 >= g &&
             18 <= h && 24 >= h && 4 > RMath.randFloat(60)) {
             a = [44, 45, 46, 66];
@@ -4753,7 +4717,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(59);
             }
         }
-    } else if (16 == currentStage) {
+    } else if (16 == GUIState.currentStage) {
         f = activeSpawnCountByGroup[0] + activeSpawnCountByGroup[1];
         k = activeSpawnCountByGroup[2] + activeSpawnCountByGroup[3];
         p = activeSpawnCountByGroup[4] + activeSpawnCountByGroup[5] + activeSpawnCountByGroup[6] + activeSpawnCountByGroup[7];
@@ -4826,7 +4790,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(64);
             }
         }
-    } else if (17 == currentStage) {
+    } else if (17 == GUIState.currentStage) {
         for (a = 0; a < partyMemberCount; a++) {
             if (0 < heroTimedDamageTimer[a]) {
                 stageConditionMask = 1;
@@ -4842,7 +4806,7 @@ function updateStageTick() { // xg
                 IncrementBadgeCount(68);
             }
         }
-    } else if (18 == currentStage) {
+    } else if (18 == GUIState.currentStage) {
         if (6 > totalSpawnedCountByGroup[9] && 68 <= g && 70 >= g && 33 <= h && 40 >= h) {
             a = [29, 44, 59];
             b = RMath.randInt(3);
@@ -4857,7 +4821,7 @@ function updateStageTick() { // xg
             totalSpawnedCountByGroup[10]++;
         }!isBadgeIncompleteForCurrentStage(71) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 2 || IncrementBadgeCount(71);
         !isBadgeIncompleteForCurrentStage(72) || 0 != activeSpawnCountByGroup[7] || 0 != activeSpawnCountByGroup[8] || stageConditionMask & 1 || IncrementBadgeCount(72);
-    } else if (19 == currentStage) {
+    } else if (19 == GUIState.currentStage) {
         if (totalSpawnedCountByGroup[7] < 20 * (35 - activeSpawnCountByGroup[6]) && 15 > RMath.randFloat(60)) {
             c = RMath.randIntRange(19, 59);
             d = RMath.randIntRange(26, 33);
@@ -4880,7 +4844,7 @@ function updateStageTick() { // xg
             fillStageTilesRect(47, 15, 50, 15, 24);
             fillStageTilesRect(1, 31, 1, 35, 32);
         }
-    } else if (20 == currentStage) {
+    } else if (20 == GUIState.currentStage) {
         if (1 == stageEventFlagArray[4]) {
             fillStageTilesRect(70, 34, 70, 34, 63);
         } else if (55 == stageTileData[34][70] && 69 <= b && 71 >= b && 33 <= f && 35 >= f) {
@@ -5158,7 +5122,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
                     }
 
                     enemyAuxStateArray[height] = 120;
-                    30 != gameScreenState && (comboWindowTimer = comboWindowMaxFrames);
+                    30 != GUIState.gameScreenState && (comboWindowTimer = comboWindowMaxFrames);
                     isBadgeIncompleteForCurrentStage(11) && 17 == enemyTypeArray[height] && 0 != effectType && stageConditionMask++;
                     isBadgeIncompleteForCurrentStage(41) && 45 == enemyTypeArray[height] && 0 == effectType && stageConditionMask++;
                 }
@@ -5343,7 +5307,7 @@ function onEnemyDeath(_enemyIdx) { // cl
     }
 
     partyEXPAccum = RMath.clamp(partyEXPAccum + expRewardValue, 0, 9999999);
-    if (LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
+    if (GUIState.LevelExpThresholds[partyLevel] <= partyEXPAccum && 99 > partyLevel) {
         partyLevel++;
         for (let _i = 0; 4 > _i; _i++) partySP[_i] += 2;
         levelUpPopupTimer = 60;
@@ -5366,7 +5330,7 @@ function onEnemyDeath(_enemyIdx) { // cl
     if (1 > 3 * RMath.rand()) {
         spawnDrop(enemyJointPosArray[_enemyIdx][0].x, enemyJointPosArray[_enemyIdx][0].y, 2, val, 0);
     }
-    if (30 != gameScreenState) {
+    if (30 != GUIState.gameScreenState) {
         comboCount++;
     }
     if (isBadgeIncompleteForCurrentStage(2) && 3 == enemyTypeArray[_enemyIdx]) {
@@ -5375,7 +5339,7 @@ function onEnemyDeath(_enemyIdx) { // cl
     if (isBadgeIncompleteForCurrentStage(5) && 4 == enemyTypeArray[_enemyIdx]) {
         IncrementBadgeCount(5);
     }
-    if (3 == currentStage) {
+    if (3 == GUIState.currentStage) {
         if (8 == enemyTypeArray[_enemyIdx]) {
             if (isBadgeIncompleteForCurrentStage(8) && 1800 > gameFrameCounter) {
                 IncrementBadgeCount(8);
@@ -5393,7 +5357,7 @@ function onEnemyDeath(_enemyIdx) { // cl
             }
         }
     }
-    if (5 == currentStage) {
+    if (5 == GUIState.currentStage) {
         if (22 == enemyTypeArray[_enemyIdx]) {
             if (isBadgeIncompleteForCurrentStage(18) && 1200 > gameFrameCounter) {
                 IncrementBadgeCount(18);

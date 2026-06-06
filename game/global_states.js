@@ -55,3 +55,41 @@ export let RenderingState = {
     scanlineTexVStart : new Float32Array(432),  // qm, 
     scanlineTexVEnd : new Float32Array(432),    // pm,
 };
+
+export let GUIState = {
+    gameScreenState : 0,
+    screenStateTimer : 0, // sa
+    currentStage : 0,
+    clickInUI : false, // ta
+
+    memberUIVisible : false,
+    inventoryUIVisible : false,
+    bestiaryUIVisible : false,
+    badgesUIVisible : false,
+    optionsUIVisible : false,
+    shrineUIVisible : false,
+    
+    memberUIVisibleBackup : false, // Ba
+    inventoryUIVisibleBackup : false, // Da
+    bestiaryUIVisibleBackup : false, // Ea
+    badgesUIVisibleBackup : false, // Ha
+    optionsUIVisibleBackup : false, // Ia
+    shrineUIVisibleBackup : false, // Ja
+
+    selectingHero : 0,
+    selectedStatIndex : 0, 
+    inventoryTabIdx : 0, // Na, 0..4 for "ARMS","CHARGE","HEAD","RING","AMULET"
+    inventoryPageIdx : 0, // Oa, 
+    inventorySlotIdx : 0, // Pa, 0..27 grid index; used to highlight/select a cell
+    currentBestiaryPage : 0,
+    bestiaryEnemySelection : 0,
+    badgesUIStageIdx : 0, // Sa
+    LevelExpThresholds : Array(100),
+};
+
+GUIState.LevelExpThresholds[0] = 0;
+
+for (let _i = 1; 98 > _i; _i++) 
+    GUIState.LevelExpThresholds[_i] = GUIState.LevelExpThresholds[_i - 1] + 1E3 * _i;
+GUIState.LevelExpThresholds[98] = 9999999;
+GUIState.LevelExpThresholds[99] = 9999999;

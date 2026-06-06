@@ -159,7 +159,7 @@ let keyJustPressed = Array(256), // Jf
     keyMapShift = Array(256); // Nf
 
 
-function resetGameProgress() { // bc
+export function resetGameProgress() { // bc
     let a, b;
     resetUIStates();
     PartyState.partyLevel = PartyState.partyMemberCount = 1;
@@ -183,19 +183,19 @@ function resetGameProgress() { // bc
 }
 
 
-function resetUIStates() {
+export function resetUIStates() {
     GUIState.screenStateTimer = 0;
     GUIState.memberUIVisibleBackup = GUIState.inventoryUIVisibleBackup = GUIState.bestiaryUIVisibleBackup = GUIState.badgesUIVisibleBackup = GUIState.optionsUIVisibleBackup = GUIState.shrineUIVisibleBackup = GUIState.clickInUI = GUIState.memberUIVisible = GUIState.inventoryUIVisible = GUIState.bestiaryUIVisible = GUIState.badgesUIVisible = GUIState.optionsUIVisible = GUIState.shrineUIVisible = false;
     GameplayState.comboMultBonus = GameplayState.comboCount = GameplayState.comboWindowTimer = GUIState.selectingHero = GUIState.selectedStatIndex = GUIState.inventoryTabIdx = GUIState.inventoryPageIdx = GUIState.inventorySlotIdx  = 0
 }
 
-function getItemModifierAmount(itemIdx, columnIdx) { // Ue
+export function getItemModifierAmount(itemIdx, columnIdx) { // Ue
     for (var c = 0; 6 > c; c += 2)
         if (itemList[itemIdx][ItemProps.StatModifyingBase + c] == columnIdx) return itemList[itemIdx][ItemProps.StatModifyingBase + c + 1];
     return 0
 }
 
-function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
+export function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
     var c = 0;
     if (0 == _columnIdx) {
         c = 0;
@@ -218,7 +218,7 @@ function getItemStatWithForge(_itemIdx, _columnIdx) { // Ve
 }
 
 
-function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
+export function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
     var c = 0;
     if (0 == _columnIdx) {
         c = 0;
@@ -239,7 +239,7 @@ function getItemForgeMultiplier(_itemIdx, _columnIdx) { // Xe
 }
 
 
-function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
+export function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
     let d = 0;
     // it goes like this...
     //       +0     +2     +4          | itemStatModifingCol + *
@@ -275,7 +275,7 @@ function getModifiedStatVal(heroIdx, itemIdx, columnIdx) {
 }
 
 
-function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
+export function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
     return itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx ||
         itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx
         ? true
@@ -283,7 +283,7 @@ function heroHasAccessoryEffect(partyIdx, accessoryIdx) {
 }
 
 
-function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
+export function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
     var c = 0;
     itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.PrimaryValue]);
     itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.PrimaryValue]);
@@ -291,7 +291,7 @@ function countAccessoryLvlBonuses(partyIdx, accessoryIdx) {
 }
 
 
-function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
+export function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
     var c = 0;
     itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][3]][AccessoryPrefixes.SecondaryValue]);
     itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.TempIdx] == accessoryIdx && (c += itemList[PartyState.partyEquipmentTable[partyIdx][4]][AccessoryPrefixes.SecondaryValue]);
@@ -299,12 +299,12 @@ function sumAccessorySecondaryValues(partyIdx, accessoryIdx) {
 }
 
 
-function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
+export function isBadgeIncompleteForCurrentStage(badgeIdx) { // A
     return GUIState.currentStage == badgeList[badgeIdx][2] && BadgeState.badgeCounterArray[badgeIdx] != badgeList[badgeIdx][4] ? true : false
 }
 
 
-function IncrementBadgeCount(badgeIndex) {
+export function IncrementBadgeCount(badgeIndex) {
     BadgeState.badgeCounterArray[badgeIndex]++;
     if (BadgeState.badgeCounterArray[badgeIndex] == badgeList[badgeIndex][4]) {
         BadgeState.lastCompletedBadgeIdx = badgeIndex;
@@ -329,7 +329,7 @@ function IncrementBadgeCount(badgeIndex) {
 
 
 
-function saveGame() {
+export function saveGame() {
     let b, c;
     let a = 0;
     SaveState.gameSaveBuffer[a++] = 1;
@@ -440,7 +440,7 @@ function saveGame() {
 }
 
 
-function loadGame(saveString) {
+export function loadGame(saveString) {
 
     let d = saveString.length - 4;
     if (0 >= d) return 1; // invalid length
@@ -511,12 +511,12 @@ function loadGame(saveString) {
 }
 
 
-function hashAdjust(a, b) {
+export function hashAdjust(a, b) {
     a += (b | 1) * (a & 255 | 1);
     return (a >> 16) + (a & 65535)
 }
 
-function updatePartyChecksum() {
+export function updatePartyChecksum() {
     var a, b, c;
     GameStateChecksum.basePartyChecksum = c = RMath.floor(RMath.randFloat(1024));
     c = hashAdjust(c, 0);
@@ -554,7 +554,7 @@ function updatePartyChecksum() {
 }
 
 
-function gameInit(a, b) {
+export function gameInit(a, b) {
     let _t0;
     console.log(`gameInit(${a}, ${b}) ${GameState.gameInitStage}`);
     if (0 == GameState.gameInitStage) {
@@ -722,7 +722,7 @@ function gameInit(a, b) {
 }
 
 
-function drawCanvas() {
+export function drawCanvas() {
 
     var a, b, c, d;
     for (let a = Consts.CANVAS_WIDTH * Consts.CANVAS_HEIGHT - 1; 0 <= a; a--) RenderingState.frameBufferArray[a] = 0; // clear buffer
@@ -1072,7 +1072,7 @@ function drawCanvas() {
 }
 
 
-function updatePartyStats() {
+export function updatePartyStats() {
     for (let hidx = 0; 4 > hidx; hidx++) {
         PartyState.partyMaxLPBonus_vals[hidx] = 10 * PartyState.partyHealthLvls[hidx];
         PartyState.partyShortAtk_vals[hidx] = 5 * PartyState.partyShortAtkLvls[hidx];
@@ -1186,7 +1186,7 @@ function updatePartyStats() {
 }
 
 
-function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // Wg
+export function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // Wg
     var h;
     if (buttonCheck(_x, _y, _width, _height))
         if (fillEmptyPixelsRect(_x, _y, _width, _height, 6684672), isMouseClicked && 0 != _itemId) {
@@ -1212,7 +1212,7 @@ function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // 
 }
 
 
-function drawGameUI() {
+export function drawGameUI() {
     var hidx, b, c, d, f, g, h, k;
     if (keyJustPressed[32]) {
         if (GUIState.memberUIVisible ||
@@ -2179,13 +2179,13 @@ function drawGameUI() {
 
 
 
-function resetDragSelection() { // ki
+export function resetDragSelection() { // ki
     GameplayState.draggedHeroIndex = -1;
     GameplayState.draggedJointIndex = 0
 }
 
 
-function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
+export function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
     spawnX *= 8;
     spawnY *= 8;
     for (let d = 0; 21 > d; d++) {
@@ -2219,7 +2219,7 @@ function resetHeroPose(heroIdx, spawnX, spawnY) { // li(a, b, c)
 }
 
 
-function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
+export function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
     var c = new RMath.Vec2();
     RMath.Vec2Sub(c, HeroesState.heroJointPositionsByHero[_entityIdx][_jointIdx], HeroesState.heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
     HeroesState.heroJointPositionsByHero[_entityIdx][_jointIdx].set(HeroesState.heroJointPrevPositionsByHero[_entityIdx][_jointIdx]);
@@ -2262,7 +2262,7 @@ function moveJointWithCollisions(_entityIdx, _jointIdx) { // ni
 }
 
 
-function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { // ti
+export function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { // ti
     var g = _cx - _halfW - 5,
         h = _cy - _halfH - 10;
     _halfW = _cx + _halfW + 5;
@@ -2301,7 +2301,7 @@ function findNearestPartyMemberInRect(_cx, _cy, _halfW, _halfH, _modelFlag) { //
 /**
 *  Purpose: Finds party members inside a rectangular area, checks line-of-sight, and applies an area hit/effect (damage/status); returns the affected party index or -1.
 */
-function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgMin, dmgMax, _cy, _cx, _w, _h) { // ui
+export function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgMin, dmgMax, _cy, _cx, _w, _h) { // ui
     _w *= .5;
     _h *= .5;
     __unused = _cy - _w - 5;
@@ -2406,7 +2406,7 @@ function damagePartyMemberInArea(__unused, stopOnHit, attackType, auxValue, dmgM
 }
 
 
-function pickHeroJointUnderMouse() { // vi
+export function pickHeroJointUnderMouse() { // vi
     var a = new RMath.Vec2(),
         b, c;
     if (-1 == GameplayState.draggedHeroIndex) {
@@ -2446,7 +2446,7 @@ function pickHeroJointUnderMouse() { // vi
 
 
 
-function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
+export function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, targetEnemyIdx) { // xi
     console.log(`spawnHeroAttackPattern(${heroIdx}, ${limbDesc}, ${itemSlot}, ${originX}, ${originY}, ${targetEnemyIdx})`);
     let projDir = new RMath.Vec2(),
         selectedItemIdx = PartyState.partyEquipmentTable[heroIdx][itemSlot],
@@ -2672,7 +2672,7 @@ function spawnHeroAttackPattern(heroIdx, limbDesc, itemSlot, originX, originY, t
 }
 
 
-function updatePartyMemberAI(memberIdx) { // Di
+export function updatePartyMemberAI(memberIdx) { // Di
     let b = HeroesState.heroJointPositionsByHero[memberIdx][2].x,
         c = HeroesState.heroJointPositionsByHero[memberIdx][2].y;
     
@@ -2743,7 +2743,7 @@ function updatePartyMemberAI(memberIdx) { // Di
 }
 
 
-function updatePlayerParty() {
+export function updatePlayerParty() {
     var a, b, c, d, f = new RMath.Vec2(),
         g = new RMath.Vec2(),
         h = new RMath.Vec2();
@@ -3058,7 +3058,7 @@ function updatePlayerParty() {
 
 
 
-function drawPlayerParty() {
+export function drawPlayerParty() {
     var a, b, c, d, f, g, h = new RMath.Vec2(),
         k = new RMath.Vec2();
     for (a = 0; a < PartyState.partyMemberCount; a++) {
@@ -3355,7 +3355,7 @@ function drawPlayerParty() {
              J10      J9
               
 */
-function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
+export function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
     //*
     // torso
     drawLine(joints[1].x, joints[1].y, joints[2].x, joints[2].y, bodyColor);
@@ -3474,7 +3474,7 @@ function drawHero(heroIdx, joints, c, d, headColor, bodyColor, noUpperJoints) {
 }
 
 
-function loadLevelData(a) {
+export function loadLevelData(a) {
     if (StageState.loadedLevelIndex != a) {
         StageState.loadedLevelIndex = a;
         LoadedSprites.currentLevelSprite = new Sprite;
@@ -3676,21 +3676,21 @@ function loadLevelData(a) {
 }
 
 
-function getStageTileAt(x, y) { // ri
+export function getStageTileAt(x, y) { // ri
     x = RMath.clamp(x, 0, 8 * StageState.stageWidth - 1) >> 3; // divide by 8
     y = RMath.clamp(y, 0, 8 * StageState.stageHeight - 1) >> 3;
     return StageState.stageTileData[y][x]
 }
 
 
-function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
+export function fillStageTilesRect(_tx0, _ty0, _tx1, _ty1, _tid) { // dj
     let _row;
     for (_row = _ty0; _row <= _ty1; _row++)
         for (_ty0 = _tx0; _ty0 <= _tx1; _ty0++) StageState.stageTileData[_row][_ty0] = _tid
 }
 
 
-function updateStageEdgeSpawns() { // wg
+export function updateStageEdgeSpawns() { // wg
     var a;
     if (12 == GUIState.gameScreenState)
         for (a = 0; a < PartyState.partyMemberCount; a++)
@@ -3847,7 +3847,7 @@ function updateStageEdgeSpawns() { // wg
 }
 
 
-function drawGameStage() {
+export function drawGameStage() {
     var a, b, c, d;
     a = stageListArray[GUIState.currentStage][StageProps.stageTilesetIdxCol];
     for (c = 0; c < StageState.stageHeight; c++)
@@ -3922,7 +3922,7 @@ function drawGameStage() {
 
 
 
-function initStageState() { // cj
+export function initStageState() { // cj
     StageState.stageFlagUseCount = StageState.stageConditionMask = StageState.stageEncounterCounter = StageState.consecutiveConditionFrameCount = StageState.gameFrameCounter = StageState.stage_totalDamageDealt = StageState.stage_partyDamageTaken = 0;
     let a, b, c, d;
     if (17 == GUIState.currentStage) {
@@ -3954,7 +3954,7 @@ function initStageState() { // cj
 }
 
 
-function updateStageTick() { // xg
+export function updateStageTick() { // xg
     var a, b, c, d, f = b = 0,
         g, h, k = 79,
         p = 0,
@@ -4561,13 +4561,13 @@ function updateStageTick() { // xg
 
 
 
-function clearEnemies() {
+export function clearEnemies() {
     EnemyState.stageMaxEnemyLevel = EnemyState.enemyCount = 0
 }
 
 
 /** spawns an enemy at coordinates (8 * gridX, 8 * gridY) */
-function spawnEnemy(gridX, gridY, enemyType, d) {
+export function spawnEnemy(gridX, gridY, enemyType, d) {
     if (999 != EnemyState.enemyCount) {
         gridX *= 8;
         gridY *= 8;
@@ -4596,7 +4596,7 @@ function spawnEnemy(gridX, gridY, enemyType, d) {
 
 // swaps the last enemy entry with the selected one
 // and decrements the enemyCount variable to invalidate it
-function deleteEnemy(enemyIdx) {
+export function deleteEnemy(enemyIdx) {
     for (var b = 0; 21 > b; b++)
         EnemyState.enemyJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[EnemyState.enemyCount - 1][b]),
             EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyPrevJointPosArray[EnemyState.enemyCount - 1][b]);
@@ -4618,7 +4618,7 @@ function deleteEnemy(enemyIdx) {
 }
 
 
-function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
+export function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
     let d = new RMath.Vec2();
     RMath.Vec2Sub(d, EnemyState.enemyJointPosArray[enemyIdx][jointIdx], EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
     EnemyState.enemyJointPosArray[enemyIdx][jointIdx].set(EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
@@ -4664,7 +4664,7 @@ function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $
 /**
  * finds the closest living enemy to a center point inside an axis-aligned rectangle that is not blocked by stage tiles (ray-stepped line-of-sight check). Returns the index of that enemy or -1 if none found.
  */
-function findEnemyInArea(cx, cy, rx, ry) { // Ei
+export function findEnemyInArea(cx, cy, rx, ry) { // Ei
     let f = cx - rx,
         g = cy - ry;
     rx = cx + rx;
@@ -4733,7 +4733,7 @@ function findEnemyInArea(cx, cy, rx, ry) { // Ei
  * Returns:
  * - (int) index of the last enemy hit, or -1 if none were hit.
  */
-function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
+export function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
     let n = -1,
         w, B, M, J, y, x, K = new RMath.Vec2(),
         ba = new RMath.Vec2(),
@@ -4840,7 +4840,7 @@ function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effe
 }
 
 
-function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
+export function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     let itemPos = new RMath.Vec2(),
         itemIdx = EnemyState.enemyTypeArray[enemyIdx] + lootVariant,
         selectedItem = enemyCatalog[itemIdx];
@@ -5000,7 +5000,7 @@ function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
 }
 
 
-function onEnemyDeath(_enemyIdx) { // cl
+export function onEnemyDeath(_enemyIdx) { // cl
     let lvlDiff = RMath.abs(enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][EnemyProps.Level] - PartyState.partyLevel);
     let expRewardValue = RMath.floor(enemyCatalog[EnemyState.enemyTypeArray[_enemyIdx]][EnemyProps.ExpReward] * (100 + PartyState.partyEnemyHpBonusPercent) / 100);
     if (EnemyState.stageMaxEnemyLevel + 10 <= PartyState.partyLevel) {
@@ -5095,7 +5095,7 @@ function onEnemyDeath(_enemyIdx) { // cl
 }
 
 
-function updateEnemies() {
+export function updateEnemies() {
     var enemyIdx;
     for (enemyIdx = 0; enemyIdx < EnemyState.enemyCount; enemyIdx++) {
         if (0 < EnemyState.enemyDmgDurationLeftArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) {
@@ -5916,7 +5916,7 @@ export function enemyUpdateFunc9(enemyIdx) {
 }
 
 
-function drawEnemies() { // Cg
+export function drawEnemies() { // Cg
     for (let enemyIdx = 0; enemyIdx < EnemyState.enemyCount; enemyIdx++) {
         let sprIdx = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex],
             primTint = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.PrimaryTint],
@@ -6052,7 +6052,7 @@ function drawEnemies() { // Cg
 }
 
 
-function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
+export function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
     let behaviorIdx = enemyCatalog[_typeIdx][EnemyProps.BehaviorIdx],
         spriteIdx = enemyCatalog[_typeIdx][EnemyProps.SpriteIndex],
         primTint = enemyCatalog[_typeIdx][EnemyProps.PrimaryTint],
@@ -6260,12 +6260,12 @@ function drawEnemyStatic(_typeIdx, _px, _py, _scale) { // Ch
     }
 }
 
-function clearProjectiles() { // im
+export function clearProjectiles() { // im
     projectileCount = 0
 }
 
 
-function spawnProjectile(
+export function spawnProjectile(
     _parent, jointPair, _px, _py, _vx, _vy, drawMode, tileIdx, tint, render, width, height, shape, hitboxWidth, 
     hitboxHeight, spawnDelay, hitCooldown, impactAge, impactLife, jointIdx, acel, velScale, custIntA, collisionMode, homingRange, customIntB, 
     maxTargets, dmgMin, dmgMax, effectType, effectDuration, applyMode, impactSpawnMode, spawnParam, tmpl_speed, tmpl_elementType, tmpl_elementBonus, 
@@ -6331,7 +6331,7 @@ function spawnProjectile(
 }
 
 
-function deleteProjectile(projIdx) { // jm
+export function deleteProjectile(projIdx) { // jm
     projectileOwnerIdx[projIdx] = projectileOwnerIdx[projectileCount - 1];
     projectileJointPair[projIdx] = projectileJointPair[projectileCount - 1];
     projectilePosition[projIdx].set(projectilePosition[projectileCount - 1]);
@@ -6390,7 +6390,7 @@ function deleteProjectile(projIdx) { // jm
 }
 
 
-function moveProjectileWithCollision(projIdx, vel) { // km
+export function moveProjectileWithCollision(projIdx, vel) { // km
     var c = 0;
     vel.set(projectileVelocity[projIdx]);
     var d = RMath.floor(RMath.Vec2Mag(vel) / 4) + 1;
@@ -6435,7 +6435,7 @@ function moveProjectileWithCollision(projIdx, vel) { // km
 }
 
 
-function updateProjectiles() { // Bg
+export function updateProjectiles() { // Bg
     let a, b, c, d = new RMath.Vec2(),
         f = new RMath.Vec2(),
         g = new RMath.Vec2(),
@@ -6698,7 +6698,7 @@ function updateProjectiles() { // Bg
 }
 
 
-function drawProjectiles() {
+export function drawProjectiles() {
     // Eg
     var a, b, c, d, 
     f = new RMath.Vec2(), g = new RMath.Vec2(), h = new RMath.Vec2(), k = new RMath.Vec2(), p = new RMath.Vec2(), t = new RMath.Vec2(), 
@@ -6880,12 +6880,12 @@ function drawProjectiles() {
 
 
 
-function clearPopups() { // wm
+export function clearPopups() { // wm
     popupCount = 0
 }
 
 
-function spawnPopup(x, y, vx, vy, life, color) { // Lg
+export function spawnPopup(x, y, vx, vy, life, color) { // Lg
     if (1E3 != popupCount) {
         x = RMath.clamp(x, 16, 623);
         y = RMath.clamp(y, 8, 351);
@@ -6906,7 +6906,7 @@ function spawnPopup(x, y, vx, vy, life, color) { // Lg
 }
 
 
-function removePopup(idx) { // xm
+export function removePopup(idx) { // xm
     popupPos[idx].set(popupPos[popupCount - 1]);
     popupVel[idx].set(popupVel[popupCount - 1]);
     popupValue[idx] = popupValue[popupCount - 1];
@@ -6916,7 +6916,7 @@ function removePopup(idx) { // xm
 }
 
 
-function updatePopups() { // Ag
+export function updatePopups() { // Ag
     let a;
     for (a = 0; a < popupCount; a++) {
         if (0 == popupVel[a].x) {
@@ -6941,7 +6941,7 @@ function updatePopups() { // Ag
 }
 
 
-function drawPopups() { // Fg
+export function drawPopups() { // Fg
     let a, b, c, d, f;
     for (a = 0; a < popupCount; a++)
         if (20 <= popupLife[a]) {
@@ -6957,12 +6957,12 @@ function drawPopups() { // Fg
 }
 
 
-function clearDrops() { // bj
+export function clearDrops() { // bj
     dropScore = dropCount = 0
 }
 
 
-function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
+export function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
     if (100 != dropCount) {
         _x = RMath.clamp(_x, 16, 623);
         _y = RMath.clamp(_y, 8, 351);
@@ -6985,7 +6985,7 @@ function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
 }
 
 
-function removeDrop(a) { // Gm
+export function removeDrop(a) { // Gm
     dropCount--;
     dropPos[a].set(dropPos[dropCount]);
     dropVel[a].set(dropVel[dropCount]);
@@ -6997,7 +6997,7 @@ function removeDrop(a) { // Gm
 }
 
 
-function isDropTypeAbsent(typeIdx) { // dl
+export function isDropTypeAbsent(typeIdx) { // dl
     if (2 == typeIdx) return true;
     let b;
     for (b = 0; b < dropCount; b++)
@@ -7006,7 +7006,7 @@ function isDropTypeAbsent(typeIdx) { // dl
 }
 
 
-function updateDrops() { // zg
+export function updateDrops() { // zg
     let a, b, c;
     for (a = b = 0; a < dropCount; a++)
         b += 7 * dropType[a] + 3 * dropValue[a] + 11 * dropMeta[a];
@@ -7059,7 +7059,7 @@ function updateDrops() { // zg
 
 
 
-function drawDrops() { // Dg
+export function drawDrops() { // Dg
     let a;
     spriteAltRenderFlag = 2;
     for (a = 0; a < dropCount; a++)
@@ -7076,7 +7076,7 @@ function drawDrops() { // Dg
 
 
 
-function canvasDrawImage(_canvas, _dx, _dy) {
+export function canvasDrawImage(_canvas, _dx, _dy) {
     try {
         CanvasState.element = document.getElementById("cv"); 
         CanvasState.context2d = CanvasState.element.getContext("2d");
@@ -7085,7 +7085,7 @@ function canvasDrawImage(_canvas, _dx, _dy) {
 }
 
 
-function setupAnimRequest() {
+export function setupAnimRequest() {
     let requestAnim = requestAnimationFrame || mozRequestAnimationFrame || webkitRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
     if (GameState.requestAnim) {
         GameState.requestAnim(setupAnimRequest);
@@ -7145,7 +7145,7 @@ function setupAnimRequest() {
 }
 
 /** Checks hostname */
-function hostnameCheck() {
+export function hostnameCheck() {
     if (Consts.hostname.length != Consts.targetHostname.length) 
         return true;
     for (GameState.hostNameUnchecked = 0; Consts.hostnameCheckIdx < Consts.hostname.length; Consts.hostnameCheckIdx++)
@@ -7156,7 +7156,7 @@ function hostnameCheck() {
 
 
 
-function computeFrameDelay() { // ag
+export function computeFrameDelay() { // ag
     GameState.timestampAnim = Date.now();
     let a = RMath.clamp(GameState.nextFrameTime - GameState.timestampAnim, 5, GameState.frameInteval);
     GameState.frameCountThisSecond++;
@@ -7169,7 +7169,7 @@ function computeFrameDelay() { // ag
 
 
 
-function drawText(_font, px, py, text, color, outlineColor) {
+export function drawText(_font, px, py, text, color, outlineColor) {
     let h, k, p, t, l, n, w, B = 640 - _font.c,
         M = _font.i.h - _font.c,
         J = _font.i.g,
@@ -7200,27 +7200,27 @@ function drawText(_font, px, py, text, color, outlineColor) {
     _font.a = 0;
 }
 
-function drawTextCentered(font, x, y, text, color, outlineColor) {
+export function drawTextCentered(font, x, y, text, color, outlineColor) {
     x -= text.length * (font.c + font.b) >> 1;
     y -= font.j >> 1;
     drawText(font, x, y, text, color, outlineColor)
 }
 
-function drawMedTextNoOutline(x, y, text, color) {
+export function drawMedTextNoOutline(x, y, text, color) {
     let f = LoadedFonts.gameFontMed;
     f.b = -1;
     f.a = 3;
     drawText(f, x, y, text, color, 0)
 }
 
-function drawSmallTextNoOutline(x, y, text, color) {
+export function drawSmallTextNoOutline(x, y, text, color) {
     let f = LoadedFonts.gameFontSmall;
     f.b = -1;
     f.a = 0;
     drawTextCentered(f, x, y, text, color, -1)
 }
 
-function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight) { // Tg
+export function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight) { // Tg
     fgR = fgR * fgAlpha >> 8;
     fgG = fgG * fgAlpha >> 8;
     fgB = fgB * fgAlpha >> 8;
@@ -7259,13 +7259,13 @@ function drawScaledTintedText(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, al
     font.a = 0;
 }
 
-function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight) { // Jg
+export function drawScaledTintedTextCentered(font, x, y, text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight) { // Jg
     x -= text.length * (glyphWidth + font.b) >> 1;
     drawScaledTintedText(font, x, y - (glyphHeight >> 1), text, fgR, fgG, fgB, fgAlpha, altR, altG, altB, altAlpha, glyphWidth, glyphHeight)
 }
 
 
-function drawLine(x1, y1, x2, y2, color) {
+export function drawLine(x1, y1, x2, y2, color) {
     x2 -= x1;
     y2 -= y1;
     var g, h;
@@ -7304,7 +7304,7 @@ function drawLine(x1, y1, x2, y2, color) {
     }
 }
 
-function drawRectOutline(x1, y1, w, h, color) {
+export function drawRectOutline(x1, y1, w, h, color) {
     w--;
     h--;
     drawLine(x1, y1, x1 + w, y1, color);
@@ -7313,11 +7313,11 @@ function drawRectOutline(x1, y1, w, h, color) {
     drawLine(x1 + w, y1, x1 + w, y1 + h, color)
 }
 
-function drawRectOutlineCentered(a, b, c, d, f) {
+export function drawRectOutlineCentered(a, b, c, d, f) {
     drawRectOutline(a - (c >> 1), b - (d >> 1), c, d, f)
 }
 
-function drawRect(_x, _y, _w, _h, _color) {
+export function drawRect(_x, _y, _w, _h, _color) {
     var g, h, k;
     _w = 640 < _x + _w ? 640 : ~~(_x + _w);
     _h = 432 < _y + _h ? 432 : ~~(_y + _h);
@@ -7342,11 +7342,11 @@ function drawRect(_x, _y, _w, _h, _color) {
     }
 }
 
-function drawRectCentered(x, y, w, h, color) {
+export function drawRectCentered(x, y, w, h, color) {
     drawRect(x - (w >> 1), y - (h >> 1), w, h, color)
 }
 
-function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor) {
+export function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor) {
     var l = spriteSheet.g, n, w, B, M;
     sourceWidth = ~~((sourceWidth << 8) / drawWidth);
     sourceHeight = ~~((sourceHeight << 8) / drawHeight);
@@ -7469,13 +7469,13 @@ function drawSpriteSheetPart(spriteSheet, _x, _y, drawWidth, drawHeight, sourceX
     }
 }
 
-function drawSpriteSheetPartCentered(spriteSheet, x, y, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor) {
+export function drawSpriteSheetPartCentered(spriteSheet, x, y, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor) {
     drawSpriteSheetPart(spriteSheet, x - (drawWidth >> 1), y - (drawHeight >> 1), drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, tintColor)
 }
 
 // whiteRCol: replacement color (integer) written when the source pixel equals white (0xFFFFFF / 16777215)
 // grayRCol: replacement color (integer) written when the source pixel equals gray marker (0x666666 / 6710886).
-function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, whiteRCol, grayRCol, copySource) {
+export function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawHeight, sourceX, sourceY, sourceWidth, sourceHeight, whiteRCol, grayRCol, copySource) {
     // Qg
     let w = spriteSheet.g,
         B, M, J, y, x;
@@ -7509,7 +7509,7 @@ function drawSpriteSheetPartTintedScaled(spriteSheet, _px, _py, drawWidth, drawH
         }
 }
 
-function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY, srcHeight, replaceColW, replaceColAlt, blendAmount) {
+export function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY, srcHeight, replaceColW, replaceColAlt, blendAmount) {
     // fl
     centerX -= dstWidth >> 1;
     centerY -= dstHeight >> 1;
@@ -7558,7 +7558,7 @@ function drawEnemyScaledSprite(centerX, centerY, dstWidth, dstHeight, srcX, srcY
         }
 }
 
-function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tintColor) {
+export function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tintColor) {
     // gh
     let h = 16, k = 16, p, t, 
         l = LoadedSprites.itemsSpriteSheet.g, n, w, B, M;
@@ -7592,7 +7592,7 @@ function drawItemSpriteTinted(_px, _py, _sourceX, _sourceY, _defaultColor, _tint
     }
 }
 
-function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
+export function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
     var g, h;
     g = 640 * _top + _left;
     h = 640 - _width;
@@ -7603,7 +7603,7 @@ function fillEmptyPixelsRect(_left, _top, _width, _height, _color) { // Xg
             }
 }
 
-function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
+export function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
     var f, g, h;
     if (RMath.abs(_x1 - _x0) >= RMath.abs(_y1 - _y0)) {
         _x0 >>= 16;
@@ -7646,7 +7646,7 @@ function updateScanlineBoundsFromLine(_x0, _y0, _x1, _y1) { // Li
     }
 }
 
-function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay1) { // mm
+export function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay1) { // mm
     var p = (RMath.max(RMath.abs(_x1 - _x0), RMath.abs(_y1 - _y0)) >> 16) + 1;
     _x1 = RMath.floor((_x1 - _x0) / p);
     _y1 = RMath.floor((_y1 - _y0) / p);
@@ -7670,7 +7670,7 @@ function rasterizeLineToScanlineBounds(_x0, _y0, _ax0, _ay0, _x1, _y1, _ax1, _ay
     }
 }
 
-function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { // T
+export function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { // T
     RMath.Vec2Sub(scratchVec2, _a, _b);
     _targetDist -= RMath.Vec2Norm(scratchVec2);
     _weightA *= _targetDist;
@@ -7681,7 +7681,7 @@ function applySeparationCorrection(_a, _b, _targetDist, _weightA, _weightB) { //
     _b.y -= scratchVec2.y * _weightB
 }
 
-function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
+export function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
     RMath.Vec2Sub(scratchVec2, _a, _b);
     _b.set(_a);
     scratchVec2.y += _yBias;
@@ -7689,12 +7689,12 @@ function stepWithVerticalBias(_a, _b, _yBias, _scale) { // S
     _a.add(scratchVec2)
 }
 
-function toggleFullscreen() {
+export function toggleFullscreen() {
     document.fullscreenEnabled && (document.fullscreenElement ? document.exitFullscreen() : CanvasState.element.requestFullscreen())
 }
 
 
-function onTouchStart(a) {
+export function onTouchStart(a) {
     handleTouch(a);
     if (1 == activeTouchCount) {
         isMouseDown = true;
@@ -7708,11 +7708,11 @@ function onTouchStart(a) {
     return false;
 };
 
-function onContextMenu() {
+export function onContextMenu() {
     if (GameState.isCanvasFocused) return false
 };
 
-function onMouseDown(mouseState) {
+export function onMouseDown(mouseState) {
     onMouseMove(mouseState);
     GameState.isCanvasFocused = false;
 
@@ -7733,7 +7733,7 @@ function onMouseDown(mouseState) {
     // ) return false
 };
 
-function onMouseUp(mouseState) {
+export function onMouseUp(mouseState) {
     onMouseMove(mouseState);
     if (mouseState.button === 0) {
         isMouseDown = false;
@@ -7741,12 +7741,12 @@ function onMouseUp(mouseState) {
     //0 == mouseState.button && (isMouseDown = false)
 };
 
-function onTouchMove(a) {
+export function onTouchMove(a) {
     handleTouch(a);
     return false;
 };
 
-function onTouchEnd(a) {
+export function onTouchEnd(a) {
     handleTouch(a);
     if (0 == activeTouchCount) {
         isMouseDown = false;
@@ -7760,12 +7760,12 @@ function onTouchEnd(a) {
     return false;
 };
 
-function onTouchCancel() {
+export function onTouchCancel() {
     activeTouchCount = 0;
     isMouseDown = false;
 };
 
-function onKeyDown(a) {
+export function onKeyDown(a) {
     var b = a.keyCode;
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);
@@ -7779,7 +7779,7 @@ function onKeyDown(a) {
     if (0 != b && GameState.isCanvasFocused) return false;
 };
 
-function onKeyUp(a) {
+export function onKeyUp(a) {
     var b = a.keyCode;
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);
@@ -7793,15 +7793,15 @@ function onKeyUp(a) {
 };
 
 
-function buttonCheck(x, y, w, h) {
+export function buttonCheck(x, y, w, h) {
     return mouseXCurrent < x || x + w <= mouseXCurrent || mouseYCurrent < y || y + h <= mouseYCurrent ? false : true
 }
 
-function buttonCheckCentered(x, y, w, h) {
+export function buttonCheckCentered(x, y, w, h) {
     return buttonCheck(x - w / 2, y - h / 2, w, h)
 }
 
-function onMouseMove(mouseState) {
+export function onMouseMove(mouseState) {
     var clientRect = CanvasState.element.getBoundingClientRect(),
         rectWidth = clientRect.right - clientRect.left,
         rectHeight = clientRect.bottom - clientRect.top,
@@ -7812,7 +7812,7 @@ function onMouseMove(mouseState) {
     // LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
 }
 
-function handleTouch(a) {
+export function handleTouch(a) {
     var clientRect = CanvasState.element.getBoundingClientRect(),
         rectWidth = clientRect.right - clientRect.left,
         rectHeight = clientRect.bottom - clientRect.top,
@@ -7835,7 +7835,7 @@ function handleTouch(a) {
 }
 
 
-function promptInput(message, _default) {
+export function promptInput(message, _default) {
     var c = null;
     try {
         c = prompt(message, _default)
@@ -7845,13 +7845,13 @@ function promptInput(message, _default) {
 
 
 
-function wrapStageIndex(a) {
+export function wrapStageIndex(a) {
     var b = stageIndexOrder.length - 1;
     return 0 > a ? b : a > b ? 0 : a
 }
 
 
-function drawIconButton(x, y, iconIndex, label, color) {
+export function drawIconButton(x, y, iconIndex, label, color) {
     isSolidRender = 1;
     drawRectCentered(x, y, 32, 32, 2147483648);
     isSolidRender = 0;
@@ -7874,7 +7874,7 @@ function drawIconButton(x, y, iconIndex, label, color) {
     
 }
 
-function drawMenuButton(x, y, iconIndex, text, color) {
+export function drawMenuButton(x, y, iconIndex, text, color) {
     isSolidRender = 1;
     drawRectCentered(x, y, 24, 24, 2147483648);
     isSolidRender = 0;
@@ -7897,7 +7897,7 @@ function drawMenuButton(x, y, iconIndex, text, color) {
 
 }
 
-function drawCancelButton(x, y) {
+export function drawCancelButton(x, y) {
     isSolidRender = 1;
     drawRectCentered(x, y, 20, 20, 2147483648);
     isSolidRender = 0;
@@ -7908,7 +7908,7 @@ function drawCancelButton(x, y) {
     }
 }
 
-function drawButtonBoldedText(x, y, w, h, text) {
+export function drawButtonBoldedText(x, y, w, h, text) {
     drawRectCentered(x, y, w, h, 0);
     drawTextCentered(LoadedFonts.gameFont, x, y, text, 16777215, 8409120);
     if (buttonCheckCentered(x, y, w, h)) {

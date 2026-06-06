@@ -12,7 +12,7 @@ import { StageProps } from "./game/stage_enums.js";
 import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
 import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
 import { GameFont } from "./game/font.js";
-import { BadgeState, BestiaryState, CanvasState, GameState, GameStateChecksum, GUIState, RenderingState, SaveState } from "./game/global_states.js";
+import { BadgeState, BestiaryState, CanvasState, GameState, GameStateChecksum, GUIState, KeyboardState, MouseState, RenderingState, SaveState } from "./game/global_states.js";
 import * as Consts from "./game/consts.js"
 import { LoadedSprites } from "./game/game_sprites.js";
 import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
@@ -43,26 +43,6 @@ document.onkeyup = onKeyUp;
 
 // vector math stuff
 var scratchVec2 = new RMath.Vec2; // nn, temporary Vec2 scratch used by separation/step helpers.
-
-// mouse input
-let isMouseClicked = false,
-    isMouseReleased = false,
-    wasMouseDown = false,
-    isMouseDown = false,
-    mouseHoldFrames = 0, // bn, frames mouse has been continuously held down (hold-duration counter).
-    mouseXCurrent = 0,
-    mouseYCurrent = 0,
-    mouseXRel = 0,
-    mouseYRel = 0,
-    activeTouchCount = 0;
-
-
-// keyboard input
-let keyJustPressed = Array(256), // Jf
-    keyPressPending = Array(256), // Kf
-    keyHeld = Array(256), // Lf
-    keyMapNoShift = Array(256), // Mf
-    keyMapShift = Array(256); // Nf
 
 
 export function resetGameProgress() { // bc
@@ -477,55 +457,55 @@ export function gameInit(a, b) {
         CanvasState.element.height = 432;
 
         for (_t0 = 0; 256 > _t0; _t0++) {
-            keyJustPressed[_t0] = false;
-            keyPressPending[_t0] = false;
-            keyHeld[_t0] = false;
-            keyMapNoShift[_t0] = 0;
-            keyMapShift[_t0] = 0;
+            KeyboardState.keyJustPressed[_t0] = false;
+            KeyboardState.keyPressPending[_t0] = false;
+            KeyboardState.keyHeld[_t0] = false;
+            KeyboardState.keyMapNoShift[_t0] = 0;
+            KeyboardState.keyMapShift[_t0] = 0;
         }
-        for (_t0 = 0; 10 > _t0; _t0++) keyMapNoShift[48 + _t0] = 48 + _t0;
-        for (_t0 = 0; 9 > _t0; _t0++) keyMapShift[49 + _t0] = 33 + _t0;
-        for (_t0 = 0; 4 > _t0; _t0++) keyMapNoShift[37 + _t0] = 37 + _t0;
-        for (_t0 = 0; 4 > _t0; _t0++) keyMapShift[37 + _t0] = 37 + _t0;
-        keyMapNoShift[13] = keyMapShift[13] = 13;
-        keyMapNoShift[16] = keyMapShift[16] = 16;
-        keyMapNoShift[17] = keyMapShift[17] = 17;
-        keyMapNoShift[18] = keyMapShift[18] = 18;
-        keyMapNoShift[32] = keyMapShift[32] = 32;
-        keyMapNoShift[186] = 58;
-        keyMapShift[186] = 42;
-        keyMapNoShift[187] = 59;
-        keyMapShift[187] = 43;
-        keyMapNoShift[188] = 44;
-        keyMapShift[188] = 60;
-        keyMapNoShift[189] = 45;
-        keyMapShift[189] = 61;
-        keyMapNoShift[190] = 46;
-        keyMapShift[190] = 62;
-        keyMapNoShift[191] = 47;
-        keyMapShift[191] = 63;
-        keyMapNoShift[192] = 64;
-        keyMapShift[192] = 96;
-        keyMapNoShift[219] = 91;
-        keyMapShift[219] = 123;
-        keyMapNoShift[220] = 92;
-        keyMapShift[220] = 124;
-        keyMapNoShift[221] = 93;
-        keyMapShift[221] = 125;
-        keyMapNoShift[222] = 94;
-        keyMapShift[222] = 126;
-        keyMapNoShift[226] = 92;
-        keyMapShift[226] = 95;
-        keyMapNoShift[58] = 58;
-        keyMapShift[58] = 42;
-        keyMapNoShift[59] = 59;
-        keyMapShift[59] = 43;
-        keyMapNoShift[173] = 45;
-        keyMapShift[173] = 61;
-        keyMapNoShift[64] = 64;
-        keyMapShift[64] = 96;
-        keyMapNoShift[160] = 94;
-        keyMapShift[160] = 126;
+        for (_t0 = 0; 10 > _t0; _t0++) KeyboardState.keyMapNoShift[48 + _t0] = 48 + _t0;
+        for (_t0 = 0; 9 > _t0; _t0++) KeyboardState.keyMapShift[49 + _t0] = 33 + _t0;
+        for (_t0 = 0; 4 > _t0; _t0++) KeyboardState.keyMapNoShift[37 + _t0] = 37 + _t0;
+        for (_t0 = 0; 4 > _t0; _t0++) KeyboardState.keyMapShift[37 + _t0] = 37 + _t0;
+        KeyboardState.keyMapNoShift[13] = KeyboardState.keyMapShift[13] = 13;
+        KeyboardState.keyMapNoShift[16] = KeyboardState.keyMapShift[16] = 16;
+        KeyboardState.keyMapNoShift[17] = KeyboardState.keyMapShift[17] = 17;
+        KeyboardState.keyMapNoShift[18] = KeyboardState.keyMapShift[18] = 18;
+        KeyboardState.keyMapNoShift[32] = KeyboardState.keyMapShift[32] = 32;
+        KeyboardState.keyMapNoShift[186] = 58;
+        KeyboardState.keyMapShift[186] = 42;
+        KeyboardState.keyMapNoShift[187] = 59;
+        KeyboardState.keyMapShift[187] = 43;
+        KeyboardState.keyMapNoShift[188] = 44;
+        KeyboardState.keyMapShift[188] = 60;
+        KeyboardState.keyMapNoShift[189] = 45;
+        KeyboardState.keyMapShift[189] = 61;
+        KeyboardState.keyMapNoShift[190] = 46;
+        KeyboardState.keyMapShift[190] = 62;
+        KeyboardState.keyMapNoShift[191] = 47;
+        KeyboardState.keyMapShift[191] = 63;
+        KeyboardState.keyMapNoShift[192] = 64;
+        KeyboardState.keyMapShift[192] = 96;
+        KeyboardState.keyMapNoShift[219] = 91;
+        KeyboardState.keyMapShift[219] = 123;
+        KeyboardState.keyMapNoShift[220] = 92;
+        KeyboardState.keyMapShift[220] = 124;
+        KeyboardState.keyMapNoShift[221] = 93;
+        KeyboardState.keyMapShift[221] = 125;
+        KeyboardState.keyMapNoShift[222] = 94;
+        KeyboardState.keyMapShift[222] = 126;
+        KeyboardState.keyMapNoShift[226] = 92;
+        KeyboardState.keyMapShift[226] = 95;
+        KeyboardState.keyMapNoShift[58] = 58;
+        KeyboardState.keyMapShift[58] = 42;
+        KeyboardState.keyMapNoShift[59] = 59;
+        KeyboardState.keyMapShift[59] = 43;
+        KeyboardState.keyMapNoShift[173] = 45;
+        KeyboardState.keyMapShift[173] = 61;
+        KeyboardState.keyMapNoShift[64] = 64;
+        KeyboardState.keyMapShift[64] = 96;
+        KeyboardState.keyMapNoShift[160] = 94;
+        KeyboardState.keyMapShift[160] = 126;
         let _t2;
         for (_t0 = 0; 276480 > _t0; _t0++) 
             RenderingState.frameBufferArray[_t0] = 0;
@@ -688,7 +668,7 @@ export function drawCanvas() {
         if (2 == GUIState.gameScreenState) {
             drawTextCentered(LoadedFonts.gameFont, 320, 220, "NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
-                if (isMouseClicked) {
+                if (MouseState.isMouseClicked) {
                     GUIState.gameScreenState = 0 == SaveState.gameLoadStatusCode ? 3 : 4;
                 }
                 drawLine(256, 228, 384, 228, 11141120);
@@ -696,7 +676,7 @@ export function drawCanvas() {
             if (0 == SaveState.gameLoadStatusCode) {
                 drawTextCentered(LoadedFonts.gameFont, 320, 260, "LOAD GAME", 16777215, 10053171);
                 if (buttonCheckCentered(320, 260, 128, 24)) {
-                    if (isMouseClicked) {
+                    if (MouseState.isMouseClicked) {
                         GUIState.gameScreenState = 5;
                     }
                     drawLine(256, 268, 384, 268, 11141120);
@@ -705,7 +685,7 @@ export function drawCanvas() {
         } else if (3 == GUIState.gameScreenState) {
             drawTextCentered(LoadedFonts.gameFont, 320, 220, "DELETE SAVED AND CREATE NEW GAME", 16777215, 10053171);
             if (buttonCheckCentered(320, 220, 128, 24)) {
-                if (isMouseClicked) {
+                if (MouseState.isMouseClicked) {
                     GUIState.gameScreenState = 4;
                 }
                 drawLine(192, 228, 448, 228, 11141120);
@@ -713,7 +693,7 @@ export function drawCanvas() {
 
             drawTextCentered(LoadedFonts.gameFont, 320, 260, "CANCEL", 16777215, 10053171);
             if (buttonCheckCentered(320, 260, 128, 24)) {
-                if (isMouseClicked) {
+                if (MouseState.isMouseClicked) {
                     GUIState.gameScreenState = 2;
                 }
                 drawLine(256, 268, 384, 268, 11141120);
@@ -722,8 +702,8 @@ export function drawCanvas() {
         
         if (drawIconButton(608, 312, 8, "IMPORT", 16777215)) {
             if (8 != GameState.userSaveCode.length) {
-                drawText(LoadedFonts.gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
-            } else if (isMouseClicked) {
+                drawText(LoadedFonts.gameFont, MouseState.mouseXCurrent - 72, MouseState.mouseYCurrent - 6, "User only", 16777215, 13158);
+            } else if (MouseState.isMouseClicked) {
                 if (a = promptInput("Import Game Data", "")) {
                     SaveState.gameLoadStatusCode = loadGame(a);
                     SaveState.statusDuration = 100;
@@ -732,8 +712,8 @@ export function drawCanvas() {
         }
         if (drawIconButton(608, 352, 9, "EXPORT", 16777215)) {
             if (8 != GameState.userSaveCode.length) {
-                drawText(LoadedFonts.gameFont, mouseXCurrent - 72, mouseYCurrent - 6, "User only", 16777215, 13158);
-            } else if (isMouseClicked) {
+                drawText(LoadedFonts.gameFont, MouseState.mouseXCurrent - 72, MouseState.mouseYCurrent - 6, "User only", 16777215, 13158);
+            } else if (MouseState.isMouseClicked) {
                 promptInput("Export Game Data", SaveState.gameSaveString);
             }
         }
@@ -778,9 +758,9 @@ export function drawCanvas() {
             GUIState.gameScreenState++;
         }
     } else if (11 == GUIState.gameScreenState || 12 == GUIState.gameScreenState || 13 == GUIState.gameScreenState || 30 == GUIState.gameScreenState) {
-        if (isMouseClicked) {
+        if (MouseState.isMouseClicked) {
             GUIState.clickInUI = false;
-            if (360 <= mouseYCurrent) GUIState.clickInUI = true;
+            if (360 <= MouseState.mouseYCurrent) GUIState.clickInUI = true;
 
             if (GUIState.memberUIVisible)
                 if (buttonCheck(8, 8, 204, 196)) GUIState.clickInUI = true;
@@ -894,7 +874,7 @@ export function drawCanvas() {
             100 > GUIState.screenStateTimer && GUIState.screenStateTimer++;
             c = RMath.floor(255 * GUIState.screenStateTimer / 100);
             drawScaledTintedTextCentered(LoadedFonts.gameFont, 320, 180, "GAME OVER", 100, 20, 10, c, 200, 0, 0, c, 16, 24);
-            if (100 == GUIState.screenStateTimer && isMouseClicked) {
+            if (100 == GUIState.screenStateTimer && MouseState.isMouseClicked) {
                 for (a = 0; 4 > a; a++) {
                     PartyState.partyLP[a] = 1;
                     PartyState.heroEmitCurrent[a] = 0;
@@ -1095,7 +1075,7 @@ export function updatePartyStats() {
 export function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx) { // Wg
     var h;
     if (buttonCheck(_x, _y, _width, _height))
-        if (fillEmptyPixelsRect(_x, _y, _width, _height, 6684672), isMouseClicked && 0 != _itemId) {
+        if (fillEmptyPixelsRect(_x, _y, _width, _height, 6684672), MouseState.isMouseClicked && 0 != _itemId) {
             if (GUIState.inventoryUIVisible = GUIState.inventoryUIVisible && inventoryItemLists[GUIState.inventoryTabIdx][28 * GUIState.inventoryPageIdx + GUIState.inventorySlotIdx] == _itemId ? false : true) {
                 GUIState.shrineUIVisible = false;
             }
@@ -1108,7 +1088,7 @@ export function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx
                 GUIState.inventoryPageIdx = RMath.floor(h / 28);
                 GUIState.inventorySlotIdx = h % 28;
             }
-        } else if (isMouseClicked) {
+        } else if (MouseState.isMouseClicked) {
         if (GUIState.inventoryUIVisible = GUIState.inventoryUIVisible && GUIState.inventoryTabIdx == _pageIdx ? false : true) {
             GUIState.shrineUIVisible = false;
         }
@@ -1120,7 +1100,7 @@ export function handleInventoryButton(_x, _y, _width, _height, _itemId, _pageIdx
 
 export function drawGameUI() {
     var hidx, b, c, d, f, g, h, k;
-    if (keyJustPressed[32]) {
+    if (KeyboardState.keyJustPressed[32]) {
         if (GUIState.memberUIVisible ||
             GUIState.inventoryUIVisible ||
             GUIState.bestiaryUIVisible ||
@@ -1231,11 +1211,11 @@ export function drawGameUI() {
         if (buttonCheck(f + hidx * d, g, 24, 24)) {
             fillEmptyPixelsRect(f + hidx * d, g, 24, 24, 8388608);
 
-            if (isMouseClicked && GUIState.selectingHero == hidx) {
+            if (MouseState.isMouseClicked && GUIState.selectingHero == hidx) {
                 GUIState.memberUIVisible = !GUIState.memberUIVisible;
             }
 
-            if (isMouseClicked) {
+            if (MouseState.isMouseClicked) {
                 GUIState.selectingHero = hidx;
             }
         }
@@ -1257,7 +1237,7 @@ export function drawGameUI() {
                 RenderingState.spriteAltRenderFlag = 0;
             }
             handleInventoryButton(k, n, 16, 16, c, b);
-            if (buttonCheck(k, n, 16, 16) && isMouseClicked && 0 != c) {
+            if (buttonCheck(k, n, 16, 16) && MouseState.isMouseClicked && 0 != c) {
                 GUIState.selectingHero = hidx;
             }
         }
@@ -1266,7 +1246,7 @@ export function drawGameUI() {
     f = 472;
     g = 379;
     d = 36;
-    if (drawIconButton(f + -1 * d, g, 13, "" + PartyState.collectedStageFlagsCount + "/" + PartyState.stageFlagsSetCount, 16777215) && isMouseClicked) {
+    if (drawIconButton(f + -1 * d, g, 13, "" + PartyState.collectedStageFlagsCount + "/" + PartyState.stageFlagsSetCount, 16777215) && MouseState.isMouseClicked) {
         for (hidx = c = 0; hidx < PartyState.partyMemberCount; hidx++) c += PartyState.partyMaxLP[hidx] - PartyState.partyLP[hidx];
         if (0 < c && 0 < PartyState.collectedStageFlagsCount) {
             for (hidx = 0; hidx < PartyState.partyMemberCount; hidx++) {
@@ -1280,31 +1260,31 @@ export function drawGameUI() {
         }
     }
     if (drawIconButton(f + 0 * d, g, 1, "STATUS", GUIState.memberUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked) {
+        if (MouseState.isMouseClicked) {
             GUIState.memberUIVisible = !GUIState.memberUIVisible;
         }
     }
 
     if (drawIconButton(f + 1 * d, g, 2, "ITEM", GUIState.inventoryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (GUIState.inventoryUIVisible = !GUIState.inventoryUIVisible)) {
+        if (MouseState.isMouseClicked && (GUIState.inventoryUIVisible = !GUIState.inventoryUIVisible)) {
             GUIState.shrineUIVisible = false;
         }
     }
 
     if (drawIconButton(f + 2 * d, g, 3, "MONSTER", GUIState.bestiaryUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (GUIState.bestiaryUIVisible = !GUIState.bestiaryUIVisible)) {
+        if (MouseState.isMouseClicked && (GUIState.bestiaryUIVisible = !GUIState.bestiaryUIVisible)) {
             GUIState.badgesUIVisible = false;
         }
     }
 
     if (drawIconButton(f + 3 * d, g, 4, "MEDAL", GUIState.badgesUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked && (GUIState.badgesUIVisible = !GUIState.badgesUIVisible)) {
+        if (MouseState.isMouseClicked && (GUIState.badgesUIVisible = !GUIState.badgesUIVisible)) {
             GUIState.bestiaryUIVisible = false;
         }
     }
 
     if (drawIconButton(f + 4 * d, g, 5, "OPTION", GUIState.optionsUIVisible ? 16750950 : 16777215)) {
-        if (isMouseClicked) {
+        if (MouseState.isMouseClicked) {
             GUIState.optionsUIVisible = !GUIState.optionsUIVisible;
         }
     }
@@ -1326,7 +1306,7 @@ export function drawGameUI() {
             LoadedFonts.gameFont.a = 1;
             drawTextCentered(LoadedFonts.gameFont, 530, 168, "INN", 15908203, 8409120);
             drawTextCentered(LoadedFonts.gameFont, 528, 187, "G " + c, 16777215, 8409120);
-            if (0 < c && c <= PartyState.partyGold && isMouseClicked && !GUIState.clickInUI) {
+            if (0 < c && c <= PartyState.partyGold && MouseState.isMouseClicked && !GUIState.clickInUI) {
                 for (hidx = 0; hidx < PartyState.partyMemberCount; hidx++) {
                     if (PartyState.partyLP[hidx] != PartyState.partyMaxLP[hidx]) {
                         spawnPopup(HeroesState.heroJointPositionsByHero[hidx][0].x, HeroesState.heroJointPositionsByHero[hidx][0].y, 0, PartyState.partyMaxLP[hidx] - PartyState.partyLP[hidx], 60, 65280);
@@ -1345,7 +1325,7 @@ export function drawGameUI() {
         if (buttonCheckCentered(52, 308, 56, 40)) {
             LoadedFonts.gameFont.a = 1;
             drawTextCentered(LoadedFonts.gameFont, 54, 296, "SMITH", 15908203, 8409120);
-            if (isMouseClicked && !GUIState.clickInUI) {
+            if (MouseState.isMouseClicked && !GUIState.clickInUI) {
                 if (GUIState.inventoryUIVisible = !GUIState.inventoryUIVisible) {
                     GUIState.shrineUIVisible = false;
                 }
@@ -1357,7 +1337,7 @@ export function drawGameUI() {
         if (buttonCheckCentered(416, 108, 48, 40)) {
             LoadedFonts.gameFont.a = 1;
             drawTextCentered(LoadedFonts.gameFont, 418, 104, "SHRINE", 15908203, 8409120);
-            if (isMouseClicked && !GUIState.clickInUI && (GUIState.shrineUIVisible = !GUIState.shrineUIVisible)) {
+            if (MouseState.isMouseClicked && !GUIState.clickInUI && (GUIState.shrineUIVisible = !GUIState.shrineUIVisible)) {
                 GUIState.inventoryUIVisible = false;
             }
         }
@@ -1385,10 +1365,10 @@ export function drawGameUI() {
             if (_clicked) {
                 if (GUIState.selectedStatIndex != _statIdx) {
                     // mouse button is held, but the cursor is hovering over another icon
-                    if (isMouseReleased) GUIState.selectedStatIndex = _statIdx;
+                    if (MouseState.isMouseReleased) GUIState.selectedStatIndex = _statIdx;
                 } else if (0 < PartyState.partySP[GUIState.selectingHero] && PartyState.partyStats[GUIState.selectedStatIndex][GUIState.selectingHero] < maxStats[GUIState.selectedStatIndex]) {
-                    drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 5, mouseYCurrent - 8, "UP", 16776960, 1118481);
-                    if (isMouseReleased) {
+                    drawText(LoadedFonts.gameFontSmall, MouseState.mouseXCurrent - 5, MouseState.mouseYCurrent - 8, "UP", 16776960, 1118481);
+                    if (MouseState.isMouseReleased) {
                         PartyState.partyStats[GUIState.selectedStatIndex][GUIState.selectingHero]++;
                         PartyState.partySP[GUIState.selectingHero]--;
                     }
@@ -1396,7 +1376,7 @@ export function drawGameUI() {
             }
         }
 
-        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+        if (drawCancelButton(f + 188, g + 4) && MouseState.isMouseClicked) {
             GUIState.memberUIVisible = false;
         }
 
@@ -1528,7 +1508,7 @@ export function drawGameUI() {
                 h = getItemStatWithForge(c, ItemProps.ForgeCostPerLevel) * PartyState.itemForgeLvls[c];
                 if (drawButtonBoldedText(_ox + 138, _oy + 48 - 2, 80, 24, "G " + h) && h <= PartyState.partyGold) {
                     PartyState.forgePreviewItemIdx = c;
-                    if (isMouseClicked) {
+                    if (MouseState.isMouseClicked) {
                         PartyState.forgePreviewItemIdx = -1;
                         PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
                         PartyState.itemForgeLvls[c]++;
@@ -1659,7 +1639,7 @@ export function drawGameUI() {
 
         PartyState.forgePreviewItemIdx = -1;
         k = GUIState.inventoryTabIdx;
-        if (drawCancelButton(_ox + 188, _oy + 4) && isMouseClicked) {
+        if (drawCancelButton(_ox + 188, _oy + 4) && MouseState.isMouseClicked) {
             GUIState.inventoryUIVisible = false;
         }
         for (hidx = 0; 28 > hidx; hidx++) {
@@ -1686,7 +1666,7 @@ export function drawGameUI() {
             if (buttonCheck(b, d, 24, 24)) {
                 fillEmptyPixelsRect(b, d, 24, 24, 6684672);
                 if (GUIState.inventorySlotIdx != hidx) {
-                    if (isMouseReleased) {
+                    if (MouseState.isMouseReleased) {
                         GUIState.inventorySlotIdx = hidx;
                     }
                 } else {
@@ -1703,20 +1683,20 @@ export function drawGameUI() {
 
                     if (0 != PartyState.itemForgeLvls[c]) {
                         if (-1 == h) {
-                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
-                            if (isMouseReleased) {
+                            drawText(LoadedFonts.gameFontSmall, MouseState.mouseXCurrent - 20, MouseState.mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
+                            if (MouseState.isMouseReleased) {
                                 PartyState.partyEquipmentTable[GUIState.selectingHero][k] = c;
                             }
                         } else if (h == GUIState.selectingHero) {
-                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 8, "REMOVE", 16777215,
+                            drawText(LoadedFonts.gameFontSmall, MouseState.mouseXCurrent - 25, MouseState.mouseYCurrent - 8, "REMOVE", 16777215,
                                 0);
-                            if (isMouseReleased) {
+                            if (MouseState.isMouseReleased) {
                                 PartyState.partyEquipmentTable[GUIState.selectingHero][k] = 0;
                             }
                         } else {
-                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 25, mouseYCurrent - 16, "REMOVE", 16777215, 0);
-                            drawText(LoadedFonts.gameFontSmall, mouseXCurrent - 20, mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
-                            if (isMouseReleased) {
+                            drawText(LoadedFonts.gameFontSmall, MouseState.mouseXCurrent - 25, MouseState.mouseYCurrent - 16, "REMOVE", 16777215, 0);
+                            drawText(LoadedFonts.gameFontSmall, MouseState.mouseXCurrent - 20, MouseState.mouseYCurrent - 8, "EQUIP", 16777215, 1118481);
+                            if (MouseState.isMouseReleased) {
                                 PartyState.partyEquipmentTable[h][k] = 0;
                                 PartyState.partyEquipmentTable[GUIState.selectingHero][k] = c;
                             }
@@ -1724,7 +1704,7 @@ export function drawGameUI() {
                         
                     }
                 }
-                if (isMouseReleased) {
+                if (MouseState.isMouseReleased) {
                     PartyState.itemIsNew[c] = 0;
                 }
             }
@@ -1746,7 +1726,7 @@ export function drawGameUI() {
         k = ["ARMS", "CHARGE", "HEAD", "RING", "AMULET"];
         for (hidx = 0; 5 > hidx; hidx++) {
             if (drawMenuButton(_ox + 12 + 28 * hidx, _oy + 238, hidx, k[hidx], GUIState.inventoryTabIdx == hidx ? 16737894 : 16777215)) {
-                if (isMouseClicked) {
+                if (MouseState.isMouseClicked) {
                     GUIState.inventoryTabIdx = hidx;
                 }
             }
@@ -1756,10 +1736,10 @@ export function drawGameUI() {
                 drawText(LoadedFonts.gameFontSmall, _ox + 12 + 28 * hidx - 12, _oy + 238 - 12, "NEW", 16776960, -1);
             }
         }
-        if (drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && isMouseClicked) {
+        if (drawMenuButton(_ox + 96 - 42, _oy + 209, 7, "PREV", 16777215) && MouseState.isMouseClicked) {
             GUIState.inventoryPageIdx--;
         }
-        if (drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215) && isMouseClicked) {
+        if (drawMenuButton(_ox + 138, _oy + 209, 8, "NEXT", 16777215) && MouseState.isMouseClicked) {
             GUIState.inventoryPageIdx++;
         }
         h = ~~(inventoryItemLists[GUIState.inventoryTabIdx].length / 28);
@@ -1771,7 +1751,7 @@ export function drawGameUI() {
         let f = 434;
         let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+        if (drawCancelButton(f + 188, g + 4) && MouseState.isMouseClicked) {
             GUIState.bestiaryUIVisible = false;
         }
         GUIState.bestiaryEnemySelection = RMath.clamp(GUIState.bestiaryEnemySelection, 0, bestiaryPageItems[GUIState.currentBestiaryPage].length - 1);
@@ -1782,7 +1762,7 @@ export function drawGameUI() {
         } else {
             if (0 == BestiaryState.bestiaryEntryState[c]) {
                 h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
-                if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= PartyState.partyGold && isMouseClicked) {
+                if (drawButtonBoldedText(f + 96, g + 48, 96, 24, "G " + h) && h <= PartyState.partyGold && MouseState.isMouseClicked) {
                     PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
                     BestiaryState.bestiaryEntryState[c] = 1;
                 }
@@ -1818,7 +1798,7 @@ export function drawGameUI() {
                 drawText(LoadedFonts.gameFontMed, f + 80, g + 0, "DROP ITEM", 16777215, 0);
                 if (1 == BestiaryState.bestiaryEntryState[c]) {
                     h = enemyCatalog[c][EnemyProps.BestiaryUnlockCost];
-                    if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= PartyState.partyGold && isMouseClicked) {
+                    if (drawButtonBoldedText(f + 120, g + 48 - 8, 80, 56, "G " + h) && h <= PartyState.partyGold && MouseState.isMouseClicked) {
                         PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
                         BestiaryState.bestiaryEntryState[c] = 2;
                     }
@@ -1876,17 +1856,17 @@ export function drawGameUI() {
                 }
                 if (buttonCheck(b, d, 24, 24)) {
                     fillEmptyPixelsRect(b, d, 24, 24, 6684672);
-                    if (isMouseClicked) {
+                    if (MouseState.isMouseClicked) {
                         GUIState.bestiaryEnemySelection = hidx;
                     }
                 }
                 drawEnemyStatic(c, b + 12, d + 20, 2);
             }
         }
-        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked) {
+        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && MouseState.isMouseClicked) {
             GUIState.currentBestiaryPage--;
         }
-        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked) {
+        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && MouseState.isMouseClicked) {
             GUIState.currentBestiaryPage++;    
         }
         GUIState.currentBestiaryPage = wrapStageIndex(GUIState.currentBestiaryPage);
@@ -1899,7 +1879,7 @@ export function drawGameUI() {
         let f = 434;
         let g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+        if (drawCancelButton(f + 188, g + 4) && MouseState.isMouseClicked) {
             GUIState.badgesUIVisible = false;
         }
         if (0 == StageState.isStageReachedArray[stageIndexOrder[GUIState.badgesUIStageIdx]]) 
@@ -1932,10 +1912,10 @@ export function drawGameUI() {
                     }
                 }
             }
-        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && isMouseClicked) {
+        if (drawMenuButton(f + 96 - 42, g + 156, 7, "PREV", 16777215) && MouseState.isMouseClicked) {
             GUIState.badgesUIStageIdx--;
         }
-        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && isMouseClicked) {
+        if (drawMenuButton(f + 138, g + 156, 8, "NEXT", 16777215) && MouseState.isMouseClicked) {
             GUIState.badgesUIStageIdx++;
         }
         GUIState.badgesUIStageIdx = wrapStageIndex(GUIState.badgesUIStageIdx);
@@ -1949,7 +1929,7 @@ export function drawGameUI() {
         let g = 202;
         d = 32;
         drawRect(f - 6, g - 6, 204, 148, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+        if (drawCancelButton(f + 188, g + 4) && MouseState.isMouseClicked) {
             GUIState.optionsUIVisible = false;
         }
         c = ["ON", "OFF"];
@@ -1967,7 +1947,7 @@ export function drawGameUI() {
             if (buttonCheckCentered(f + 84 + hidx * d, g + 40, 32, 40)) {
                 fillEmptyPixelsRect(f + 72 + hidx * d, g + 20, 24, 24, 8388608);
                 drawTextCentered(LoadedFonts.gameFontMed, f + 84 + hidx * d, g + 52, c[PartyState.autoMoveEnabled[hidx]], 16711680, 0);
-                if (isMouseClicked) {
+                if (MouseState.isMouseClicked) {
                     PartyState.autoMoveEnabled[hidx] = 1 - PartyState.autoMoveEnabled[hidx];
                 }
             }
@@ -1976,7 +1956,7 @@ export function drawGameUI() {
         drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[PartyState.cliffStopEnabled], 16777215, 0);
         if (buttonCheck(f + 0, g + 64 - 2, 192, 12)) {
             drawText(LoadedFonts.gameFontMed, f + 78, g + 64, c[PartyState.cliffStopEnabled], 16711680, 0);
-            if (isMouseClicked) {
+            if (MouseState.isMouseClicked) {
                 PartyState.cliffStopEnabled = 1 - PartyState.cliffStopEnabled;
             }
         }
@@ -1988,7 +1968,7 @@ export function drawGameUI() {
         }
         h = stageListArray[GUIState.currentStage][StageProps.stageReturnCost];
         if (drawButtonBoldedText(f + 96, g + 120, 96, 24, "G " + h)) {
-            if (h <= PartyState.partyGold && isMouseClicked) {
+            if (h <= PartyState.partyGold && MouseState.isMouseClicked) {
                 PartyState.partyGold = RMath.clamp(PartyState.partyGold - h, 0, 9999999);
                 if (1 == GUIState.currentStage) {
                     GUIState.gameScreenState = 0;
@@ -2014,7 +1994,7 @@ export function drawGameUI() {
         f = 224;
         g = 14;
         drawRect(f - 6, g - 6, 204, 180, stageListArray[GUIState.currentStage][StageProps.stageUIBgColorCol]);
-        if (drawCancelButton(f + 188, g + 4) && isMouseClicked) {
+        if (drawCancelButton(f + 188, g + 4) && MouseState.isMouseClicked) {
             GUIState.shrineUIVisible = false;
         }
         for (hidx = h = 0; hidx < badgeList.length; hidx++)
@@ -2044,7 +2024,7 @@ export function drawGameUI() {
                 drawSpriteSheetPart(LoadedSprites.iconSpriteSheet, b, d + 6, 8, 8, 272, 8, 8, 8, 39168);
             } else if (buttonCheck(b + 14, d, 20, 20)) {
                 fillEmptyPixelsRect(b + 14, d, 20, 20, 6684672);
-                if (shrineRewardOptions[hidx][1] <= h && isMouseClicked) {
+                if (shrineRewardOptions[hidx][1] <= h && MouseState.isMouseClicked) {
                     c = hidx;
                 }
             }
@@ -2316,10 +2296,10 @@ export function pickHeroJointUnderMouse() { // vi
     var a = new RMath.Vec2(),
         b, c;
     if (-1 == GameplayState.draggedHeroIndex) {
-        if (isMouseClicked && !GUIState.clickInUI) {
+        if (MouseState.isMouseClicked && !GUIState.clickInUI) {
             b = 20;
-            a.x = mouseXCurrent - HeroesState.heroJointPrevPositionsByHero[GUIState.selectingHero][0].x;
-            a.y = mouseYCurrent - (HeroesState.heroJointPrevPositionsByHero[GUIState.selectingHero][0].y - 8);
+            a.x = MouseState.mouseXCurrent - HeroesState.heroJointPrevPositionsByHero[GUIState.selectingHero][0].x;
+            a.y = MouseState.mouseYCurrent - (HeroesState.heroJointPrevPositionsByHero[GUIState.selectingHero][0].y - 8);
             c = RMath.Vec2Mag(a);
             if (20 > c) {
                 if (c < b) {
@@ -2331,8 +2311,8 @@ export function pickHeroJointUnderMouse() { // vi
             for (var d = 0; d < PartyState.partyMemberCount; d++)
                 if (HeroesState.heroUpperJointMode[d] != HeroesState.areUpperJointsDisabled)
                     for (var f = 0; 10 > f; f++) {
-                        a.x = mouseXCurrent - HeroesState.heroJointPrevPositionsByHero[d][f].x;
-                        a.y = mouseYCurrent - HeroesState.heroJointPrevPositionsByHero[d][f].y;
+                        a.x = MouseState.mouseXCurrent - HeroesState.heroJointPrevPositionsByHero[d][f].x;
+                        a.y = MouseState.mouseYCurrent - HeroesState.heroJointPrevPositionsByHero[d][f].y;
                         c = RMath.Vec2Mag(a);
                         if (20 > c) {
                             if (c < b) {
@@ -2344,7 +2324,7 @@ export function pickHeroJointUnderMouse() { // vi
                         }
                     }
         }
-    } else if (!wasMouseDown) {
+    } else if (!MouseState.wasMouseDown) {
         GameplayState.draggedHeroIndex = -1; 
         GameplayState.draggedJointIndex = 0;
     }
@@ -2707,8 +2687,8 @@ export function updatePlayerParty() {
                     }
                 }
                 if (GameplayState.draggedHeroIndex == a) {
-                    HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].x += .2 * (mouseXCurrent - HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].x);
-                    HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].y += .2 * (mouseYCurrent - HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].y);
+                    HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].x += .2 * (MouseState.mouseXCurrent - HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].x);
+                    HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].y += .2 * (MouseState.mouseYCurrent - HeroesState.heroJointPositionsByHero[GameplayState.draggedHeroIndex][GameplayState.draggedJointIndex].y);
                 }
                 b = itemList[PartyState.partyEquipmentTable[a][0]][ItemProps.Appearance];
                 c = PartyState.heroRangeValues[a];
@@ -3893,9 +3873,9 @@ export function updateStageTick() { // xg
     c = [0, -4, 4, 4, -4];
     d = [0, -4, -4, 4, 4];
     for (a = 0; 5 > a; a++) {
-        var n = RMath.clamp(mouseXCurrent + c[a] >> 3, 0, StageState.stageWidth - 1),
-            w = RMath.clamp(mouseYCurrent + d[a] >> 3, 0, StageState.stageHeight - 1);
-        if (isMouseClicked) {
+        var n = RMath.clamp(MouseState.mouseXCurrent + c[a] >> 3, 0, StageState.stageWidth - 1),
+            w = RMath.clamp(MouseState.mouseYCurrent + d[a] >> 3, 0, StageState.stageHeight - 1);
+        if (MouseState.isMouseClicked) {
             if (39 == StageState.stageTileData[w][n]) {
                 fillStageTilesRect(n, w, n, w, 32);
                 a = 1;
@@ -3930,8 +3910,8 @@ export function updateStageTick() { // xg
                     }
                 }
                 if (11 == GUIState.currentStage) {
-                    c = 8 * n + 4 - mouseXCurrent;
-                    d = 8 * w + 4 - mouseYCurrent;
+                    c = 8 * n + 4 - MouseState.mouseXCurrent;
+                    d = 8 * w + 4 - MouseState.mouseYCurrent;
                     if (RMath.abs(c) >= RMath.abs(d)) {
                         if (0 < c && 32 == StageState.stageTileData[w][n + 1]) {
                             fillStageTilesRect(n + 1, w, n + 1, w, 47);
@@ -3954,7 +3934,7 @@ export function updateStageTick() { // xg
                     if (isBadgeIncompleteForCurrentStage(44)) {
                         c = RMath.abs(64 - n);
                         d = RMath.abs(11 - w);
-                        spawnPopup(mouseXCurrent, mouseYCurrent, 0, "" + c + d, 30, 10066431);
+                        spawnPopup(MouseState.mouseXCurrent, MouseState.mouseYCurrent, 0, "" + c + d, 30, 10066431);
                         if (0 ==
                             c && 0 == d) {
                             IncrementBadgeCount(44);
@@ -6873,7 +6853,7 @@ export function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
         _x = RMath.clamp(_x, 16, 623);
         _y = RMath.clamp(_y, 8, 351);
         RMath.Vec2Set(DropState.dropPos[DropState.dropCount], _x, _y);
-        DropState.dropVel[DropState.dropCount].x = mouseXCurrent < _x ?
+        DropState.dropVel[DropState.dropCount].x = MouseState.mouseXCurrent < _x ?
             RMath.randFloatRange(-.5, -1) :
             RMath.randFloatRange(.5, 1);
         DropState.dropVel[DropState.dropCount].y = RMath.randFloatRange(-1, -2);
@@ -7011,18 +6991,18 @@ export function setupAnimRequest() {
         GameState.lastAnimFrameBucket = a;
         GameState.totalFrames++;
     }
-    isMouseClicked = 0 == wasMouseDown && 1 == isMouseDown;
-    isMouseReleased = 1 == wasMouseDown && 0 == isMouseDown;
-    if (wasMouseDown = isMouseDown) {
-        mouseHoldFrames++;
+    MouseState.isMouseClicked = 0 == MouseState.wasMouseDown && 1 == MouseState.isMouseDown;
+    MouseState.isMouseReleased = 1 == MouseState.wasMouseDown && 0 == MouseState.isMouseDown;
+    if (MouseState.wasMouseDown = MouseState.isMouseDown) {
+        MouseState.mouseHoldFrames++;
     } else {
-        mouseHoldFrames = 0;
+        MouseState.mouseHoldFrames = 0;
     }
-    mouseXCurrent = mouseXRel;
-    mouseYCurrent = mouseYRel;
+    MouseState.mouseXCurrent = MouseState.mouseXRel;
+    MouseState.mouseYCurrent = MouseState.mouseYRel;
     for (a = 0; 256 > a; a++) {
-        keyJustPressed[a] = keyPressPending[a];
-        keyPressPending[a] = false;
+        KeyboardState.keyJustPressed[a] = KeyboardState.keyPressPending[a];
+        KeyboardState.keyPressPending[a] = false;
     }
     
     RMath.setRandSeed((RMath.getRandSeed() + RMath.floor(1024 * RMath.rand())) & 1023);
@@ -7602,14 +7582,14 @@ export function toggleFullscreen() {
 
 export function onTouchStart(a) {
     handleTouch(a);
-    if (1 == activeTouchCount) {
-        isMouseDown = true;
-        mouseXCurrent = mouseXRel;
-        mouseYCurrent = mouseYRel;
-    } else if (2 == activeTouchCount) {
-        isMouseDown = false;
-        mouseXCurrent = mouseXRel;
-        mouseYCurrent = mouseYRel;
+    if (1 == MouseState.activeTouchCount) {
+        MouseState.isMouseDown = true;
+        MouseState.mouseXCurrent = MouseState.mouseXRel;
+        MouseState.mouseYCurrent = MouseState.mouseYRel;
+    } else if (2 == MouseState.activeTouchCount) {
+        MouseState.isMouseDown = false;
+        MouseState.mouseXCurrent = MouseState.mouseXRel;
+        MouseState.mouseYCurrent = MouseState.mouseYRel;
     }
     return false;
 };
@@ -7623,13 +7603,13 @@ export function onMouseDown(mouseState) {
     GameState.isCanvasFocused = false;
 
     const insideCanvas =
-        mouseXRel >= 0 && mouseXRel < Consts.CANVAS_WIDTH &&
-        mouseYRel >= 0 && mouseYRel < Consts.CANVAS_HEIGHT;
+        MouseState.mouseXRel >= 0 && MouseState.mouseXRel < Consts.CANVAS_WIDTH &&
+        MouseState.mouseYRel >= 0 && MouseState.mouseYRel < Consts.CANVAS_HEIGHT;
 
     if (insideCanvas) {
         GameState.isCanvasFocused = true;
         if (mouseState.button === 0) {
-            isMouseDown = true;
+            MouseState.isMouseDown = true;
         }
         return false;
     }
@@ -7642,7 +7622,7 @@ export function onMouseDown(mouseState) {
 export function onMouseUp(mouseState) {
     onMouseMove(mouseState);
     if (mouseState.button === 0) {
-        isMouseDown = false;
+        MouseState.isMouseDown = false;
     }
     //0 == mouseState.button && (isMouseDown = false)
 };
@@ -7654,21 +7634,21 @@ export function onTouchMove(a) {
 
 export function onTouchEnd(a) {
     handleTouch(a);
-    if (0 == activeTouchCount) {
-        isMouseDown = false;
-    } else if (1 == activeTouchCount) {
-        mouseXCurrent = mouseXRel;
-        mouseYCurrent = mouseYRel;
-    } else if (2 == activeTouchCount) {
-        mouseXCurrent = mouseXRel;
-        mouseYCurrent = mouseYRel;
+    if (0 == MouseState.activeTouchCount) {
+        MouseState.isMouseDown = false;
+    } else if (1 == MouseState.activeTouchCount) {
+        MouseState.mouseXCurrent = MouseState.mouseXRel;
+        MouseState.mouseYCurrent = MouseState.mouseYRel;
+    } else if (2 == MouseState.activeTouchCount) {
+        MouseState.mouseXCurrent = MouseState.mouseXRel;
+        MouseState.mouseYCurrent = MouseState.mouseYRel;
     }
     return false;
 };
 
 export function onTouchCancel() {
-    activeTouchCount = 0;
-    isMouseDown = false;
+    MouseState.activeTouchCount = 0;
+    MouseState.isMouseDown = false;
 };
 
 export function onKeyDown(a) {
@@ -7676,11 +7656,11 @@ export function onKeyDown(a) {
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);
     } else {
-        b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
+        b = a.shiftKey ? KeyboardState.keyMapShift[b] : KeyboardState.keyMapNoShift[b];
     }
     if (0 <= b && 256 > b) {
-        keyHeld[b] = true;
-        keyPressPending[b] = true;
+        KeyboardState.keyHeld[b] = true;
+        KeyboardState.keyPressPending[b] = true;
     }
     if (0 != b && GameState.isCanvasFocused) return false;
 };
@@ -7690,17 +7670,17 @@ export function onKeyUp(a) {
     if (65 <= b & 90 >= b) {
         a.shiftKey || (b += 32);
     } else {
-        b = a.shiftKey ? keyMapShift[b] : keyMapNoShift[b];
+        b = a.shiftKey ? KeyboardState.keyMapShift[b] : KeyboardState.keyMapNoShift[b];
     }
     if (0 <= b && 256 > b) {
-        keyHeld[b] = false;
+        KeyboardState.keyHeld[b] = false;
     }
     if (0 != b && GameState.isCanvasFocused) return false;
 };
 
 
 export function buttonCheck(x, y, w, h) {
-    return mouseXCurrent < x || x + w <= mouseXCurrent || mouseYCurrent < y || y + h <= mouseYCurrent ? false : true
+    return MouseState.mouseXCurrent < x || x + w <= MouseState.mouseXCurrent || MouseState.mouseYCurrent < y || y + h <= MouseState.mouseYCurrent ? false : true
 }
 
 export function buttonCheckCentered(x, y, w, h) {
@@ -7713,8 +7693,8 @@ export function onMouseMove(mouseState) {
         rectHeight = clientRect.bottom - clientRect.top,
         f = RMath.min(rectWidth / Consts.CANVAS_WIDTH, rectHeight / Consts.CANVAS_HEIGHT),
         rectHeight = RMath.floor(rectHeight / 2 - Consts.CANVAS_HEIGHT * f / 2);
-    mouseXRel = RMath.floor((mouseState.clientX - clientRect.left - RMath.floor(rectWidth / 2 - Consts.CANVAS_WIDTH * f / 2)) / f);
-    mouseYRel = RMath.floor((mouseState.clientY - clientRect.top - rectHeight) / f)
+    MouseState.mouseXRel = RMath.floor((mouseState.clientX - clientRect.left - RMath.floor(rectWidth / 2 - Consts.CANVAS_WIDTH * f / 2)) / f);
+    MouseState.mouseYRel = RMath.floor((mouseState.clientY - clientRect.top - rectHeight) / f)
     // LogMsg(`(${mouseXRel}, ${mouseYRel}), ${isCanvasFocused}`);
 }
 
@@ -7727,16 +7707,16 @@ export function handleTouch(a) {
         rectHeight = RMath.floor(rectHeight / 2 - 432 * f / 2);
     a = a.touches;
     console.log(a);
-    activeTouchCount = a.length;
-    if (1 == activeTouchCount) {
-        mouseXRel = RMath.floor((a[0].clientX - clientRect.left - rectWidth) / f);
-        mouseYRel = RMath.floor((a[0].clientY - clientRect.top - rectHeight) / f);
-    } else if (2 == activeTouchCount) {
-        mouseXRel = RMath.floor((a[0].clientX - clientRect.left - rectWidth) / f);
-        mouseYRel = RMath.floor((a[0].clientY - clientRect.top - rectHeight) / f);
+    MouseState.activeTouchCount = a.length;
+    if (1 == MouseState.activeTouchCount) {
+        MouseState.mouseXRel = RMath.floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        MouseState.mouseYRel = RMath.floor((a[0].clientY - clientRect.top - rectHeight) / f);
+    } else if (2 == MouseState.activeTouchCount) {
+        MouseState.mouseXRel = RMath.floor((a[0].clientX - clientRect.left - rectWidth) / f);
+        MouseState.mouseYRel = RMath.floor((a[0].clientY - clientRect.top - rectHeight) / f);
         rectHeight = RMath.floor((a[1].clientY - clientRect.top - rectHeight) / f);
-        mouseXRel = RMath.floor((mouseXRel + RMath.floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2);
-        mouseYRel = RMath.floor((mouseYRel + rectHeight) / 2);
+        MouseState.mouseXRel = RMath.floor((MouseState.mouseXRel + RMath.floor((a[1].clientX - clientRect.left - rectWidth) / f)) / 2);
+        MouseState.mouseYRel = RMath.floor((MouseState.mouseYRel + rectHeight) / 2);
     }
 }
 

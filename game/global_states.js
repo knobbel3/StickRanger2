@@ -150,3 +150,25 @@ export let BestiaryState = {
 };
 for (let _i = 0; _i < enemyTypeCount; _i++) BestiaryState.bestiaryEntryState[_i] = 0;
 
+export let MouseState = {
+    isMouseClicked : false,
+    isMouseReleased : false,
+    wasMouseDown : false,
+    isMouseDown : false,
+    mouseHoldFrames : 0, // bn, frames mouse has been continuously held down (hold-duration counter).
+    mouseXCurrent : 0,
+    mouseYCurrent : 0,
+    mouseXRel : 0,
+    mouseYRel : 0,
+    activeTouchCount : 0
+};
+
+
+// keyboard input
+export let KeyboardState = {
+    keyJustPressed : Array(256), // Jf
+    keyPressPending : Array(256), // Kf
+    keyHeld : Array(256), // Lf
+    keyMapNoShift : Array(256), // Mf
+    keyMapShift : Array(256), // Nf
+}

@@ -2,28 +2,28 @@
  The games source code use is permission :-)
 */
 
-import { ItemProps, ModifierColumns, AccessoryPrefixes, AccessoryProps } from "./game/item_enums.js";
-import { enemyCatalog, enemyDispatchTable, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex, enemyTypeCount } from "./game/enemy_list.js";
-import { EnemyProps, BehaviorTypes } from "./game/enemy_enums.js";
-import { itemList } from "./game/item_list.js";
-import * as RMath from "./game/math.js";
-import { badgeCount, badgeList, stageBadgeRewardItemIdxByStage } from "./game/badge_list.js";
-import { StageProps } from "./game/stage_enums.js";
-import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./game/stage_data.js";
-import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./game/sprite.js";
-import { GameFont } from "./game/font.js";
-import { BadgeState, BestiaryState, CanvasState, GameState, GameStateChecksum, GUIState, KeyboardState, MouseState, RenderingState, SaveState } from "./game/global_states.js";
-import * as Consts from "./game/consts.js"
-import { LoadedSprites } from "./game/game_sprites.js";
-import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game/game_fonts.js";
-import { inventoryItemLists, PartyState } from "./game/party_state.js";
-import { shrineRewardClaimed, shrineRewardClaimSlotCount, shrineRewardOptions } from "./game/shrine_data.js";
-import { GameplayState, HeroesState } from "./game/heroes.js";
-import { StageState } from "./game/stages.js";
-import { EnemyState } from "./game/enemy_state.js";
-import { ProjectileState } from "./game/projectile_state.js";
-import { PopupState } from "./game/popup_state.js";
-import { DropState } from "./game/drop_state.js";
+import { ItemProps, ModifierColumns, AccessoryPrefixes, AccessoryProps } from "./item_enums.js";
+import { enemyCatalog, enemyDispatchTable, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex, enemyTypeCount } from "./enemy_list.js";
+import { EnemyProps, BehaviorTypes } from "./enemy_enums.js";
+import { itemList } from "./item_list.js";
+import * as RMath from "./math.js";
+import { badgeCount, badgeList, stageBadgeRewardItemIdxByStage } from "./badge_list.js";
+import { StageProps } from "./stage_enums.js";
+import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./stage_data.js";
+import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./sprite.js";
+import { GameFont } from "./font.js";
+import { BadgeState, BestiaryState, CanvasState, GameState, GameStateChecksum, GUIState, KeyboardState, MouseState, RenderingState, SaveState } from "./global_states.js";
+import * as Consts from "./consts.js"
+import { LoadedSprites } from "./game_sprites.js";
+import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game_fonts.js";
+import { inventoryItemLists, PartyState } from "./party_state.js";
+import { shrineRewardClaimed, shrineRewardClaimSlotCount, shrineRewardOptions } from "./shrine_data.js";
+import { GameplayState, HeroesState } from "./heroes.js";
+import { StageState } from "./stages.js";
+import { EnemyState } from "./enemy_state.js";
+import { ProjectileState } from "./projectile_state.js";
+import { PopupState } from "./popup_state.js";
+import { DropState } from "./drop_state.js";
 
 
 export {gameInit as Init, toggleFullscreen as full_screen};

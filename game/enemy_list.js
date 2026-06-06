@@ -103,7 +103,7 @@ import {
     enemyUpdateFunc7, 
     enemyUpdateFunc8, 
     enemyUpdateFunc9 
-} from "../ranger2.js";
+} from "./ranger2.js";
 
 export const enemyHitboxHalfWidthByBehavior = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10]; // Lk
 export const enemyHitboxHalfHeightByBehavior = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10]; // Mk

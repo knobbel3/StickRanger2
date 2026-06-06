@@ -1,4 +1,4 @@
-import { Init } from "./ranger2.js";
+import { Init } from "./game/ranger2.js";
 
 function cvs_mv2(gw,gh,ss,as,ab,ms){
 	var d=document;

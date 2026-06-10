@@ -1,7 +1,7 @@
 import { badgeCount } from "./badge_list.js";
-import { enemyTypeCount } from "./enemy_list.js";
 import { shrineRewardClaimSlotCount } from "./shrine_data.js";
-import { Sprite } from "./sprite.js";
+
+const ENEMY_TYPE_COUNT = 128; // quick fix for circular dependency
 
 export let CanvasState = {
     element : document.getElementById("cv"),
@@ -14,6 +14,8 @@ CanvasState.context2d = CanvasState.element.getContext("2d");
 CanvasState.canvasImage = CanvasState.context2d.createImageData(640, 432);
 CanvasState.canvasImage = CanvasState.context2d.createImageData(640, 432);
 CanvasState.canvasBuffer = new Uint32Array(CanvasState.canvasImage.data.buffer);
+
+
 
 export let SaveState = {
     userSaveCode : undefined, // ca
@@ -146,9 +148,9 @@ export let GameStateChecksum = {
 };
 
 export let BestiaryState = {
-    bestiaryEntryState : Array(enemyTypeCount) // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
+    bestiaryEntryState : Array(ENEMY_TYPE_COUNT) // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
 };
-for (let _i = 0; _i < enemyTypeCount; _i++) BestiaryState.bestiaryEntryState[_i] = 0;
+for (let _i = 0; _i < ENEMY_TYPE_COUNT; _i++) BestiaryState.bestiaryEntryState[_i] = 0;
 
 export let MouseState = {
     isMouseClicked : false,

@@ -1,25 +1,19 @@
-import { ItemProps, ModifierColumns, AccessoryPrefixes, AccessoryProps } from "./item_enums.js";
-import { enemyCatalog, enemyDispatchTable, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex, enemyTypeCount } from "./enemy_list.js";
+import { enemyCatalog, enemyDispatchTable, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex } from "./enemy_list.js";
 import { EnemyProps, BehaviorTypes } from "./enemy_enums.js";
-import { itemList } from "./item_list.js";
 import * as RMath from "./math.js";
-import { badgeCount, badgeList, stageBadgeRewardItemIdxByStage } from "./badge_list.js";
-import { StageProps } from "./stage_enums.js";
-import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./stage_data.js";
-import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./sprite.js";
-import { GameFont } from "./font.js";
-import { BadgeState, BestiaryState, CanvasState, GameState, GameStateChecksum, GUIState, KeyboardState, MouseState, RenderingState, SaveState } from "./global_states.js";
-import * as Consts from "./consts.js"
 import { LoadedSprites } from "./game_sprites.js";
-import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game_fonts.js";
-import { inventoryItemLists, PartyState } from "./party_state.js";
-import { shrineRewardClaimed, shrineRewardClaimSlotCount, shrineRewardOptions } from "./shrine_data.js";
+import { PartyState } from "./party_state.js";
 import { GameplayState, HeroesState } from "./heroes.js";
 import { StageState } from "./stages.js";
 import { EnemyState } from "./enemy_state.js";
-import { ProjectileState } from "./projectile_state.js";
-import { PopupState } from "./popup_state.js";
-import { DropState } from "./drop_state.js";
+import { getStageTileAt } from "./stage.js";
+import { spawnPopup } from "./popups.js";
+import { IncrementBadgeCount, isBadgeIncompleteForCurrentStage } from "./badges.js";
+import { findNearestPartyMemberInRect } from "./party.js";
+import { spawnProjectile } from "./projectiles.js";
+import { isDropTypeAbsent, spawnDrop } from "./drops.js";
+import { drawEnemyScaledSprite, drawLine, drawRect, drawRectCentered, drawRectOutlineCentered, drawSpriteSheetPartCentered } from "./render.js";
+import { GUIState } from "./global_states.js";
 
 
 export function clearEnemies() {
@@ -60,7 +54,7 @@ export function spawnEnemy(gridX, gridY, enemyType, d) {
 export function deleteEnemy(enemyIdx) {
     for (var b = 0; 21 > b; b++)
         EnemyState.enemyJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[EnemyState.enemyCount - 1][b]),
-            EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyPrevJointPosArray[EnemyState.enemyCount - 1][b]);
+        EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyPrevJointPosArray[EnemyState.enemyCount - 1][b]);
     EnemyState.enemyTypeArray[enemyIdx] = EnemyState.enemyTypeArray[EnemyState.enemyCount - 1];
     EnemyState.enemyUpdateFuncIdxArray[enemyIdx] = EnemyState.enemyUpdateFuncIdxArray[EnemyState.enemyCount - 1];
     EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = EnemyState.enemyPoseTrailWriteIdxArray[EnemyState.enemyCount - 1];

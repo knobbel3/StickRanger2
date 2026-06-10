@@ -1,25 +1,14 @@
-import { ItemProps, ModifierColumns, AccessoryPrefixes, AccessoryProps } from "./item_enums.js";
-import { enemyCatalog, enemyDispatchTable, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex, enemyTypeCount } from "./enemy_list.js";
-import { EnemyProps, BehaviorTypes } from "./enemy_enums.js";
-import { itemList } from "./item_list.js";
+import { enemyTypeCount } from "./enemy_list.js";
 import * as RMath from "./math.js";
-import { badgeCount, badgeList, stageBadgeRewardItemIdxByStage } from "./badge_list.js";
-import { StageProps } from "./stage_enums.js";
-import { bestiaryPageItems, stageCount, stageIndexOrder, stageListArray } from "./stage_data.js";
-import { loadSprite, Sprite, spriteCreateBuffer, uncheckedSpriteCount } from "./sprite.js";
-import { GameFont } from "./font.js";
+import { badgeCount } from "./badge_list.js";
+import { stageCount } from "./stage_data.js";
 import { BadgeState, BestiaryState, CanvasState, GameState, GameStateChecksum, GUIState, KeyboardState, MouseState, RenderingState, SaveState } from "./global_states.js";
 import * as Consts from "./consts.js"
-import { LoadedSprites } from "./game_sprites.js";
-import { charKerningAfter, charKerningBefore, LoadedFonts } from "./game_fonts.js";
-import { inventoryItemLists, PartyState } from "./party_state.js";
-import { shrineRewardClaimed, shrineRewardClaimSlotCount, shrineRewardOptions } from "./shrine_data.js";
-import { GameplayState, HeroesState } from "./heroes.js";
+import { PartyState } from "./party_state.js";
+import { shrineRewardClaimed, shrineRewardClaimSlotCount } from "./shrine_data.js";
+import { GameplayState } from "./heroes.js";
 import { StageState } from "./stages.js";
-import { EnemyState } from "./enemy_state.js";
-import { ProjectileState } from "./projectile_state.js";
-import { PopupState } from "./popup_state.js";
-import { DropState } from "./drop_state.js";
+import { canvasDrawImage, drawCanvas } from "./render.js";
 
 
 export function resetGameProgress() { // bc
@@ -45,13 +34,11 @@ export function resetGameProgress() { // bc
     PartyState.cliffStopEnabled = 0
 }
 
-
 export function resetUIStates() {
     GUIState.screenStateTimer = 0;
     GUIState.memberUIVisibleBackup = GUIState.inventoryUIVisibleBackup = GUIState.bestiaryUIVisibleBackup = GUIState.badgesUIVisibleBackup = GUIState.optionsUIVisibleBackup = GUIState.shrineUIVisibleBackup = GUIState.clickInUI = GUIState.memberUIVisible = GUIState.inventoryUIVisible = GUIState.bestiaryUIVisible = GUIState.badgesUIVisible = GUIState.optionsUIVisible = GUIState.shrineUIVisible = false;
     GameplayState.comboMultBonus = GameplayState.comboCount = GameplayState.comboWindowTimer = GUIState.selectingHero = GUIState.selectedStatIndex = GUIState.inventoryTabIdx = GUIState.inventoryPageIdx = GUIState.inventorySlotIdx  = 0
 }
-
 
 export function saveGame() {
     let b, c;
@@ -163,7 +150,6 @@ export function saveGame() {
     SaveState.gameSaveStatusDuration = 50
 }
 
-
 export function loadGame(saveString) {
 
     let d = saveString.length - 4;
@@ -234,8 +220,6 @@ export function loadGame(saveString) {
     return 0;
 }
 
-
-
 export function hashAdjust(a, b) {
     a += (b | 1) * (a & 255 | 1);
     return (a >> 16) + (a & 65535)
@@ -277,9 +261,6 @@ export function updatePartyChecksum() {
     for (a = 0; a < shrineRewardClaimSlotCount; a++) c = hashAdjust(c, shrineRewardClaimed[a]);
     GameStateChecksum.partyChecksum = c ^ 16777215
 }
-
-
-
 
 export function setupAnimRequest() {
     let requestAnim = requestAnimationFrame || mozRequestAnimationFrame || webkitRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
@@ -349,8 +330,6 @@ export function hostnameCheck() {
             return true;
     return false
 }
-
-
 
 export function computeFrameDelay() { // ag
     GameState.timestampAnim = Date.now();

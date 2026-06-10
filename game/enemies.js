@@ -1,4 +1,4 @@
-import { enemyCatalog, enemyDispatchTable, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex } from "./enemy_list.js";
+import { enemyCatalog, enemyHitboxHalfHeightByBehavior, enemyHitboxHalfWidthByBehavior, enemySpriteAnchorYBySpriteIndex } from "./enemy_list.js";
 import { EnemyProps, BehaviorTypes } from "./enemy_enums.js";
 import * as RMath from "./math.js";
 import { LoadedSprites } from "./game_sprites.js";
@@ -15,6 +15,20 @@ import { isDropTypeAbsent, spawnDrop } from "./drops.js";
 import { drawEnemyScaledSprite, drawLine, drawRect, drawRectCentered, drawRectOutlineCentered, drawSpriteSheetPartCentered } from "./render.js";
 import { GUIState } from "./global_states.js";
 
+const enemyDispatchTable = [
+    enemySlimeBehavior,
+    enemyBoxSnakeBehavior,
+    enemyBatBehavior,
+    enemyDragonBehavior,
+    enemyStickmanBehavior,
+    enemyTreeBehavior,
+    enemyTreeBehavior,
+    enemyHangingTreeBehavior,
+    enemyUpdateFunc7,
+    enemyUpdateFunc8,
+    enemyUpdateFunc9,
+    enemyStickmanBehavior
+];
 
 export function clearEnemies() {
     EnemyState.stageMaxEnemyLevel = EnemyState.enemyCount = 0

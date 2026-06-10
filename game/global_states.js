@@ -1,7 +1,6 @@
 import { badgeCount } from "./badge_list.js";
+import { enemyTypeCount } from "./enemy_list.js";
 import { shrineRewardClaimSlotCount } from "./shrine_data.js";
-
-const ENEMY_TYPE_COUNT = 128; // quick fix for circular dependency
 
 export let CanvasState = {
     element : document.getElementById("cv"),
@@ -148,9 +147,9 @@ export let GameStateChecksum = {
 };
 
 export let BestiaryState = {
-    bestiaryEntryState : Array(ENEMY_TYPE_COUNT) // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
+    bestiaryEntryState : Array(enemyTypeCount) // Bestiary entry unlock state: 0=locked, 1=preview/purchased, 2=fully unlocked
 };
-for (let _i = 0; _i < ENEMY_TYPE_COUNT; _i++) BestiaryState.bestiaryEntryState[_i] = 0;
+for (let _i = 0; _i < enemyTypeCount; _i++) BestiaryState.bestiaryEntryState[_i] = 0;
 
 export let MouseState = {
     isMouseClicked : false,

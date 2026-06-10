@@ -92,33 +92,6 @@ enemyCatalog[87] = [34, 4, 0, 0, 19, 1, 10040064, 13421568, 15658496, 2500, 1, 0
 enemyCatalog[88] = [36, 6, 12, 12, 13, 1, 13408512, 10027161, 2228258, 5E3, 0, 104, 0, 24, 4288217241, 1, 16, 16, 4, 4, 50, 50, 500, 10, .5, 100, 0, 4, 0, 0, 4, 4, 5, 300, 600, 20, 160, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 400, 6, 100, 134, 50, 0, 0, 0, 0, 138, 1E3];
 enemyCatalog[89] = [36, 4, 0, 0, 19, 2, 6697728, 13421568, 10053171, 25E3, 1, 0, 2, 19, 4294901760, 1, 32, 32, 32, 64, 0, 0, 0, 10, 0, 100, 0, 0, 0, 0, 6, 6, 1, 10, 50, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4278190080, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 800, 5, 100, 132, 50, 0, 0, 0, 0, 138, 100];
 
-import { 
-    enemyBatBehavior, 
-    enemyBoxSnakeBehavior, 
-    enemyDragonBehavior, 
-    enemyHangingTreeBehavior, 
-    enemySlimeBehavior, 
-    enemyStickmanBehavior, 
-    enemyTreeBehavior, 
-    enemyUpdateFunc7, 
-    enemyUpdateFunc8, 
-    enemyUpdateFunc9 
-} from "./enemies.js";
-
 export const enemyHitboxHalfWidthByBehavior = [8, 10, 10, 10, 9, 4, 4, 10, 9, 8, 10, 10]; // Lk
 export const enemyHitboxHalfHeightByBehavior = [8, 10, 10, 10, 12, 24, 24, 10, 9, 8, 10, 10]; // Mk
 export const enemySpriteAnchorYBySpriteIndex = [4, 4, 5, 4, 4, 4, 5, 5, 4, 3, 5, 5, 5, 5, 6, 7, 3, 0, 2, 2, 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // Nk
-export const enemyDispatchTable = [
-    enemySlimeBehavior,
-    enemyBoxSnakeBehavior,
-    enemyBatBehavior,
-    enemyDragonBehavior,
-    enemyStickmanBehavior,
-    enemyTreeBehavior,
-    enemyTreeBehavior,
-    enemyHangingTreeBehavior,
-    enemyUpdateFunc7,
-    enemyUpdateFunc8,
-    enemyUpdateFunc9,
-    enemyStickmanBehavior
-];

@@ -268,18 +268,18 @@ export function gameLoop() {
         requestAnim(gameLoop);
         GameState.requestAnimCallCount++;
         GameState.timestampAnim = Date.now();
-        var a = RMath.floor(60 * (GameState.timestampAnim - GameState.lastTimestamp) / 1E3 + .5);
-        if (0 > a || 60 <= a) {
+        let framesPassed = RMath.floor(60 * (GameState.timestampAnim - GameState.lastTimestamp) / 1E3 + .5);
+        if (0 > framesPassed || 60 <= framesPassed) {
             GameState.requestAnimCallCount = 0;
             GameState.currentFPS = GameState.frameCountThisSecond;
             GameState.frameCountThisSecond = 0;
             GameState.lastTimestamp = GameState.timestampAnim;
-            a = 0;
-        } else if (a == GameState.lastAnimFrameBucket) {
+            framesPassed = 0;
+        } else if (framesPassed == GameState.lastAnimFrameBucket) {
             return;
         }
         GameState.frameCountThisSecond++;
-        GameState.lastAnimFrameBucket = a;
+        GameState.lastAnimFrameBucket = framesPassed;
         GameState.totalFrames++;
     }
     MouseState.isMouseClicked = 0 == MouseState.wasMouseDown && 1 == MouseState.isMouseDown;

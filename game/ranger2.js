@@ -12,7 +12,7 @@ import * as Consts from "./consts.js"
 import { LoadedSprites } from "./game_sprites.js";
 import { LoadedFonts } from "./game_fonts.js";
 import { inventoryItemLists } from "./party_state.js";
-import { onContextMenu, onKeyDown, onKeyUp, onMouseDown, onMouseMove, onMouseUp, onTouchCancel, onTouchEnd, onTouchMove, onTouchStart, toggleFullscreen } from "./input.js";
+import { initInputState, onContextMenu, onKeyDown, onKeyUp, onMouseDown, onMouseMove, onMouseUp, onTouchCancel, onTouchEnd, onTouchMove, onTouchStart, toggleFullscreen } from "./input.js";
 import { computeFrameDelay, hashAdjust, loadGame, gameLoop } from "./state.js";
 
 
@@ -49,56 +49,7 @@ export function gameInit(a, b) {
         CanvasState.element.width = 640;
         CanvasState.element.height = 432;
 
-        for (_t0 = 0; 256 > _t0; _t0++) {
-            KeyboardState.keyJustPressed[_t0] = false;
-            KeyboardState.keyPressPending[_t0] = false;
-            KeyboardState.keyHeld[_t0] = false;
-            KeyboardState.keyMapNoShift[_t0] = 0;
-            KeyboardState.keyMapShift[_t0] = 0;
-        }
-        for (_t0 = 0; 10 > _t0; _t0++) KeyboardState.keyMapNoShift[48 + _t0] = 48 + _t0;
-        for (_t0 = 0; 9 > _t0; _t0++) KeyboardState.keyMapShift[49 + _t0] = 33 + _t0;
-        for (_t0 = 0; 4 > _t0; _t0++) KeyboardState.keyMapNoShift[37 + _t0] = 37 + _t0;
-        for (_t0 = 0; 4 > _t0; _t0++) KeyboardState.keyMapShift[37 + _t0] = 37 + _t0;
-        KeyboardState.keyMapNoShift[13] = KeyboardState.keyMapShift[13] = 13;
-        KeyboardState.keyMapNoShift[16] = KeyboardState.keyMapShift[16] = 16;
-        KeyboardState.keyMapNoShift[17] = KeyboardState.keyMapShift[17] = 17;
-        KeyboardState.keyMapNoShift[18] = KeyboardState.keyMapShift[18] = 18;
-        KeyboardState.keyMapNoShift[32] = KeyboardState.keyMapShift[32] = 32;
-        KeyboardState.keyMapNoShift[186] = 58;
-        KeyboardState.keyMapShift[186] = 42;
-        KeyboardState.keyMapNoShift[187] = 59;
-        KeyboardState.keyMapShift[187] = 43;
-        KeyboardState.keyMapNoShift[188] = 44;
-        KeyboardState.keyMapShift[188] = 60;
-        KeyboardState.keyMapNoShift[189] = 45;
-        KeyboardState.keyMapShift[189] = 61;
-        KeyboardState.keyMapNoShift[190] = 46;
-        KeyboardState.keyMapShift[190] = 62;
-        KeyboardState.keyMapNoShift[191] = 47;
-        KeyboardState.keyMapShift[191] = 63;
-        KeyboardState.keyMapNoShift[192] = 64;
-        KeyboardState.keyMapShift[192] = 96;
-        KeyboardState.keyMapNoShift[219] = 91;
-        KeyboardState.keyMapShift[219] = 123;
-        KeyboardState.keyMapNoShift[220] = 92;
-        KeyboardState.keyMapShift[220] = 124;
-        KeyboardState.keyMapNoShift[221] = 93;
-        KeyboardState.keyMapShift[221] = 125;
-        KeyboardState.keyMapNoShift[222] = 94;
-        KeyboardState.keyMapShift[222] = 126;
-        KeyboardState.keyMapNoShift[226] = 92;
-        KeyboardState.keyMapShift[226] = 95;
-        KeyboardState.keyMapNoShift[58] = 58;
-        KeyboardState.keyMapShift[58] = 42;
-        KeyboardState.keyMapNoShift[59] = 59;
-        KeyboardState.keyMapShift[59] = 43;
-        KeyboardState.keyMapNoShift[173] = 45;
-        KeyboardState.keyMapShift[173] = 61;
-        KeyboardState.keyMapNoShift[64] = 64;
-        KeyboardState.keyMapShift[64] = 96;
-        KeyboardState.keyMapNoShift[160] = 94;
-        KeyboardState.keyMapShift[160] = 126;
+        initInputState();
         let _t2;
         for (_t0 = 0; 276480 > _t0; _t0++) 
             RenderingState.frameBufferArray[_t0] = 0;

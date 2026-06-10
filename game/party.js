@@ -1038,25 +1038,22 @@ export function updatePlayerParty() {
 
 
 export function drawPlayerParty() {
-    var a, b, c, d, f, g, h = new RMath.Vec2(),
+    var b, c, d, f, g, h = new RMath.Vec2(),
         k = new RMath.Vec2();
-    for (a = 0; a < PartyState.partyMemberCount; a++) {
+    for (let a = 0; a < PartyState.partyMemberCount; a++) {
         d = 15908203;
         f = 16777215;
         if (0 < HeroesState.heroStatusTintTimer[a]) {
             d = 1989840;
             f = 5934817;
-        } else {
-            if (0 < HeroesState.heroSkipTimer[a]) {
-                d = 9840;
-                f = 1989840;
-            } else {
-                if (0 < HeroesState.heroTimedDamageTimer[a]) {
-                    d = 3381504;
-                    f = 3407616;
-                }
-            }
+        } else if (0 < HeroesState.heroSkipTimer[a]) {
+            d = 9840;
+            f = 1989840;
+        } else if (0 < HeroesState.heroTimedDamageTimer[a]) {
+            d = 3381504;
+            f = 3407616;
         }
+        
         if (0 < HeroesState.heroHitFlashTimer[a]) {
             HeroesState.heroHitFlashTimer[a]--;
             f = 16711680;

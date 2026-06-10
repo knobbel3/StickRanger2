@@ -262,10 +262,10 @@ export function updatePartyChecksum() {
     GameStateChecksum.partyChecksum = c ^ 16777215
 }
 
-export function setupAnimRequest() {
+export function gameLoop() {
     let requestAnim = requestAnimationFrame || mozRequestAnimationFrame || webkitRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
-    if (GameState.requestAnim) {
-        GameState.requestAnim(setupAnimRequest);
+    if (requestAnim) {
+        requestAnim(gameLoop);
         GameState.requestAnimCallCount++;
         GameState.timestampAnim = Date.now();
         var a = RMath.floor(60 * (GameState.timestampAnim - GameState.lastTimestamp) / 1E3 + .5);
@@ -318,7 +318,9 @@ export function setupAnimRequest() {
         }
     }
     canvasDrawImage(CanvasState.canvasImage, 0, 0);
-    GameState.requestAnim || setTimeout(setupAnimRequest, computeFrameDelay());
+    if (!requestAnim) {
+        setTimeout(gameLoop, computeFrameDelay());
+    }
 }
 
 /** Checks hostname */

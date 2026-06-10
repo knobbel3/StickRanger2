@@ -13,7 +13,7 @@ import { LoadedSprites } from "./game_sprites.js";
 import { LoadedFonts } from "./game_fonts.js";
 import { inventoryItemLists } from "./party_state.js";
 import { onContextMenu, onKeyDown, onKeyUp, onMouseDown, onMouseMove, onMouseUp, onTouchCancel, onTouchEnd, onTouchMove, onTouchStart, toggleFullscreen } from "./input.js";
-import { computeFrameDelay, hashAdjust, loadGame, setupAnimRequest } from "./state.js";
+import { computeFrameDelay, hashAdjust, loadGame, gameLoop } from "./state.js";
 
 
 
@@ -196,6 +196,6 @@ export function gameInit(a, b) {
 
         // updatePartyChecksum();
         // spriteCreateBuffer(canvasImageBuffer, 640, 432);
-        setupAnimRequest();
+        gameLoop();
     }
 }

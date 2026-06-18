@@ -1337,7 +1337,7 @@ export function drawGameUI() {
     }
     LoadedFonts.gameFontSmall.a = 2;
     drawScaledTintedText(LoadedFonts.gameFontSmall, 476, 421, Consts.copyrightText1, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
-    drawScaledTintedText(LoadedFonts.gameFontSmall, 607, 421, "" + GameState.currentFPS + Consts.fpsName, 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
+    drawScaledTintedText(LoadedFonts.gameFontSmall, 607, 421, "" + GameState.currentFPS + "fps", 0, 0, 0, 0, 0, 0, 0, 128, 5, 7);
 }
 
 

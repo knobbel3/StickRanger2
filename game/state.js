@@ -323,15 +323,15 @@ export function gameLoop() {
     }
 }
 
-/** Checks hostname */
-export function hostnameCheck() {
-    if (Consts.hostname.length != Consts.targetHostname.length) 
-        return true;
-    for (GameState.hostNameUnchecked = 0; Consts.hostnameCheckIdx < Consts.hostname.length; Consts.hostnameCheckIdx++)
-        if (Consts.hostname[Consts.hostnameCheckIdx] != Consts.targetHostname[Consts.hostnameCheckIdx]) 
-            return true;
-    return false
-}
+// /** Checks hostname */
+// export function hostnameCheck() {
+//     if (Consts.hostname.length != Consts.targetHostname.length) 
+//         return true;
+//     for (GameState.hostNameUnchecked = 0; Consts.hostnameCheckIdx < Consts.hostname.length; Consts.hostnameCheckIdx++)
+//         if (Consts.hostname[Consts.hostnameCheckIdx] != Consts.targetHostname[Consts.hostnameCheckIdx]) 
+//             return true;
+//     return false
+// }
 
 export function computeFrameDelay() { // ag
     GameState.timestampAnim = Date.now();

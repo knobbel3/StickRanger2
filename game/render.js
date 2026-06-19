@@ -376,7 +376,7 @@ export function drawCanvas() {
 }
 
 export function drawGameUI() {
-    var hidx, b, c, d, f, g, h, k;
+    let hidx, b, c, d, f, g, h, k;
     if (KeyboardState.keyJustPressed[32]) {
         if (GUIState.memberUIVisible ||
             GUIState.inventoryUIVisible ||

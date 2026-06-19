@@ -32,11 +32,8 @@ export function spawnDrop(_x, _y, _tidx, _val, _meta) { // Gh
         DropState.dropMeta[DropState.dropCount] = _meta;
         DropState.dropState[DropState.dropCount] = 0;
         DropState.dropCount++;
-        for (
-            _tidx = DropState.dropScore = 0; // end initialization
-            _tidx < DropState.dropCount; // condition
-            _tidx++ // repeat
-        ) DropState.dropScore += 7 * DropState.dropType[_tidx] + 3 * DropState.dropValue[_tidx] + 11 * DropState.dropMeta[_tidx];
+        for (let i = DropState.dropScore = 0; i < DropState.dropCount; i++ ) 
+            DropState.dropScore += 7 * DropState.dropType[i] + 3 * DropState.dropValue[i] + 11 * DropState.dropMeta[i];
     }
 }
 
@@ -49,75 +46,77 @@ export function removeDrop(a) { // Gm
     DropState.dropValue[a] = DropState.dropValue[DropState.dropCount];
     DropState.dropMeta[a] = DropState.dropMeta[DropState.dropCount];
     DropState.dropState[a] = DropState.dropState[DropState.dropCount];
-    for (a = DropState.dropScore = 0; a < DropState.dropCount; a++) DropState.dropScore += 7 * DropState.dropType[a] + 3 * DropState.dropValue[a] + 11 * DropState.dropMeta[a]
+    for (let i = DropState.dropScore = 0; i < DropState.dropCount; i++) 
+        DropState.dropScore += 7 * DropState.dropType[i] + 3 * DropState.dropValue[i] + 11 * DropState.dropMeta[i]
 }
 
 
 export function isDropTypeAbsent(typeIdx) { // dl
     if (2 == typeIdx) return true;
-    let b;
-    for (b = 0; b < DropState.dropCount; b++)
+    for (let b = 0; b < DropState.dropCount; b++)
         if (DropState.dropType[b] == typeIdx) return false;
     return true
 }
 
 
 export function updateDrops() { // zg
-    let a, b, c;
-    for (a = b = 0; a < DropState.dropCount; a++)
-        b += 7 * DropState.dropType[a] + 3 * DropState.dropValue[a] + 11 * DropState.dropMeta[a];
-    
+    // another anti-tampering code
+    // b = 0;
+    // for (let a = 0; a < DropState.dropCount; a++)
+    //     b += 7 * DropState.dropType[a] + 3 * DropState.dropValue[a] + 11 * DropState.dropMeta[a];
     // if (dropScore != b) {
     //     frameBufferArray = null;
     // }
-    for (a = 0; a < DropState.dropCount; a++) {
-        DropState.dropVel[a].y += .04;
-        RMath.Vec2Scale(DropState.dropVel[a], .98);
-        c = RMath.clamp(DropState.dropPos[a].y + DropState.dropVel[a].y, 8, 8 * StageState.stageHeight + 16 - 1);
-        b = getStageTileAt(DropState.dropPos[a].x, c);
-        if (!(0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < DropState.dropVel[a].y)) {
-            DropState.dropPos[a].y = c
+    for (let i = 0; i < DropState.dropCount; i++) {
+        DropState.dropVel[i].y += .04;
+        RMath.Vec2Scale(DropState.dropVel[i], .98);
+        let c = RMath.clamp(DropState.dropPos[i].y + DropState.dropVel[i].y, 8, 8 * StageState.stageHeight + 16 - 1);
+        let b = getStageTileAt(DropState.dropPos[i].x, c);
+        if (!(0 <= b && 23 >= b || 24 <= b && 26 >= b && 0 < DropState.dropVel[i].y)) {
+            DropState.dropPos[i].y = c
         }
         if (c > 8 * StageState.stageHeight + 12) {
             if (isBadgeIncompleteForCurrentStage(29)) {
-                if (2 == DropState.dropType[a]) {
+                if (2 == DropState.dropType[i]) {
                     IncrementBadgeCount(29);
                 }
             }
-            removeDrop(a--);
+            removeDrop(i--);
         } else {
-            c = RMath.clamp(DropState.dropPos[a].x + DropState.dropVel[a].x, 16, 623);
-            b = getStageTileAt(c, DropState.dropPos[a].y);
-            0 <= b && 23 >= b || (DropState.dropPos[a].x = c);
-            if (100 > DropState.dropState[a]) {
-                DropState.dropState[a]++;
-            } else if (-1 != findNearestPartyMemberInRect(DropState.dropPos[a].x, DropState.dropPos[a].y - 6, 12, 12, 1)) {
-                if (2 == DropState.dropType[a]) {
-                    PartyState.partyGold = RMath.clamp(PartyState.partyGold + DropState.dropValue[a], 0, 9999999);
-                    spawnPopup(DropState.dropPos[a].x, DropState.dropPos[a].y, 0, DropState.dropValue[a], 60, 16776960);
-                } else if (3 == DropState.dropType[a]) {
-                    StageState.stageEventFlagArray[DropState.dropValue[a]] = 1;
+            let newX = RMath.clamp(DropState.dropPos[i].x + DropState.dropVel[i].x, 16, 623);
+            let b = getStageTileAt(newX, DropState.dropPos[i].y);
+
+            if (!(0 <= b && 23 >= b)) 
+                DropState.dropPos[i].x = newX;
+            if (100 > DropState.dropState[i]) {
+                DropState.dropState[i]++;
+            } else if (-1 != findNearestPartyMemberInRect(DropState.dropPos[i].x, DropState.dropPos[i].y - 6, 12, 12, 1)) {
+                if (2 == DropState.dropType[i]) {
+                    PartyState.partyGold = RMath.clamp(PartyState.partyGold + DropState.dropValue[i], 0, 9999999);
+                    spawnPopup(DropState.dropPos[i].x, DropState.dropPos[i].y, 0, DropState.dropValue[i], 60, 16776960);
+                } else if (3 == DropState.dropType[i]) {
+                    StageState.stageEventFlagArray[DropState.dropValue[i]] = 1;
                     PartyState.collectedStageFlagsCount++;
-                } else if (PartyState.itemForgeLvls[DropState.dropType[a]] < DropState.dropValue[a]) {
-                    PartyState.itemForgeLvls[DropState.dropType[a]] = DropState.dropValue[a];
-                    PartyState.itemIsNew[DropState.dropType[a]] = 1;
+                } else if (PartyState.itemForgeLvls[DropState.dropType[i]] < DropState.dropValue[i]) {
+                    PartyState.itemForgeLvls[DropState.dropType[i]] = DropState.dropValue[i];
+                    PartyState.itemIsNew[DropState.dropType[i]] = 1;
                 }
                 if (isBadgeIncompleteForCurrentStage(24)) {
-                    if (2 == DropState.dropType[a] && 225 <= DropState.dropValue[a]) {
+                    if (2 == DropState.dropType[i] && 225 <= DropState.dropValue[i]) {
                         IncrementBadgeCount(24);
                     }
                 }
-                removeDrop(a--);
+                removeDrop(i--);
             }
         }
     }
 }
 
 export function drawDrops() { // Dg
-    let a;
     RenderingState.spriteAltRenderFlag = 2;
-    for (a = 0; a < DropState.dropCount; a++)
-        (100 == DropState.dropState[a] || DropState.dropState[a] & 6) &&
+    for (let a = 0; a < DropState.dropCount; a++) {
+
+        if (100 == DropState.dropState[a] || DropState.dropState[a] & 6)
             drawSpriteSheetPart(LoadedSprites.droppedItemSpriteSheet,
                 DropState.dropPos[a].x - 6, DropState.dropPos[a].y - 12,
                 12, 12,
@@ -125,5 +124,6 @@ export function drawDrops() { // Dg
                 12, 12,
                 itemList[DropState.dropType[a]][ItemProps.SpriteSourceX]
             );
+        }
     RenderingState.spriteAltRenderFlag = 0
 }

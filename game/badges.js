@@ -13,9 +13,9 @@ export function IncrementBadgeCount(badgeIndex) {
     if (BadgeState.badgeCounterArray[badgeIndex] == badgeList[badgeIndex][4]) {
         BadgeState.lastCompletedBadgeIdx = badgeIndex;
         BadgeState.badgePopupTimer = 120;
-        var b = 0;
+        let b = 0;
         badgeIndex = badgeList[badgeIndex][2];
-        for (var c = 0; c < badgeList.length; c++) {
+        for (let c = 0; c < badgeList.length; c++) {
             if (
                 badgeList[c] &&
                 badgeIndex == badgeList[c][2] &&

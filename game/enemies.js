@@ -88,40 +88,40 @@ export function deleteEnemy(enemyIdx) {
 
 
 export function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
-    let d = new RMath.Vec2();
-    RMath.Vec2Sub(d, EnemyState.enemyJointPosArray[enemyIdx][jointIdx], EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
+    let jdir = new RMath.Vec2();
+    RMath.Vec2Sub(jdir, EnemyState.enemyJointPosArray[enemyIdx][jointIdx], EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
     EnemyState.enemyJointPosArray[enemyIdx][jointIdx].set(EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
-    let f = (RMath.Vec2Mag(d) >> 2) + 1;
-    RMath.Vec2Scale(d, 1 / f);
-    for (let g, h, k = 0; k < f; k++) {
-        g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y + d.y;
-        h = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x, g);
+    let f = (RMath.Vec2Mag(jdir) >> 2) + 1;
+    RMath.Vec2Scale(jdir, 1 / f);
+    for (let k = 0; k < f; k++) {
+        let g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y + jdir.y;
+        let h = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x, g);
         if (0 > g || 8 * StageState.stageHeight <= g) {
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
         } else if (0 <= h && 25 >= h) {
-            if (0 < d.y) {
+            if (0 < jdir.y) {
                 EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
             }
-            d.x *= bounceScale;
-            d.y = -d.y;
-        } else if (26 <= h && 26 >= h && 0 < d.y) {
+            jdir.x *= bounceScale;
+            jdir.y = -jdir.y;
+        } else if (26 <= h && 26 >= h && 0 < jdir.y) {
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
-            d.x *= bounceScale;
-            d.y = -d.y;
+            jdir.x *= bounceScale;
+            jdir.y = -jdir.y;
         } else {
             EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y = g;
         }
-        g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x + d.x;
+        g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x + jdir.x;
         h = getStageTileAt(g, EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y);
         if (0 > g || 640 <= g) {
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
         } else if (0 <= h && 25 >= h) {
-            d.y *= bounceScale;
-            d.x = -d.x;
+            jdir.y *= bounceScale;
+            jdir.x = -jdir.x;
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
         } else if (27 <= h && 29 >= h) {
-            d.y *= bounceScale;
-            d.x = -d.x;
+            jdir.y *= bounceScale;
+            jdir.x = -jdir.x;
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
         } else {
             EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x = g;

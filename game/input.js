@@ -133,7 +133,6 @@ export function handleTouch(a) {
         rectWidth = RMath.floor(rectWidth / 2 - 640 * f / 2),
         rectHeight = RMath.floor(rectHeight / 2 - 432 * f / 2);
     a = a.touches;
-    console.log(a);
     MouseState.activeTouchCount = a.length;
     if (1 == MouseState.activeTouchCount) {
         MouseState.mouseXRel = RMath.floor((a[0].clientX - clientRect.left - rectWidth) / f);

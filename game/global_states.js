@@ -11,7 +11,6 @@ export let CanvasState = {
 
 CanvasState.context2d = CanvasState.element.getContext("2d");
 CanvasState.canvasImage = CanvasState.context2d.createImageData(640, 432);
-CanvasState.canvasImage = CanvasState.context2d.createImageData(640, 432);
 CanvasState.canvasBuffer = new Uint32Array(CanvasState.canvasImage.data.buffer);
 
 
@@ -134,7 +133,7 @@ export let BadgeState = {
     ],
 };
 for (let _i = 0; _i < badgeCount; _i++) BadgeState.badgeCounterArray[_i] = 0;
-for (let _i = 0; _i < shrineRewardClaimSlotCount; _i++) BadgeState.badgeCounterArray[_i] = 0;
+// for (let _i = 0; _i < shrineRewardClaimSlotCount; _i++) BadgeState.badgeCounterArray[_i] = 0;
 
 export let GameStateChecksum = {
     partyChecksum : 0,

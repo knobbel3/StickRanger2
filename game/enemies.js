@@ -144,25 +144,25 @@ export function findEnemyInArea(cx, cy, rx, ry) { // Ei
     let w = -1;
     for (let _i = 0; _i < EnemyState.enemyCount; _i++)
         if (0 != EnemyState.enemyHealthArray[_i]) {
-            let h = enemyHitboxHalfWidthByBehavior[enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
-            let k = enemyHitboxHalfHeightByBehavior[enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
+            let hbW = enemyHitboxHalfWidthByBehavior[enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
+            let hbH = enemyHitboxHalfHeightByBehavior[enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.BehaviorIdx]] * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
             if (EnemyState.enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeLeft || EnemyState.enemyUpdateFuncIdxArray[_i] == BehaviorTypes.TreeRight)
-                k = 3 * EnemyState.enemyPoseTrailWriteIdxArray[_i] + 5 * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
-            let p = EnemyState.enemyJointPosArray[_i][EnemyState.enemyTargetJointIdx];
-            if (!(p.x - h > rx || p.x + h < f || p.y - k > ry || p.y + k < g)) {
-                l.x = p.x - cx;
-                l.y = p.y - cy;
-                k = RMath.Vec2Mag(l);
-                h = (k >> 3) + 1;
-                RMath.Vec2Scale(l, 1 / h);
+                hbH = 3 * EnemyState.enemyPoseTrailWriteIdxArray[_i] + 5 * enemyCatalog[EnemyState.enemyTypeArray[_i]][EnemyProps.DrawScale];
+            let pos = EnemyState.enemyJointPosArray[_i][EnemyState.enemyTargetJointIdx];
+            if (!(pos.x - hbW > rx || pos.x + hbW < f || pos.y - hbH > ry || pos.y + hbH < g)) {
+                l.x = pos.x - cx;
+                l.y = pos.y - cy;
+                hbH = RMath.Vec2Mag(l);
+                hbW = (hbH >> 3) + 1;
+                RMath.Vec2Scale(l, 1 / hbW);
                 RMath.Vec2Set(t, cx, cy);
-                for (var M = 0; M <= h; M++) {
-                    p = getStageTileAt(t.x, t.y);
-                    if (0 <= p && 29 >= p) break;
+                for (var M = 0; M <= hbW; M++) {
+                    pos = getStageTileAt(t.x, t.y);
+                    if (0 <= pos && 29 >= pos) break;
                     t.add(l);
                 }
-                if (M > h && k < n) {
-                    n = k;
+                if (M > hbW && hbH < n) {
+                    n = hbH;
                     w = _i;
                 }
             }

@@ -579,27 +579,30 @@ export function onEnemyDeath(_enemyIdx) { // cl
 
 
 export function updateEnemies() {
-    var enemyIdx;
+    let enemyIdx;
     for (enemyIdx = 0; enemyIdx < EnemyState.enemyCount; enemyIdx++) {
         if (0 < EnemyState.enemyDmgDurationLeftArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) {
             EnemyState.enemyDmgDurationLeftArray[enemyIdx]--;
-            var b = RMath.floor(EnemyState.enemyDmgPerFrameArray[enemyIdx] / 60),
+            let b = RMath.floor(EnemyState.enemyDmgPerFrameArray[enemyIdx] / 60),
                 c = EnemyState.enemyDmgPerFrameArray[enemyIdx] - 60 * b;
             RMath.randFloat(60) < c && (b += 1);
             EnemyState.enemyHealthArray[enemyIdx] = RMath.max(EnemyState.enemyHealthArray[enemyIdx] - b, 0);
             StageState.stage_totalDamageDealt += b
         }
-        if (0 < EnemyState.enemyFreezeTimerArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) // effect type 5 in al
+
+        // freeze effect
+        if (0 < EnemyState.enemyFreezeTimerArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) { // effect type 5 in al
             EnemyState.enemyFreezeTimerArray[enemyIdx]--;
-        else {
-            // if (0 < Gk[enemyIdx] && 0 < enemyHealthArray[enemyIdx] && (Gk[enemyIdx]--, randFloat(100) < Hk[enemyIdx])) continue;
-            if (0 < EnemyState.enemySkipDurationLeftArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) { // effect type 2
-                EnemyState.enemySkipDurationLeftArray[enemyIdx]--;
-                if (RMath.randFloat(100) < EnemyState.enemyUpdateSkipProbArray[enemyIdx])
-                    continue;
-            }
-            enemyIdx = enemyDispatchTable[EnemyState.enemyUpdateFuncIdxArray[enemyIdx]](enemyIdx)
+            continue;
         }
+
+        // random skip effect
+        if (0 < EnemyState.enemySkipDurationLeftArray[enemyIdx] && 0 < EnemyState.enemyHealthArray[enemyIdx]) { // effect type 2
+            EnemyState.enemySkipDurationLeftArray[enemyIdx]--;
+            if (RMath.randFloat(100) < EnemyState.enemyUpdateSkipProbArray[enemyIdx])
+                continue;
+        }
+        enemyIdx = enemyDispatchTable[EnemyState.enemyUpdateFuncIdxArray[enemyIdx]](enemyIdx)
     }
 }
 

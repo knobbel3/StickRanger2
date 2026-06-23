@@ -88,43 +88,43 @@ export function deleteEnemy(enemyIdx) {
 
 
 export function moveEnemyJointWithTileCollision(enemyIdx, jointIdx, bounceScale) { // $k
-    let jdir = new RMath.Vec2();
-    RMath.Vec2Sub(jdir, EnemyState.enemyJointPosArray[enemyIdx][jointIdx], EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
+    let vel = new RMath.Vec2();
+    RMath.Vec2Sub(vel, EnemyState.enemyJointPosArray[enemyIdx][jointIdx], EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
     EnemyState.enemyJointPosArray[enemyIdx][jointIdx].set(EnemyState.enemyPrevJointPosArray[enemyIdx][jointIdx]);
-    let f = (RMath.Vec2Mag(jdir) >> 2) + 1;
-    RMath.Vec2Scale(jdir, 1 / f);
-    for (let k = 0; k < f; k++) {
-        let g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y + jdir.y;
-        let h = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x, g);
-        if (0 > g || 8 * StageState.stageHeight <= g) {
+    let substepCount = (RMath.Vec2Mag(vel) >> 2) + 1; // floor(speed / 4) + 1
+    RMath.Vec2Scale(vel, 1 / substepCount);
+    for (let k = 0; k < substepCount; k++) {
+        let nextY = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y + vel.y;
+        let nextX = getStageTileAt(EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x, nextY);
+        if (0 > nextY || 8 * StageState.stageHeight <= nextY) {
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
-        } else if (0 <= h && 25 >= h) {
-            if (0 < jdir.y) {
+        } else if (0 <= nextX && 25 >= nextX) {
+            if (0 < vel.y) {
                 EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
             }
-            jdir.x *= bounceScale;
-            jdir.y = -jdir.y;
-        } else if (26 <= h && 26 >= h && 0 < jdir.y) {
+            vel.x *= bounceScale;
+            vel.y = -vel.y;
+        } else if (26 <= nextX && 26 >= nextX && 0 < vel.y) {
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 2;
-            jdir.x *= bounceScale;
-            jdir.y = -jdir.y;
+            vel.x *= bounceScale;
+            vel.y = -vel.y;
         } else {
-            EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y = g;
+            EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y = nextY;
         }
-        g = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x + jdir.x;
-        h = getStageTileAt(g, EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y);
-        if (0 > g || 640 <= g) {
+        nextY = EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x + vel.x;
+        nextX = getStageTileAt(nextY, EnemyState.enemyJointPosArray[enemyIdx][jointIdx].y);
+        if (0 > nextY || 640 <= nextY) {
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
-        } else if (0 <= h && 25 >= h) {
-            jdir.y *= bounceScale;
-            jdir.x = -jdir.x;
+        } else if (0 <= nextX && 25 >= nextX) {
+            vel.y *= bounceScale;
+            vel.x = -vel.x;
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
-        } else if (27 <= h && 29 >= h) {
-            jdir.y *= bounceScale;
-            jdir.x = -jdir.x;
+        } else if (27 <= nextX && 29 >= nextX) {
+            vel.y *= bounceScale;
+            vel.x = -vel.x;
             EnemyState.enemyTileContactFlagsArray[enemyIdx] |= 1;
         } else {
-            EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x = g;
+            EnemyState.enemyJointPosArray[enemyIdx][jointIdx].x = nextY;
         }
     }
 }

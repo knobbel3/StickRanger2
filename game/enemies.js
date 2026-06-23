@@ -608,12 +608,12 @@ export function updateEnemies() {
 
 
 export function enemySlimeBehavior(enemyIdx) {
-
-    var b, c = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+    let drawScale = enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
     if (0 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
         EnemyState.enemyJointPosArray[enemyIdx][0].x += 4;
         EnemyState.enemyJointPosArray[enemyIdx][0].y += 6;
-        for (b = 0; 1 > b; b++) EnemyState.enemyPrevJointPosArray[enemyIdx][b].set(EnemyState.enemyJointPosArray[enemyIdx][b]);
+        // for (let i = 0; 1 > i; i++) 
+        EnemyState.enemyPrevJointPosArray[enemyIdx][0].set(EnemyState.enemyJointPosArray[enemyIdx][0]);
         EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = RMath.randSelect(1, 2);
     } else if (1 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] || 2 == EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx]) {
         RMath.stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][0], EnemyState.enemyPrevJointPosArray[enemyIdx][0], .03, .99);
@@ -625,24 +625,24 @@ export function enemySlimeBehavior(enemyIdx) {
                 }
             }
         }
-        var d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
-        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - d * c + 1);
+        let d = enemySpriteAnchorYBySpriteIndex[enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.SpriteIndex]];
+        spawnEnemyLoot(enemyIdx, 0, EnemyState.enemyJointPosArray[enemyIdx][0].x, EnemyState.enemyJointPosArray[enemyIdx][0].y - d * drawScale + 1);
         EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0;
         if (0 >= EnemyState.enemyHealthArray[enemyIdx])
-            for (b = 0; 1 > b; b++) {
-                EnemyState.enemyJointPosArray[enemyIdx][b].x += RMath.randFloatRange(-.3, .3);
-                EnemyState.enemyJointPosArray[enemyIdx][b].y -= RMath.randFloatRange(1, 2);
+            for (let i = 0; 1 > i; i++) {
+                EnemyState.enemyJointPosArray[enemyIdx][i].x += RMath.randFloatRange(-.3, .3);
+                EnemyState.enemyJointPosArray[enemyIdx][i].y -= RMath.randFloatRange(1, 2);
             }
-        for (b = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        for (let i = 0; 1 > i; i++) moveEnemyJointWithTileCollision(enemyIdx, i, .5);
         EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].x = EnemyState.enemyJointPosArray[enemyIdx][0].x;
-        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y = EnemyState.enemyJointPosArray[enemyIdx][0].y - d * c + 1;
+        EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y = EnemyState.enemyJointPosArray[enemyIdx][0].y - d * drawScale + 1;
         if (0 >= EnemyState.enemyHealthArray[enemyIdx]) {
             EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] = 3;
             onEnemyDeath(enemyIdx);
         }
     } else {
-        for (b = 0; 1 > b; b++) RMath.stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][b], EnemyState.enemyPrevJointPosArray[enemyIdx][b], .05, .99);
-        for (b = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 1 > b; b++) moveEnemyJointWithTileCollision(enemyIdx, b, .5);
+        for (let i = 0; 1 > i; i++) RMath.stepWithVerticalBias(EnemyState.enemyJointPosArray[enemyIdx][i], EnemyState.enemyPrevJointPosArray[enemyIdx][i], .05, .99);
+        for (let i = EnemyState.enemyTileContactFlagsArray[enemyIdx] = 0; 1 > i; i++) moveEnemyJointWithTileCollision(enemyIdx, i, .5);
         if (50 <= EnemyState.enemyDeathTimerArray[enemyIdx]++) {
             deleteEnemy(enemyIdx--);
         }

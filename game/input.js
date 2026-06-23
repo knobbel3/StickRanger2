@@ -157,17 +157,17 @@ export function promptInput(message, _default) {
 }
 
 export function initInputState() {
-    for (_t0 = 0; 256 > _t0; _t0++) {
-        KeyboardState.keyJustPressed[_t0] = false;
-        KeyboardState.keyPressPending[_t0] = false;
-        KeyboardState.keyHeld[_t0] = false;
-        KeyboardState.keyMapNoShift[_t0] = 0;
-        KeyboardState.keyMapShift[_t0] = 0;
+    for (let i = 0; 256 > i; i++) {
+        KeyboardState.keyJustPressed[i] = false;
+        KeyboardState.keyPressPending[i] = false;
+        KeyboardState.keyHeld[i] = false;
+        KeyboardState.keyMapNoShift[i] = 0;
+        KeyboardState.keyMapShift[i] = 0;
     }
-    for (_t0 = 0; 10 > _t0; _t0++) KeyboardState.keyMapNoShift[48 + _t0] = 48 + _t0;
-    for (_t0 = 0; 9 > _t0; _t0++) KeyboardState.keyMapShift[49 + _t0] = 33 + _t0;
-    for (_t0 = 0; 4 > _t0; _t0++) KeyboardState.keyMapNoShift[37 + _t0] = 37 + _t0;
-    for (_t0 = 0; 4 > _t0; _t0++) KeyboardState.keyMapShift[37 + _t0] = 37 + _t0;
+    for (let i = 0; 10 > i; i++) KeyboardState.keyMapNoShift[48 + i] = 48 + i;
+    for (let i = 0; 9 > i; i++) KeyboardState.keyMapShift[49 + i] = 33 + i;
+    for (let i = 0; 4 > i; i++) KeyboardState.keyMapNoShift[37 + i] = 37 + i;
+    for (let i = 0; 4 > i; i++) KeyboardState.keyMapShift[37 + i] = 37 + i;
     KeyboardState.keyMapNoShift[13] = KeyboardState.keyMapShift[13] = 13;
     KeyboardState.keyMapNoShift[16] = KeyboardState.keyMapShift[16] = 16;
     KeyboardState.keyMapNoShift[17] = KeyboardState.keyMapShift[17] = 17;

@@ -203,109 +203,121 @@ export function findEnemyInArea(cx, cy, rx, ry) { // Ei
  * - (int) index of the last enemy hit, or -1 if none were hit.
  */
 export function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectType, effectDuration, damageMin, damageMax, centerPos, directionVec, width, height) { // al
-    let n = -1,
-        w, B, M, J, y, x, K = new RMath.Vec2(),
-        ba = new RMath.Vec2(),
-        U, na;
+    let hitIdx = -1;
     width *= .5;
     height *= .5;
+
+    let tlx, tly, drx, dry;
     if (0 == shapeMode) {
-        w = centerPos.x - width;
-        B = centerPos.y - height;
-        M = centerPos.x + width;
-        J = centerPos.y + height;
+        tlx = centerPos.x - width;
+        tly = centerPos.y - height;
+        drx = centerPos.x + width;
+        dry = centerPos.y + height;
     } else if (1 == shapeMode) {
         RMath.Vec2Norm(directionVec);
         RMath.Vec2Scale(directionVec, height);
-        w = RMath.min(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
-        B = RMath.min(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
-        M = RMath.max(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
-        J = RMath.max(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
+        tlx = RMath.min(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+        tly = RMath.min(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
+        drx = RMath.max(centerPos.x - directionVec.x, centerPos.x + directionVec.x);
+        dry = RMath.max(centerPos.y - directionVec.y, centerPos.y + directionVec.y);
     }
     
 
-    for (height = 0; height < EnemyState.enemyCount; height++)
-        if (0 != EnemyState.enemyHealthArray[height]) {
-            x = EnemyState.enemyJointPosArray[height][EnemyState.enemyTargetJointIdx];
-            y = enemyHitboxHalfWidthByBehavior[EnemyState.enemyUpdateFuncIdxArray[height]] * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.DrawScale];
-            width = enemyHitboxHalfHeightByBehavior[EnemyState.enemyUpdateFuncIdxArray[height]] * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.DrawScale];
-            if (EnemyState.enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeLeft || EnemyState.enemyUpdateFuncIdxArray[height] == BehaviorTypes.TreeRight)
-                width = 3 * EnemyState.enemyPoseTrailWriteIdxArray[height] + 5 * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.DrawScale];
-            if (!(x.x - y > M || x.x + y < w || x.y - width > J || x.y + width < B)) {
+    for (let enemyIdx = 0; enemyIdx < EnemyState.enemyCount; enemyIdx++) {
+
+        if (0 != EnemyState.enemyHealthArray[enemyIdx]) {
+            let jpos = EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx];
+            let w = enemyHitboxHalfWidthByBehavior[EnemyState.enemyUpdateFuncIdxArray[enemyIdx]] * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+            let h = enemyHitboxHalfHeightByBehavior[EnemyState.enemyUpdateFuncIdxArray[enemyIdx]] * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+            if (EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeLeft || 
+                EnemyState.enemyUpdateFuncIdxArray[enemyIdx] == BehaviorTypes.TreeRight)
+                h = 3 * EnemyState.enemyPoseTrailWriteIdxArray[enemyIdx] + 5 * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.DrawScale];
+            
+            if (!(jpos.x - w > drx || jpos.x + w < tlx || jpos.y - h > dry || jpos.y + h < tly)) {
+                let scanDir = new RMath.Vec2();
                 if (0 == shapeMode) {
-                    ba.x = x.x - centerPos.x;
-                    ba.y = x.y - centerPos.y;
-                    U = RMath.Vec2Mag(ba);
-                    U = (U >> 3) + 1;
-                    RMath.Vec2Scale(ba, 1 / U);
-                    K.set(centerPos);
-                    for (var Fa = 0; Fa <= U; Fa++) {
-                        na = getStageTileAt(K.x, K.y);
-                        if (0 <= na && 29 >= na) break;
-                        K.add(ba);
+                    scanDir.x = jpos.x - centerPos.x;
+                    scanDir.y = jpos.y - centerPos.y;
+                    let scanLength = RMath.Vec2Mag(scanDir);
+                    scanLength = (scanLength >> 3) + 1; // floor(x / 8) + 1
+                    RMath.Vec2Scale(scanDir, 1 / scanLength);
+                    let scanPos = new RMath.Vec2();
+                    scanPos.set(centerPos);
+                    let i = 0;
+                    for (i = 0; i <= scanLength; i++) {
+                        let tileIdx = getStageTileAt(scanPos.x, scanPos.y);
+                        if (0 <= tileIdx && 29 >= tileIdx) break;
+                        scanPos.add(scanDir);
                     }
-                    if (Fa <= U) continue;
+                    if (i <= scanLength) continue;
                 } else if (1 == shapeMode) {
-                    ba.x = 2 * directionVec.x;
-                    ba.y = 2 * directionVec.y;
-                    U = RMath.Vec2Mag(ba);
-                    U = (U >> 3) + 1;
-                    RMath.Vec2Scale(ba, 1 / U);
-                    RMath.Vec2Sub(K, centerPos, directionVec);
-                    for (Fa = 0; Fa <= U; Fa++) {
-                        na = getStageTileAt(K.x, K.y);
-                        if (0 <= na && 29 >= na) break;
-                        if (x.x - y < K.x && x.x + y > K.x && x.y - width < K.y && x.y + width > K.y) {
-                            Fa = U + 2;
+                    scanDir.x = 2 * directionVec.x;
+                    scanDir.y = 2 * directionVec.y;
+                    let scanLength = RMath.Vec2Mag(scanDir);
+                    scanLength = (scanLength >> 3) + 1;
+                    let scanPos = new RMath.Vec2();
+                    RMath.Vec2Scale(scanDir, 1 / scanLength);
+                    RMath.Vec2Sub(scanPos, centerPos, directionVec);
+                    let i;
+                    for (i = 0; i <= scanLength; i++) {
+                        let tileIdx = getStageTileAt(scanPos.x, scanPos.y);
+                        if (0 <= tileIdx && 29 >= tileIdx) break;
+                        if (jpos.x - w < scanPos.x && jpos.x + w > scanPos.x && jpos.y - h < scanPos.y && jpos.y + h > scanPos.y) {
+                            i = scanLength + 2;
                             break;
                         }
-                        K.add(ba);
+                        scanPos.add(scanDir);
                     }
-                    if (Fa < U + 2) continue;
+                    if (i < scanLength + 2) continue;
                 }
+
                 if (0 == applyFlag) {
-                    n = damageMin + RMath.floor(RMath.randFloat(damageMax - damageMin + 1));
+                    let dmg = damageMin + RMath.floor(RMath.randFloat(damageMax - damageMin + 1));
                     if (4 == effectType) {
-                        EnemyState.enemyDmgPerFrameArray[height] = RMath.max(
-                            EnemyState.enemyDmgPerFrameArray[height],
-                            RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100))
+                        EnemyState.enemyDmgPerFrameArray[enemyIdx] = RMath.max(
+                            EnemyState.enemyDmgPerFrameArray[enemyIdx],
+                            RMath.max(1, dmg - RMath.floor(dmg * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.PoisonResistPct] / 100))
                         );
-                        EnemyState.enemyDmgDurationLeftArray[height] = RMath.max(
-                            EnemyState.enemyDmgDurationLeftArray[height],
-                            effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.PoisonResistPct] / 100)
+                        EnemyState.enemyDmgDurationLeftArray[enemyIdx] = RMath.max(
+                            EnemyState.enemyDmgDurationLeftArray[enemyIdx],
+                            effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.PoisonResistPct] / 100)
                         );
                     } else {
                         if (0 == effectType) {
-                            n = RMath.max(1, n - enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.PhysResistPct]);
+                            dmg = RMath.max(1, dmg - enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.PhysResistPct]);
                         } else if (1 == effectType) {
-                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.FireResistPct] / 100));
+                            dmg = RMath.max(1, dmg - RMath.floor(dmg * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.FireResistPct] / 100));
                         } else if (2 == effectType) {
-                            n = RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.IceResistPct] / 100));
-                        } else {
-                            3 == effectType && (n = RMath.max(1, n - RMath.floor(n * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.LightResistPct] / 100)));
+                            dmg = RMath.max(1, dmg - RMath.floor(dmg * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.IceResistPct] / 100));
+                        } else if (3 == effectType) {
+                            dmg = RMath.max(1, dmg - RMath.floor(dmg * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.LightResistPct] / 100));
                         }
-                        EnemyState.enemyHealthArray[height] = RMath.max(EnemyState.enemyHealthArray[height] - n, 0);
-                        spawnPopup(EnemyState.enemyJointPosArray[height][EnemyState.enemyTargetJointIdx].x, EnemyState.enemyJointPosArray[height][EnemyState.enemyTargetJointIdx].y - width, 0 > ba.x ? -1 : 1, n, 60, 12632256);
-                        StageState.stage_totalDamageDealt += n;
+                        EnemyState.enemyHealthArray[enemyIdx] = RMath.max(EnemyState.enemyHealthArray[enemyIdx] - dmg, 0);
+                        spawnPopup(EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].x, EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y - h, 0 > scanDir.x ? -1 : 1, dmg, 60, 12632256);
+                        StageState.stage_totalDamageDealt += dmg;
                     }
                     if (2 == effectType) {
-                        EnemyState.enemySkipDurationLeftArray[height] = 120 - RMath.floor(120 * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
-                        EnemyState.enemyUpdateSkipProbArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.IceResistPct] / 100);
-                    } else {
-                        5 == effectType && (EnemyState.enemyFreezeTimerArray[height] = effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[height]][EnemyProps.FreezeResistPct] / 100));
+                        EnemyState.enemySkipDurationLeftArray[enemyIdx] = 120 - RMath.floor(120 * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.IceResistPct] / 100);
+                        EnemyState.enemyUpdateSkipProbArray[enemyIdx] = effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.IceResistPct] / 100);
+                    } else if (5 == effectType) {
+                        EnemyState.enemyFreezeTimerArray[enemyIdx] = effectDuration - RMath.floor(effectDuration * enemyCatalog[EnemyState.enemyTypeArray[enemyIdx]][EnemyProps.FreezeResistPct] / 100);
                     }
 
-                    EnemyState.enemyAuxStateArray[height] = 120;
-                    30 != GUIState.gameScreenState && (GameplayState.comboWindowTimer = GameplayState.comboWindowMaxFrames);
-                    isBadgeIncompleteForCurrentStage(11) && 17 == EnemyState.enemyTypeArray[height] && 0 != effectType && StageState.stageConditionMask++;
-                    isBadgeIncompleteForCurrentStage(41) && 45 == EnemyState.enemyTypeArray[height] && 0 == effectType && StageState.stageConditionMask++;
-                }
+                    EnemyState.enemyAuxStateArray[enemyIdx] = 120;
 
-                n = height;
+                    if (30 != GUIState.gameScreenState)
+                        GameplayState.comboWindowTimer = GameplayState.comboWindowMaxFrames;
+                    isBadgeIncompleteForCurrentStage(11) && 17 == EnemyState.enemyTypeArray[enemyIdx] && 0 != effectType && StageState.stageConditionMask++;
+                    isBadgeIncompleteForCurrentStage(41) && 45 == EnemyState.enemyTypeArray[enemyIdx] && 0 == effectType && StageState.stageConditionMask++;
+                }
+                hitIdx = enemyIdx;
                 maxTargets--;
                 if (0 >= maxTargets) break;
             }
-        } return n; // index of a hit enemy (last one hit), or -1 if none.
+        }
+    }
+
+    return hitIdx; // index of a hit enemy (last one hit), or -1 if none.
 }
 
 

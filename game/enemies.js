@@ -391,95 +391,99 @@ export function spawnEnemyLoot(enemyIdx, typeOffset, _px, _py) { // bl
     
     if (0 < EnemyState.enemyActionCooldownTimerArray[enemyIdx]) {
         EnemyState.enemyActionCooldownTimerArray[enemyIdx]--;
-    } else if (!(RMath.randFloat(1E3) >= _p23)) {
-        EnemyState.enemyActionCooldownTimerArray[enemyIdx] = _p22;
-        let pVelY;
-        if (0 == visType) {
+        return;
+    }
+
+    if (RMath.randFloat(1E3) >= _p23)
+        return;
+    
+    EnemyState.enemyActionCooldownTimerArray[enemyIdx] = _p22;
+    if (0 == visType) {
+        spawnProjectile(
+            parentIdx, attachMode, 0, 0, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
+            _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31, 
+            _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+        );
+    } else if (1 == visType) {
+        spawnProjectile(
+            parentIdx, attachMode, _px, _py, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
+            _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31,
+             _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+        );
+    } else if (2 == visType) {
+        let spawnX = _px;
+        let spawnY = _py;
+        let velX = spawnX < HeroesState.heroJointPositionsByHero[_foundHero][2].x ? .1 * _p21 : -.1 * _p21;
+        for (let i = 0; i < _p20; i++) {
             spawnProjectile(
-                parentIdx, attachMode, 0, 0, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
-                _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31, 
-                _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+                parentIdx, attachMode, spawnX, spawnY, velX, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
+                _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
             );
-        } else if (1 == visType) {
+        }
+    } else if (3 == visType || 6 == visType) {
+        let spawnCenter = new RMath.Vec2();
+        if (3 == visType) {
+            RMath.Vec2Set(spawnCenter, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[spawnAngle][EnemyState.enemyTargetJointIdx].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[spawnAngle][EnemyState.enemyTargetJointIdx].y);
+        } else if (6 == visType) {
+            RMath.Vec2Set(spawnCenter, 0, -1);
+        }
+        let angleIncr = (0 < _s1) ? _s1 : 16;
+        let spawnAngle = RMath.floor(512 * RMath.Vec2Angle(spawnCenter) / RMath.TAU);
+        spawnAngle -= RMath.floor((_p20 - 1) * angleIncr / 2);
+        for (let i = 0; i < _p20; i++) {
+            spawnCenter.x = RMath.rotationLUT[spawnAngle & 511][0];
+            spawnCenter.y = -RMath.rotationLUT[spawnAngle & 511][1];
+            let spawnX = _px + 10 * spawnCenter.x;
+            let spawnY = _py + 10 * spawnCenter.y;
+            let velX = spawnCenter.x * _p21 * .1;
+            let velY = spawnCenter.y * _p21 * .1;
             spawnProjectile(
-                parentIdx, attachMode, _px, _py, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
-                _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31,
-                 _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+                parentIdx, attachMode, spawnX, spawnY, velX, velY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
+                _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
             );
-        } else if (2 == visType) {
+            spawnAngle += angleIncr;
+        } 
+    } else if (4 == visType) {
+        for (let i = 0; i < _p20; i++) {
+            RMath.Vec2Set(targetPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[enemyIdx][0].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[enemyIdx][0].y);
+            let targetRange = 0 < _s1 ? _s1 - 1 : _p20;
+            if (0 < _p20) {
+                let angle = RMath.floor(RMath.randFloat(512));
+                targetRange *= RMath.randFloat(10);
+                targetPos.x += RMath.rotationLUT[angle][0] * targetRange;
+                targetPos.y += RMath.rotationLUT[angle][1] * targetRange;
+            }
             let spawnX = _px;
             let spawnY = _py;
-            let velX = spawnX < HeroesState.heroJointPositionsByHero[_foundHero][2].x ? .1 * _p21 : -.1 * _p21;
-            for (let i = 0; i < _p20; i++) {
-                spawnProjectile(
-                    parentIdx, attachMode, spawnX, spawnY, velX, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
-                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
-                    _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
-                );
-            }
-        } else if (3 == visType || 6 == visType) {
-            let spawnCenter = new RMath.Vec2();
-            if (3 == visType) {
-                RMath.Vec2Set(spawnCenter, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[spawnAngle][EnemyState.enemyTargetJointIdx].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[spawnAngle][EnemyState.enemyTargetJointIdx].y);
-            } else if (6 == visType) {
-                RMath.Vec2Set(spawnCenter, 0, -1);
-            }
-            let angleIncr = (0 < _s1) ? _s1 : 16;
-            let spawnAngle = RMath.floor(512 * RMath.Vec2Angle(spawnCenter) / RMath.TAU);
-            spawnAngle -= RMath.floor((_p20 - 1) * angleIncr / 2);
-            for (let i = 0; i < _p20; i++) {
-                spawnCenter.x = RMath.rotationLUT[spawnAngle & 511][0];
-                spawnCenter.y = -RMath.rotationLUT[spawnAngle & 511][1];
-                let spawnX = _px + 10 * spawnCenter.x;
-                let spawnY = _py + 10 * spawnCenter.y;
-                let velX = spawnCenter.x * _p21 * .1;
-                let velY = spawnCenter.y * _p21 * .1;
-                spawnProjectile(
-                    parentIdx, attachMode, spawnX, spawnY, velX, velY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
-                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
-                    _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
-                );
-                spawnAngle += angleIncr;
-            } 
-        } else if (4 == visType) {
-            for (let i = 0; i < _p20; i++) {
-                RMath.Vec2Set(targetPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[enemyIdx][0].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[enemyIdx][0].y);
-                let targetRange = 0 < _s1 ? _s1 - 1 : _p20;
-                if (0 < _p20) {
-                    let angle = RMath.floor(RMath.randFloat(512));
-                    targetRange *= RMath.randFloat(10);
-                    targetPos.x += RMath.rotationLUT[angle][0] * targetRange;
-                    targetPos.y += RMath.rotationLUT[angle][1] * targetRange;
-                }
-                let spawnX = _px;
-                let spawnY = _py;
-                let velX = targetPos.x / _p21;
-                let velY = (targetPos.y - .5 * _p21 * _p21 * _p12 * .01) / _p21;
-                spawnProjectile(
-                    parentIdx, attachMode, spawnX, spawnY, velX, velY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
-                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
-                    _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
-                );
-            } 
-        } else if (5 == visType) {
-            for (let i = 0; i < _p20; i++) {
-                let spawnX = _px + RMath.randFloatRange(-_p24, _p24);
-                let spawnY = _py + RMath.randFloatRange(-_p24, 0);
-                spawnProjectile(
-                    parentIdx, attachMode, spawnX, spawnY, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
-                    0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, 
-                    _p30, _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, 
-                    _p43, _p44
-                );
-            } 
-        } else if (7 == visType) {
-            for (let i = 0; i < _p20; i++) {
-                let spawnX = RMath.floor(_px / 8);
-                let spawnY = RMath.floor(_py / 8);
-                spawnEnemy(spawnX, spawnY, enemyType + _p18, 0);
-            }
+            let velX = targetPos.x / _p21;
+            let velY = (targetPos.y - .5 * _p21 * _p21 * _p12 * .01) / _p21;
+            spawnProjectile(
+                parentIdx, attachMode, spawnX, spawnY, velX, velY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
+                _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
+            );
+        } 
+    } else if (5 == visType) {
+        for (let i = 0; i < _p20; i++) {
+            let spawnX = _px + RMath.randFloatRange(-_p24, _p24);
+            let spawnY = _py + RMath.randFloatRange(-_p24, 0);
+            spawnProjectile(
+                parentIdx, attachMode, spawnX, spawnY, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, 
+                _p30, _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, 
+                _p43, _p44
+            );
+        } 
+    } else if (7 == visType) {
+        for (let i = 0; i < _p20; i++) {
+            let spawnX = RMath.floor(_px / 8);
+            let spawnY = RMath.floor(_py / 8);
+            spawnEnemy(spawnX, spawnY, enemyType + _p18, 0);
         }
     }
+    
     
 }
 

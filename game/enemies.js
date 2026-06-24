@@ -323,67 +323,67 @@ export function applyEffectToEnemies(applyFlag, shapeMode, maxTargets, effectTyp
 }
 
 
-export function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
-    let itemPos = new RMath.Vec2(),
-        itemIdx = EnemyState.enemyTypeArray[enemyIdx] + lootVariant,
-        selectedItem = enemyCatalog[itemIdx];
-    lootVariant = -enemyIdx - 1;
-    let k = selectedItem[EnemyProps.ProjectileAttachMode];
-    if (0 == k) {
-        k = -1;
-    } else if (1 == k) {
-        k = 0;
-    } else if (2 == k) {
-        k = 1;
+export function spawnEnemyLoot(enemyIdx, typeOffset, _px, _py) { // bl
+    let targetPos = new RMath.Vec2(),
+        enemyType = EnemyState.enemyTypeArray[enemyIdx] + typeOffset,
+        selectedEnemy = enemyCatalog[enemyType];
+    let parentIdx = -enemyIdx - 1;
+    let attachMode = selectedEnemy[EnemyProps.ProjectileAttachMode];
+    if (0 == attachMode) {
+        attachMode = -1;
+    } else if (1 == attachMode) {
+        attachMode = 0;
+    } else if (2 == attachMode) {
+        attachMode = 1;
     }
     
-    let _s0 = selectedItem[EnemyProps.ProjectileVisualPack] % 100,
-        _s1 = RMath.floor(selectedItem[EnemyProps.ProjectileVisualPack] / 100),
-        _p0 = selectedItem[EnemyProps.PArg0],
-        _p1 = selectedItem[EnemyProps.PArg1],
-        _p2 = selectedItem[EnemyProps.PArg2],
-        _p3 = selectedItem[EnemyProps.PArg3],
-        _p4 = selectedItem[EnemyProps.PArg4],
-        _p5 = selectedItem[EnemyProps.PArg5],
-        _p6 = selectedItem[EnemyProps.PArg6],
-        _p7 = selectedItem[EnemyProps.PArg7],
-        _p8 = selectedItem[EnemyProps.PArg8],
-        _p9 = selectedItem[EnemyProps.PArg9],
-        _p10 = selectedItem[EnemyProps.PArg10],
-        _p11 = selectedItem[EnemyProps.PArg11],
-        _p12 = selectedItem[EnemyProps.PArg12],
-        _p13 = selectedItem[EnemyProps.PArg13],
-        _p14 = selectedItem[EnemyProps.PArg14],
-        _p15 = selectedItem[EnemyProps.PArg15],
-        _p16 = selectedItem[EnemyProps.PArg16],
-        _p17 = selectedItem[EnemyProps.PArg17],
-        _p18 = selectedItem[EnemyProps.PArg18],
-        _p19 = selectedItem[EnemyProps.PArg19],
-        _p20 = selectedItem[EnemyProps.PArg20],
-        _p21 = selectedItem[EnemyProps.PArg21],
-        _p22 = selectedItem[EnemyProps.PArg22],
-        _p23 = selectedItem[EnemyProps.PArg23],
-        _p24 = selectedItem[EnemyProps.PArg24],
-        _p25 = selectedItem[EnemyProps.PArg25],
-        _p26 = selectedItem[EnemyProps.PArg26],
-        _p27 = selectedItem[EnemyProps.PArg27],
-        _p28 = selectedItem[EnemyProps.PArg28],
-        _p29 = selectedItem[EnemyProps.PArg29],
-        _p30 = selectedItem[EnemyProps.PArg30],
-        _p31 = selectedItem[EnemyProps.PArg31],
-        _p32 = selectedItem[EnemyProps.PArg32],
-        _p33 = selectedItem[EnemyProps.PArg33],
-        _p34 = selectedItem[EnemyProps.PArg34],
-        _p35 = selectedItem[EnemyProps.PArg35],
-        _p36 = selectedItem[EnemyProps.PArg36],
-        _p37 = selectedItem[EnemyProps.PArg37],
-        _p38 = selectedItem[EnemyProps.PArg38],
-        _p39 = selectedItem[EnemyProps.PArg39],
-        _p40 = selectedItem[EnemyProps.PArg40],
-        _p41 = selectedItem[EnemyProps.PArg41],
-        _p42 = selectedItem[EnemyProps.PArg42],
-        _p43 = selectedItem[EnemyProps.PArg43],
-        _p44 = selectedItem[EnemyProps.PArg44];
+    let visType = selectedEnemy[EnemyProps.ProjectileVisualPack] % 100,
+        _s1 = RMath.floor(selectedEnemy[EnemyProps.ProjectileVisualPack] / 100),
+        _p0 = selectedEnemy[EnemyProps.PArg0],
+        _p1 = selectedEnemy[EnemyProps.PArg1],
+        _p2 = selectedEnemy[EnemyProps.PArg2],
+        _p3 = selectedEnemy[EnemyProps.PArg3],
+        _p4 = selectedEnemy[EnemyProps.PArg4],
+        _p5 = selectedEnemy[EnemyProps.PArg5],
+        _p6 = selectedEnemy[EnemyProps.PArg6],
+        _p7 = selectedEnemy[EnemyProps.PArg7],
+        _p8 = selectedEnemy[EnemyProps.PArg8],
+        _p9 = selectedEnemy[EnemyProps.PArg9],
+        _p10 = selectedEnemy[EnemyProps.PArg10],
+        _p11 = selectedEnemy[EnemyProps.PArg11],
+        _p12 = selectedEnemy[EnemyProps.PArg12],
+        _p13 = selectedEnemy[EnemyProps.PArg13],
+        _p14 = selectedEnemy[EnemyProps.PArg14],
+        _p15 = selectedEnemy[EnemyProps.PArg15],
+        _p16 = selectedEnemy[EnemyProps.PArg16],
+        _p17 = selectedEnemy[EnemyProps.PArg17],
+        _p18 = selectedEnemy[EnemyProps.PArg18],
+        _p19 = selectedEnemy[EnemyProps.PArg19],
+        _p20 = selectedEnemy[EnemyProps.PArg20],
+        _p21 = selectedEnemy[EnemyProps.PArg21],
+        _p22 = selectedEnemy[EnemyProps.PArg22],
+        _p23 = selectedEnemy[EnemyProps.PArg23],
+        _p24 = selectedEnemy[EnemyProps.PArg24],
+        _p25 = selectedEnemy[EnemyProps.PArg25],
+        _p26 = selectedEnemy[EnemyProps.PArg26],
+        _p27 = selectedEnemy[EnemyProps.PArg27],
+        _p28 = selectedEnemy[EnemyProps.PArg28],
+        _p29 = selectedEnemy[EnemyProps.PArg29],
+        _p30 = selectedEnemy[EnemyProps.PArg30],
+        _p31 = selectedEnemy[EnemyProps.PArg31],
+        _p32 = selectedEnemy[EnemyProps.PArg32],
+        _p33 = selectedEnemy[EnemyProps.PArg33],
+        _p34 = selectedEnemy[EnemyProps.PArg34],
+        _p35 = selectedEnemy[EnemyProps.PArg35],
+        _p36 = selectedEnemy[EnemyProps.PArg36],
+        _p37 = selectedEnemy[EnemyProps.PArg37],
+        _p38 = selectedEnemy[EnemyProps.PArg38],
+        _p39 = selectedEnemy[EnemyProps.PArg39],
+        _p40 = selectedEnemy[EnemyProps.PArg40],
+        _p41 = selectedEnemy[EnemyProps.PArg41],
+        _p42 = selectedEnemy[EnemyProps.PArg42],
+        _p43 = selectedEnemy[EnemyProps.PArg43],
+        _p44 = selectedEnemy[EnemyProps.PArg44];
 
     let _foundHero = findNearestPartyMemberInRect(_px, _py, _p24, _p24, 0);
     if (_foundHero == -1)
@@ -394,88 +394,89 @@ export function spawnEnemyLoot(enemyIdx, lootVariant, _px, _py) { // bl
     } else if (!(RMath.randFloat(1E3) >= _p23)) {
         EnemyState.enemyActionCooldownTimerArray[enemyIdx] = _p22;
         let pVelY;
-        if (0 == _s0) {
+        if (0 == visType) {
             spawnProjectile(
-                lootVariant, k, 0, 0, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
+                parentIdx, attachMode, 0, 0, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
                 _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31, 
                 _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
             );
-        } else if (1 == _s0) {
+        } else if (1 == visType) {
             spawnProjectile(
-                lootVariant, k, _px, _py, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
+                parentIdx, attachMode, _px, _py, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 0, _p12, 
                 _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, _p31,
                  _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
             );
-        } else if (2 == _s0) {
-            _p22 = _px;
-            _p23 = _py;
-            _p24 = _p22 < HeroesState.heroJointPositionsByHero[_foundHero][2].x ? .1 * _p21 : -.1 * _p21;
-            for (_s0 = 0; _s0 < _p20; _s0++) {
+        } else if (2 == visType) {
+            let spawnX = _px;
+            let spawnY = _py;
+            let velX = spawnX < HeroesState.heroJointPositionsByHero[_foundHero][2].x ? .1 * _p21 : -.1 * _p21;
+            for (let i = 0; i < _p20; i++) {
                 spawnProjectile(
-                    lootVariant, k, _p22, _p23, _p24, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    parentIdx, attachMode, spawnX, spawnY, velX, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
                     0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
                     _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
                 );
             }
-        } else if (3 == _s0 || 6 == _s0) {
-            if (3 == _s0) {
-                RMath.Vec2Set(itemPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[enemyIdx][EnemyState.enemyTargetJointIdx].y);
-            } else if (6 == _s0) {
-                RMath.Vec2Set(itemPos, 0, -1);
+        } else if (3 == visType || 6 == visType) {
+            let spawnCenter = new RMath.Vec2();
+            if (3 == visType) {
+                RMath.Vec2Set(spawnCenter, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[spawnAngle][EnemyState.enemyTargetJointIdx].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[spawnAngle][EnemyState.enemyTargetJointIdx].y);
+            } else if (6 == visType) {
+                RMath.Vec2Set(spawnCenter, 0, -1);
             }
-            itemIdx = (0 < _s1) ? _s1 : 16;
-            enemyIdx = RMath.floor(512 * RMath.Vec2Angle(itemPos) / RMath.TAU);
-            enemyIdx -= RMath.floor((_p20 - 1) * itemIdx / 2);
-            for (_s0 = 0; _s0 < _p20; _s0++) {
-                itemPos.x = RMath.rotationLUT[enemyIdx & 511][0];
-                itemPos.y = -RMath.rotationLUT[enemyIdx & 511][1];
-                _p22 = _px + 10 * itemPos.x;
-                _p23 = _py + 10 * itemPos.y;
-                _p24 = itemPos.x * _p21 * .1;
-                pVelY = itemPos.y * _p21 * .1;
+            let angleIncr = (0 < _s1) ? _s1 : 16;
+            let spawnAngle = RMath.floor(512 * RMath.Vec2Angle(spawnCenter) / RMath.TAU);
+            spawnAngle -= RMath.floor((_p20 - 1) * angleIncr / 2);
+            for (let i = 0; i < _p20; i++) {
+                spawnCenter.x = RMath.rotationLUT[spawnAngle & 511][0];
+                spawnCenter.y = -RMath.rotationLUT[spawnAngle & 511][1];
+                let spawnX = _px + 10 * spawnCenter.x;
+                let spawnY = _py + 10 * spawnCenter.y;
+                let velX = spawnCenter.x * _p21 * .1;
+                let velY = spawnCenter.y * _p21 * .1;
                 spawnProjectile(
-                    lootVariant, k, _p22, _p23, _p24, pVelY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    parentIdx, attachMode, spawnX, spawnY, velX, velY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
                     0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
                     _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
                 );
-                enemyIdx += itemIdx;
+                spawnAngle += angleIncr;
             } 
-        } else if (4 == _s0) {
-            for (_s0 = 0; _s0 < _p20; _s0++) {
-                RMath.Vec2Set(itemPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[enemyIdx][0].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[enemyIdx][0].y);
-                itemIdx = 0 < _s1 ? _s1 - 1 : _p20;
+        } else if (4 == visType) {
+            for (let i = 0; i < _p20; i++) {
+                RMath.Vec2Set(targetPos, HeroesState.heroJointPositionsByHero[_foundHero][2].x - EnemyState.enemyJointPosArray[enemyIdx][0].x, HeroesState.heroJointPositionsByHero[_foundHero][2].y - EnemyState.enemyJointPosArray[enemyIdx][0].y);
+                let targetRange = 0 < _s1 ? _s1 - 1 : _p20;
                 if (0 < _p20) {
-                    _p24 = RMath.floor(RMath.randFloat(512));
-                    itemIdx = RMath.randFloat(10) * itemIdx;
-                    itemPos.x += RMath.rotationLUT[_p24][0] * itemIdx;
-                    itemPos.y += RMath.rotationLUT[_p24][1] * itemIdx;
+                    let angle = RMath.floor(RMath.randFloat(512));
+                    targetRange *= RMath.randFloat(10);
+                    targetPos.x += RMath.rotationLUT[angle][0] * targetRange;
+                    targetPos.y += RMath.rotationLUT[angle][1] * targetRange;
                 }
-                _p22 = _px;
-                _p23 = _py;
-                _p24 = itemPos.x / _p21;
-                pVelY = (itemPos.y - .5 * _p21 * _p21 * _p12 * .01) / _p21;
+                let spawnX = _px;
+                let spawnY = _py;
+                let velX = targetPos.x / _p21;
+                let velY = (targetPos.y - .5 * _p21 * _p21 * _p12 * .01) / _p21;
                 spawnProjectile(
-                    lootVariant, k, _p22, _p23, _p24, pVelY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    parentIdx, attachMode, spawnX, spawnY, velX, velY, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
                     0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, _p30, 
                     _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, _p43, _p44
                 );
             } 
-        } else if (5 == _s0) {
-            for (_s0 = 0; _s0 < _p20; _s0++) {
-                _p22 = _px + RMath.randFloatRange(-_p24, _p24);
-                _p23 = _py + RMath.randFloatRange(-_p24, 0);
+        } else if (5 == visType) {
+            for (let i = 0; i < _p20; i++) {
+                let spawnX = _px + RMath.randFloatRange(-_p24, _p24);
+                let spawnY = _py + RMath.randFloatRange(-_p24, 0);
                 spawnProjectile(
-                    lootVariant, k, _p22, _p23, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
+                    parentIdx, attachMode, spawnX, spawnY, 0, 0, _p0, _p1, _p2, _p3, _p4, _p5, 0, _p6, _p7, _p8, _p9, _p10, _p11, 
                     0, _p12, _p13, _p14, _p15, _p16, 0, _p17, _p18, _p19, _p25, _p26, 0, _p27, 0, _p28, _p29, 
                     _p30, _p31, _p32, _p33, 0, _p34, _p35, 0, 0, _p36, _p37, 0, _p38, _p39, _p40, _p41, _p42, 
                     _p43, _p44
                 );
             } 
-        } else if (7 == _s0) {
-            for (_s0 = 0; _s0 < _p20; _s0++) {
-                _p22 = RMath.floor(_px / 8);
-                _p23 = RMath.floor(_py / 8);
-                spawnEnemy(_p22, _p23, itemIdx + _p18, 0);
+        } else if (7 == visType) {
+            for (let i = 0; i < _p20; i++) {
+                let spawnX = RMath.floor(_px / 8);
+                let spawnY = RMath.floor(_py / 8);
+                spawnEnemy(spawnX, spawnY, enemyType + _p18, 0);
             }
         }
     }
